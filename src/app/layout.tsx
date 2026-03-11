@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import Script from "next/script";
 import { defaultMetadata } from "@/lib/metadata";
 import { hotelSchema } from "@/lib/schema";
+import { CookieConsent } from "@/components/cookie-consent";
+import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
 export const metadata = defaultMetadata;
@@ -55,6 +57,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelSchema()) }}
         />
         {children}
+        <SiteFooter />
+        <CookieConsent />
       </body>
     </html>
   );

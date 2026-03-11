@@ -46,21 +46,46 @@ export async function POST(req: Request) {
       );
     }
 
+    // Confirm Delivery for HotelRunner (if applicable)
+    const messageUid = req.headers.get("x-message-uid");
+    const hmac = req.headers.get("x-payload-signature");
+
+    // PRODUCTION LOG: Trace lead entry
+    console.log(`[Lead Entry] Source: ${messageUid ? 'HotelRunner' : 'Website'}, ID: ${messageUid || 'N/A'}`);
+
+    // Implement HMAC validation logic here if NEXT_PUBLIC_HR_SECRET is set
+    
     const payload = await getPayloadClient();
+    
+    try {
+      await payload.create({
+        collection: "organization-leads",
+        data: {
+          ...parsed.data,
+          source: messageUid ? `hotelrunner:${messageUid}` : "direct_website"
+        },
+        overrideAccess: true
+      });
+    } catch (creationError) {
+      console.error("[Lead Creation Error]", creationError);
+      return NextResponse.json(
+        { ok: false, error: "Veri tabanı hatası oluştu. Lütfen teknik ekibe bildirin." },
+        { status: 500 }
+      );
+    }
 
-    await payload.create({
-      collection: "organization-leads",
-      data: {
-        ...parsed.data,
-        source: "website"
-      },
-      overrideAccess: true
-    });
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       ok: true,
-      message: "Talebiniz başarıyla alındı. Sizinle en kısa sürede iletişime geçeceğiz."
+      message: "Talebiniz başarıyla alındı. Kozbeyli Konağı ekibi en kısa sürede sizinle iletişime geçecektir."
     });
+
+    if (messageUid) {
+      // HotelRunner delivery acknowledgement
+      response.headers.set("x-message-delivery", "confirmed");
+      console.log(`[Lead Ack] Confirmed delivery for message_uid: ${messageUid}`);
+    }
+
+    return response;
   } catch (error) {
     console.error("Lead submission error:", error);
 

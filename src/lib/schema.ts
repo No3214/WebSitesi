@@ -14,7 +14,17 @@ export function hotelSchema() {
       addressRegion: "İzmir",
       addressCountry: "TR"
     },
+    starRating: {
+      "@type": "Rating",
+      "ratingValue": "5"
+    },
+    priceRange: "$$$",
     amenityFeature: [
+      {
+        "@type": "LocationFeatureSpecification",
+        name: "Taş Mimari",
+        value: true
+      },
       {
         "@type": "LocationFeatureSpecification",
         name: "Restaurant",
@@ -22,7 +32,7 @@ export function hotelSchema() {
       },
       {
         "@type": "LocationFeatureSpecification",
-        name: "Breakfast",
+        name: "Zeytin Bahçesi",
         value: true
       },
       {

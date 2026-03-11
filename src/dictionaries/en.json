@@ -1,0 +1,26 @@
+{
+  "Home": {
+    "title": "A Luxurious Escape in the Heart of History",
+    "eyebrow": "OLD FOÇA, KOZBEYLİ",
+    "cta": "DISCOVER OUR ROOMS",
+    "story": "OUR STORY"
+  },
+  "Navigation": {
+    "rooms": "Rooms",
+    "dining": "Gastronomy",
+    "events": "Events",
+    "booking": "Booking"
+  },
+  "Rooms": {
+    "title": "Refined Rooms & Suites",
+    "eyebrow": "Accommodation",
+    "text": "Discover our accommodations that combine the stone architecture of Kozbeyli Mansion with the peaceful Aegean view.",
+    "detail": "View Details"
+  },
+  "Footer": {
+    "description": "A refined stop at the heart of Foça, where a 200-year-old story is reinterpreted with luxury and comfort.",
+    "explore": "Explore",
+    "legal": "Legal",
+    "contact": "Contact"
+  }
+}

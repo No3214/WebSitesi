@@ -244,10 +244,17 @@ img {
   gap: 24px;
 }
 
+.object-cover {
+  object-fit: cover;
+}
+
 .feature-box {
-  background: var(--white);
-  padding: 40px;
+  background-color: var(--white);
+  padding: 32px;
   border: 1px solid var(--border);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .feature-box h3 {
@@ -317,6 +324,27 @@ img {
   border-color: var(--olive);
 }
 
+.serif-text {
+  font-family: var(--sans);
+  color: #333;
+}
+
+.serif-text h3 {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  margin: 40px 0 20px;
+  color: var(--olive);
+}
+
+.serif-text ul {
+  padding-left: 20px;
+  margin-bottom: 30px;
+}
+
+.serif-text li {
+  margin-bottom: 12px;
+}
+
 .embed-box {
   background: var(--white);
   padding: 40px;
@@ -327,4 +355,99 @@ img {
   .card-grid, .feature-grid, .detail-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Cookie Banner */
+.cookie-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--white);
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+  z-index: 1000;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.cookie-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cookie-content p {
+  font-size: 0.85rem;
+  margin: 0;
+  color: #666;
+}
+
+.cookie-content p a {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
+.button.sm {
+  padding: 8px 16px;
+  font-size: 0.75rem;
+}
+
+.cookie-icon {
+  color: var(--gold);
+}
+
+.serif-text h3 {
+  margin-top: 32px;
+  color: var(--olive);
+}
+
+/* Footer */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 80px 0 40px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 60px;
+}
+
+.footer-grid h4 {
+  margin-bottom: 24px;
+  font-size: 1.25rem;
+}
+
+.footer-grid ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-grid li {
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 40px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.footer-info p {
+  max-width: 300px;
+  line-height: 1.6;
+  color: #666;
 }

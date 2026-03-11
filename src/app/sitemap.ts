@@ -1,16 +1,28 @@
-import type { MetadataRoute } from "next";
-import { rooms } from "@/data/rooms";
-import { siteUrl } from "@/lib/utils";
+import { MetadataRoute } from 'next';
+import { rooms } from '@/data/rooms';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticPages = ["", "/odalar", "/menu", "/organizasyonlar"].map((path) => ({
-    url: `${siteUrl}${path || "/"}`,
-    lastModified: new Date()
+  const baseUrl = 'https://www.kozbeylikonagi.com';
+
+  const staticPages = [
+    '',
+    '/odalar',
+    '/menu',
+    '/organizasyonlar',
+    '/kvkk',
+    '/mesafeli-satis-sozlesmesi',
+  ].map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: route === '' ? 1 : 0.8,
   }));
 
   const roomPages = rooms.map((room) => ({
-    url: `${siteUrl}/odalar/${room.slug}`,
-    lastModified: new Date()
+    url: `${baseUrl}/odalar/${room.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
   }));
 
   return [...staticPages, ...roomPages];

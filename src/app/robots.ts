@@ -1,15 +1,12 @@
-import type { MetadataRoute } from "next";
-import { siteUrl } from "@/lib/utils";
+import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-        disallow: ["/api/", "/admin/", "/_next/"]
-      }
-    ],
-    sitemap: `${siteUrl}/sitemap.xml`
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: ['/admin/', '/api/'],
+    },
+    sitemap: 'https://www.kozbeylikonagi.com/sitemap.xml',
   };
 }

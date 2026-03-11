@@ -1,11 +1,13 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SectionTitle } from "@/components/section-title";
+import { SiteFooter } from "@/components/site-footer";
 import { rooms as fallbackRooms } from "@/data/rooms";
 import { getPayloadClient } from "@/lib/payload";
 
 export const metadata = {
-  title: "Odalar | Lüks Konaklama Deneyimi"
+  title: "Odalar | Kozbeyli Konağı"
 };
 
 export default async function RoomsPage() {
@@ -47,9 +49,17 @@ export default async function RoomsPage() {
           />
 
           <div className="card-grid">
-            {items.map((room) => (
+            {items.map((room, index) => (
               <Link key={room.slug} href={`/odalar/${room.slug}`} className="card">
-                <img src={room.images[0]} alt={room.title} />
+                <div style={{ position: 'relative', height: '350px' }}>
+                  <Image 
+                    src={room.images[0]} 
+                    alt={room.title} 
+                    fill 
+                    className="object-cover"
+                    priority={index < 3}
+                  />
+                </div>
                 <div className="card-body">
                   <span className="meta">{room.capacity} · {room.view}</span>
                   <h3>{room.title}</h3>
@@ -61,6 +71,7 @@ export default async function RoomsPage() {
           </div>
         </div>
       </main>
+      <SiteFooter />
     </>
   );
 }

@@ -1,0 +1,26 @@
+{
+  "Home": {
+    "title": "Tarihin Kalbinde Lüks Bir Kaçış",
+    "eyebrow": "ESKİ FOÇA, KOZBEYLİ",
+    "cta": "ODALARIMIZI KEŞFEDİN",
+    "story": "HİKAYEMİZ"
+  },
+  "Navigation": {
+    "rooms": "Odalar",
+    "dining": "Gastronomi",
+    "events": "Organizasyon",
+    "booking": "Rezervasyon"
+  },
+  "Rooms": {
+    "title": "Rafine Oda ve Süitler",
+    "eyebrow": "Konaklama",
+    "text": "Kozbeyli Konağı'nın taş mimarisi ile huzur verici Ege manzarasını birleştiren konaklama birimlerimizi keşfedin.",
+    "detail": "Detayları Gör"
+  },
+  "Footer": {
+    "description": "Foça'nın kalbinde, 200 yıllık bir hikayenin lüks ve konforla yeniden yorumlandığı rafine bir durak.",
+    "explore": "Keşfedin",
+    "legal": "Hukuki",
+    "contact": "İletişim"
+  }
+}
