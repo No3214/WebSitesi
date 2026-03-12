@@ -4,6 +4,7 @@ import { defaultMetadata } from "@/lib/metadata";
 import { hotelSchema } from "@/lib/schema";
 import { CookieConsent } from "@/components/cookie-consent";
 import { SiteFooter } from "@/components/site-footer";
+import { WhatsAppBridge } from "@/components/whatsapp-bridge";
 import { DigitalConcierge } from "@/components/digital-concierge";
 import "./globals.css";
 
@@ -60,6 +61,7 @@ export default function RootLayout({
         />
         {children}
         <SiteFooter />
+        <WhatsAppBridge />
         <DigitalConcierge />
         <CookieConsent />
       </body>

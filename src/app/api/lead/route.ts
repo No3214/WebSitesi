@@ -58,13 +58,27 @@ export async function POST(req: Request) {
     const forwardedFor = req.headers.get("x-forwarded-for");
     const ipAddress = forwardedFor?.split(",")[0]?.trim() || "unknown";
 
+    // EXPERT LEAD SCORING LOGIC
+    let score = 50; // Base score
+    const { estimatedBudget, guestCount, type } = parsed.data;
+
+    if (estimatedBudget === "over-500k") score += 30;
+    else if (estimatedBudget === "250k-500k") score += 20;
+
+    if (guestCount && guestCount > 100) score += 15;
+    if (type === "dugun" || type === "kurumsal") score += 10;
+
+    const isHighValue = score >= 80;
+
     await payload.create({
       collection: "organization-leads",
       data: {
         ...parsed.data,
         source: "website",
         ipAddress,
-        userAgent: req.headers.get("user-agent") || "unknown"
+        userAgent: req.headers.get("user-agent") || "unknown",
+        // Inject expert metadata into message for now or extend schema if possible
+        message: `[SCORE: ${score}] [PRIORITY: ${isHighValue ? 'HIGH' : 'NORMAL'}]\n\n${parsed.data.message}`
       },
       overrideAccess: true
     });

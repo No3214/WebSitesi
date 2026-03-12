@@ -9,23 +9,23 @@ import { FadeIn, StaggerContainer } from "@/components/animations";
 
 const fallbackPackages = [
   {
-    title: "Butik Düğün ve Davet",
-    short: "Tarihi taş duvarlar arasında, zeytin ağaçlarının gölgesinde masalsı bir düğün deneyimi.",
-    description: "Kozbeyli Konağı'nın büyülü atmosferi, en özel gününüzü unutulmaz bir hikayeye dönüştürüyor. 150 kişiye kadar ağırlama kapasitemiz, özel dekorasyon çözümlerimiz ve gurme düğün menülerimizle yanınızdayız.",
+    title: "Tescilli Mirasta Butik Düğün",
+    short: "19. yüzyıl tescilli taş konak avlusunda, asırlık zeytin ağaçları eşliğinde masalsı bir imza düğünü.",
+    description: "Kozbeyli Konağı, Rum ve Türk mimarisinin ortak mirasından süzülen tescilli bir yapıdır. 150-200 kişiye kadar ağırlama kapasitesine sahip geniş avlumuzda, aslına uygun restore edilmiş taş duvarlar ve geleneksel Horasan harcı işçiliği arasında, her detayı 'Uzman' ekibimizce planlanan prestijli düğünlere ev sahipliği yapıyoruz.",
     category: "Düğün & Nişan",
     image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80"
   },
   {
-    title: "Kurumsal Buluşmalar",
-    short: "İlham verici bir ortamda, verimli toplantılar ve seçkin iş yemekleri.",
-    description: "Şehrin gürültüsünden uzak, yaratıcılığı tetikleyen sessiz ve rafine bir toplantı ortamı. Profesyonel ikram hizmetlerimiz ve teknolojik altyapımızla iş dünyasına butik çözümler sunuyoruz.",
+    title: "Kurumsal 'Off-Site' Deneyimi",
+    short: "İzmir'e 15 dakika mesafede, Kozbeyli taşının termal konforuyla yaratıcı kurumsal buluşmalar.",
+    description: "Şehrin gürültüsünden arınmış, Kozbeyli taşının doğal nefes alma özelliği sayesinde yaz aylarında bile doğal serinlik sunan toplantı alanlarımızda verimliliği artırın. 40 kişiye kadar butik toplantı kapasitemiz, yüksek hızlı internet ve şömineli kapalı alanımızla kurumsal prestiji tarihle birleştiriyoruz.",
     category: "Kurumsal",
     image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80"
   },
   {
-    title: "Özel Kutlamalar",
-    short: "Yıl dönümü, doğum günü ve rafine kutlamalarınız için kişiselleştirilmiş hizmet.",
-    description: "Sadece size ve sevdiklerinize özel, her detayı titizlikle planlanmış kutlamalar. Şefimizin özel menüleri ve konağımızın benzersiz ambiyansıyla anılarınıza değer katın.",
+    title: "Gurme Gastronomi Kutlamaları",
+    short: "İnci Hanım'ın Antakya mutfağı ve 180 yıllık dibek taşında dövülmüş kahve eşliğinde kutlamalar.",
+    description: "Doğum günü veya yıl dönümü gibi özel anlarınızı, Antakya ve Ege mutfağının hibritleştiği gurme lezzetlerle taçlandırın. Konak avlusundaki 180 yıllık orijinal dibek taşında elde dövülen ve odun ateşinde ağır ağır pişen imza Dibek kahvemiz, kutlamanıza gerçek bir tarihsel doku katacak.",
     category: "Özel Gün",
     image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80"
   }
