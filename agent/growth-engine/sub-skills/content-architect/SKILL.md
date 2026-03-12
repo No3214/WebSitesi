@@ -8,6 +8,13 @@ description: GEO-SEO and A-Grade Citability content generation skill.
 
 Engineering content that is perfectly optimized for AI search engines (Perplexity, Gemini, SearchGPT).
 
+## Görsel DNA ve Prompt Mühendisliği (Visual DNA)
+
+Ajan, ürettiği her metin bloğu için o metni destekleyecek 1 adet "Master Image Prompt" kurgular:
+- **Visual Mapping**: Metinde "Kozbeyli Taşı" geçiyorsa, görsel promptunda "volcanic tüf texture" ve "side-light" vurgusu yapar.
+- **DNA Adherence**: `visual_dna.md` dosyasındaki kamera (Leica M11) ve renk kurallarına (Olive green, stone beige) %100 uyar.
+- **Output**: Metnin sonuna `[VISUAL_PROMPT: ...]` etiketiyle Stable Diffusion/Midjourney uyumlu teknik prompt ekler.
+
 ## Sihirli Komponent Orkestrasyonu (Magic-MCP logic)
 
 Ajan, `21st.dev` pazar yerindeki yüksek kaliteli blokları şu kriterlere göre projeye otonom olarak önerir:
