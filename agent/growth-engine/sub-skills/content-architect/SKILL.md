@@ -8,6 +8,13 @@ description: GEO-SEO and A-Grade Citability content generation skill.
 
 Engineering content that is perfectly optimized for AI search engines (Perplexity, Gemini, SearchGPT).
 
+## Sihirli Komponent Orkestrasyonu (Magic-MCP logic)
+
+Ajan, `21st.dev` pazar yerindeki yüksek kaliteli blokları şu kriterlere göre projeye otonom olarak önerir:
+- **Block Selection**: Kullanıcı "Dashboard Stats" istiyorsa, piyasadaki en iyi shadcn tabanlı "Bento Grid" veya "Metric Card" bloklarını analiz eder.
+- **Consistency Check**: Seçilen bloğun markanın `style_dna.md` kurallarına (Renk, font, ritim) uyumunu denetler.
+- **Auto-Drafting**: Tasarımı sadece tarif etmez; projenin mevcut `@/components/*` yapısına uygun kod taslaklarını Magic-MCP protokolüyle hazırlar.
+
 ## Core Metrics (A-Grade Citability)
 
 - **Word Count**: 134-167 words per core passage.
