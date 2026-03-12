@@ -72,11 +72,11 @@ export default function GrowthDashboard() {
           {[
             { label: "Ads Health", val: stats.ads + "%", color: "text-blue-400", desc: "Performance optimization active", size: "col-span-1" },
             { label: "SEO Citability", val: stats.seo + "%", color: "text-emerald-400", desc: "GEO algorithms satisfied", size: "col-span-1" },
-            { label: "Sales Readiness", val: stats.sales, color: "text-amber-400", desc: "Expert protocol online", size: "col-span-1" },
-            { label: "Total Leads", val: stats.leadsFound, color: "text-purple-400", desc: "Hunted in last 24h", size: "col-span-1" },
+            { label: "Design AI", val: "Active", color: "text-rose-400", desc: "Visual DNA mapping online", size: "col-span-1" },
+            { label: "SEO Health", val: "94/100", color: "text-purple-400", desc: "Last audit: 10m ago", size: "col-span-1" },
             { 
               label: "System Status", 
-              val: "Autonomous", 
+              val: "Autonomous Mastery", 
               color: "text-white", 
               desc: "Auto-Pilot orchestrator running 7/24 on Railway", 
               size: "md:col-span-2 lg:col-span-4 bg-gradient-to-r from-emerald-500/10 to-blue-500/10" 

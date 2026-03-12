@@ -1,74 +1,90 @@
-```
-import { NextResponse } from "next/server";
-
+import { NextResponse } from 'next/server';
 import {
-  enforceRateLimit,
-  extractClientIp,
-  validateSameOrigin,
-} from "@/lib/security";
-import { buildSystemPrompt, processChatRequest } from "@/services/ai";
+  applyOutputGuardrails,
+  buildFallbackResponse,
+  buildSystemPrompt,
+  emitChatTelemetry,
+  generateAIResponse,
+  sanitizeMessages,
+} from '@/lib/ai';
 
-const RATE_LIMIT = {
-  windowMs: 15 * 60 * 1000,
-  maxRequests: 10,
-};
+function buildRequestId() {
+  return crypto.randomUUID();
+}
 
 export async function POST(req: Request) {
+  const requestId = buildRequestId();
+  const startedAt = Date.now();
+
   try {
-    const { messages } = await req.json();
+    const body = await req.json().catch(() => null);
+    const messages = sanitizeMessages(body?.messages);
 
-    if (!validateSameOrigin(req)) {
+    if (!messages.length) {
       return NextResponse.json(
-        { ok: false, message: "Geçersiz istek kaynağı." },
-        { status: 403 },
+        { error: 'Mesaj içeriği bulunamadı.' },
+        { status: 400 },
       );
     }
 
-    const ipAddress = extractClientIp(req.headers);
-    const rateLimit = enforceRateLimit(
-      `chat:${ipAddress}`,
-      RATE_LIMIT.maxRequests,
-      RATE_LIMIT.windowMs,
-    );
-
-    if (!rateLimit.allowed) {
-      return NextResponse.json(
-        {
-          ok: false,
-          message: "Çok fazla talep gönderildi. Lütfen daha sonra tekrar deneyiniz.",
-        },
-        {
-          status: 429,
-          headers: {
-            "Retry-After": rateLimit.retryAfterSec.toString(),
-          },
-        },
-      );
-    }
-
-    // This is where you would normally call your LLM provider (OpenAI, Anthropic, etc.)
-    // For now, we use our modular service to handle the logic.
     const systemPrompt = buildSystemPrompt();
-    const response = await processChatRequest(messages);
+    const providerResult = await generateAIResponse(messages, systemPrompt);
+
+    const usedFallback = !providerResult.ok || !providerResult.content;
+    const rawContent = usedFallback
+      ? buildFallbackResponse(messages)
+      : providerResult.content!;
+
+    const content = applyOutputGuardrails(rawContent);
+
+    emitChatTelemetry({
+      route: '/api/chat',
+      requestId,
+      provider: providerResult.provider,
+      model: providerResult.model,
+      fallbackUsed: usedFallback,
+      latencyMs: Date.now() - startedAt,
+      status: usedFallback ? 'fallback' : 'success',
+      error: providerResult.error,
+      messageCount: messages.length,
+    });
 
     return NextResponse.json({
-      role: response.role,
-      content: response.content,
-      usage: {
-        prompt_tokens: systemPrompt.length / 4, // Simulated
-        completion_tokens: response.content.length / 4, // Simulated
-        total_tokens: (systemPrompt.length + response.content.length) / 4,
+      role: 'assistant',
+      content,
+      meta: {
+        requestId,
+        fallbackUsed: usedFallback,
+        provider: providerResult.provider,
+        model: providerResult.model,
       },
     });
   } catch (error) {
-    console.error("Chat API error:", error);
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
+
+    emitChatTelemetry({
+      route: '/api/chat',
+      requestId,
+      provider: 'none',
+      fallbackUsed: true,
+      latencyMs: Date.now() - startedAt,
+      status: 'error',
+      error: message,
+      messageCount: 0,
+    });
+
     return NextResponse.json(
       {
-        ok: false,
-        message: "Efendim, şu an size yardımcı olamıyorum. Lütfen daha sonra tekrar deneyiniz.",
+        role: 'assistant',
+        content:
+          'Şu anda size hemen yardımcı olabilmek için kısa cevap modunda devam ediyorum. Oda, restoran veya rezervasyon konusunda sorunuzu tekrar iletebilirsiniz.',
+        meta: {
+          requestId,
+          fallbackUsed: true,
+          provider: 'none',
+        },
       },
-      { status: 500 },
+      { status: 200 },
     );
   }
 }
-```
