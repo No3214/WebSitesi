@@ -94,6 +94,11 @@ export async function POST(req: Request) {
       );
     }
 
+    const payload = await getPayloadClient();
+    if (!payload) {
+        return NextResponse.json({ ok: false, message: "Internal Server Error" }, { status: 500 });
+    }
+
     let score = 50;
     const { estimatedBudget, guestCount, type } = parsed.data;
 
@@ -103,29 +108,23 @@ export async function POST(req: Request) {
     if (guestCount && guestCount > 100) score += 15;
     if (type === "dugun" || type === "kurumsal") score += 10;
 
-    const payload = await getPayloadClient();
-    if (!payload) {
-      return NextResponse.json(
-        { ok: false, message: "Veritabanı bağlantısı kurulamadı." },
-        { status: 500 },
-      );
-    }
-
     const sanitizedMessage = safeText(parsed.data.message, 3000);
     const sanitizedName = safeText(parsed.data.name, 120);
     const sanitizedType = safeText(parsed.data.type, 80);
 
+    const leadData: any = {
+      ...parsed.data,
+      name: sanitizedName,
+      type: sanitizedType,
+      message: `[SCORE: ${score}] [PRIORITY: ${score >= 80 ? "HIGH" : "NORMAL"}]\n\n${sanitizedMessage}`,
+      source: "website",
+      ipAddress,
+      userAgent: req.headers.get("user-agent") || "unknown",
+    };
+
     await payload.create({
       collection: "organization-leads",
-      data: {
-        ...parsed.data,
-        name: sanitizedName,
-        type: sanitizedType,
-        message: `[SCORE: ${score}] [PRIORITY: ${score >= 80 ? "HIGH" : "NORMAL"}]\n\n${sanitizedMessage}`,
-        source: "website",
-        ipAddress,
-        userAgent: req.headers.get("user-agent") || "unknown",
-      } as any,
+      data: leadData,
       overrideAccess: true,
     });
 

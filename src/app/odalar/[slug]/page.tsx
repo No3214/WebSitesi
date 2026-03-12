@@ -4,7 +4,6 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { rooms as fallbackRooms } from "@/data/rooms";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { Check } from "lucide-react";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { useEffect, useState } from "react";
@@ -219,8 +218,6 @@ export default function RoomDetailPage({ params }: Props) {
           }
         }
       `}</style>
-
-      <SiteFooter />
     </>
   );
 }

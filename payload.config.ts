@@ -1,27 +1,40 @@
 import path from "path";
-import { buildConfig } from "payload";
+
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { buildConfig } from "payload";
 
-import { Users } from "./payload/collections/Users";
-import { Media } from "./payload/collections/Media";
-import { Rooms } from "./payload/collections/Rooms";
-import { MenuSections } from "./payload/collections/MenuSections";
-import { OrganizationPackages } from "./payload/collections/OrganizationPackages";
-import { OrganizationLeads } from "./payload/collections/OrganizationLeads";
 import { AgentPerformanceLogs } from "./payload/collections/AgentPerformanceLogs";
+import { HotelRunnerEvents } from "./payload/collections/HotelRunnerEvents";
+import { Media } from "./payload/collections/Media";
+import { MenuSections } from "./payload/collections/MenuSections";
+import { OrganizationLeads } from "./payload/collections/OrganizationLeads";
+import { OrganizationPackages } from "./payload/collections/OrganizationPackages";
+import { Rooms } from "./payload/collections/Rooms";
+import { Users } from "./payload/collections/Users";
+
+const payloadSecret = process.env.PAYLOAD_SECRET;
+const databaseUri = process.env.DATABASE_URI;
+
+if (!payloadSecret) {
+  throw new Error("PAYLOAD_SECRET is required. Refusing to boot with an insecure default.");
+}
+
+if (!databaseUri) {
+  throw new Error("DATABASE_URI is required.");
+}
 
 export default buildConfig({
-  secret: process.env.PAYLOAD_SECRET || "change-me",
-  serverURL: process.env.NEXT_PUBLIC_SITE_URL,
+  secret: payloadSecret,
+  serverURL: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   admin: {
-    user: "users"
+    user: "users",
   },
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI
-    }
+      connectionString: databaseUri,
+    },
   }),
   cors: [process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"],
   csrf: [process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"],
@@ -32,9 +45,10 @@ export default buildConfig({
     MenuSections,
     OrganizationPackages,
     OrganizationLeads,
-    AgentPerformanceLogs
+    AgentPerformanceLogs,
+    HotelRunnerEvents,
   ],
   typescript: {
-    outputFile: path.resolve(process.cwd(), "payload-types.ts")
-  }
+    outputFile: path.resolve(process.cwd(), "payload-types.ts"),
+  },
 });

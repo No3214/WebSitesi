@@ -1,20 +1,22 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+/**
+ * Production-Ready Middleware
+ * Focuses on global security headers and routing logic.
+ * Heavy lifting (like HMAC validation) is moved to route segments to avoid body consumption issues.
+ */
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Security Hardening: Admin boundaries
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/payload")) {
-    // In production, you might want to restrict by IP or specific session checks
-    // For now, we ensure headers are properly managed
     const response = NextResponse.next();
     response.headers.set("X-Frame-Options", "SAMEORIGIN");
     response.headers.set("X-Content-Type-Options", "nosniff");
+    response.headers.set("Cache-Control", "no-store");
     return response;
   }
 
-  // Handle SEO Redirections or trailing slashes if needed
   if (pathname.endsWith("/") && pathname.length > 1) {
     return NextResponse.redirect(new URL(pathname.slice(0, -1), request.url));
   }
@@ -23,14 +25,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SectionTitle } from "@/components/section-title";
-import { SiteFooter } from "@/components/site-footer";
 import { rooms as fallbackRooms } from "@/data/rooms";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { useEffect, useState } from "react";
@@ -62,7 +61,6 @@ export default function RoomsPage() {
           </StaggerContainer>
         </div>
       </main>
-      <SiteFooter />
     </>
   );
 }

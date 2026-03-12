@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { SiteHeader } from "@/components/site-header";
 import { SectionTitle } from "@/components/section-title";
-import { SiteFooter } from "@/components/site-footer";
 import { LeadForm } from "@/components/lead-form";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 
@@ -145,8 +144,6 @@ export default function OrganizationsPage() {
           }
         }
       `}</style>
-
-      <SiteFooter />
     </>
   );
 }

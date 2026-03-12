@@ -7,15 +7,8 @@ const rateLimitStore = new Map<string, RateLimitEntry>();
 
 function normalizeIp(ip: string | null) {
   if (!ip) return "unknown";
-
-  if (ip.includes(",")) {
-    return ip.split(",")[0].trim();
-  }
-
-  if (ip.startsWith("::ffff:")) {
-    return ip.replace("::ffff:", "");
-  }
-
+  if (ip.includes(",")) return ip.split(",")[0].trim();
+  if (ip.startsWith("::ffff:")) return ip.replace("::ffff:", "");
   return ip.trim();
 }
 
@@ -38,9 +31,7 @@ export function safeText(value: string, maxLength: number) {
 export function validateSameOrigin(request: Request) {
   const origin = request.headers.get("origin");
   const host = request.headers.get("host");
-
   if (!origin || !host) return true;
-
   try {
     const originUrl = new URL(origin);
     return originUrl.host === host;

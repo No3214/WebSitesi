@@ -1,7 +1,6 @@
 "use client";
 
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { FadeIn } from "@/components/animations";
 
 export default function MenuPage() {
@@ -180,8 +179,6 @@ export default function MenuPage() {
           }
         }
       `}</style>
-
-      <SiteFooter />
     </>
   );
 }

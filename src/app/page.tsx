@@ -1,15 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { SiteHeader } from "@/components/site-header";
-import { SectionTitle } from "@/components/section-title";
-import { SiteFooter } from "@/components/site-footer";
-import { HotelRunnerEmbed } from "@/components/hotel-runner-embed";
-import { rooms } from "@/data/rooms";
-import { FadeIn, StaggerContainer } from "@/components/animations";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+
+import { FadeIn, StaggerContainer } from "@/components/animations";
+import { HotelRunnerEmbed } from "@/components/hotel-runner-embed";
+import { SectionTitle } from "@/components/section-title";
+import { SiteHeader } from "@/components/site-header";
+import { rooms } from "@/data/rooms";
 import { getDictionary } from "@/lib/dictionary";
 
 // High-Conversion Content
@@ -119,7 +119,7 @@ export default function HomePage() {
               <p style={{ color: '#f7f4ec', fontSize: '1.2rem', maxWidth: '800px', margin: '0 auto 40px', lineHeight: 1.6 }}>
                 {locale === 'tr' 
                   ? "180 yıllık tescilli taş mimarinin içinde, denize 12 km mesafede, kişiselleştirilmiş hizmet ve rafine bir kaçış."
-                  : "Within 180-year-old registered stone architecture, 12 km from the sea, personalized service and a refined escape."
+                   : "Within 180-year-old registered stone architecture, 12 km from the sea, personalized service and a refined escape."
                 }
               </p>
             </FadeIn>
@@ -241,7 +241,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      <SiteFooter />
     </>
   );
 }

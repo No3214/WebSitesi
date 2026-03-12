@@ -43,6 +43,9 @@ export function LeadForm() {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
 
+    // Get Turnstile token
+    const cfToken = formData.get('cf-turnstile-response');
+
     // Honeypot check
     if (data.website) {
       setStatus('success');
@@ -53,7 +56,7 @@ export function LeadForm() {
       const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, ...meta })
+        body: JSON.stringify({ ...data, ...meta, cfToken })
       });
 
       if (res.ok) {
@@ -137,6 +140,13 @@ export function LeadForm() {
         <input type="checkbox" name="consent" required />
         <span>Kişisel verilerimin teklif ve bilgilendirme amacıyla işlenmesini kabul ediyorum.</span>
       </label>
+
+      {/* Cloudflare Turnstile Widget */}
+      <div 
+        className="cf-turnstile" 
+        data-sitekey={process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || ""}
+        style={{ marginBottom: '16px' }}
+      ></div>
 
       <button
         className="button primary"
