@@ -9,6 +9,7 @@ import { Rooms } from "./payload/collections/Rooms";
 import { MenuSections } from "./payload/collections/MenuSections";
 import { OrganizationPackages } from "./payload/collections/OrganizationPackages";
 import { OrganizationLeads } from "./payload/collections/OrganizationLeads";
+import { AgentPerformanceLogs } from "./payload/collections/AgentPerformanceLogs";
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || "change-me",
@@ -30,7 +31,8 @@ export default buildConfig({
     Rooms,
     MenuSections,
     OrganizationPackages,
-    OrganizationLeads
+    OrganizationLeads,
+    AgentPerformanceLogs
   ],
   typescript: {
     outputFile: path.resolve(process.cwd(), "payload-types.ts")
