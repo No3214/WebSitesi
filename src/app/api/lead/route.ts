@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
 import { getPayloadClient } from "@/lib/payload";
+import {
+  enforceRateLimit,
+  extractClientIp,
+  safeText,
+  validateSameOrigin,
+} from "@/lib/security";
 
 const leadSchema = z.object({
   name: z.string().trim().min(2).max(120),
@@ -18,8 +25,13 @@ const leadSchema = z.object({
   utmMedium: z.string().trim().max(100).optional(),
   utmCampaign: z.string().trim().max(120).optional(),
   referrer: z.string().trim().max(500).optional(),
-  website: z.string().optional() // Honeypot
+  website: z.string().optional(),
 });
+
+const RATE_LIMIT = {
+  windowMs: 10 * 60 * 1000,
+  maxRequests: 8,
+};
 
 export async function POST(req: Request) {
   try {
@@ -33,7 +45,13 @@ export async function POST(req: Request) {
       payloadData = Object.fromEntries(formData.entries());
     }
 
-    // Honeypot check
+    if (!validateSameOrigin(req)) {
+      return NextResponse.json(
+        { ok: false, message: "Geçersiz istek kaynağı." },
+        { status: 403 },
+      );
+    }
+
     if (payloadData.website) {
       return NextResponse.json({ ok: true, message: "Success" });
     }
@@ -43,23 +61,40 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json(
         { ok: false, errors: parsed.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!parsed.data.consent) {
       return NextResponse.json(
         { ok: false, message: "Aydınlatma metni onayı zorunludur." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const payload = await getPayloadClient();
-    const forwardedFor = req.headers.get("x-forwarded-for");
-    const ipAddress = forwardedFor?.split(",")[0]?.trim() || "unknown";
+    const ipAddress = extractClientIp(req.headers);
+    const rateLimit = enforceRateLimit(
+      `lead:${ipAddress}`,
+      RATE_LIMIT.maxRequests,
+      RATE_LIMIT.windowMs,
+    );
 
-    // EXPERT LEAD SCORING LOGIC
-    let score = 50; // Base score
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Çok fazla talep gönderildi. Lütfen daha sonra tekrar deneyiniz.",
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": rateLimit.retryAfterSec.toString(),
+          },
+        },
+      );
+    }
+
+    let score = 50;
     const { estimatedBudget, guestCount, type } = parsed.data;
 
     if (estimatedBudget === "over-500k") score += 30;
@@ -68,24 +103,36 @@ export async function POST(req: Request) {
     if (guestCount && guestCount > 100) score += 15;
     if (type === "dugun" || type === "kurumsal") score += 10;
 
-    const isHighValue = score >= 80;
+    const payload = await getPayloadClient();
+    if (!payload) {
+      return NextResponse.json(
+        { ok: false, message: "Veritabanı bağlantısı kurulamadı." },
+        { status: 500 },
+      );
+    }
+
+    const sanitizedMessage = safeText(parsed.data.message, 3000);
+    const sanitizedName = safeText(parsed.data.name, 120);
+    const sanitizedType = safeText(parsed.data.type, 80);
 
     await payload.create({
       collection: "organization-leads",
       data: {
         ...parsed.data,
+        name: sanitizedName,
+        type: sanitizedType,
+        message: `[SCORE: ${score}] [PRIORITY: ${score >= 80 ? "HIGH" : "NORMAL"}]\n\n${sanitizedMessage}`,
         source: "website",
         ipAddress,
         userAgent: req.headers.get("user-agent") || "unknown",
-        // Inject expert metadata into message for now or extend schema if possible
-        message: `[SCORE: ${score}] [PRIORITY: ${isHighValue ? 'HIGH' : 'NORMAL'}]\n\n${parsed.data.message}`
-      },
-      overrideAccess: true
+      } as any,
+      overrideAccess: true,
     });
 
     return NextResponse.json({
       ok: true,
-      message: "Talebiniz alındı. Satış danışmanımız 24 saat içinde sizinle iletişime geçecek."
+      message:
+        "Talebiniz alındı. Satış danışmanımız 24 saat içinde sizinle iletişime geçecek.",
     });
   } catch (error) {
     console.error("Lead submission error:", error);
@@ -93,9 +140,9 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         ok: false,
-        message: "Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz."
+        message: "Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
