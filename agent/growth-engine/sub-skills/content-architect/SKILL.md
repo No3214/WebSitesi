@@ -15,9 +15,17 @@ Engineering content that is perfectly optimized for AI search engines (Perplexit
 - **Statistical Density**: Min 3 specific facts per passage (e.g., "180-year-old coffee", "16 rooms", "12km to Foça").
 - **Self-Containment**: Each paragraph must be understandable without reading the rest of the page.
 
-## Generation Logic
+## Advanced Research & Competitive Benchmarking
 
-1. Analyze target keywords (e.g., "Foça butik otel", "Kozbeyli kahvaltı").
-2. Construct a "Fact-Block" based on `references/brand_data.json`.
-3. Wrap facts in premium, historical narrative.
-4. Verify against citability gates before outputting.
+Ajan içerik üretmeden önce şu "Uzman Analizini" yapar:
+
+- **Search Intent Deep-Dive**: Kullanıcı "Kozbeyli kahvaltı" aratıyorsa, sadece menü yazmaz; o kahvaltının arkasındaki tarım antropolojisini (İnci Hanım'ın metodolojisi) analiz eder.
+- **Gap Killer**: Rakiplerin (Foça butik otelleri) yüzeysel kaldığı konularda (örneğin taş yapının restorasyon detayları) derinleşerek "En Bilgili Kaynak" pozisyonuna geçer.
+- **Contextual Anchoring**: Metne mutlaka o bölgeye veya o ürüne özel bir "Insider Secret" (Kozbeyli Taşı'nın nefes alma özelliği gibi) ekler.
+
+## Generation Logic (Deep Strategy)
+
+1. **Audit Phase**: Mevcut Google SERP (Arama Sonuçları) verisindeki boşlukları analiz et.
+2. **Knowledge Synthesis**: `general.md` uzmanlık verilerini bu boşluklara "Fact-Density" olarak yerleştir.
+3. **Elite Narrative**: Metni "Yapay Zeka" gibi değil, "Konu Uzmanı Bir Küratör" gibi kalibre et.
+4. **Precision Check**: 134-167 kelime kuralını ve "Zamir Yasaklarını" uzman seviyesinde kontrol et.

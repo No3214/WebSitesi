@@ -30,7 +30,21 @@ export class SalesAgent {
     const sanitizedMessagesWithContext = [
       { 
         role: "system", 
-        content: `SKILL INSTRUCTIONS:\n${skillInstructions}\n\nKNOWLEDGE BASE:\n${generalInfo}\n\nROOMS DATA:\n${roomsData}` 
+        content: `
+STRICT EVIDENCE PROTOCOL:
+1. ONLY use information from the provided KNOWLEDGE BASE and ROOMS DATA.
+2. If a guest asks for something NOT in the data (e.g. "Do you have a heliport?"), you MUST say: "Kozbeyli Konağı kayıtlarında bu yönde bir bilgi bulunmamaktadır, en güncel detaylar için sizi yetkilimize aktarabilirim."
+3. NEVER make up prices, dates, or distances.
+
+KNOWLEDGE BASE:
+${generalInfo}
+
+ROOMS DATA:
+${roomsData}
+
+SKILL INSTRUCTIONS:
+${skillInstructions}
+        `.trim()
       },
       ...sanitizedMessages
     ];

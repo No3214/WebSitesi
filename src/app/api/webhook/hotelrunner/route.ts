@@ -37,7 +37,8 @@ export async function POST(req: Request) {
     if (body.reservation) {
       const res = body.reservation;
       
-      await payload.create({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (payload as any).create({
         collection: "organization-leads",
         data: {
           name: `${res.guest_first_name} ${res.guest_last_name}`,

@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { SiteHeader } from "@/components/site-header";
 import { SectionTitle } from "@/components/section-title";
@@ -35,6 +33,21 @@ export default function GrowthDashboard() {
     { id: 2, name: "Luxury Wedding Planners UK", type: "Event", status: "Warm", score: 8.1 },
     { id: 3, name: "Ege Gastronomi Derneği", type: "Corporate", status: "New", score: 7.5 },
   ]);
+
+  // Mock "Active Optimization" effect to use setters
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStats(prev => ({ ...prev, ads: Math.min(100, prev.ads + (Math.random() > 0.5 ? 1 : 0)) }));
+      
+      if (Math.random() > 0.8) {
+        setLeads(prev => [
+          { id: Date.now(), name: "Yeni Fırsat Şirketi", type: "Corporate", status: "New", score: 8.5 },
+          ...prev.slice(0, 2)
+        ]);
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0a0a0c] text-white">
