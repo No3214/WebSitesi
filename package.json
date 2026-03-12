@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "test:e2e": "playwright test",
     "payload:types": "cross-env PAYLOAD_CONFIG_PATH=payload.config.ts payload generate:types",
-    "seed": "node scripts/seed.mjs"
+    "seed": "node scripts/seed.mjs",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.0.0",
@@ -42,6 +44,19 @@
     "eslint-config-next": "^15.2.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "storybook": "^10.2.17",
+    "@storybook/nextjs-vite": "^10.2.17",
+    "@chromatic-com/storybook": "^5.0.1",
+    "@storybook/addon-vitest": "^10.2.17",
+    "@storybook/addon-a11y": "^10.2.17",
+    "@storybook/addon-docs": "^10.2.17",
+    "@storybook/addon-onboarding": "^10.2.17",
+    "vite": "^8.0.0",
+    "eslint-plugin-storybook": "^10.2.17",
+    "vitest": "^4.1.0",
+    "playwright": "^1.58.2",
+    "@vitest/browser-playwright": "^4.1.0",
+    "@vitest/coverage-v8": "^4.1.0"
   }
 }

@@ -154,7 +154,7 @@ export default function GrowthDashboard() {
               <span className="ml-4 text-[10px] text-gray-500 uppercase tracking-widest font-bold">Auto-Pilot Terminal</span>
             </div>
             <div className="space-y-5 font-mono text-[11px] leading-relaxed">
-              <p className="text-gray-500">>>> Initializing Expert Mastery Protocol...</p>
+              <p className="text-gray-500">{">>>"} Initializing Expert Mastery Protocol...</p>
               <p><span className="text-emerald-500">[OK]</span> SalesAgent: Context injected.</p>
               <p><span className="text-emerald-500">[OK]</span> GEO-Engine: &apos;About&apos; optimized.</p>
               <p><span className="text-blue-400">[INFO]</span> AuditRunner: Periodic check complete.</p>

@@ -6,7 +6,7 @@ import { getDictionary } from "@/lib/dictionary";
 import { LanguageSwitcher } from "./language-switcher";
 
 export function SiteHeader() {
-  const [dict, setDict] = useState<any>(null);
+  const [dict, setDict] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
@@ -14,7 +14,7 @@ export function SiteHeader() {
   }, []);
 
   if (!dict) return <header className="header premium-header" />;
-  const t = dict.Navigation;
+  const t = (dict as any).Navigation;
 
   const links = [
     { href: "/odalar", label: t.rooms },
