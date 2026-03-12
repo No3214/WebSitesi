@@ -26,8 +26,12 @@ export function SiteHeader() {
   return (
     <header className="header premium-header">
       <div className="container header-inner">
-        <Link href="/" className="brand-logo serif">
-          KOZBEYLİ KONAĞI
+        <Link href="/" className="brand-logo flex items-center gap-4">
+          <div className="logo-icon w-10 h-10 border border-olive/30 rounded-full flex items-center justify-center font-serif text-olive text-xs tracking-tighter overflow-hidden relative group">
+            <div className="absolute inset-0 bg-olive/5 group-hover:bg-olive/10 transition-colors" />
+            <span className="relative z-10">KK</span>
+          </div>
+          <span className="serif tracking-[0.2em] text-lg text-olive">KOZBEYLİ KONAĞI</span>
         </Link>
 
         <nav className="nav">
