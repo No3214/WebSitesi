@@ -3,38 +3,39 @@ import { z } from "zod";
 import { getPayloadClient } from "@/lib/payload";
 
 const leadSchema = z.object({
-  name: z.string().min(2),
-  phone: z.string().min(5),
-  email: z.string().email().optional().or(z.literal("")),
-  eventDate: z.string().optional(),
-  type: z.string().min(2),
-  message: z.string().min(5),
-  website: z.string().optional(), // Honeypot
+  name: z.string().trim().min(2).max(120),
+  phone: z.string().trim().min(8).max(25),
+  email: z.string().trim().email().optional().or(z.literal("")),
+  eventDate: z.string().trim().max(30).optional(),
+  guestCount: z.coerce.number().int().positive().max(1200).optional(),
+  estimatedBudget: z
+    .enum(["under-100k", "100k-250k", "250k-500k", "over-500k"])
+    .optional(),
+  type: z.string().trim().min(2).max(80),
+  message: z.string().trim().min(10).max(3000),
+  consent: z.coerce.boolean(),
+  utmSource: z.string().trim().max(100).optional(),
+  utmMedium: z.string().trim().max(100).optional(),
+  utmCampaign: z.string().trim().max(120).optional(),
+  referrer: z.string().trim().max(500).optional(),
+  website: z.string().optional() // Honeypot
 });
 
 export async function POST(req: Request) {
   try {
     const contentType = req.headers.get("content-type") || "";
-    let payloadData: any;
+    let payloadData: Record<string, unknown>;
 
     if (contentType.includes("application/json")) {
       payloadData = await req.json();
     } else {
       const formData = await req.formData();
-      payloadData = {
-        name: String(formData.get("name") || ""),
-        phone: String(formData.get("phone") || ""),
-        email: String(formData.get("email") || ""),
-        eventDate: String(formData.get("eventDate") || ""),
-        type: String(formData.get("type") || ""),
-        message: String(formData.get("message") || ""),
-        website: String(formData.get("website") || ""),
-      };
+      payloadData = Object.fromEntries(formData.entries());
     }
 
     // Honeypot check
     if (payloadData.website) {
-      return NextResponse.json({ ok: true, message: "Success" }); // Silently drop
+      return NextResponse.json({ ok: true, message: "Success" });
     }
 
     const parsed = leadSchema.safeParse(payloadData);
@@ -46,46 +47,32 @@ export async function POST(req: Request) {
       );
     }
 
-    // Confirm Delivery for HotelRunner (if applicable)
-    const messageUid = req.headers.get("x-message-uid");
-    const hmac = req.headers.get("x-payload-signature");
-
-    // PRODUCTION LOG: Trace lead entry
-    console.log(`[Lead Entry] Source: ${messageUid ? 'HotelRunner' : 'Website'}, ID: ${messageUid || 'N/A'}`);
-
-    // Implement HMAC validation logic here if NEXT_PUBLIC_HR_SECRET is set
-    
-    const payload = await getPayloadClient();
-    
-    try {
-      await payload.create({
-        collection: "organization-leads",
-        data: {
-          ...parsed.data,
-          source: messageUid ? `hotelrunner:${messageUid}` : "direct_website"
-        },
-        overrideAccess: true
-      });
-    } catch (creationError) {
-      console.error("[Lead Creation Error]", creationError);
+    if (!parsed.data.consent) {
       return NextResponse.json(
-        { ok: false, error: "Veri tabanı hatası oluştu. Lütfen teknik ekibe bildirin." },
-        { status: 500 }
+        { ok: false, message: "Aydınlatma metni onayı zorunludur." },
+        { status: 400 }
       );
     }
 
-    const response = NextResponse.json({
-      ok: true,
-      message: "Talebiniz başarıyla alındı. Kozbeyli Konağı ekibi en kısa sürede sizinle iletişime geçecektir."
+    const payload = await getPayloadClient();
+    const forwardedFor = req.headers.get("x-forwarded-for");
+    const ipAddress = forwardedFor?.split(",")[0]?.trim() || "unknown";
+
+    await payload.create({
+      collection: "organization-leads",
+      data: {
+        ...parsed.data,
+        source: "website",
+        ipAddress,
+        userAgent: req.headers.get("user-agent") || "unknown"
+      },
+      overrideAccess: true
     });
 
-    if (messageUid) {
-      // HotelRunner delivery acknowledgement
-      response.headers.set("x-message-delivery", "confirmed");
-      console.log(`[Lead Ack] Confirmed delivery for message_uid: ${messageUid}`);
-    }
-
-    return response;
+    return NextResponse.json({
+      ok: true,
+      message: "Talebiniz alındı. Satış danışmanımız 24 saat içinde sizinle iletişime geçecek."
+    });
   } catch (error) {
     console.error("Lead submission error:", error);
 

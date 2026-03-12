@@ -1,13 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import { SiteHeader } from "@/components/site-header";
 import { SectionTitle } from "@/components/section-title";
 import { SiteFooter } from "@/components/site-footer";
-import { getPayloadClient } from "@/lib/payload";
 import { LeadForm } from "@/components/lead-form";
-
-export const metadata = {
-  title: "Organizasyonlar | Kozbeyli Konağı Luxury Events"
-};
+import { FadeIn, StaggerContainer } from "@/components/animations";
 
 const fallbackPackages = [
   {
@@ -33,73 +31,56 @@ const fallbackPackages = [
   }
 ];
 
-export default async function OrganizationsPage() {
-  let packs = fallbackPackages;
-
-  try {
-    const payload = await getPayloadClient();
-    if (payload) {
-      const docs = await payload.find({
-        collection: "organization-packages",
-        limit: 50,
-        sort: "order"
-      });
-
-      if (docs.docs.length) {
-        packs = docs.docs.map((doc: any) => ({
-          title: doc.title,
-          short: doc.short,
-          description: doc.description || doc.short,
-          category: doc.category,
-          image: doc.image?.url || fallbackPackages[0].image
-        }));
-      }
-    }
-  } catch (e) {
-    console.warn("Payload integration skipped for organizations, using detailed static fallback.");
-  }
-
+export default function OrganizationsPage() {
   return (
     <>
       <SiteHeader />
       <main className="section" style={{ paddingTop: '120px' }}>
         <div className="container">
-          <SectionTitle
-            eyebrow="ORGANİZASYON"
-            title="Sizin Hikayeniz, Bizim Mekanımız"
-            text="Ege'nin kalbinde, tarihin ve doğanın kucağında unutulmaz etkinliklere imza atıyoruz."
-          />
+          <FadeIn>
+            <SectionTitle
+              eyebrow="ORGANİZASYON"
+              title="Sizin Hikayeniz, Bizim Mekanımız"
+              text="Ege'nin kalbinde, tarihin ve doğanın kucağında unutulmaz etkinliklere imza atıyoruz."
+            />
+          </FadeIn>
 
-          <div className="org-grid">
-            {packs.map((item: any, index: number) => (
-              <div key={item.title} className="org-card">
-                <div className="org-image-wrapper">
-                  <Image 
-                    src={item.image} 
-                    alt={item.title} 
-                    fill 
-                    className="object-cover"
-                    priority={index === 0}
-                  />
-                </div>
-                <div className="org-content">
-                  <span className="eyebrow">{item.category}</span>
-                  <h2 className="serif">{item.title}</h2>
-                  <p>{item.description}</p>
-                  <a href="#teklif" className="button secondary">TEKLİF TALEBİ</a>
-                </div>
-              </div>
-            ))}
-          </div>
+          <StaggerContainer delay={0.2}>
+            <div className="org-grid">
+              {fallbackPackages.map((item, index) => (
+                <FadeIn key={item.title}>
+                  <div className="org-card">
+                    <div className="org-image-wrapper">
+                      <Image 
+                        src={item.image} 
+                        alt={item.title} 
+                        fill 
+                        className="object-cover"
+                        priority={index === 0}
+                      />
+                    </div>
+                    <div className="org-content">
+                      <span className="eyebrow">{item.category}</span>
+                      <h2 className="serif">{item.title}</h2>
+                      <p>{item.description}</p>
+                      <a href="#teklif" className="button secondary">TEKLİF TALEBİ</a>
+                    </div>
+                  </div>
+                </FadeIn>
+              ))}
+            </div>
+          </StaggerContainer>
 
-          <div id="teklif" className="lead-section">
-             <SectionTitle
-                eyebrow="İLETİŞİM"
-                title="Hayalinizi Planlayalım"
-                text="Detayları bizimle paylaşın, uzman ekibimiz en kısa sürede size özel bir teklif hazırlasın."
-              />
-            <LeadForm />
-          </div>
+          <FadeIn delay={0.5}>
+            <div id="teklif" className="lead-section">
+               <SectionTitle
+                  eyebrow="İLETİŞİM"
+                  title="Hayalinizi Planlayalım"
+                  text="Detayları bizimle paylaşın, uzman ekibimiz en kısa sürede size özel bir teklif hazırlasın."
+                />
+              <LeadForm />
+            </div>
+          </FadeIn>
         </div>
       </main>
 

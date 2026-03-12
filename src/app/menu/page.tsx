@@ -1,103 +1,95 @@
-import Image from "next/image";
+"use client";
+
 import { SiteHeader } from "@/components/site-header";
-import { SectionTitle } from "@/components/section-title";
 import { SiteFooter } from "@/components/site-footer";
-import { getPayloadClient } from "@/lib/payload";
+import { FadeIn } from "@/components/animations";
 
-export const metadata = {
-  title: "Gastronomi & Menü | Kozbeyli Konağı Lezzetleri"
-};
-
-const fallbackSections = [
-  {
-    title: "Köy Kahvaltısı",
-    description: "Kozbeyli Köyü'nün bereketli topraklarından gelen, taze ve doğal ürünlerle hazırlanan meşhur serpme kahvaltımız.",
-    items: [
-      { name: "Yöresel Peynir Tabağı", description: "Foça tulumu, ezine ve baharatlı lor peyniri seçkisi", priceLabel: "Dahil" },
-      { name: "Ev Yapımı Reçeller", description: "Bahçemizden toplanan meyvelerle hazırlanan geleneksel tarifler", priceLabel: "Dahil" },
-      { name: "Taş Fırın Ürünleri", description: "Sıcak köy ekmeği, pişi ve simit çeşitleri", priceLabel: "Dahil" }
-    ]
-  },
-  {
-    title: "Ege Mutfağından Seçmeler",
-    description: "Mevsimsel sebzeler ve yerel deniz mahsulleriyle hazırlanan, zeytinyağının başrolde olduğu rafine lezzetler.",
-    items: [
-      { name: "Günün Deniz Mahsulü", description: "Foça balıkçılarından taze gelen günlük deniz ürünleri", priceLabel: "Sorunuz" },
-      { name: "Kabak Çiçeği Dolması", description: "Nar ekşili ve dereotlu özel iç harcı ile", priceLabel: "Sorunuz" },
-      { name: "Zeytinyağlı Enginar", description: "Taze bezelye ve dereotu yatağında", priceLabel: "Sorunuz" }
-    ]
-  },
-  {
-     title: "Tescilli Dibek Kahvesi",
-     description: "Kozbeyli'nin 200 yıllık geleneği, taş dibeklerde dövülerek hazırlanan efsanevi kahve deneyimi.",
-     items: [
-       { name: "Tarihi Dibek Kahvesi", description: "Geleneksel sunum ve lokum ile", priceLabel: "Tadı Unutulmaz" },
-       { name: "Damla Sakızlı Dibek", description: "Gerçek sakız reçinesi ile aromalandırılmış", priceLabel: "Özel" }
-     ]
-  }
-];
-
-export default async function MenuPage() {
-  let sections = fallbackSections;
-
-  try {
-    const payload = await getPayloadClient();
-    if (payload) {
-      const docs = await payload.find({
-        collection: "menu-sections",
-        limit: 50,
-        sort: "order"
-      });
-  
-      if (docs.docs.length) {
-        sections = docs.docs as any;
-      }
+export default function MenuPage() {
+  const sections = [
+    {
+      title: "Meşhur Organik Köy Kahvaltısı",
+      description: "Kozbeyli Köyü&apos;nun bereketli topraklarından gelen, ev yapımı reçeller ve taze ürünlerle hazırlanan zengin soframız.",
+      items: [
+        { name: "Serpme Köy Kahvaltısı", description: "Ev yapımı reçeller, köy peynirleri, sıcak pişi, sahanda yumurta, taze sebzeler ve sınırsız çay eşliğinde.", priceLabel: "Dahil" },
+        { name: "Konak Sıcak Tabağı", description: "Sucuklu yumurta, hellim peyniri ve ızgara zeytin.", priceLabel: "Özel" },
+      ]
+    },
+    {
+      title: "Antakya Mutfağından Esintiler",
+      description: "Antakyalı İnci Hanım'ın elinden çıkan, geleneksel tariflerle hazırlanan efsanevi lezzetler.",
+      items: [
+        { name: "Konak Sac Kavurma", description: "Odun ateşinde, özel baharatlarla harmanlanmış yumuşacık dana eti.", priceLabel: "Gurme Seçim" },
+        { name: "Özel Antakya Mezeleri", description: "Humus, muhammara, babagannuş ve taze Antakya kekiği ile.", priceLabel: "Taze" },
+        { name: "Taş Fırın Lahmacun & Pide", description: "Geleneksel Antakya usulü ince hamur ve zengin iç harç.", priceLabel: "Taş Fırın" }
+      ]
+    },
+    {
+      title: "Taş Fırın Pizalarımız",
+      description: "Özel mayalanmış hamur ile odun ateşinde pişen çıtır İtalyan ve Ege yorumları.",
+      items: [
+        { name: "Foka Margherita", description: "Foça domatesi, taze fesleğen ve mozzarella.", priceLabel: "Klasik" },
+        { name: "Kozbeyli Gurme", description: "Yerel sucuk, mantar, közlenmiş biber ve Ege otları.", priceLabel: "Favori" }
+      ]
+    },
+    {
+       title: "Tatlılar & Meşhur Dibek Kahvesi",
+       description: "Yemeğin sonunda unutulmaz bir kapanış için geleneksel ve modern tatlar.",
+       items: [
+         { name: "Sıcak Antakya Künefesi", description: "Közde hazırlanan, gerçek Antakya peyniri ve Antep fıstığı ile.", priceLabel: "Efsane" },
+         { name: "Tarihi Dibek Kahvesi", description: "180 yıllık gelenekle taş dibeklerde dövülmüş, odun ateşinde pişmiş.", priceLabel: "Tescilli" }
+       ]
     }
-  } catch (e) {
-    console.warn("Payload menu skipped, using detailed static content.");
-  }
+  ];
 
   return (
     <>
       <SiteHeader />
       <main className="section" style={{ paddingTop: '120px' }}>
         <div className="container">
-          <SectionTitle
-            eyebrow="GASTRONOMİ"
-            title="Doğadan Tabağa Ege Lezzetleri"
-            text="Geleneksel tariflerin modern dokunuşlarla buluştuğu, Kozbeyli'nin ruhunu taşıyan gurme bir yolculuk."
-          />
+          <FadeIn>
+            <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+              <span className="eyebrow">GASTRONOMİ</span>
+              <h1 className="serif" style={{ fontSize: '3.5rem', marginTop: '16px' }}>Doğadan Tabağa Ege Lezzetleri</h1>
+              <p style={{ color: '#666', maxWidth: '700px', margin: '24px auto 0' }}>
+                Geleneksel tariflerin modern dokunuşlarla buluştuğu, Kozbeyli&apos;nin ruhunu taşıyan gurme bir yolculuk.
+              </p>
+            </div>
+          </FadeIn>
 
           <div className="menu-layout">
-            {sections.map((section: any, idx: number) => (
-              <div key={section.title} className="menu-section-box">
-                <div className="menu-header">
-                  <h2 className="serif">{section.title}</h2>
-                  <p className="section-desc">{section.description}</p>
-                </div>
-                
-                <div className="menu-items">
-                  {section.items?.map((item: any, i: number) => (
-                    <div key={i} className="menu-item-row">
-                      <div className="item-main">
-                        <div className="name-price">
-                          <span className="item-name">{item.name}</span>
-                          <span className="item-price">{item.priceLabel}</span>
+            {sections.map((section, idx) => (
+              <FadeIn key={section.title} delay={idx * 0.2}>
+                <div className="menu-section-box">
+                  <div className="menu-header">
+                    <h2 className="serif">{section.title}</h2>
+                    <p className="section-desc">{section.description}</p>
+                  </div>
+                  
+                  <div className="menu-items">
+                    {section.items.map((item, i) => (
+                      <div key={i} className="menu-item-row">
+                        <div className="item-main">
+                          <div className="name-price">
+                            <span className="item-name">{item.name}</span>
+                            <span className="item-price">{item.priceLabel}</span>
+                          </div>
+                          <p className="item-desc">{item.description}</p>
                         </div>
-                        <p className="item-desc">{item.description}</p>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </FadeIn>
             ))}
           </div>
 
-          <div className="menu-cta">
-            <h3 className="serif">Size Özel Bir Akşam?</h3>
-            <p>Özel kutlamalarınız ve grup yemekleriniz için bizimle iletişime geçebilirsiniz.</p>
-            <a href="/organizasyonlar#teklif" className="button primary">İLETİŞİME GEÇİN</a>
-          </div>
+          <FadeIn delay={0.6}>
+            <div className="menu-cta">
+              <h3 className="serif">Size Özel Bir Akşam?</h3>
+              <p>Özel kutlamalarınız ve grup yemekleriniz için bizimle iletişime geçebilirsiniz.</p>
+              <a href="/organizasyonlar#teklif" className="button primary">İLETİŞİME GEÇİN</a>
+            </div>
+          </FadeIn>
         </div>
       </main>
 

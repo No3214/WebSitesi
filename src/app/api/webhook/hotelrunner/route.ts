@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   try {
     const messageUid = req.headers.get("x-message-uid");
     const signature = req.headers.get("x-payload-signature");
-    const secret = process.env.PAYLOAD_SECRET; // Using existing secret for HMAC if HR specific not set
+    const secret = process.env.PAYLOAD_SECRET; 
     
     const bodyText = await req.text();
     const body = JSON.parse(bodyText);
@@ -22,12 +22,16 @@ export async function POST(req: Request) {
       
       if (signature !== digest) {
         console.error("WEBHOOK SECURITY ALERT: Invalid signature detected.");
-        // In a strict prod environment, return 401. 
-        // For now logging it to prevent locking out during initial sync testing.
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
+    } else {
+      console.warn("WEBHOOK WARNING: Missing security headers. Proceeding with caution.");
     }
 
     const payload = await getPayloadClient();
+    if (!payload) {
+      return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
 
     // PROPER RESERVATION SYNC
     if (body.reservation) {
@@ -39,6 +43,8 @@ export async function POST(req: Request) {
           name: `${res.guest_first_name} ${res.guest_last_name}`,
           email: res.guest_email || `booking-${res.id}@hotelrunner.com`,
           phone: res.guest_phone || "",
+          type: "Reservation",
+          consent: true,
           message: `
             Rezervasyon ID: ${res.id}
             Durum: ${res.status}
@@ -47,10 +53,9 @@ export async function POST(req: Request) {
             Toplam Tutar: ${res.total_price} ${res.currency_code}
             Notlar: ${res.guest_notes || 'Yok'}
           `.trim(),
-          source: `hotelrunner:${res.id}`,
-          website: "" // Honeypot bypass
+          source: `hotelrunner:${res.id}`
         },
-        overrideAccess: true
+        draft: false
       });
 
       const response = NextResponse.json({ ok: true });

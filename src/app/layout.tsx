@@ -4,6 +4,7 @@ import { defaultMetadata } from "@/lib/metadata";
 import { hotelSchema } from "@/lib/schema";
 import { CookieConsent } from "@/components/cookie-consent";
 import { SiteFooter } from "@/components/site-footer";
+import { DigitalConcierge } from "@/components/digital-concierge";
 import "./globals.css";
 
 export const metadata = defaultMetadata;
@@ -49,6 +50,7 @@ export default function RootLayout({
           <img 
             height="1" width="1" style={{ display: 'none' }}
             src="https://www.facebook.com/tr?id=XXXXXXXXXXXXXXX&ev=PageView&noscript=1"
+            alt=""
           />
         </noscript>
 
@@ -58,6 +60,7 @@ export default function RootLayout({
         />
         {children}
         <SiteFooter />
+        <DigitalConcierge />
         <CookieConsent />
       </body>
     </html>

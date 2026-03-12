@@ -307,7 +307,7 @@ img {
   box-shadow: 0 10px 50px rgba(0, 0, 0, 0.05);
 }
 
-.lead-form input, select, textarea {
+.lead-form input, .lead-form select, .lead-form textarea {
   width: 100%;
   padding: 16px;
   border: none;

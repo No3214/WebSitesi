@@ -1,8 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getDictionary } from "@/lib/dictionary";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
 
 export function SiteFooter() {
+  const [dict, setDict] = useState<any>(null);
   const currentYear = new Date().getFullYear();
+
+  useEffect(() => {
+    const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    getDictionary(locale).then(setDict);
+  }, []);
+
+  if (!dict) return null;
+  const t = dict.Footer;
 
   return (
     <footer className="footer-premium">
@@ -10,9 +23,7 @@ export function SiteFooter() {
         <div className="footer-grid">
           <div className="footer-brand-col">
             <h3 className="brand-serif">Kozbeyli Konağı</h3>
-            <p className="brand-tagline">
-              Foça&apos;nın kalbinde, 200 yıllık bir hikayenin lüks ve konforla yeniden yorumlandığı rafine bir durak.
-            </p>
+            <p className="brand-tagline">{t.description}</p>
             <div className="social-links">
               <a href="https://instagram.com/kozbeylikonagi" target="_blank" rel="noreferrer" aria-label="Instagram">
                 <Instagram size={20} />
@@ -24,7 +35,7 @@ export function SiteFooter() {
           </div>
 
           <div className="footer-links-col">
-            <h4 className="footer-title">Keşfedin</h4>
+            <h4 className="footer-title">{t.explore}</h4>
             <ul>
               <li><Link href="/odalar">Odalarımız</Link></li>
               <li><Link href="/menu">Gastronomi</Link></li>
@@ -34,16 +45,15 @@ export function SiteFooter() {
           </div>
 
           <div className="footer-links-col">
-            <h4 className="footer-title">Hukuki</h4>
+            <h4 className="footer-title">{t.legal}</h4>
             <ul>
               <li><Link href="/kvkk">KVKK Aydınlatma Metni</Link></li>
               <li><Link href="/mesafeli-satis-sozlesmesi">Mesafeli Satış Sözleşmesi</Link></li>
-              <li><Link href="/mesafeli-satis-sozlesmesi#iptal">İptal ve İade Koşulları</Link></li>
             </ul>
           </div>
 
           <div className="footer-contact-col">
-            <h4 className="footer-title">İletişim</h4>
+            <h4 className="footer-title">{t.contact}</h4>
             <div className="contact-item">
               <MapPin size={18} />
               <span>Kozbeyli Köyü, Foça, İzmir</span>
