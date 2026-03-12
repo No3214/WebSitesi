@@ -1,41 +1,29 @@
 import type { Metadata } from "next";
 
+import { env } from "@/lib/env";
 import { absoluteUrl } from "./utils";
 
-const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
-const facebookVerification = process.env.NEXT_PUBLIC_FACEBOOK_DOMAIN_VERIFICATION;
+const verification = {
+  ...(env.GOOGLE_SITE_VERIFICATION ? { google: env.GOOGLE_SITE_VERIFICATION } : {}),
+  ...(env.FACEBOOK_DOMAIN_VERIFICATION
+    ? {
+        other: {
+          "facebook-domain-verification": [env.FACEBOOK_DOMAIN_VERIFICATION],
+        },
+      }
+    : {}),
+};
 
 export const defaultMetadata: Metadata = {
-  metadataBase: new URL(absoluteUrl("/")),
+  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {
     default: "Kozbeyli Konağı | Taş Butik Otel & Restoran | Foça",
     template: "%s | Kozbeyli Konağı",
   },
   description:
     "Foça Kozbeyli’de taş mimariyle harmanlanmış butik otel konforu, gurme restoran deneyimi ve unutulmaz etkinlik alanları.",
-  keywords: [
-    "butik otel",
-    "foça otelleri",
-    "kozbeyli",
-    "taş ev",
-    "restoran",
-    "düğün mekanları",
-    "ege mutfağı",
-  ],
-  ...(googleVerification || facebookVerification
-    ? {
-        verification: {
-          ...(googleVerification ? { google: googleVerification } : {}),
-          ...(facebookVerification
-            ? {
-                other: {
-                  "facebook-domain-verification": [facebookVerification],
-                },
-              }
-            : {}),
-        },
-      }
-    : {}),
+  keywords: ["butik otel", "foça otelleri", "kozbeyli", "taş ev", "restoran", "düğün mekanları", "ege mutfağı"],
+  verification,
   alternates: {
     canonical: "/",
   },

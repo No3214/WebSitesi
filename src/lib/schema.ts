@@ -1,8 +1,5 @@
+import { env } from "@/lib/env";
 import { absoluteUrl } from "./utils";
-
-const googleMapsUrl = process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL;
-const reviewRating = process.env.NEXT_PUBLIC_REVIEW_RATING;
-const reviewCount = process.env.NEXT_PUBLIC_REVIEW_COUNT;
 
 export function hotelSchema() {
   return {
@@ -10,7 +7,7 @@ export function hotelSchema() {
     "@type": ["Hotel", "LodgingBusiness", "Restaurant"],
     name: "Kozbeyli Konağı Taş Otel & Restaurant",
     description:
-      "Foça'nın tarihi Kozbeyli köyünde, 19. yüzyıl mimarisiyle modern lüksü birleştiren ödüllü taş otel ve restoran.",
+      "Foça'nın tarihi Kozbeyli köyünde, taş mimariyle modern konforu buluşturan butik otel ve restoran deneyimi.",
     url: absoluteUrl("/"),
     logo: absoluteUrl("/logo.svg"),
     image: [absoluteUrl("/img/hero-main.jpg"), absoluteUrl("/img/stone-room.jpg")],
@@ -38,15 +35,6 @@ export function hotelSchema() {
       { "@type": "LocationFeatureSpecification", name: "Ücretsiz Wi-Fi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Etkinlik ve Düğün Alanı", value: true },
     ],
-    ...(googleMapsUrl ? { hasMap: googleMapsUrl } : {}),
-    ...(reviewRating && reviewCount
-      ? {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: reviewRating,
-            reviewCount,
-          },
-        }
-      : {}),
+    ...(env.GOOGLE_MAPS_URL ? { hasMap: env.GOOGLE_MAPS_URL } : {}),
   };
 }

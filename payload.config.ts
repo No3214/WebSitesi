@@ -1,43 +1,32 @@
 import path from "path";
-
+import { buildConfig } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
-import { buildConfig } from "payload";
 
-import { AgentPerformanceLogs } from "./payload/collections/AgentPerformanceLogs";
-import { HotelRunnerEvents } from "./payload/collections/HotelRunnerEvents";
-import { Media } from "./payload/collections/Media";
-import { MenuSections } from "./payload/collections/MenuSections";
-import { OrganizationLeads } from "./payload/collections/OrganizationLeads";
-import { OrganizationPackages } from "./payload/collections/OrganizationPackages";
-import { Rooms } from "./payload/collections/Rooms";
+import { env, getAllowedOrigins } from "@/lib/env";
 import { Users } from "./payload/collections/Users";
-
-const payloadSecret = process.env.PAYLOAD_SECRET;
-const databaseUri = process.env.DATABASE_URI;
-
-if (!payloadSecret) {
-  throw new Error("PAYLOAD_SECRET is required. Refusing to boot with an insecure default.");
-}
-
-if (!databaseUri) {
-  throw new Error("DATABASE_URI is required.");
-}
+import { Media } from "./payload/collections/Media";
+import { Rooms } from "./payload/collections/Rooms";
+import { MenuSections } from "./payload/collections/MenuSections";
+import { OrganizationPackages } from "./payload/collections/OrganizationPackages";
+import { OrganizationLeads } from "./payload/collections/OrganizationLeads";
+import { AgentPerformanceLogs } from "./payload/collections/AgentPerformanceLogs";
+import { WebhookEvents } from "./payload/collections/WebhookEvents";
 
 export default buildConfig({
-  secret: payloadSecret,
-  serverURL: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  secret: env.PAYLOAD_SECRET,
+  serverURL: env.NEXT_PUBLIC_SITE_URL,
   admin: {
     user: "users",
   },
   editor: lexicalEditor(),
   db: postgresAdapter({
     pool: {
-      connectionString: databaseUri,
+      connectionString: env.DATABASE_URI,
     },
   }),
-  cors: [process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"],
-  csrf: [process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"],
+  cors: getAllowedOrigins(),
+  csrf: getAllowedOrigins(),
   collections: [
     Users,
     Media,
@@ -46,7 +35,7 @@ export default buildConfig({
     OrganizationPackages,
     OrganizationLeads,
     AgentPerformanceLogs,
-    HotelRunnerEvents,
+    WebhookEvents,
   ],
   typescript: {
     outputFile: path.resolve(process.cwd(), "payload-types.ts"),

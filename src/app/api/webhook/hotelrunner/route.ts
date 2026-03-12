@@ -1,107 +1,196 @@
 import crypto from "node:crypto";
 import { NextResponse } from "next/server";
+
+import { env } from "@/lib/env";
 import { getPayloadClient } from "@/lib/payload";
 import { safeText } from "@/lib/security";
 
-const replayStore = new Map<string, number>();
-const MAX_AGE_MS = 10 * 60 * 1000;
-const ALLOWED_EVENTS = new Set(["reservation.created", "reservation.updated", "reservation.cancelled"]);
+type ReservationBody = {
+  reservation?: {
+    id?: string | number;
+    guest_first_name?: string;
+    guest_last_name?: string;
+    guest_email?: string;
+    guest_phone?: string;
+    status?: string;
+    room_type_name?: string;
+    checkin?: string;
+    checkout?: string;
+    total_price?: string | number;
+    currency_code?: string;
+    guest_notes?: string;
+  };
+};
 
-function isReplay(messageUid: string) {
+const replayStore = new Map<string, number>();
+const REPLAY_TTL_MS = 6 * 60 * 60 * 1000;
+
+function pruneReplayStore() {
   const now = Date.now();
-  for (const [uid, expiresAt] of replayStore.entries()) {
-    if (expiresAt <= now) replayStore.delete(uid);
+  for (const [key, expiresAt] of replayStore.entries()) {
+    if (expiresAt <= now) replayStore.delete(key);
   }
-  if (replayStore.has(messageUid)) return true;
-  replayStore.set(messageUid, now + MAX_AGE_MS);
-  return false;
+}
+
+function markReplay(messageUid: string) {
+  pruneReplayStore();
+  replayStore.set(messageUid, Date.now() + REPLAY_TTL_MS);
+}
+
+function hasReplay(messageUid: string) {
+  pruneReplayStore();
+  const expiresAt = replayStore.get(messageUid);
+  return Boolean(expiresAt && expiresAt > Date.now());
+}
+
+function createDigest(bodyText: string) {
+  return crypto.createHmac("sha256", env.HOTELRUNNER_WEBHOOK_SECRET).update(bodyText).digest("hex");
+}
+
+function safeCompare(a: string, b: string) {
+  const left = Buffer.from(a);
+  const right = Buffer.from(b);
+  if (left.length !== right.length) return false;
+  return crypto.timingSafeEqual(left, right);
+}
+
+async function writeAuditLog(data: Record<string, unknown>) {
+  const payload = await getPayloadClient();
+  await payload.create({
+    collection: "webhook-events",
+    data,
+    overrideAccess: true,
+  });
 }
 
 export async function GET() {
-  return NextResponse.json({ status: "active", version: "1.1.0", support: "HMAC-SHA256" });
+  return NextResponse.json({ status: "active" });
 }
 
 export async function POST(req: Request) {
-  try {
-    const messageUid = req.headers.get("x-message-uid");
-    const signature = req.headers.get("x-payload-signature");
-    const secret = process.env.HOTELRUNNER_WEBHOOK_SECRET;
+  const messageUid = req.headers.get("x-message-uid") || "";
+  const signature = req.headers.get("x-payload-signature") || "";
+  const receivedAt = new Date().toISOString();
 
-    if (!secret || !signature || !messageUid) {
-      return NextResponse.json({ error: "Missing webhook security headers" }, { status: 401 });
-    }
-
-    if (isReplay(messageUid)) {
-      return NextResponse.json({ error: "Replay detected" }, { status: 409 });
-    }
-
-    const bodyText = await req.text();
-    const expected = crypto.createHmac("sha256", secret).update(bodyText).digest("hex");
-    const signatureBuffer = Buffer.from(signature, "utf8");
-    const expectedBuffer = Buffer.from(expected, "utf8");
-
-    if (signatureBuffer.length !== expectedBuffer.length || !crypto.timingSafeEqual(signatureBuffer, expectedBuffer)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const body = JSON.parse(bodyText) as {
-      event?: string;
-      reservation?: Record<string, any>;
-    };
-
-    if (!body.event || !ALLOWED_EVENTS.has(body.event)) {
-      return NextResponse.json({ error: "Unsupported event type" }, { status: 400 });
-    }
-
-    if (!body.reservation) {
-      return NextResponse.json({ error: "Unsupported payload structure" }, { status: 400 });
-    }
-
-    const payload = await getPayloadClient();
-    if (!payload) return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-
-    const res = body.reservation;
-    const reservationId = safeText(String(res.id || messageUid), 80);
-
-    // Audit Log in HotelRunnerEvents
-    await payload.create({
-      collection: "hotelrunner-events" as any,
-      data: {
-        messageUid,
-        event: body.event,
-        payload: body,
-        status: "processed"
-      }
-    });
-
-    // Create Lead
-    await payload.create({
-      collection: "organization-leads" as any,
-      data: {
-        name: `${safeText(res.guest_first_name || "Misafir", 80)} ${safeText(res.guest_last_name || "", 80)}`.trim(),
-        email: safeText(res.guest_email || "", 160) || `booking-${reservationId}@hotelrunner.local`,
-        phone: safeText(res.guest_phone || "", 40),
-        type: "Reservation",
-        consent: true,
-        message: [
-          `Event: ${body.event}`,
-          `Rezervasyon ID: ${reservationId}`,
-          `Durum: ${safeText(String(res.status || "unknown"), 60)}`,
-          `Oda: ${safeText(String(res.room_type_name || "unknown"), 120)}`,
-          `Konaklama: ${safeText(String(res.checkin || "-"), 30)} / ${safeText(String(res.checkout || "-"), 30)}`,
-          `Toplam Tutar: ${safeText(String(res.total_price || "0"), 30)} ${safeText(String(res.currency_code || ""), 10)}`,
-          `Notlar: ${safeText(String(res.guest_notes || "Yok"), 500)}`,
-        ].join("\n"),
-        source: `hotelrunner:${reservationId}`,
-      },
-      draft: false,
-    });
-
-    const response = NextResponse.json({ ok: true });
-    response.headers.set("x-message-delivery", "confirmed");
-    return response;
-  } catch (error) {
-    console.error("WEBHOOK CRITICAL ERROR:", error);
-    return NextResponse.json({ ok: false }, { status: 500 });
+  if (!messageUid) {
+    return NextResponse.json({ ok: false, error: "Missing x-message-uid" }, { status: 400 });
   }
+
+  if (!signature) {
+    await writeAuditLog({
+      provider: "hotelrunner",
+      messageUid,
+      status: "rejected",
+      signatureValid: false,
+      errorMessage: "Missing signature",
+      receivedAt,
+    });
+
+    return NextResponse.json({ ok: false, error: "Missing signature" }, { status: 401 });
+  }
+
+  if (hasReplay(messageUid)) {
+    await writeAuditLog({
+      provider: "hotelrunner",
+      messageUid,
+      status: "duplicate",
+      signatureValid: true,
+      receivedAt,
+    });
+
+    return NextResponse.json({ ok: true, duplicate: true }, { status: 200 });
+  }
+
+  const bodyText = await req.text();
+  const expectedSignature = createDigest(bodyText);
+
+  if (!safeCompare(signature, expectedSignature)) {
+    await writeAuditLog({
+      provider: "hotelrunner",
+      messageUid,
+      status: "rejected",
+      signatureValid: false,
+      errorMessage: "Invalid signature",
+      receivedAt,
+    });
+
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body: ReservationBody;
+  try {
+    body = JSON.parse(bodyText) as ReservationBody;
+  } catch {
+    await writeAuditLog({
+      provider: "hotelrunner",
+      messageUid,
+      status: "rejected",
+      signatureValid: true,
+      errorMessage: "Invalid JSON",
+      payloadJson: { raw: bodyText },
+      receivedAt,
+    });
+
+    return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const reservation = body.reservation;
+  if (!reservation?.id) {
+    await writeAuditLog({
+      provider: "hotelrunner",
+      messageUid,
+      status: "rejected",
+      signatureValid: true,
+      errorMessage: "Unsupported payload structure",
+      payloadJson: body,
+      receivedAt,
+    });
+
+    return NextResponse.json({ ok: false, error: "Unsupported payload structure" }, { status: 400 });
+  }
+
+  const payload = await getPayloadClient();
+  const reservationId = String(reservation.id);
+
+  await payload.create({
+    collection: "organization-leads",
+    data: {
+      name: safeText(`${reservation.guest_first_name || ""} ${reservation.guest_last_name || ""}`.trim() || "HotelRunner Guest", 120),
+      normalizedPhone: safeText((reservation.guest_phone || "").replace(/\D+/g, ""), 25),
+      phone: safeText(reservation.guest_phone || "", 25) || "Bilinmiyor",
+      normalizedEmail: safeText((reservation.guest_email || `booking-${reservationId}@hotelrunner.local`).toLowerCase(), 200),
+      email: safeText((reservation.guest_email || `booking-${reservationId}@hotelrunner.local`).toLowerCase(), 200),
+      type: "reservation",
+      consent: true,
+      leadScore: 90,
+      leadPriority: "high",
+      source: `hotelrunner:${reservationId}`,
+      dedupeHash: crypto.createHash("sha256").update(`hotelrunner:${reservationId}`).digest("hex"),
+      message: [
+        `Rezervasyon ID: ${reservationId}`,
+        `Durum: ${safeText(reservation.status || "bilinmiyor", 50)}`,
+        `Oda: ${safeText(reservation.room_type_name || "bilinmiyor", 120)}`,
+        `Konaklama: ${safeText(reservation.checkin || "-", 30)} / ${safeText(reservation.checkout || "-", 30)}`,
+        `Toplam Tutar: ${safeText(String(reservation.total_price || "-"), 30)} ${safeText(reservation.currency_code || "", 10)}`,
+        `Notlar: ${safeText(reservation.guest_notes || "Yok", 1000)}`,
+      ].join("\n"),
+    },
+    overrideAccess: true,
+  });
+
+  await writeAuditLog({
+    provider: "hotelrunner",
+    messageUid,
+    reservationId,
+    status: "processed",
+    signatureValid: true,
+    payloadJson: body,
+    receivedAt,
+  });
+
+  markReplay(messageUid);
+
+  const response = NextResponse.json({ ok: true });
+  response.headers.set("x-message-delivery", "confirmed");
+  return response;
 }
