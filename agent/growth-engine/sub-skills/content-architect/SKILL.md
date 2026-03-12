@@ -15,6 +15,13 @@ Engineering content that is perfectly optimized for AI search engines (Perplexit
 - **Statistical Density**: Min 3 specific facts per passage (e.g., "180-year-old coffee", "16 rooms", "12km to Foça").
 - **Self-Containment**: Each paragraph must be understandable without reading the rest of the page.
 
+## Retorik DNA ve Hızlandırma (Rhetorical DNA & Pacing)
+
+İçerik üretiminde şu "Kozbeyli İmzası" uygulanır:
+- **Yapılandırma**: Her paragraf maksimum 3 yoğun cümleden oluşur, ardından veri odaklı liste gelir.
+- **Kelime Dağarcığı**: %30 'Uzman Terimi' kuralı (Horasan harcı, mikro-klima, tüf taşı).
+- **Bilgi Yoğunluğu**: Her 150 kelime en az 5 somut tarihsel veya teknik veri içermelidir.
+
 ## Advanced Research & Competitive Benchmarking
 
 Ajan içerik üretmeden önce şu "Uzman Analizini" yapar:
