@@ -4,15 +4,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
+import type { Dictionary } from "@/lib/types";
 
 export function SiteFooter() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(null);
+  const [dict, setDict] = useState<Dictionary | null>(null);
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
-    getDictionary(locale).then(setDict);
+    getDictionary(locale as "tr" | "en").then((d) => setDict(d as Dictionary));
   }, []);
 
   if (!dict) return null;

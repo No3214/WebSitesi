@@ -32,7 +32,9 @@ test('Monkey Test: Chaos & Stability Verification', async ({ page }) => {
       const index = Math.floor(Math.random() * count);
       try {
         await interactive.nth(index).click({ timeout: 300, force: true });
-      } catch (e) {}
+      } catch {
+        // ignore
+      }
     }
     
     expect(errors.length).toBe(0);

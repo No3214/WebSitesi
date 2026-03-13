@@ -3,7 +3,52 @@
     "title": "Tarihin Kalbinde Lüks Bir Kaçış",
     "eyebrow": "ESKİ FOÇA, KOZBEYLİ",
     "cta": "ODALARIMIZI KEŞFEDİN",
-    "story": "HİKAYEMİZ"
+    "story": "HİKAYEMİZ",
+    "heroTitle": "Premium Taş Konakta\nZarif Ege Deneyimi",
+    "heroText": "500 yıllık tescilli taş mimarinin içinde, denize 12 km mesafede, kişiselleştirilmiş hizmet ve rafine bir kaçış.",
+    "bookNow": "HEMEN REZERVASYON",
+    "planEvent": "ETKİNLİK PLANLA",
+    "kpiGuestExperience": "MİSAFİR DENEYİMİ",
+    "kpiBookingTrust": "DİREKT REZERVASYON GÜVENİ",
+    "kpiResponseTime": "GERİ DÖNÜŞ SÜRESİ",
+    "roomsTitle": "Sükunet ve Konfor",
+    "roomsText": "Her detayı özenle tasarlanmış, ruhu olan odalarımızda tarihin dokusunu hissedin.",
+    "conciergeEyebrow": "CONCIERGE",
+    "conciergeTitle": "Premium Deneyim Paketleri",
+    "conciergeText": "Sadece konaklama değil; ömür boyu hatırlanacak anılar biriktirmeniz için tasarlanmış özel servisler.",
+    "bookingTitle": "Yerinizi Ayırtın",
+    "bookingText": "En iyi fiyat garantisi, esnek iptal ve concierge desteği ile direkt rezervasyon avantajı.",
+    "faqEyebrow": "SIK SORULANLAR",
+    "faqTitle": "Karar Sürecini Kısaltın",
+    "faqText": "Rezervasyon öncesi aklınıza takılabilecek detaylar.",
+    "experiences": [
+      {
+        "title": "Antakya & Ege Gastronomisi",
+        "text": "İnci Hanım'ın özel reçeteleri, sac kavurma ve 500 yıllık taş dibekte dövülen taze kahve."
+      },
+      {
+        "title": "VIP Transfer & Hızlı Check-in",
+        "text": "İzmir Havalimanı transferi ve odaya doğrudan giriş ayrıcalığı."
+      },
+      {
+        "title": "Küratörlü Foça Kaçamağı",
+        "text": "Tekne turu, köy rotası ve gastronomi deneyimi tek pakette."
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Check-in / Check-out saatleri nedir?",
+        "a": "Check-in 14:00 itibarıyla, check-out 12:00'ye kadardır."
+      },
+      {
+        "q": "Çocuklu aileler için uygun mu?",
+        "a": "Evet, aile odalarımız ve çocuk dostu menülerimiz bulunmaktadır."
+      },
+      {
+        "q": "Organizasyon rezervasyonu nasıl yapılır?",
+        "a": "Talep formunu doldurduğunuzda satış ekibimiz 24 saat içinde size döner."
+      }
+    ]
   },
   "Navigation": {
     "history": "Hikayemiz",
@@ -16,12 +61,96 @@
     "title": "Rafine Oda ve Süitler",
     "eyebrow": "Konaklama",
     "text": "Kozbeyli Konağı'nın taş mimarisi ile huzur verici Ege manzarasını birleştiren konaklama birimlerimizi keşfedin.",
-    "detail": "Detayları Gör"
+    "detail": "Detayları Gör",
+    "size": "Büyüklük",
+    "capacity": "Kapasite",
+    "view": "Manzara",
+    "experience": "Oda Deneyimi",
+    "directBookingAdvantage": "DİREKT REZERVASYON AVANTAJI",
+    "selectDates": "Lütfen Tarih Seçiniz",
+    "bestPriceBook": "EN İYİ FİYATLA YERİNİZİ AYIRIN",
+    "muehuerlueTasKonak": "MÜHÜRLÜ TAŞ KONAK"
   },
   "Footer": {
     "description": "Foça'nın kalbinde, 200 yıllık bir hikayenin lüks ve konforla yeniden yorumlandığı rafine bir durak.",
     "explore": "Keşfedin",
     "legal": "Hukuki",
     "contact": "İletişim"
+  },
+  "Common": {
+    "hours": "SAAT",
+    "loading": "Yükleniyor...",
+    "error": "Bir hata oluştu."
+  },
+  "LeadForm": {
+    "name": "Tam Adınız",
+    "phone": "Telefon Numaranız",
+    "email": "E-posta Adresiniz",
+    "date": "Etkinlik Tarihi",
+    "guests": "Tahmini Kişi Sayısı",
+    "budget": "Tahmini Bütçe",
+    "budgetUnder100": "100.000 TL altı",
+    "budget100to250": "100.000 - 250.000 TL",
+    "budget250to500": "250.000 - 500.000 TL",
+    "budgetOver500": "500.000 TL üzeri",
+    "type": "Organizasyon Tercihi",
+    "typeWedding": "Butik Düğün",
+    "typeEngagement": "Nişan / Söz",
+    "typeCorporate": "Kurumsal Etkinlik",
+    "typeSpecial": "Özel Kutlama",
+    "message": "Özel talepleriniz ve diğer notlar...",
+    "consent": "Kişisel verilerimin teklif ve bilgilendirme amacıyla işlenmesini kabul ediyorum.",
+    "submit": "Teklif Talebini Gönder",
+    "submitting": "Gönderiliyor...",
+    "successTitle": "Talebiniz Alındı",
+    "successText": "Satış ekibimiz müsaitlik ve fiyat bilgisini kısa sürede paylaşacak. Teşekkür ederiz.",
+    "newRequest": "Yeni Talep Gönder",
+    "error": "Bir hata oluştu. Lütfen tekrar deneyin."
+  },
+  "Organizations": {
+    "eyebrow": "ORGANİZASYON",
+    "title": "Sizin Hikayeniz, Bizim Mekanımız",
+    "text": "Ege'nin kalbinde, tarihin ve doğanın kucağında unutulmaz etkinliklere imza atıyoruz.",
+    "contactEyebrow": "İLETİŞİM",
+    "contactTitle": "Hayalinizi Planlayalım",
+    "contactText": "Detayları bizimle paylaşın, uzman ekibimiz en kısa sürede size özel bir teklif hazırlasın.",
+    "requestOffer": "TEKLİF TALEBİ",
+    "packages": [
+      {
+        "title": "Tescilli Mirasta Butik Düğün",
+        "category": "Düğün & Nişan",
+        "description": "Kozbeyli Konağı, Rum ve Türk mimarisinin ortak mirasından süzülen tescilli bir yapıdır. 150-200 kişiye kadar ağırlama kapasitesine sahip geniş avlumuzda, aslına uygun restore edilmiş taş duvarlar ve geleneksel Horasan harcı işçiliği arasında, her detayı 'Uzman' ekibimizce planlanan prestijli düğünlere ev sahipliği yapıyoruz."
+      },
+      {
+        "title": "Kurumsal 'Off-Site' Deneyimi",
+        "category": "Kurumsal",
+        "description": "Şehrin gürültüsünden arınmış, Kozbeyli taşının termal konforuyla yaratıcı kurumsal buluşmalar. 40 kişiye kadar butik toplantı kapasitemiz, yüksek hızlı internet ve şömineli kapalı alanımızla kurumsal prestiji tarihle birleştiriyoruz."
+      },
+      {
+        "title": "Gurme Gastronomi Kutlamaları",
+        "category": "Özel Gün",
+        "description": "Doğum günü veya yıl dönümü gibi özel anlarınızı, Antakya ve Ege mutfağının hibritleştiği gurme lezzetlerle taçlandırın. Konak avlusundaki 180 yıllık orijinal dibek taşında elde dövülen ve odun ateşinde ağır ağır pişen imza Dibek kahvemiz, kutlamanıza gerçek bir tarihsel doku katacak."
+      }
+    ]
+  },
+  "Gastronomy": {
+    "heroTitle": "Gastronomi Mirası",
+    "heroSubtitle": "ANTAKYA'DAN EGE'YE BİR LEZZET KÖPRÜSÜ",
+    "inciTitle": "İnci Hanım'ın Mutfağı",
+    "inciContent": "Kozbeyli Konağı'nın mutfağı, sadece bir yemek alanı değil; İnci Hanım'ın Antakya kökenli aile mirası ile Ege'nin kadim topraklarını birleştiren bir 'Gastronomi Laboratuvarı'dır.",
+    "dibekTitle": "Orijinal Taş Dibek",
+    "dibekContent": "500 yıllık orijinal taş dibekte, her gün taze olarak elde dövülen Dibek Kahvesi, köydeki tek gerçek uygulayıcısı olduğumuz bir ritüeldir.",
+    "breakfastTitle": "Farm-to-Table Kahvaltı",
+    "breakfastContent": "Serpme köy kahvaltımız, Kozbeyli'nin asırlık zeytin ağaçlarından ve İnci Hanım'ın geleneksel reçel tariflerinden süzülen tam organik bir döngüdür."
+  },
+  "History": {
+    "heroTitle": "Hikayemiz",
+    "heroSubtitle": "500 YILLIK TAŞLARIN FISILTISI",
+    "textureTitle": "Tarihi Doku",
+    "textureContent": "Kozbeyli Konağı, sadece bir otel değil; Horasan harcıyla örülmüş, 500 yıllık tescilli bir Osmanlı mimarisi şaheseridir. Köyün en eski sivil mimari örneklerinden biridir.",
+    "merchantTitle": "Tüccar Mirası",
+    "merchantContent": "1870-1891 yılları arasında bölgenin en varlıklı tüccar aileleri için inşa edilen yapı, zemin katındaki devasa şarap ve zeytinyağı mahzenleriyle dönemin ticari gücünü yansıtır.",
+    "restorationTitle": "Modern Restorasyon",
+    "restorationContent": "2012 yılında başlayan restorasyon, Anıtlar Kurulu denetiminde, çimento kullanılmadan orijinal tekniklerle tamamlandı. 'Living Museum' felsefesiyle her taş aslına sadık kalarak korundu."
   }
 }

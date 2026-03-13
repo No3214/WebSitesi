@@ -13,15 +13,14 @@ export function SiteHeader() {
     getDictionary(locale).then(setDict);
   }, []);
 
-  if (!dict) return <header className="header premium-header" />;
-  const navigationDict = dict.Navigation as Record<string, string>;
+  const navigationDict = (dict?.Navigation as Record<string, string>) || {};
 
   const links = [
-    { href: "/hikayemiz", label: navigationDict.history || "Hikayemiz" },
-    { href: "/odalar", label: navigationDict.rooms },
-    { href: "/gastronomi", label: navigationDict.dining || "Gastronomi" },
-    { href: "/organizasyonlar", label: navigationDict.events },
-    { href: "/#faq", label: "SSS" }
+    { href: "/hikayemiz", label: navigationDict.history || "..." },
+    { href: "/odalar", label: navigationDict.rooms || "..." },
+    { href: "/gastronomi", label: navigationDict.dining || "..." },
+    { href: "/organizasyonlar", label: navigationDict.events || "..." },
+    { href: "/#faq", label: "SSS" },
   ];
 
   return (
@@ -44,10 +43,12 @@ export function SiteHeader() {
         </nav>
 
         <div className="header-actions">
-            <LanguageSwitcher />
+          <LanguageSwitcher />
+          {navigationDict.booking && (
             <Link className="button primary" href="/#rezervasyon">
-                {navigationDict.booking}
+              {navigationDict.booking}
             </Link>
+          )}
         </div>
       </div>
 

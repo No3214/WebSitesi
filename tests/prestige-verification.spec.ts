@@ -31,8 +31,10 @@ test.describe('Prestige & Heritage Verification', () => {
     await page.waitForTimeout(1000);
     
     // Check for social proof or scarcity badges (if implemented)
-    const toast = page.locator('.toast, [role="alert"]');
-    // This is optional based on whether they are triggered
+    const toast = page.locator(".toast, [role='alert']");
+    if (await toast.isVisible()) {
+      console.log("Toast visible");
+    }
   });
 
   test('Living Museum Map should be interactive', async ({ page }) => {
@@ -52,6 +54,9 @@ test.describe('Prestige & Heritage Verification', () => {
     
     // Menu button should be visible on mobile
     const menuBtn = page.locator('button:has-text("Menü"), .mobile-menu-trigger');
+    if (await menuBtn.isVisible()) {
+      console.log("Menu button visible");
+    }
     // Ensure no horizontal overflow
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
     expect(bodyWidth).toBeLessThanOrEqual(375);

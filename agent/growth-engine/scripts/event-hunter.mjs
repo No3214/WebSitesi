@@ -7,12 +7,6 @@ async function searchEventleads() {
   console.log("💎 Event Master Agent: Searching for high-value event opportunities...");
 
   // Simulated targeted search logic for "Expert Mode"
-  const sectors = [
-    { name: "Luxury Wedding Planners", focus: "Boutique Weddings" },
-    { name: "Tech Company HR", focus: "Corporate Retreats" },
-    { name: "Gastronomy Associations", focus: "Culinary Tours" }
-  ];
-
   const results = [
     { company: "Elite Weddings İzmir", type: "Partner", potential: "High", reason: "Focuses on historical venues" },
     { company: "GlobalTech Solutions", type: "Corporate", potential: "Premium", reason: "Annual leadership retreat planning" },
