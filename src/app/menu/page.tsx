@@ -35,7 +35,7 @@ export default function MenuPage() {
        description: "Yemeğin sonunda unutulmaz bir kapanış için geleneksel ve modern tatlar.",
        items: [
          { name: "Sıcak Antakya Künefesi", description: "Közde hazırlanan, gerçek Antakya peyniri ve Antep fıstığı ile.", priceLabel: "Efsane" },
-         { name: "Tarihi Dibek Kahvesi", description: "180 yıllık gelenekle taş dibeklerde dövülmüş, odun ateşinde pişmiş.", priceLabel: "Tescilli" }
+         { name: "Tarihi Dibek Kahvesi", description: "500 yıllık gelenekle taş dibeklerde dövülmüş, odun ateşinde pişmiş.", priceLabel: "Tescilli" }
        ]
     }
   ];
