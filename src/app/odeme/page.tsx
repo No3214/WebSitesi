@@ -23,11 +23,12 @@ export default function PaymentPage() {
               }}
             >
               <AlertTriangle size={20} />
-              <div>
-                <h2 className="serif" style={{ marginBottom: 8 }}>Canlı ödeme kapalı</h2>
-                <p>
-                  Bu sayfa şu anda yalnızca test/demonstrasyon amacıyla tutulmaktadır. Gerçek kart tahsilatı yapılmaz,
-                  3D Secure akışı çalışmaz ve bu ekran üzerinden rezervasyon onayı oluşmaz.
+              <div style={{ padding: 20 }}>
+                <h2 className="serif" style={{ marginBottom: 12, color: "#92400e" }}>Ödeme Simülasyonu / Demo</h2>
+                <p style={{ color: "#92400e", fontSize: "0.95rem", lineHeight: 1.6 }}>
+                  Bu sayfa <strong>yalnızca demonstrasyon</strong> amacıyla tasarlanmıştır. 
+                  Bu arayüz üzerinden gerçek bir kart tahsilatı yapılmaz ve herhangi bir rezervasyon kaydı oluşmaz. 
+                  Resmi rezervasyonunuzu tamamlamak için lütfen butik otelimizin ana rezervasyon motorunu kullanın.
                 </p>
               </div>
             </div>

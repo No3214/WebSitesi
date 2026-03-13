@@ -1,4 +1,4 @@
-import { getPayloadClient } from "../lib/payload";
+import { getPayloadClient } from "../src/lib/payload";
 
 /**
  * Pilot Lead Generation Script
@@ -18,6 +18,10 @@ async function runPilot() {
   ];
 
   const payload = await getPayloadClient();
+  if (!payload) {
+    console.error("❌ Payload client not initialized");
+    return;
+  }
 
   for (const lead of mockLeads) {
     console.log(`Analyzing lead: ${lead.name}...`);
@@ -28,11 +32,12 @@ async function runPilot() {
       data: {
         name: lead.name,
         email: lead.email,
+        phone: "0000000000",
         type: lead.sector,
         message: "SYSTEM_PILOT: AI-Generated outreach pending review.",
         consent: true,
         source: "agent_discovery"
-      },
+      } as any,
       overrideAccess: true
     });
   }

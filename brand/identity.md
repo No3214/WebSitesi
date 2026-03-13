@@ -2,13 +2,16 @@
 
 ## Core Values
 
-1. **Historical Preservation**: Every stone tells a story.
-2. **Culinary Mastery**: Antakya meets the Aegean.
-3. **Quiet Luxury**: Peace is the ultimate premium.
+1. **Historical Preservation**: Every stone tells an 1870-1891 merchant story via Horasan mortar archaeology.
+2. **Culinary Mastery**: Antakya heritage meets early-harvest 0.2 acid Zeytinyağı and ata tohumu.
+3. **Quiet Luxury**: Bioclimatic thermal mass and Poyraz winds define the 'No3214' premium.
 
 ## Unique Selling Points (USPs)
 
-- **500-Year-Old Structure**: Built with authentic stone and Horasan mortar. A "Living Museum" experience mirroring archaeological park sensitivities.
-- **Culinary Mastery**: Directed by İnci Hanım, merging Antakya roots with Aegean produce. A "Slow Living" (Yavaş Yaşam) gastronomy destination.
-- **Tarihi Dibek Kahvesi**: 180-year-old stone dibek (mortar) heritage.
-- **Merchant Heritage**: Originally part of a settlement for leading village families, now preserved as a "Special Certificate" (Özel Belgeli) style retreat.
+- **Bioclimatic Heritage**: Built with Kozbeyli Tuff and Horasan mortar (nefes alan yapı). Thermal mass ensures 24°C internal stable temp.
+- **Micro-Klima Advantage**: 180m altitude and Poyraz (North wind) creates a 15% humidity drop vs coastline.
+- **Sismic Stability**: Built directly on andezit rock veins, ensuring 180+ years of structural integrity.
+- **Culinary Anthropology**: Directed by İnci Hanım, merging Antakya 'Heritage seeds' with local Aegean 72-hour reduced nar ekşisi.
+- **Historical Dibek**: 180-year-old andezit mortar ritual (no-oxidation coffee).
+- **Merchant Architecture**: L-Tipi Sofa style, preserving the 19th-century elite village social structure.
+- **Özel Belgeli Status**: Official heritage certification (Tourism Operation License for Special Facilities).

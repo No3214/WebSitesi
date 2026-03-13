@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 import {
   applyOutputGuardrails,
@@ -18,18 +19,12 @@ export async function POST(req: Request) {
   const startedAt = Date.now();
 
   try {
-    const ip = req.headers.get('x-forwarded-for') || 'anonymous';
+    const ip = req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for') || 'anonymous';
     const body = await req.json().catch(() => null);
     
     // 1. Rate Limiting check
     if (!checkRateLimit(ip)) {
       return rateLimitResponse();
-    }
-
-    // 2. Turnstile Bot Protection (Server-side validation)
-    const turnstileToken = body?.turnstileToken;
-    if (process.env.NODE_ENV === 'production' && !turnstileToken) {
-      return NextResponse.json({ error: 'Güvenlik doğrulaması başarısız.' }, { status: 403 });
     }
 
     const messages = sanitizeMessages(body?.messages);

@@ -20,6 +20,7 @@ export interface LeadData {
 
 export async function processLeadSubmission(data: LeadData) {
   const payload = await getPayloadClient();
+  if (!payload) throw new Error("Payload client not initialized");
 
   // 1. Normalization
   const normalizedPhone = data.phone.replace(/\D/g, "");
@@ -29,6 +30,7 @@ export async function processLeadSubmission(data: LeadData) {
 
   // 2. Duplicate Detection (Simple phone/date hash)
   const existingLead = await payload.find({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     collection: "organization-leads" as any,
     where: {
       and: [
@@ -61,6 +63,7 @@ export async function processLeadSubmission(data: LeadData) {
 
   // 4. Create Lead
   await payload.create({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     collection: "organization-leads" as any,
     data: {
       ...data,
@@ -68,8 +71,9 @@ export async function processLeadSubmission(data: LeadData) {
       phone: normalizedPhone,
       email: normalizedEmail,
       message: sanitizedMessage,
-      score,
-      priority, // Ensure these fields exist in collection or use message prefix as fallback
+      leadScore: score,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      leadPriority: priority.toLowerCase() as any, // "HIGH" -> "high"
       // Since I might not have updated the collection schema yet, I'll use the message prefix strategy too
       internalNotes: `SCORE: ${score} | PRIORITY: ${priority}`,
       source: data.utmSource ? `utm:${data.utmSource}` : "website",

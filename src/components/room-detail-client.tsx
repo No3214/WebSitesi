@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { Check } from "lucide-react";
 import { FadeIn } from "@/components/animations";
 import { useEffect, useState } from "react";
@@ -10,6 +11,7 @@ import { SiteHeader } from "@/components/site-header";
 import { rooms as fallbackRooms } from "@/data/rooms";
 
 export function RoomDetailClient({ slug }: { slug: string }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
   const room = fallbackRooms.find((item) => item.slug === slug);
 
@@ -100,9 +102,9 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                     <span className="price-eyebrow">DİREKT REZERVASYON AVANTAJI</span>
                     <span className="price-main">Lütfen Tarih Seçiniz</span>
                   </div>
-                  <a href="/#rezervasyon" className="button premium-cta full">
+                  <Link href="/#rezervasyon" className="button premium-cta full">
                     EN İYİ FİYATLA YERİNİZİ AYIRIN
-                  </a>
+                  </Link>
                 </div>
               </div>
             </FadeIn>

@@ -1,12 +1,9 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
 import { Languages } from "lucide-react";
 
 export function LanguageSwitcher() {
-  const router = useRouter();
-  const pathname = usePathname();
-
+  // const router = useRouter();
   // Simplified toggle logic for TR/EN
   const toggleLanguage = () => {
     // In a production next-intl setup, this would use locale routing.

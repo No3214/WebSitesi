@@ -46,6 +46,7 @@ export function buildSystemPrompt() {
   return cachedSystemPrompt;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function processChatRequest(messages: any[]) {
   const lastUserMessage = safeText(
     String(messages[messages.length - 1]?.content || "").toLowerCase(),

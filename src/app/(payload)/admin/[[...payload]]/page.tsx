@@ -1,7 +1,7 @@
 import { RootPage, generatePageMetadata } from '@payloadcms/next/views'
 import config from '@payload-config'
+// @ts-expect-error - importMap is generated JS without types
 import { importMap } from '../importMap'
-import { handleServerFunctions } from '@payloadcms/next/layouts'
 
 type Args = {
   params: Promise<{
@@ -13,16 +13,17 @@ type Args = {
 }
 
 export const generateMetadata = ({ params, searchParams }: Args) =>
-  generatePageMetadata({ config, params, searchParams })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  generatePageMetadata({ config, params: params as any, searchParams })
 
 const Page = ({ params, searchParams }: Args) => {
   return (
     <RootPage 
       config={config} 
-      params={params} 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      params={params as any} 
       searchParams={searchParams} 
       importMap={importMap} 
-      serverFunction={handleServerFunctions}
     />
   )
 }

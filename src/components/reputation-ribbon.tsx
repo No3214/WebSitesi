@@ -52,7 +52,7 @@ export const ReputationRibbon = () => {
           <div className="hidden lg:flex items-center gap-3">
             <div className="h-8 w-[1px] bg-zinc-800" />
             <div className="text-zinc-500 text-[10px] uppercase tracking-widest max-w-[150px] leading-tight italic">
-              "Kültürel Miras ve Gastronominin En Yüksek Puanlı Adresi"
+              &quot;Kültürel Miras ve Gastronominin En Yüksek Puanlı Adresi&quot;
             </div>
           </div>
         </div>

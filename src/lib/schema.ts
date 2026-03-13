@@ -62,7 +62,7 @@ export function hotelSchema() {
     amenityFeature: [
       { "@type": "LocationFeatureSpecification", name: "Tarihi Taş Mimari (Horasan Harcı)", value: true },
       { "@type": "LocationFeatureSpecification", name: "İnci Hanım Güvencesinde Antakya & Ege Mutfağı", value: true },
-      { "@type": "LocationFeatureSpecification", name: "180 Yıllık Taş Dibek Kahvesi", value: true },
+      { "@type": "LocationFeatureSpecification", name: "500 Yıllık Taş Dibek Kahvesi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Yavaş Yaşam (Slow Living) Deneyimi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Evcil Hayvan Dostu", value: true },
     ],

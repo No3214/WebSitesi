@@ -4,11 +4,12 @@ import { rooms as fallbackRooms } from "@/data/rooms";
 import { RoomDetailClient } from "@/components/room-detail-client";
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const room = fallbackRooms.find((item) => item.slug === params.slug);
+  const { slug } = await params;
+  const room = fallbackRooms.find((item) => item.slug === slug);
   if (!room) return {};
 
   return {
@@ -21,9 +22,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function RoomDetailPage({ params }: Props) {
-  const roomExists = fallbackRooms.some((item) => item.slug === params.slug);
+export default async function RoomDetailPage({ params }: Props) {
+  const { slug } = await params;
+  const roomExists = fallbackRooms.some((item) => item.slug === slug);
   if (!roomExists) notFound();
 
-  return <RoomDetailClient slug={params.slug} />;
+  return <RoomDetailClient slug={slug} />;
 }

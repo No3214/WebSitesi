@@ -6,6 +6,7 @@ import { getDictionary } from "@/lib/dictionary";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
 
 export function SiteFooter() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
   const currentYear = new Date().getFullYear();
 

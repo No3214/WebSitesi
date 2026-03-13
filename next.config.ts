@@ -6,7 +6,7 @@ const csp = [
   "img-src 'self' data: https: blob:",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://connect.facebook.net https://eu-assets.i.posthog.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://eu-assets.i.posthog.com",
   "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://connect.facebook.net https://graph.facebook.net https://graph.facebook.com https://app.hotelrunner.com https://eu.i.posthog.com https://eu-assets.i.posthog.com",
   "frame-src 'self' https://www.googletagmanager.com https://www.facebook.com https://app.hotelrunner.com",
   "object-src 'none'",
@@ -36,10 +36,10 @@ const nextConfig: NextConfig = {
     ],
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   async headers() {
     return [

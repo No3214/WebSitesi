@@ -120,6 +120,9 @@ export async function POST(req: Request) {
     }
 
     const payload = await getPayloadClient();
+    if (!payload) {
+      return NextResponse.json({ ok: false, message: "Sunucu hatası: Payload başlatılamadı." }, { status: 500 });
+    }
     const normalizedPhone = normalizePhone(parsed.data.phone);
     const normalizedEmail = normalizeEmail(parsed.data.email);
     const sanitizedMessage = safeText(parsed.data.message, 3000);
@@ -147,6 +150,7 @@ export async function POST(req: Request) {
 
     const { score, leadPriority } = scoreLead(parsed.data);
 
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     await payload.create({
       collection: "organization-leads",
       data: {
@@ -162,9 +166,10 @@ export async function POST(req: Request) {
         dedupeHash,
         leadScore: score,
         leadPriority,
-      },
+      } as any,
       overrideAccess: true,
     });
+    /* eslint-enable @typescript-eslint/no-explicit-any */
 
     return NextResponse.json({
       ok: true,

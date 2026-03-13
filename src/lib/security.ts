@@ -6,10 +6,14 @@ type RateLimitEntry = {
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
 function normalizeIp(ip: string | null) {
-  if (!ip) return "unknown";
+  if (!ip || !ip.trim()) return null;
   if (ip.includes(",")) return ip.split(",")[0].trim();
   if (ip.startsWith("::ffff:")) return ip.replace("::ffff:", "");
   return ip.trim();
+}
+
+function normalizeHost(value: string) {
+  return value.trim().toLowerCase().replace(/\.$/, "");
 }
 
 export function extractClientIp(headers: Headers) {
@@ -34,7 +38,7 @@ export function validateSameOrigin(request: Request) {
   if (!origin || !host) return true;
   try {
     const originUrl = new URL(origin);
-    return originUrl.host === host;
+    return normalizeHost(originUrl.host) === normalizeHost(host);
   } catch {
     return false;
   }

@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 import { ConversionMotivators } from "@/components/conversion-motivators";
 import { CookieConsent } from "@/components/cookie-consent";
 import { DigitalConcierge } from "@/components/digital-concierge";
 import { SiteFooter } from "@/components/site-footer";
 import { TrackingScripts } from "@/components/tracking-scripts";
-import { defaultMetadata } from "@/lib/metadata";
 import { defaultMetadata } from "@/lib/metadata";
 import "./globals.css";
 
@@ -29,7 +29,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body>
         <ErrorBoundary>
           <CSPostHogProvider>
-            <LoadingBar />
+            <Suspense fallback={null}>
+              <LoadingBar />
+            </Suspense>
             <ReputationRibbon />
             <ConversionVelocity />
             <AtmosphericImmersion />

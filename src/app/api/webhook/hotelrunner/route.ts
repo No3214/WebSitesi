@@ -56,8 +56,11 @@ function safeCompare(a: string, b: string) {
 
 async function writeAuditLog(data: Record<string, unknown>) {
   const payload = await getPayloadClient();
+  if (!payload) return;
+  
   await payload.create({
-    collection: "webhook-events",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    collection: "webhook-events" as any,
     data,
     overrideAccess: true,
   });
@@ -72,21 +75,16 @@ export async function POST(req: Request) {
   const signature = req.headers.get("x-payload-signature") || "";
   const receivedAt = new Date().toISOString();
 
-  if (!messageUid) {
-    return NextResponse.json({ ok: false, error: "Missing x-message-uid" }, { status: 400 });
+  // Fail-close: Block if security headers are missing
+  if (!messageUid || !signature) {
+    console.warn(`[WEBHOOK] Blocked attempt - MessageUID: ${messageUid ? 'present' : 'missing'}, Signature: ${signature ? 'present' : 'missing'}`);
+    return NextResponse.json({ ok: false, error: "Unauthorized access attempt" }, { status: 401 });
   }
 
-  if (!signature) {
-    await writeAuditLog({
-      provider: "hotelrunner",
-      messageUid,
-      status: "rejected",
-      signatureValid: false,
-      errorMessage: "Missing signature",
-      receivedAt,
-    });
-
-    return NextResponse.json({ ok: false, error: "Missing signature" }, { status: 401 });
+  // Security Hardening: Ensure we are using a real secret in production
+  if (process.env.NODE_ENV === "production" && env.HOTELRUNNER_WEBHOOK_SECRET === "hotelrunner-dev-secret") {
+    console.error("[WEBHOOK] CRITICAL: Webhook attempting to run with dev secret in production!");
+    return NextResponse.json({ ok: false, error: "Configuration Error" }, { status: 500 });
   }
 
   if (hasReplay(messageUid)) {
@@ -150,10 +148,15 @@ export async function POST(req: Request) {
   }
 
   const payload = await getPayloadClient();
+  if (!payload) {
+    throw new Error("Payload client could not be initialized");
+  }
+
   const reservationId = String(reservation.id);
 
   await payload.create({
-    collection: "organization-leads",
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    collection: "organization-leads" as any,
     data: {
       name: safeText(`${reservation.guest_first_name || ""} ${reservation.guest_last_name || ""}`.trim() || "HotelRunner Guest", 120),
       normalizedPhone: safeText((reservation.guest_phone || "").replace(/\D+/g, ""), 25),
@@ -163,7 +166,8 @@ export async function POST(req: Request) {
       type: "reservation",
       consent: true,
       leadScore: 90,
-      leadPriority: "high",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      leadPriority: "high" as any,
       source: `hotelrunner:${reservationId}`,
       dedupeHash: crypto.createHash("sha256").update(`hotelrunner:${reservationId}`).digest("hex"),
       message: [

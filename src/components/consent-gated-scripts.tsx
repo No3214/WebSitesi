@@ -12,19 +12,22 @@ export function ConsentGatedScripts() {
       if (saved) {
         try {
           setConsent(JSON.parse(saved));
-        } catch (e) {
+        } catch {
           setConsent(null);
         }
       }
     };
 
     checkConsent();
-    window.addEventListener("cookie-consent-updated", ((e: CustomEvent) => {
-      setConsent(e.detail);
-    }) as any);
+    const handleConsentUpdate = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      setConsent(detail);
+    };
+
+    window.addEventListener("cookie-consent-updated", handleConsentUpdate);
 
     return () => {
-      window.removeEventListener("cookie-consent-updated", (() => {}) as any);
+      window.removeEventListener("cookie-consent-updated", handleConsentUpdate);
     };
   }, []);
 

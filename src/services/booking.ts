@@ -15,11 +15,14 @@ export interface HotelRunnerReservation {
   guest_notes?: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function processHotelRunnerWebhook(messageUid: string, body: any) {
   const payload = await getPayloadClient();
+  if (!payload) throw new Error("Payload client not initialized");
   
   // 1. Check for Duplicate
   const existingEvent = await payload.find({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     collection: "hotelrunner-events" as any,
     where: {
       messageUid: { equals: messageUid }
@@ -33,6 +36,7 @@ export async function processHotelRunnerWebhook(messageUid: string, body: any) {
   // 2. Audit Trail - Create Log
   try {
     await payload.create({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       collection: "hotelrunner-events" as any,
       data: {
         messageUid,
@@ -51,6 +55,7 @@ export async function processHotelRunnerWebhook(messageUid: string, body: any) {
     const res: HotelRunnerReservation = body.reservation;
     
     await payload.create({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       collection: "organization-leads" as any,
       data: {
         name: `${res.guest_first_name} ${res.guest_last_name}`,

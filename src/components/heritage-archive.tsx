@@ -54,7 +54,7 @@ export const HeritageArchive = () => {
       <div className="relative z-10 mb-16">
         <h3 className="serif text-4xl text-gold italic mb-4">Miras Arşivi: Görsel Hafıza</h3>
         <p className="text-zinc-500 max-w-2xl text-sm leading-relaxed">
-          Kozbeyli Konağı'nın ruhunu oluşturan dokuların, kokuların ve ışıkların sinematik arşivi. 
+          Kozbeyli Konağı&apos;nın ruhunu oluşturan dokuların, kokuların ve ışıkların sinematik arşivi. 
           Bilimin değil, mimarinin ve doğanın şiirsel detaylarını keşfedin.
         </p>
       </div>

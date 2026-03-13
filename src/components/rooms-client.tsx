@@ -10,6 +10,7 @@ import { getDictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
 
 export function RoomsClient() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
 
   useEffect(() => {

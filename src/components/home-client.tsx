@@ -62,6 +62,7 @@ const faqs = [
 ];
 
 export function HomeClient() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
   const [locale, setLocale] = useState<'tr' | 'en'>('tr');
 

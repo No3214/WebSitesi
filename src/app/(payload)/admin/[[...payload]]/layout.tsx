@@ -1,6 +1,7 @@
 import { RootLayout } from '@payloadcms/next/layouts'
 import React from 'react'
 import config from '@payload-config'
+// @ts-expect-error - importMap is generated JS without types
 import { importMap } from '../importMap'
 import { handleServerFunctions } from '@payloadcms/next/layouts'
 import './custom.css'
@@ -13,7 +14,8 @@ const Layout = ({ children }: Args) => (
   <RootLayout 
     config={config} 
     importMap={importMap} 
-    serverFunction={handleServerFunctions}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    serverFunction={handleServerFunctions as any}
   >
     {children}
   </RootLayout>

@@ -18,6 +18,9 @@
     "@payloadcms/db-postgres": "^3.0.0",
     "@payloadcms/next": "^3.0.0",
     "@payloadcms/richtext-lexical": "^3.0.0",
+    "@remotion/cli": "^4.0.435",
+    "@remotion/player": "^4.0.435",
+    "@remotion/renderer": "^4.0.435",
     "@trigger.dev/sdk": "^3.3.17",
     "clsx": "^2.1.1",
     "framer-motion": "^12.35.2",
@@ -28,6 +31,7 @@
     "posthog-js": "^1.360.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "remotion": "^4.0.435",
     "sharp": "^0.33.5",
     "tailwind-merge": "^3.0.2",
     "zod": "^3.24.2"

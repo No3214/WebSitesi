@@ -24,7 +24,7 @@ Kozbeyli Konağı, 1870-1891 yılları arasında bölgenin zeytinyağı ticareti
 Kozbeyli mutfağı, 1930'lardaki nüfus mübadelesi ve aile göçleriyle kristallenen bir "Antakya-Ege" füzyonudur.
 
 ### ☕ Dibek Ritüeli (Moleküler Gastronomi Kökeni)
-- **Dövme Tekniği**: Kahve çekirdekleri 180 yıllık orijinal andezit taş dibekte, çelik bıçaklı makinelerin aksine çekirdeği "yakmadan" ve yağını içinde hapsetmek için "ezilerek" dövülür. Bu, kahvenin asiditesini düşürürken gövdesini (body) maksimize eder.
+- **Dövme Tekniği**: Kahve çekirdekleri 180 yıllık orijinal andezit taş dibekte, çelik bıçaklı makinelerin aksine çekirdeği "yakmadan" ve yağını içinde hapsetmek için "ezilerek" dövülür. Bu, kahvekin asiditesini düşürürken gövdesini (body) maksimize eder.
 - **Isıl İşlem**: Odun ateşinde, bakır cezvelerde, düşük ısıda (85-90°C) demlenir.
 
 ### 🥗 İnci Hanım'ın "Heritage" Reçeteleri

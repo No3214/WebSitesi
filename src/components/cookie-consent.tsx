@@ -6,7 +6,7 @@ import { Cookie } from "lucide-react";
 
 import {
   CONSENT_STORAGE_KEY,
-  getDefaultConsent,
+  // getDefaultConsent,
   parseConsent,
   saveConsent,
   type ConsentState,
@@ -38,7 +38,7 @@ export function CookieConsent() {
     return "Yalnızca zorunlu çerezler aktif.";
   }, [draft.analytics, draft.marketing]);
 
-  const apply = (value: typeof draft) => {
+  const apply = (value: { analytics: boolean; marketing: boolean }) => {
     saveConsent(value);
     setDraft(value);
     setIsVisible(false);
