@@ -10,8 +10,6 @@ interface Lead {
   reason: string;
 }
 
-const TARGET_INDUSTRIES = ["Tech", "Real Estate", "Luxury Retail", "Event Planning"];
-
 export async function huntLeads(): Promise<Lead[]> {
   console.log("🚀 Growth Agent: Hunting for corporate leads in İzmir/Foça...");
   

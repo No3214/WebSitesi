@@ -16,11 +16,14 @@ async function runSeoAutoPilot() {
   console.log("🕵️ Starting SEO Content Auto-Pilot Audit...");
 
   // 1. Load context
-  const auditResultsPath = path.join(process.cwd(), '.gemini/antigravity/brain/51688047-5682-4573-ae7f-291778524b52/audit_results.md');
-  let auditResults = "";
+  const auditResultsPath = path.join(
+    process.cwd(),
+    ".gemini/antigravity/brain/51688047-5682-4573-ae7f-291778524b52/audit_results.md"
+  );
   try {
-    auditResults = fs.readFileSync(auditResultsPath, 'utf8');
-  } catch (e) {
+    const auditResults = fs.readFileSync(auditResultsPath, "utf8");
+    console.log(`Audit results loaded: ${auditResults.length} bytes`);
+  } catch {
     console.log("⚠️ Audit results not found at brain path, checking root...");
     // Fallback if path differs
   }
