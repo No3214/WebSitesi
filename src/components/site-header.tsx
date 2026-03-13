@@ -14,12 +14,13 @@ export function SiteHeader() {
   }, []);
 
   if (!dict) return <header className="header premium-header" />;
-  const t = (dict as any).Navigation;
+  const navigationDict = dict.Navigation as Record<string, string>;
 
   const links = [
-    { href: "/odalar", label: t.rooms },
-    { href: "/menu", label: t.dining },
-    { href: "/organizasyonlar", label: t.events },
+    { href: "/hikayemiz", label: navigationDict.history || "Hikayemiz" },
+    { href: "/odalar", label: navigationDict.rooms },
+    { href: "/gastronomi", label: navigationDict.dining || "Gastronomi" },
+    { href: "/organizasyonlar", label: navigationDict.events },
     { href: "/#faq", label: "SSS" }
   ];
 
@@ -45,7 +46,7 @@ export function SiteHeader() {
         <div className="header-actions">
             <LanguageSwitcher />
             <Link className="button primary" href="/#rezervasyon">
-                {t.booking}
+                {navigationDict.booking}
             </Link>
         </div>
       </div>

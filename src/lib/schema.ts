@@ -1,6 +1,12 @@
 import { env } from "@/lib/env";
 import { absoluteUrl } from "./utils";
+import { ReputationData } from "./ai/reputation-intelligence";
 
+/**
+ * Hotel Schema (SEO & Reputation Integrated)
+ * Similar to Exely/Professional OTA widgets.
+ * Provides AggregateRating and Curated Good Reviews to Google.
+ */
 export function hotelSchema() {
   const base = {
     "@context": "https://schema.org",
@@ -38,16 +44,33 @@ export function hotelSchema() {
     },
     aggregateRating: {
       "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "124"
+      "ratingValue": ReputationData.overall.score,
+      "reviewCount": ReputationData.overall.reviewCount,
+      "bestRating": "10"
     },
+    review: ReputationData.featuredReviews.map(rev => ({
+      "@type": "Review",
+      "author": { "@type": "Person", "name": rev.author },
+      "datePublished": rev.date,
+      "reviewBody": rev.content,
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": rev.rating,
+        "bestRating": rev.platform === "Booking.com" ? "10" : "5"
+      }
+    })),
     amenityFeature: [
-      { "@type": "LocationFeatureSpecification", name: "Tarihi Taş Mimari", value: true },
-      { "@type": "LocationFeatureSpecification", name: "Organik Serpme Kahvaltı", value: true },
-      { "@type": "LocationFeatureSpecification", name: "Zeytinlik & Bahçe", value: true },
-      { "@type": "LocationFeatureSpecification", name: "Ücretsiz Otopark", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Tarihi Taş Mimari (Horasan Harcı)", value: true },
+      { "@type": "LocationFeatureSpecification", name: "İnci Hanım Güvencesinde Antakya & Ege Mutfağı", value: true },
+      { "@type": "LocationFeatureSpecification", name: "180 Yıllık Taş Dibek Kahvesi", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Yavaş Yaşam (Slow Living) Deneyimi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Evcil Hayvan Dostu", value: true },
     ],
+    award: [
+      "Foça'nın En Otantik Butik Oteli",
+      "Geleneksel Antakya Mutfağı Miras Koruyucusu"
+    ],
+    hasMenu: absoluteUrl("/restoran"),
     ...(env.GOOGLE_MAPS_URL ? { hasMap: env.GOOGLE_MAPS_URL } : {}),
   };
 

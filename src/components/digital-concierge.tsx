@@ -1,19 +1,35 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { trackEvent } from '@/components/analytics-provider';
+import { GrowthEngine } from '@/lib/growth-engine';
+import { NegotiatorAgent } from '@/lib/ai/negotiator';
 
 /**
  * Digital Concierge Component
  * A premium AI-driven chat widget that uses the brand's persona.
  */
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export function DigitalConcierge() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Merhaba! Ben Kozbeyli Konağı\'nın Dijital Kâhyasıyım. Size odalarımız, menümüz veya rezervasyon sürecimiz hakkında nasıl yardımcı olabilirim?' }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isNegotiating, setIsNegotiating] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const guest = GrowthEngine.recognizeGuest();
+    const welcomeMsg = guest?.isReturning 
+      ? GrowthEngine.proactivePrompt('loyalty')
+      : GrowthEngine.proactivePrompt('default');
+      
+    setMessages([{ role: 'assistant', content: welcomeMsg }]);
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -26,10 +42,13 @@ export function DigitalConcierge() {
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    const userMessage = { role: 'user', content: input };
+    const userMessage: Message = { role: 'user' as "user" | "assistant", content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
+
+    // Track AI engagement
+    trackEvent('concierge_message_sent', { length: input.length });
 
     try {
       const response = await fetch('/api/chat', {
@@ -41,7 +60,17 @@ export function DigitalConcierge() {
       if (!response.ok) throw new Error('Network response was not ok');
       
       const data = await response.json();
-      setMessages(prev => [...prev, data]);
+      let assistantResponse = data.content;
+
+      // Negotiation Logic (Agentic Persuasion)
+      if (messages.length > 3 && !isNegotiating) {
+        const offer = NegotiatorAgent.getPersuasionOffer("GENEL");
+        assistantResponse += `\n\n**${offer.title}:** ${offer.perk} Kod: \`${offer.code}\``;
+        setIsNegotiating(true);
+      }
+
+      setMessages(prev => [...prev, { role: 'assistant' as "user" | "assistant", content: assistantResponse }]);
+      trackEvent('concierge_response_received', { provider: data.meta?.provider });
     } catch (error) {
       console.error('Chat Error:', error);
       setMessages(prev => [...prev, { 

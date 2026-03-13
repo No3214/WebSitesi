@@ -8,6 +8,7 @@ export type Room = {
   view: string;
   amenities: string[];
   images: string[];
+  video?: string;
 };
 
 export const rooms: Room[] = [
@@ -15,12 +16,13 @@ export const rooms: Room[] = [
     slug: "standart-bahce-manzarali-oda",
     title: "Standart Bahçe Manzaralı Oda",
     short: "Kozbeyli Konağı'nın 24 metrekarelik, iç bahçe manzaralı huzurlu odası.",
-    description: "Kozbeyli Konağı'nın Standart Bahçe Manzaralı odaları, 24 metrekarelik kullanım alanıyla modern konforu tarihi dokuyla birleştirir. Tesisin iç bahçesine bakan bu konaklama birimleri, orijinal taş mimarinin doğal serinliğini koruyarak misafirlere huzurlu bir atmosfer sunar. Oda içerisinde yüksek hızlı Wi-Fi, ayarlanabilir klima sistemi, LCD televizyon ve özel tasarım banyo olanakları standart olarak yer almaktadır. Kozbeyli Köyü'nün sessizliğini ve bahçedeki yerel bitki örtüsünün tazeliğini doğrudan deneyimlemek isteyen misafirler için optimize edilmiştir. Konaklama deneyimi, sabahları servis edilen ve Kozbeyli Köyü üreticilerinden tedarik edilen ürünlerle hazırlanan zengin serpme köy kahvaltısını da kapsamaktadır. Tesis genelindeki 5 yıldızlı hizmet standartları, bu oda tipinde de eksiksiz şekilde uygulanmaktadır.",
+    description: "Orijinal taş dokusunun korunduğu bu oda, 180 yıllık Dibek Kahvesi mirasına ve köyün tarihi dokusuna en yakın konumdadır. / Preserving its original stone texture, this room is closest to the 180-year-old Dibek Coffee heritage and the village's historical fabric.",
     capacity: "2 Yetişkin",
     size: "24 m²",
     view: "İç Bahçe",
     amenities: ["Bahçe Manzarası", "Klima", "LCD TV", "Wi-Fi", "Özel Banyo"],
-    images: ["https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=1200&q=80"]
+    images: ["https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=1200&q=80"],
+    video: "https://assets.mixkit.co/videos/preview/mixkit-luxury-resort-with-a-swimming-pool-and-palm-trees-4148-large.mp4"
   },
   {
     slug: "standart-deniz-manzarali-oda",
@@ -81,7 +83,7 @@ export const rooms: Room[] = [
     slug: "superior-3-kisilik-oda",
     title: "Superrior 3 Kişilik Oda",
     short: "42 metrekarelik, 3 kişi kapasiteli, küvetli lüks deniz manzaralı süit.",
-    description: "Superrior 3 Kişilik Oda tipi, lüks ve ferahlık kavramlarını 42 metrekarelik alanda üç kişilik konaklama kapasitesiyle birleştirir. Panoramik deniz manzarası eşliğinde konaklama imkanı sunan bu süit, geniş banyosunda yer alan lüks küvetiyle dinlendirici bir atmosfer sağlar. Oda içerisinde yüksek kaliteli ses sistemleri, profesyonel kahve istasyonu ve ücretsiz hızlı internet erişimi gibi teknolojik olanaklar tamdır. Özel üretim yataklar ve hipoalerjenik nevresim takımları, uyku kalitesini en üst düzeye çıkarmak için seçilmiştir. Kozbeyli Köyü'nün tescilli tarihi dokusunun içerisinde, modern bir konakta sunulan bu deneyim, hem aileler hem de seçkin gezgin grupları için idealdir. Tesisin gastronomi ekibi tarafından hazırlanan özel ikramlar, bu oda tipinde konaklayan misafirler için standarttır.",
+    description: "500 yıllık taş mimarinin en seçkin örneği olan Alaybey Süit, antik Horasan harcıyla örülmüş duvarları ve tüccar ailelerin mirasını yansıtan 'Slow Living' konseptiyle tasarlandı. / The most distinguished example of 500-year-old stone architecture, Alaybey Suite features walls interwoven with ancient Horasan mortar and a 'Slow Living' concept reflecting merchant heritage.",
     capacity: "3 Yetişkin",
     size: "42 m²",
     view: "Panoramik Deniz",
