@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { ConversionMotivators } from "@/components/conversion-motivators";
 import { CookieConsent } from "@/components/cookie-consent";
 import { DigitalConcierge } from "@/components/digital-concierge";
 import { SiteFooter } from "@/components/site-footer";
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <SiteFooter />
         <WhatsAppBridge />
         <DigitalConcierge />
+        <ConversionMotivators />
         <CookieConsent />
       </body>
     </html>
