@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 
-import { env } from "@/lib/env";
+import { env } from "@/lib/env.server";
 import { getPayloadClient } from "@/lib/payload";
 import { safeText } from "@/lib/security";
 
@@ -52,6 +52,27 @@ function safeCompare(a: string, b: string) {
   const right = Buffer.from(b);
   if (left.length !== right.length) return false;
   return crypto.timingSafeEqual(left, right);
+}
+
+
+async function hasReservationLead(payload: NonNullable<Awaited<ReturnType<typeof getPayloadClient>>>, reservationId: string) {
+  const source = `hotelrunner:${reservationId}`;
+  const dedupeHash = crypto.createHash("sha256").update(source).digest("hex");
+
+  const existing = await payload.find({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    collection: "organization-leads" as any,
+    where: {
+      or: [
+        { source: { equals: source } },
+        { dedupeHash: { equals: dedupeHash } },
+      ],
+    },
+    limit: 1,
+    overrideAccess: true,
+  });
+
+  return existing.docs.length > 0;
 }
 
 async function writeAuditLog(data: Record<string, unknown>) {
@@ -153,6 +174,21 @@ export async function POST(req: Request) {
   }
 
   const reservationId = String(reservation.id);
+
+  if (await hasReservationLead(payload, reservationId)) {
+    await writeAuditLog({
+      provider: "hotelrunner",
+      messageUid,
+      reservationId,
+      status: "duplicate",
+      signatureValid: true,
+      payloadJson: body,
+      receivedAt,
+    });
+
+    markReplay(messageUid);
+    return NextResponse.json({ ok: true, duplicate: true }, { status: 200 });
+  }
 
   await payload.create({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

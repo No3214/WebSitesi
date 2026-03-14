@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { env } from "@/lib/env";
+import { env } from "@/lib/env.server";
 import { absoluteUrl } from "./utils";
 
 const verification = {
