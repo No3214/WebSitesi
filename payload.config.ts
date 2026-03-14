@@ -3,7 +3,7 @@ import { buildConfig } from "payload";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 
-import { env, getAllowedOrigins } from "@/lib/env";
+import { env, getAllowedOrigins } from "@/lib/env.server";
 import { Users } from "./payload/collections/Users";
 import { Media } from "./payload/collections/Media";
 import { Rooms } from "./payload/collections/Rooms";
