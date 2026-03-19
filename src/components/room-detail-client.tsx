@@ -23,33 +23,33 @@ export function RoomDetailClient({ slug }: { slug: string }) {
   if (!room) notFound();
   if (!dict) return <div className="loading-screen" />;
 
+  const otherRooms = fallbackRooms.filter((r) => r.slug !== slug).slice(0, 3);
+
   return (
     <>
       <SiteHeader />
-      <main className="section" style={{ paddingTop: '150px' }}>
+      <main className="section" style={{ paddingTop: '120px' }}>
         <div className="container">
+          {/* Breadcrumb */}
+          <nav style={{ marginBottom: '32px', fontSize: '0.82rem', color: '#999' }} aria-label="Breadcrumb">
+            <Link href="/" style={{ color: '#999' }}>Ana Sayfa</Link>
+            <span style={{ margin: '0 8px' }}>/</span>
+            <Link href="/odalar" style={{ color: '#999' }}>Odalar</Link>
+            <span style={{ margin: '0 8px' }}>/</span>
+            <span style={{ color: 'var(--olive)' }}>{room.title}</span>
+          </nav>
           <div className="detail-layout">
             <FadeIn direction="left">
               <div className="detail-media">
                  <div className="main-image-wrapper">
-                    {room.video ? (
-                      <video 
-                        src={room.video} 
-                        autoPlay 
-                        muted 
-                        loop 
-                        playsInline 
-                        className="object-cover absolute inset-0 w-full h-full"
-                      />
-                    ) : (
-                      <Image 
-                        src={room.images[0]} 
-                        alt={room.title} 
-                        fill 
-                        className="object-cover"
-                        priority
-                      />
-                    )}
+                    <Image
+                      src={room.images[0]}
+                      alt={room.title}
+                      fill
+                      className="object-cover"
+                      priority
+                      sizes="(max-width: 1200px) 100vw, 55vw"
+                    />
                  </div>
                  <div className="image-strip">
                    {room.images.map((img, i) => (
@@ -109,6 +109,27 @@ export function RoomDetailClient({ slug }: { slug: string }) {
               </div>
             </FadeIn>
           </div>
+
+          {/* Other Rooms */}
+          {otherRooms.length > 0 && (
+            <div style={{ marginTop: '80px' }}>
+              <h2 className="serif" style={{ fontSize: '1.8rem', color: 'var(--olive)', marginBottom: '32px' }}>Diğer Odalarımız</h2>
+              <div className="card-grid">
+                {otherRooms.map((r) => (
+                  <Link key={r.slug} href={`/odalar/${r.slug}`} className="card">
+                    <div style={{ position: 'relative', height: '220px' }}>
+                      <Image src={r.images[0]} alt={r.title} fill className="object-cover" sizes="33vw" />
+                      <span style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '4px 10px', fontSize: '0.7rem', fontWeight: 600 }}>{r.size}</span>
+                    </div>
+                    <div className="card-body" style={{ padding: '20px' }}>
+                      <span className="meta">{r.capacity} · {r.view}</span>
+                      <h3 style={{ fontSize: '1.1rem' }}>{r.title}</h3>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
@@ -180,11 +201,11 @@ export function RoomDetailClient({ slug }: { slug: string }) {
         }
 
         .spec-card {
-          background: #fdfaf6;
+          background: var(--soft);
           padding: 24px;
-          border-radius: 12px;
+          border-radius: 0;
           text-align: center;
-          border: 1px solid #f1ece1;
+          border: 1px solid var(--border);
         }
 
         .spec-icon { font-size: 1.5rem; margin-bottom: 12px; }
@@ -207,7 +228,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
         }
 
         .booking-card-premium {
-          background: var(--zinc-900);
+          background: var(--olive);
           color: white;
           padding: 40px;
           border-radius: 16px;

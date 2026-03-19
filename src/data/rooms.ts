@@ -8,7 +8,6 @@ export type Room = {
   view: string;
   amenities: string[];
   images: string[];
-  video?: string;
 };
 
 export const rooms: Room[] = [
@@ -22,7 +21,6 @@ export const rooms: Room[] = [
     view: "İç Bahçe",
     amenities: ["Bahçe Manzarası", "Klima", "LCD TV", "Wi-Fi", "Özel Banyo"],
     images: ["https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=1200&q=80"],
-    video: "https://assets.mixkit.co/videos/preview/mixkit-luxury-resort-with-a-swimming-pool-and-palm-trees-4148-large.mp4"
   },
   {
     slug: "standart-deniz-manzarali-oda",

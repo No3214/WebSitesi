@@ -24,10 +24,11 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         />
       </head>
       <body>
+        <a href="#main-content" className="skip-nav">İçeriğe Geç</a>
         <ErrorBoundary>
           <CSPostHogProvider>
             <TrackingScripts />
-            {children}
+            <div id="main-content">{children}</div>
             <SiteFooter />
             <FloatingContact />
             <MobileActionBar />
