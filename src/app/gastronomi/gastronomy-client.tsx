@@ -50,7 +50,7 @@ export function GastronomyClient() {
         {/* Hero */}
         <section style={{ position: "relative", height: "50vh", minHeight: "400px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
           <Image
-            src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1920&q=80"
+            src="/images/rooms/aile-3.jpeg"
             alt="Kozbeyli Konağı restoran ve gastronomi"
             fill
             className="object-cover"
@@ -72,7 +72,7 @@ export function GastronomyClient() {
               <FadeIn direction="left">
                 <div style={{ position: "relative", height: "460px" }}>
                   <Image
-                    src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=900&q=80"
+                    src="/images/rooms/standart-2.jpeg"
                     alt="Organik serpme köy kahvaltısı"
                     fill
                     className="object-cover"

@@ -60,16 +60,16 @@ export const defaultMetadata: Metadata = {
       "Tarihin kalbinde, lüks ve konforun buluşma noktası. Taş mimari odalar, ödüllü mutfak ve Ege'nin en huzurlu köyü Kozbeyli'de sizi bekliyoruz.",
     images: [
       {
-        url: absoluteUrl("/img/hero-main.jpg"),
+        url: absoluteUrl("/images/rooms/bahce-1.jpeg"),
         width: 1200,
         height: 630,
-        alt: "Kozbeyli Konağı Genel Görünüm",
+        alt: "Kozbeyli Konağı - Bahçe Manzaralı Oda",
       },
       {
-        url: absoluteUrl("/img/stone-room-premium.jpg"),
+        url: absoluteUrl("/images/rooms/deniz-1.jpeg"),
         width: 1200,
         height: 630,
-        alt: "Lüks Taş Oda Deneyimi",
+        alt: "Kozbeyli Konağı - Deniz Manzaralı Oda",
       },
     ],
   },
@@ -79,7 +79,7 @@ export const defaultMetadata: Metadata = {
     creator: "@kozbeylikonagi",
     title: "Kozbeyli Konağı | Foça'nın En Prestijli Butik Oteli",
     description: "Taş mimari, gurme lezzetler ve eşsiz bir Ege köyü hikayesi.",
-    images: [absoluteUrl("/img/hero-main.jpg")],
+    images: [absoluteUrl("/images/rooms/bahce-1.jpeg")],
   },
   category: "travel",
   robots: {

@@ -14,7 +14,7 @@ const upcomingEvents = [
     time: "20:30 – 23:00",
     location: "Avlu",
     description: "Akustik gitar ve Ege şarkıları eşliğinde özel menü. Meze tabağı, ana yemek ve şarap dahil.",
-    image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
+    image: "/images/rooms/balkonlu-aile-2.jpeg",
     capacity: "Sınırlı kontenjan",
   },
   {
@@ -23,7 +23,7 @@ const upcomingEvents = [
     time: "19:00 – 21:30",
     location: "Restoran",
     description: "Ege bağlarından seçme şaraplar, yerel peynirler ve somelier rehberliğinde tadım deneyimi.",
-    image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80",
+    image: "/images/rooms/aile-5.jpeg",
     capacity: "20 kişi",
   },
   {
@@ -32,7 +32,7 @@ const upcomingEvents = [
     time: "11:00 – 14:00",
     location: "Mutfak",
     description: "İnci Hanım'la birlikte Antakya mutfağının sırlarını öğrenin. Sac kavurma, lahmacun ve ev baklavası.",
-    image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80",
+    image: "/images/rooms/standart-4.jpeg",
     capacity: "12 kişi",
   },
   {
@@ -41,7 +41,7 @@ const upcomingEvents = [
     time: "10:00 – 16:00",
     location: "Bahçe & Zeytin Tarlası",
     description: "Zeytinyağı üretim sürecine katılın, hasat yapın ve kendi zeytinyağınızı eve götürün. Öğle yemeği dahil.",
-    image: "https://images.unsplash.com/photo-1474979266404-7eaacbadb8c5?auto=format&fit=crop&w=800&q=80",
+    image: "/images/rooms/bahce-2.jpeg",
     capacity: "15 kişi",
   },
 ];

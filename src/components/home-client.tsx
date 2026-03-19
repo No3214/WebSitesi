@@ -122,7 +122,7 @@ export function HomeClient() {
         <section className="hero" style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
           <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
             <Image
-              src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1920&q=80"
+              src="/images/rooms/bahce-1.jpeg"
               alt="Kozbeyli Konağı - 500 yıllık taş butik otel"
               fill
               className="object-cover"
@@ -216,6 +216,11 @@ export function HomeClient() {
                         <span className="meta">{room.size} · {room.capacity} · {room.view}</span>
                         <h3>{room.title}</h3>
                         <p>{room.short}</p>
+                        {room.price && (
+                          <span style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--olive)", fontFamily: "var(--serif)" }}>
+                            ₺{room.price.toLocaleString("tr-TR")} <span style={{ fontSize: "0.7rem", color: "#999", fontWeight: 400 }}>/ {locale === "tr" ? "gece" : "night"}</span>
+                          </span>
+                        )}
                         <span style={{ color: "var(--gold)", fontSize: "0.82rem", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
                           {locale === "tr" ? "Detayları Gör" : "View Details"} <ArrowRight size={14} />
                         </span>
@@ -272,11 +277,11 @@ export function HomeClient() {
         {/* === RESTAURANT TEASER === */}
         <section className="section" id="gastronomi-teaser">
           <div className="container">
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "60px", alignItems: "center" }}>
+            <div className="gastro-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "60px", alignItems: "center" }}>
               <FadeIn direction="left">
                 <div style={{ position: "relative", height: "500px", borderRadius: "0" }}>
                   <Image
-                    src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80"
+                    src="/images/rooms/aile-3.jpeg"
                     alt="Kozbeyli Konağı Restoran - Antakya ve Ege Mutfağı"
                     fill
                     className="object-cover"
@@ -451,6 +456,7 @@ export function HomeClient() {
 
         @media (max-width: 768px) {
           .hero h1 { font-size: 2.2rem !important; }
+          .gastro-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
         }
       `}</style>
     </>

@@ -64,7 +64,7 @@ export function WeddingClient() {
       <main style={{ paddingTop: "80px" }}>
         {/* Hero */}
         <section style={{ position: "relative", height: "50vh", minHeight: "400px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-          <Image src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80" alt="Kozbeyli Konağı düğün organizasyonu" fill className="object-cover" priority />
+          <Image src="/images/rooms/balkonlu-aile-1.jpeg" alt="Kozbeyli Konağı düğün organizasyonu" fill className="object-cover" priority />
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.55) 100%)" }} />
           <div style={{ position: "relative", zIndex: 2, textAlign: "center", color: "white" }}>
             <span className="eyebrow" style={{ color: "rgba(255,255,255,0.7)" }}>DÜĞÜN & ÖZEL ORGANİZASYON</span>

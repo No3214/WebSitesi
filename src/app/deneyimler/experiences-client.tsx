@@ -14,7 +14,7 @@ const experiences = [
     text: "Foça ve çevresindeki butik bağlardan seçilmiş Ege şarapları, peynir eşleştirmesi ve somelier rehberliğinde tadım akşamı.",
     duration: "2 saat",
     capacity: "8-20 kişi",
-    image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=80",
+    image: "/images/rooms/aile-5.jpeg",
   },
   {
     icon: Utensils,
@@ -22,7 +22,7 @@ const experiences = [
     text: "İnci Hanım'ın eşliğinde Antakya & Ege mutfağından seçme tarifleri bizzat pişirin. Sac kavurma, zeytinyağlılar ve taş fırın ekmek.",
     duration: "3 saat",
     capacity: "6-12 kişi",
-    image: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80",
+    image: "/images/rooms/standart-4.jpeg",
   },
   {
     icon: Leaf,
@@ -30,7 +30,7 @@ const experiences = [
     text: "Mevsiminde zeytinyağı hasadına katılın. Bahçeden sofraya yolculuğu deneyimleyin ve organik zeytinyağı ile eve dönün.",
     duration: "Yarım gün",
     capacity: "4-15 kişi",
-    image: "https://images.unsplash.com/photo-1474979266404-7eaacbadb8c5?auto=format&fit=crop&w=800&q=80",
+    image: "/images/rooms/bahce-2.jpeg",
   },
   {
     icon: Compass,
@@ -38,7 +38,7 @@ const experiences = [
     text: "Tekne turu, köy rotası, tarihi Foça sokakları ve gastronomi deneyimi tek pakette. Rehber eşliğinde Ege'yi keşfedin.",
     duration: "Tam gün",
     capacity: "2-10 kişi",
-    image: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80",
+    image: "/images/rooms/deniz-3.jpeg",
   },
   {
     icon: Coffee,
@@ -46,7 +46,7 @@ const experiences = [
     text: "180 yıllık taş dibekte Türk kahvesi hazırlama deneyimi. Kahvenin hikayesini öğrenin, kendi kahvenizi dövün.",
     duration: "45 dakika",
     capacity: "2-8 kişi",
-    image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefda?auto=format&fit=crop&w=800&q=80",
+    image: "/images/rooms/uc-kisilik-1.jpeg",
   },
   {
     icon: Music,
@@ -54,7 +54,7 @@ const experiences = [
     text: "Seçili akşamlarda avluda canlı müzik eşliğinde özel menü. Ege'nin yıldızları altında romantik bir gece.",
     duration: "Akşam",
     capacity: "Açık",
-    image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
+    image: "/images/rooms/balkonlu-aile-2.jpeg",
   },
 ];
 

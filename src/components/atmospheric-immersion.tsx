@@ -50,19 +50,19 @@ export const AtmosphericImmersion = () => {
       title: "Kozbeyli Sabahı",
       description: "Köyün uyanışı, taze kuş sesleri ve taş duvarlara düşen ilk güneş ışığı.",
       sound: "https://assets.mixkit.co/sfx/preview/mixkit-forest-bird-chirping-with-wind-1216.mp3",
-      video: "https://images.unsplash.com/photo-1518173946687-a4c8a483592e?auto=format&fit=crop&w=1920&q=80"
+      video: "/images/rooms/bahce-1.jpeg"
     },
     evening: {
       title: "Konakta Akşam",
       description: "Avluda yanan ateş, gaz lambasının sıcaklığı ve 500 yıllık sessizliğin huzuru.",
       sound: "https://assets.mixkit.co/sfx/preview/mixkit-crackling-fireplace-754.mp3",
-      video: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1920&q=80"
+      video: "/images/rooms/standart-2.jpeg"
     },
     ritual: {
       title: "Sıvı Altın Ritüeli",
       description: "Bahçemizden süzülen el değmemiş zeytinyağının, taş kaselere dökülen o yoğun dokusu.",
       sound: "https://assets.mixkit.co/sfx/preview/mixkit-water-pour-into-glass-3037.mp3",
-      video: "https://images.unsplash.com/photo-1474979266404-7eaacbadb8c5?auto=format&fit=crop&w=1920&q=80"
+      video: "/images/rooms/deniz-3.jpeg"
     }
   };
 
