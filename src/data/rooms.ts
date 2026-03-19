@@ -70,9 +70,9 @@ export const rooms: Room[] = [
   },
   {
     slug: "superior-2-kisilik-oda",
-    title: "Superrior 2 Kişilik Oda",
+    title: "Superior 2 Kişilik Oda",
     short: "40 metrekarelik, küvetli ve panoramik deniz manzaralı lüks süit.",
-    description: "Superrior 2 Kişilik Oda, Kozbeyli Konağı'nın sunduğu en yüksek konfor standartlarını temsil eden 40 metrekarelik bir lüks süittir. Kesintisiz Ege Denizi manzarasına sahip olan bu oda, içerisinde bulunan özel tasarım küvetiyle bir spa deneyimi vaat eder. Teknik donanımında Bose ses sistemi, Nespresso kahve makinesi ve L'Occitane markalı premium buklet ürünleri yer almaktadır. Antika mobilyalarla döşenmiş olan iç mekan, 19. yüzyılın asaletini 21. yüzyıl teknolojileriyle başarıyla entegre eder. Özellikle balayı çiftleri ve özel yıl dönümü kutlamaları için tasarlanan bu oda, misafirlerine Kozbeyli Köyü'ndeki en prestijli konaklama deneyimini sunar. Yastık menüsü ve özel oda servisi seçenekleriyle her anı kişiselleştirilmiş bir hizmet sunulmaktadır.",
+    description: "Superior 2 Kişilik Oda, Kozbeyli Konağı'nın sunduğu en yüksek konfor standartlarını temsil eden 40 metrekarelik bir lüks süittir. Kesintisiz Ege Denizi manzarasına sahip olan bu oda, içerisinde bulunan özel tasarım küvetiyle bir spa deneyimi vaat eder. Teknik donanımında Bose ses sistemi, Nespresso kahve makinesi ve L'Occitane markalı premium buklet ürünleri yer almaktadır. Antika mobilyalarla döşenmiş olan iç mekan, 19. yüzyılın asaletini 21. yüzyıl teknolojileriyle başarıyla entegre eder. Özellikle balayı çiftleri ve özel yıl dönümü kutlamaları için tasarlanan bu oda, misafirlerine Kozbeyli Köyü'ndeki en prestijli konaklama deneyimini sunar. Yastık menüsü ve özel oda servisi seçenekleriyle her anı kişiselleştirilmiş bir hizmet sunulmaktadır.",
     capacity: "2 Yetişkin",
     size: "40 m²",
     view: "Panoramik Deniz",
@@ -81,7 +81,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "superior-3-kisilik-oda",
-    title: "Superrior 3 Kişilik Oda",
+    title: "Superior 3 Kişilik Oda",
     short: "42 metrekarelik, 3 kişi kapasiteli, küvetli lüks deniz manzaralı süit.",
     description: "500 yıllık taş mimarinin en seçkin örneği olan Alaybey Süit, antik Horasan harcıyla örülmüş duvarları ve tüccar ailelerin mirasını yansıtan 'Slow Living' konseptiyle tasarlandı. / The most distinguished example of 500-year-old stone architecture, Alaybey Suite features walls interwoven with ancient Horasan mortar and a 'Slow Living' concept reflecting merchant heritage.",
     capacity: "3 Yetişkin",

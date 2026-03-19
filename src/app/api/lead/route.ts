@@ -56,7 +56,11 @@ function scoreLead(input: z.infer<typeof leadSchema>) {
 }
 
 async function verifyTurnstile(token: string | undefined, ipAddress: string) {
-  if (!env.TURNSTILE_SECRET_KEY) return true;
+  // Fail-closed in production: if no key configured, reject in prod
+  if (!env.TURNSTILE_SECRET_KEY) {
+    if (process.env.NODE_ENV === "production") return false;
+    return true; // Only skip in development
+  }
   if (!token) return false;
 
   const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
@@ -78,6 +82,12 @@ async function verifyTurnstile(token: string | undefined, ipAddress: string) {
 
 export async function POST(req: Request) {
   try {
+    // Reject excessively large request bodies (50KB max for a lead form)
+    const contentLength = req.headers.get("content-length");
+    if (contentLength && parseInt(contentLength) > 50_000) {
+      return NextResponse.json({ ok: false, message: "İstek çok büyük." }, { status: 413 });
+    }
+
     const contentType = req.headers.get("content-type") || "";
     let payloadData: Record<string, unknown>;
 

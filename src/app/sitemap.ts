@@ -1,28 +1,32 @@
-import { MetadataRoute } from 'next';
-import { rooms } from '@/data/rooms';
+import { MetadataRoute } from "next";
+import { rooms } from "@/data/rooms";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.kozbeylikonagi.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.kozbeylikonagi.com";
 
   const staticPages = [
-    '',
-    '/odalar',
-    '/menu',
-    '/organizasyonlar',
-    '/kvkk',
-    '/mesafeli-satis-sozlesmesi',
-  ].map((route) => ({
+    { route: "", priority: 1, changeFrequency: "weekly" as const },
+    { route: "/odalar", priority: 0.9, changeFrequency: "weekly" as const },
+    { route: "/gastronomi", priority: 0.8, changeFrequency: "weekly" as const },
+    { route: "/menu", priority: 0.7, changeFrequency: "weekly" as const },
+    { route: "/hikayemiz", priority: 0.7, changeFrequency: "monthly" as const },
+    { route: "/organizasyonlar", priority: 0.8, changeFrequency: "weekly" as const },
+    { route: "/misafir-rehberi", priority: 0.5, changeFrequency: "monthly" as const },
+    { route: "/kvkk", priority: 0.2, changeFrequency: "yearly" as const },
+    { route: "/gizlilik-politikasi", priority: 0.2, changeFrequency: "yearly" as const },
+    { route: "/mesafeli-satis-sozlesmesi", priority: 0.2, changeFrequency: "yearly" as const },
+  ].map(({ route, priority, changeFrequency }) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: route === '' ? 1 : 0.8,
+    changeFrequency,
+    priority,
   }));
 
   const roomPages = rooms.map((room) => ({
     url: `${baseUrl}/odalar/${room.slug}`,
     lastModified: new Date(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
   }));
 
   return [...staticPages, ...roomPages];

@@ -1,32 +1,40 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 /**
- * Edge Middleware for Distribution Hardening.
- * Handles simulated geo-detection and language routing.
+ * Edge Middleware
+ * - Admin route protection
+ * - Language detection hint
+ * - Security: blocks suspicious patterns
  */
 export function middleware(request: NextRequest) {
-  const { nextUrl: url, headers } = request;
-  
-  // 1. Simulated Geo-Detection (Hardened for global distribution)
-  const country = headers.get('x-vercel-ip-country') || 'TR';
-  const acceptLanguage = headers.get('accept-language') || 'tr';
-  
-  // 2. Logic to suggest /en if user is from outside TR or has EN preference
-  const isEnPreferred = acceptLanguage.toLowerCase().includes('en') || country !== 'TR';
-  const hasLocaleCookie = request.cookies.has('NEXT_LOCALE');
-  
-  // Log telemetry (Simulated)
-  console.log(`[Middleware] Target: ${url.pathname} | Geo: ${country} | Language: ${acceptLanguage} | EN_Preferred: ${isEnPreferred} | Cookie: ${hasLocaleCookie}`);
+  const { nextUrl: url } = request;
+  const response = NextResponse.next();
 
-  // In a real production environment, we could rewrite the URL here 
-  // currently we just pass through as the client-side language switcher handles state.
-  return NextResponse.next();
+  // Block common attack patterns
+  const path = url.pathname;
+  const blockedPatterns = [
+    /\.env$/,
+    /\.git/,
+    /wp-admin/,
+    /wp-login/,
+    /phpinfo/,
+    /\.php$/,
+    /xmlrpc/,
+  ];
+
+  if (blockedPatterns.some((p) => p.test(path))) {
+    return new NextResponse(null, { status: 404 });
+  }
+
+  // Prevent admin pages from being indexed
+  if (path.startsWith("/admin")) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+
+  return response;
 }
 
 export const config = {
-  matcher: [
-    // Skip all internal paths (_next)
-    '/((?!_next|api|public|.*\\..*).*)',
-  ],
+  matcher: ["/((?!_next|api|public|.*\\..*).*)", "/admin/:path*"],
 };
