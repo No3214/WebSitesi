@@ -56,6 +56,8 @@ export function SiteFooter() {
               <li><Link href="/kvkk">KVKK Aydınlatma Metni</Link></li>
               <li><Link href="/gizlilik-politikasi">Gizlilik Politikası</Link></li>
               <li><Link href="/mesafeli-satis-sozlesmesi">Mesafeli Satış Sözleşmesi</Link></li>
+              <li><Link href="/cerez-politikasi">Çerez Politikası</Link></li>
+              <li><Link href="/kullanim-sartlari">Kullanım Şartları</Link></li>
             </ul>
           </div>
 

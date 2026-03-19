@@ -259,6 +259,13 @@ export function HomeClient() {
                 );
               })}
             </div>
+            <FadeIn>
+              <div style={{ textAlign: "center", marginTop: "40px" }}>
+                <Link href="/deneyimler" className="button secondary">
+                  {locale === "tr" ? "TÜM DENEYİMLER" : "ALL EXPERIENCES"} →
+                </Link>
+              </div>
+            </FadeIn>
           </div>
         </section>
 
@@ -314,26 +321,29 @@ export function HomeClient() {
             </FadeIn>
             <div className="feature-grid">
               {[
-                { icon: CalendarDays, title: locale === "tr" ? "Butik Düğün" : "Boutique Wedding", text: locale === "tr" ? "Tarihi avluda 60 kişilik samimi kutlama" : "Intimate celebration for 60 in a historic courtyard" },
-                { icon: Users, title: locale === "tr" ? "Kurumsal Toplantı" : "Corporate Meeting", text: locale === "tr" ? "Off-site retreat ve team building" : "Off-site retreat and team building" },
-                { icon: Wine, title: locale === "tr" ? "Gastronomi Etkinliği" : "Gastronomy Event", text: locale === "tr" ? "Şarap tadımı ve özel menü akşamları" : "Wine tasting and special menu evenings" },
+                { icon: CalendarDays, title: locale === "tr" ? "Butik Düğün" : "Boutique Wedding", text: locale === "tr" ? "Tarihi avluda 60 kişilik samimi kutlama" : "Intimate celebration for 60 in a historic courtyard", href: "/dugun-organizasyon" },
+                { icon: Users, title: locale === "tr" ? "Kurumsal Toplantı" : "Corporate Meeting", text: locale === "tr" ? "Off-site retreat ve team building" : "Off-site retreat and team building", href: "/kurumsal" },
+                { icon: Wine, title: locale === "tr" ? "Gastronomi Etkinliği" : "Gastronomy Event", text: locale === "tr" ? "Şarap tadımı ve özel menü akşamları" : "Wine tasting and special menu evenings", href: "/etkinlikler" },
               ].map((item, idx) => {
                 const Icon = item.icon;
                 return (
                   <FadeIn key={idx} delay={idx * 0.1}>
-                    <div className="feature-box" style={{ background: "var(--white)", padding: "48px 36px", border: "1px solid var(--border)", textAlign: "center" }}>
+                    <Link href={item.href} className="feature-box" style={{ background: "var(--white)", padding: "48px 36px", border: "1px solid var(--border)", textAlign: "center", display: "block" }}>
                       <Icon size={32} style={{ color: "var(--gold)", marginBottom: "20px" }} />
                       <h3 className="serif" style={{ fontSize: "1.3rem", marginBottom: "12px" }}>{item.title}</h3>
                       <p style={{ color: "#666", lineHeight: 1.6, fontSize: "0.95rem" }}>{item.text}</p>
-                    </div>
+                    </Link>
                   </FadeIn>
                 );
               })}
             </div>
             <FadeIn>
-              <div style={{ marginTop: "40px" }}>
-                <Link href="/organizasyonlar" className="button primary">
-                  {locale === "tr" ? "TEKLİF ALIN" : "GET A QUOTE"} →
+              <div style={{ marginTop: "40px", display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
+                <Link href="/dugun-organizasyon" className="button primary">
+                  {locale === "tr" ? "DÜĞÜN PAKETLERİ" : "WEDDING PACKAGES"} →
+                </Link>
+                <Link href="/kurumsal" className="button secondary">
+                  {locale === "tr" ? "KURUMSAL ETKİNLİK" : "CORPORATE EVENTS"} →
                 </Link>
               </div>
             </FadeIn>

@@ -41,23 +41,17 @@ export function RoomsClient() {
                 <FadeIn key={room.slug}>
                   <Link href={`/odalar/${room.slug}`} className="card">
                     <div style={{ position: 'relative', height: '350px', overflow: 'hidden' }}>
-                      <Image 
-                        src={room.images[0]} 
-                        alt={room.title} 
-                        fill 
+                      <Image
+                        src={room.images[0]}
+                        alt={room.title}
+                        fill
                         className="object-cover"
                         priority={index < 3}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
-                      {room.video && (
-                        <video
-                          src={room.video}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          className="absolute inset-0 w-full h-full object-cover opacity-0 hover:opacity-100 transition-opacity duration-700"
-                        />
-                      )}
+                      <span style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '6px 12px', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.05em', backdropFilter: 'blur(4px)' }}>
+                        {room.size}
+                      </span>
                     </div>
                     <div className="card-body">
                       <span className="meta">{room.capacity} · {room.view}</span>

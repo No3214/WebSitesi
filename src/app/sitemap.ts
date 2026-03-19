@@ -22,6 +22,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { route: "/kvkk", priority: 0.2, changeFrequency: "yearly" as const },
     { route: "/gizlilik-politikasi", priority: 0.2, changeFrequency: "yearly" as const },
     { route: "/mesafeli-satis-sozlesmesi", priority: 0.2, changeFrequency: "yearly" as const },
+    { route: "/cerez-politikasi", priority: 0.2, changeFrequency: "yearly" as const },
+    { route: "/kullanim-sartlari", priority: 0.2, changeFrequency: "yearly" as const },
   ].map(({ route, priority, changeFrequency }) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
