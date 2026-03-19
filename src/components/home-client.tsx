@@ -409,15 +409,20 @@ export function HomeClient() {
                 eyebrow={locale === "tr" ? "SIK SORULAN SORULAR" : "FAQ"}
                 title={locale === "tr" ? "Merak Ettikleriniz" : "Frequently Asked Questions"}
               />
-              <div className="faq-list">
+              <div className="faq-list" role="list">
                 {faqs.map((faq, idx) => (
-                  <div key={idx} className="faq-item" style={{ borderBottom: "1px solid var(--border)", cursor: "pointer" }} onClick={() => setOpenFaq(openFaq === idx ? null : idx)}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0" }}>
+                  <div key={idx} className="faq-item" role="listitem" style={{ borderBottom: "1px solid var(--border)" }}>
+                    <button
+                      onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                      aria-expanded={openFaq === idx}
+                      aria-controls={`faq-answer-${idx}`}
+                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", width: "100%", background: "none", border: "none", cursor: "pointer", textAlign: "left", font: "inherit" }}
+                    >
                       <h3 className="serif" style={{ fontSize: "1.1rem", margin: 0 }}>{faq.q[locale]}</h3>
                       <ChevronDown size={18} style={{ color: "#999", transform: openFaq === idx ? "rotate(180deg)" : "rotate(0)", transition: "transform 0.3s ease", flexShrink: 0, marginLeft: "16px" }} />
-                    </div>
+                    </button>
                     {openFaq === idx && (
-                      <p style={{ color: "#555", lineHeight: 1.7, paddingBottom: "20px", margin: 0 }}>{faq.a[locale]}</p>
+                      <p id={`faq-answer-${idx}`} role="region" style={{ color: "#555", lineHeight: 1.7, paddingBottom: "20px", margin: 0 }}>{faq.a[locale]}</p>
                     )}
                   </div>
                 ))}
