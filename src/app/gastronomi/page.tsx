@@ -21,10 +21,10 @@ const restaurantSchema = {
   name: "Kozbeyli Konağı Restoran",
   description: "Antakya ve Ege mutfağının buluşma noktası. İnci Hanım'ın imza reçeteleri ve 180 yıllık taş dibek kahvesi.",
   url: "https://www.kozbeylikonagi.com/gastronomi",
-  telephone: "+90-232-676-10-10",
+  telephone: "+90-232-826-11-12",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Kozbeyli Köyü İç Yolu",
+    streetAddress: "Kozbeyli Küme Evleri No:188",
     addressLocality: "Foça",
     addressRegion: "İzmir",
     postalCode: "35680",
@@ -32,7 +32,7 @@ const restaurantSchema = {
   },
   servesCuisine: ["Antakya Mutfağı", "Ege Mutfağı", "Türk Mutfağı"],
   openingHoursSpecification: [
-    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "08:00", closes: "22:00" },
+    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], opens: "08:30", closes: "23:00" },
   ],
   priceRange: "₺₺₺",
 };

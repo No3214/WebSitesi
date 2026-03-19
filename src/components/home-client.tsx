@@ -321,7 +321,7 @@ export function HomeClient() {
             </FadeIn>
             <div className="feature-grid">
               {[
-                { icon: CalendarDays, title: locale === "tr" ? "Butik Düğün" : "Boutique Wedding", text: locale === "tr" ? "Tarihi avluda 60 kişilik samimi kutlama" : "Intimate celebration for 60 in a historic courtyard", href: "/dugun-organizasyon" },
+                { icon: CalendarDays, title: locale === "tr" ? "Butik Düğün" : "Boutique Wedding", text: locale === "tr" ? "Tarihi avluda ~100 kişilik butik düğün" : "Intimate celebration for ~100 in a historic courtyard", href: "/dugun-organizasyon" },
                 { icon: Users, title: locale === "tr" ? "Kurumsal Toplantı" : "Corporate Meeting", text: locale === "tr" ? "Off-site retreat ve team building" : "Off-site retreat and team building", href: "/kurumsal" },
                 { icon: Wine, title: locale === "tr" ? "Gastronomi Etkinliği" : "Gastronomy Event", text: locale === "tr" ? "Şarap tadımı ve özel menü akşamları" : "Wine tasting and special menu evenings", href: "/etkinlikler" },
               ].map((item, idx) => {
@@ -431,10 +431,10 @@ export function HomeClient() {
                 text={locale === "tr" ? "İzmir'e 80 km, Ege Denizi'ne 12 km. Tarihi köy yaşamının huzurunda." : "80 km from İzmir, 12 km from the Aegean Sea. In the serenity of historic village life."}
               />
               <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-                <a href="https://maps.app.goo.gl/kozbeylikonagi" target="_blank" rel="noreferrer" className="button primary">
+                <a href="https://maps.app.goo.gl/DXMWQg8aJHt3KNcTA" target="_blank" rel="noreferrer" className="button primary">
                   {locale === "tr" ? "HARİTADA GÖR" : "VIEW ON MAP"}
                 </a>
-                <a href="https://wa.me/905322521010" target="_blank" rel="noreferrer" className="button secondary">
+                <a href="https://wa.me/905322342686" target="_blank" rel="noreferrer" className="button secondary">
                   {locale === "tr" ? "WHATSAPP İLE ULAŞIN" : "CONTACT VIA WHATSAPP"}
                 </a>
               </div>

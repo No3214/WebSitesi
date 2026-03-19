@@ -89,7 +89,7 @@ export function ExperiencesClient() {
                           <span>⏱ {exp.duration}</span>
                           <span>👥 {exp.capacity}</span>
                         </div>
-                        <Link href="https://wa.me/905322521010" className="button primary" target="_blank" rel="noreferrer">
+                        <Link href="https://wa.me/905322342686" className="button primary" target="_blank" rel="noreferrer">
                           Bilgi Al & Rezervasyon
                         </Link>
                       </div>

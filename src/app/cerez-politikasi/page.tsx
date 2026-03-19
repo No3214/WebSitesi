@@ -48,7 +48,7 @@ export default function CookiePolicyPage() {
             <p>Tarayıcı ayarlarınızdan çerezleri silebilir veya engelleyebilirsiniz. Ancak bazı çerezleri devre dışı bırakmak, sitenin düzgün çalışmamasına neden olabilir.</p>
 
             <h3>6. İletişim</h3>
-            <p>Çerez politikamız hakkında sorularınız için <a href="mailto:info@kozbeylikonagi.com.tr" style={{ color: "var(--gold)" }}>info@kozbeylikonagi.com.tr</a> adresine ulaşabilirsiniz.</p>
+            <p>Çerez politikamız hakkında sorularınız için <a href="mailto:info@kozbeylikonagi.com" style={{ color: "var(--gold)" }}>info@kozbeylikonagi.com</a> adresine ulaşabilirsiniz.</p>
           </div>
         </div>
       </main>

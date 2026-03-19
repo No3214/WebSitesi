@@ -47,7 +47,7 @@ export default function KVKKPage() {
               <section>
                 <h2 className="text-zinc-900 font-bold mb-4">5. VERİ SAHİBİNİN HAKLARI</h2>
                 <p>
-                  KVKK’nın 11. maddesi uyarınca; verilerinizin işlenip işlenmediğini öğrenme, düzeltilmesini isteme, silinmesini talep etme ve kanuna aykırı işlemeden doğan zararın giderilmesini talep etme haklarına sahipsiniz. Taleplerinizi info@kozbeylikonagi.com.tr adresine iletebilirsiniz.
+                  KVKK’nın 11. maddesi uyarınca; verilerinizin işlenip işlenmediğini öğrenme, düzeltilmesini isteme, silinmesini talep etme ve kanuna aykırı işlemeden doğan zararın giderilmesini talep etme haklarına sahipsiniz. Taleplerinizi info@kozbeylikonagi.com adresine iletebilirsiniz.
                 </p>
               </section>
             </div>

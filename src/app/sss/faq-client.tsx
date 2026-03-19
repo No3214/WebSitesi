@@ -16,14 +16,14 @@ const faqGroups = [
       { q: "Evcil hayvan kabul ediyor musunuz?", a: "Evet, küçük evcil hayvanlar (10 kg'a kadar) belirli odalarda kabul edilmektedir. Lütfen rezervasyon sırasında bilgi veriniz." },
       { q: "Bebek yatağı temin ediliyor mu?", a: "Evet, aile odalarımızda ücretsiz bebek yatağı hizmeti sunulmaktadır. Önceden talep edilmesi gerekmektedir." },
       { q: "Direkt rezervasyonun avantajı nedir?", a: "Web sitemizden yapacağınız direkt rezervasyonlarda en iyi fiyat garantisi, ücretsiz hoşgeldin kokteyli ve esnek iptal koşulları sunuyoruz." },
-      { q: "İptal koşulları nedir?", a: "48 saat öncesine kadar ücretsiz iptal. 48 saat içinde yapılan iptallerde ilk gece ücreti tahsil edilir." },
+      { q: "İptal koşulları nedir?", a: "Varıştan 72 saat öncesine kadar iptal ücretsiz. 72 saat içinde yapılan iptallerde ücret iadesi yapılmaz." },
     ],
   },
   {
     title: "Restoran & Gastronomi",
     items: [
       { q: "Restoran sadece konaklayan misafirlere mi açık?", a: "Hayır, restoranımız dış misafirlere de açıktır. Yoğun dönemlerde rezervasyon yapmanızı öneririz." },
-      { q: "Kahvaltı dahil mi?", a: "Evet, organik köy kahvaltısı tüm konaklama paketlerine dahildir." },
+      { q: "Kahvaltı dahil mi?", a: "Evet, serpme kahvaltı (sucuklu yumurta + pişi dahil) tüm konaklama paketlerine dahildir. Kahvaltı varışın ertesi sabahı servis edilir." },
       { q: "Özel diyet ihtiyaçlarına uyum sağlıyor musunuz?", a: "Evet, vejetaryen, vegan, glutensiz ve alerjik besin ihtiyaçları için önceden bilgi vermeniz durumunda özel menü hazırlıyoruz." },
       { q: "Canlı müzik hangi günler?", a: "Cuma ve Cumartesi akşamları 20:30-23:00 arası akustik canlı müzik programımız bulunmaktadır." },
     ],
@@ -39,7 +39,7 @@ const faqGroups = [
   {
     title: "Organizasyon & Etkinlik",
     items: [
-      { q: "Düğün organizasyonu yapıyor musunuz?", a: "Evet, 30-60 kişilik butik düğünler düzenliyoruz. Detaylı bilgi için düğün sayfamızı ziyaret edebilirsiniz." },
+      { q: "Düğün organizasyonu yapıyor musunuz?", a: "Evet, 100 kişiye kadar düğün ve organizasyon düzenliyoruz. Detaylı bilgi için düğün sayfamızı ziyaret edebilirsiniz." },
       { q: "Kurumsal toplantı düzenleyebilir miyiz?", a: "Evet, 30 kişiye kadar kurumsal toplantı, workshop ve retreat organizasyonları yapıyoruz." },
       { q: "Özel akşam yemeği organize edebilir miyiz?", a: "Evet, 8-40 kişi arası özel menü ile akşam yemeği organizasyonları düzenliyoruz." },
     ],
@@ -94,7 +94,7 @@ export function FAQClient() {
               <div style={{ textAlign: "center", padding: "40px", background: "var(--soft)", marginTop: "20px" }}>
                 <p style={{ fontSize: "1.1rem", marginBottom: "16px", color: "var(--olive)" }} className="serif">Sorunuzun cevabını bulamadınız mı?</p>
                 <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-                  <Link href="https://wa.me/905322521010" className="button primary" target="_blank" rel="noreferrer">
+                  <Link href="https://wa.me/905322342686" className="button primary" target="_blank" rel="noreferrer">
                     <MessageCircle size={16} style={{ marginRight: "8px" }} /> WhatsApp ile Sorun
                   </Link>
                   <Link href="/iletisim" className="button secondary">İletişim Sayfası</Link>

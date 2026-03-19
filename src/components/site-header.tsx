@@ -98,10 +98,10 @@ export function SiteHeader() {
             >
               {nav.booking || "Rezervasyon"}
             </Link>
-            <a href="tel:+902326761010" className="mobile-menu-link mobile-phone">
-              +90 (232) 676 10 10
+            <a href="tel:+902328261112" className="mobile-menu-link mobile-phone">
+              +90 (232) 826 11 12
             </a>
-            <a href="https://wa.me/905322521010" className="mobile-menu-link mobile-whatsapp" target="_blank" rel="noreferrer">
+            <a href="https://wa.me/905322342686" className="mobile-menu-link mobile-whatsapp" target="_blank" rel="noreferrer">
               WhatsApp ile Ulaşın
             </a>
           </nav>

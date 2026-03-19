@@ -55,10 +55,10 @@ export function HotelRunnerEmbed() {
             : "Rezervasyon ve fiyat bilgisi için bize doğrudan ulaşabilirsiniz."}
         </p>
         <div className="booking-buttons">
-          <a className="button secondary" href="tel:+902326761010" aria-label="Telefon ile rezervasyon">
+          <a className="button secondary" href="tel:+902328261112" aria-label="Telefon ile rezervasyon">
             <Phone size={16} /> Rezervasyon Hattı
           </a>
-          <a className="button primary" href="https://wa.me/905322521010" target="_blank" rel="noreferrer" aria-label="WhatsApp ile rezervasyon">
+          <a className="button primary" href="https://wa.me/905322342686" target="_blank" rel="noreferrer" aria-label="WhatsApp ile rezervasyon">
             <MessageCircle size={16} /> WhatsApp
           </a>
         </div>

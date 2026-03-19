@@ -65,11 +65,11 @@ export function SiteFooter() {
             <h4 className="footer-title">{t.contact}</h4>
             <div className="contact-item">
               <MapPin size={18} />
-              <span>Kozbeyli Köyü, Foça, İzmir</span>
+              <span>Kozbeyli Küme Evleri No:188, Foça, İzmir</span>
             </div>
             <div className="contact-item">
               <Phone size={18} />
-              <span>+90 (232) 826 12 34</span>
+              <span>+90 (232) 826 11 12</span>
             </div>
             <div className="contact-item">
               <Mail size={18} />

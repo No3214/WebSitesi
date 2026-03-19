@@ -36,10 +36,10 @@ const highlights = [
 ];
 
 const menuCategories = [
-  { name: "Serpme Kahvaltı", time: "08:00 – 11:00", desc: "30+ çeşit organik köy kahvaltısı, tüm konaklama paketlerine dahil" },
-  { name: "Öğle Menüsü", time: "12:00 – 15:00", desc: "Hafif Ege mezeler, salatalar ve günün çorbası" },
-  { name: "Akşam Yemeği", time: "19:00 – 22:00", desc: "İnci Hanım'ın imza menüsü: Antakya & Ege füzyonu, 4 portluk servis" },
-  { name: "Dibek Kahve & Tatlı", time: "Tüm gün", desc: "180 yıllık taş dibekte dövülen kahve, ev yapımı baklava ve sütlaç" },
+  { name: "Serpme Kahvaltı", time: "08:30 – 11:00", desc: "Serpme kahvaltı + sucuklu yumurta + pişi — tüm konaklama paketlerine dahil" },
+  { name: "Fix Menü (Soft İçecek Dahil)", time: "19:00 – 22:00", desc: "Ege & Antakya mutfağı fix menü. Soft içecekler dahil. ₺2.500/kişi", price: "₺2.500" },
+  { name: "Fix Menü (Alkol Dahil)", time: "19:00 – 22:00", desc: "Ege & Antakya mutfağı fix menü. Alkollü içecekler dahil. ₺2.750/kişi", price: "₺2.750" },
+  { name: "Dibek Kahve & Tatlı", time: "Gün boyu", desc: "Taş dibekte dövülen kahve, ev yapımı baklava ve tatlılar" },
 ];
 
 export function GastronomyClient() {
@@ -90,11 +90,11 @@ export function GastronomyClient() {
                     İnci Hanım, Antakya&apos;nın zengin lezzet kültürünü Ege&apos;nin bereket dolu topraklarıyla buluşturarak eşsiz bir mutfak yaratmıştır. Her tabak, nesiller arası aktarılan tariflerin ve mevsimin en taze ürünlerinin buluşmasıdır.
                   </p>
                   <p style={{ color: "#555", lineHeight: 1.8 }}>
-                    Restoranımız sadece otel misafirlerine değil, tüm yemekseverlere açıktır. Akşam yemekleri için rezervasyon önerilir.
+                    Restoranımız sadece otel misafirlerine değil, tüm yemekseverlere açıktır. Fix menü ağırlıklı servis (alakart yok). Mutfak kapanış 22:00, restoran kapanış 23:00.
                   </p>
                   <div style={{ display: "flex", gap: "12px", marginTop: "28px", flexWrap: "wrap" }}>
                     <Link href="/menu" className="button primary">GÜNCEL MENÜ</Link>
-                    <a href="tel:+902326761010" className="button secondary">REZERVASYON</a>
+                    <a href="tel:+902328261112" className="button secondary">REZERVASYON</a>
                   </div>
                 </div>
               </FadeIn>

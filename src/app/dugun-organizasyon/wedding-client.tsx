@@ -10,49 +10,49 @@ import { Check, Heart, Star, Users } from "lucide-react";
 const packages = [
   {
     name: "Taş Konak Paketi",
-    subtitle: "Samimi & Otantik",
-    capacity: "30-40 Kişi",
+    subtitle: "Kokteyl · Sade & Şık",
+    capacity: "~100 Kişi",
     icon: Heart,
     features: [
-      "Tarihi taş avluda tören",
-      "3 saatlik kokteyl resepsiyon",
-      "İnci Hanım'ın özel menüsü",
-      "Konaklama: 4 oda (çift için ücretsiz)",
-      "Özel dekorasyon danışmanlığı",
-      "Fotoğraf çekimi için özel saatler",
+      "Tarihi taş avluda kokteyl organizasyonu",
+      "Yemeksiz, sade ve şık konsept",
+      "Standart dekorasyon",
+      "Hafta içi: 5 oda konaklama dahil",
+      "Cumartesi: 16 oda (tüm otel) çifte dahil",
+      "%50 kapora ile rezervasyon",
     ],
   },
   {
     name: "Ege Rüyası Paketi",
-    subtitle: "Zarif & Kapsamlı",
-    capacity: "40-60 Kişi",
+    subtitle: "★ ÖNERİLEN — Gala Yemek Dahil",
+    capacity: "~100 Kişi",
     icon: Star,
     featured: true,
     features: [
-      "Avlu + bahçe kullanımı",
-      "5 saatlik tam organizasyon",
-      "Açık büfe akşam yemeği + içecek paketi",
-      "Konaklama: 6 oda (gelin-damat süiti dahil)",
-      "DJ veya canlı müzik koordinasyonu",
+      "Kokteyl açılış + gala yemek",
+      "Standart dekorasyon dahil",
+      "Hafta içi: 5 oda konaklama dahil",
+      "Cumartesi: 16 oda (tüm otel) çifte dahil",
+      "Fix menü servis (şef seçimi)",
+      "İçecek paketi seçenekleri (ayrı fiyatlandırılır)",
+      "DJ koordinasyonu opsiyonel",
       "Gelin hazırlık odası",
-      "VIP transfer (havalimanı/otel)",
-      "Profesyonel organizasyon koordinatörü",
     ],
   },
   {
     name: "Osmanlı Sarayı Paketi",
-    subtitle: "Tüm Dahil Premium",
-    capacity: "Konağın tamamı",
+    subtitle: "Full Premium · Tüm Dahil",
+    capacity: "Konağın Tamamı (16 oda)",
     icon: Users,
     features: [
       "Konağın tüm alanları özel kullanım",
-      "2 gün boyunca tesis tahsisi",
-      "Kına + düğün + brunch paketi",
-      "Tüm odalar dahil (tam konaklama)",
-      "Premium içecek paketi + şarap eşleştirmesi",
-      "Havai fişek veya dilek feneri",
-      "Profesyonel fotoğraf + video çekimi",
-      "Özel menü tasarımı (tasting dahil)",
+      "VIP dekorasyon paketi",
+      "Premium menü (şef ile tasting dahil)",
+      "Premium alkollü içecek paketi",
+      "Tüm 16 oda konaklama dahil",
+      "DJ performans (House/Afro House) — 2 saat",
+      "Profesyonel fotoğraf & video çekimi",
+      "Sinematik düğün filmi + drone çekimi",
     ],
   },
 ];
@@ -78,7 +78,7 @@ export function WeddingClient() {
         <section className="section">
           <div className="container">
             <FadeIn>
-              <SectionTitle eyebrow="PAKETLER" title="Düğün Paketlerimiz" text="Her bütçeye ve hayale uygun, kişiselleştirilebilir organizasyon seçenekleri." />
+              <SectionTitle eyebrow="PAKETLER" title="Düğün Paketlerimiz" text="~100 kişi kapasiteli tarihi taş konakta, 3 farklı paket seçeneği. Cumartesi günleri tüm otel çifte dahil." />
             </FadeIn>
 
             <div className="feature-grid">

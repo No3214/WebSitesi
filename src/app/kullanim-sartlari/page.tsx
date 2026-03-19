@@ -51,7 +51,7 @@ export default function TermsPage() {
             <p>Bu şartlar önceden bildirim yapılmaksızın güncellenebilir. Güncel versiyonlar bu sayfada yayımlanır.</p>
 
             <h3>9. İletişim</h3>
-            <p>Sorularınız için <a href="mailto:info@kozbeylikonagi.com.tr" style={{ color: "var(--gold)" }}>info@kozbeylikonagi.com.tr</a> adresine ulaşabilirsiniz.</p>
+            <p>Sorularınız için <a href="mailto:info@kozbeylikonagi.com" style={{ color: "var(--gold)" }}>info@kozbeylikonagi.com</a> adresine ulaşabilirsiniz.</p>
           </div>
         </div>
       </main>

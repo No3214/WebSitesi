@@ -8,13 +8,13 @@ export const MobileActionBar = () => {
   return (
     <div className="mobile-bar-wrap">
       <div className="mobile-bar">
-        <a href="tel:+902326761010" className="mobile-bar-item" aria-label="Telefon ile ara">
+        <a href="tel:+902328261112" className="mobile-bar-item" aria-label="Telefon ile ara">
           <Phone size={18} />
           <span>Ara</span>
         </a>
 
         <a
-          href="https://maps.app.goo.gl/kozbeylikonagi"
+          href="https://maps.app.goo.gl/DXMWQg8aJHt3KNcTA"
           target="_blank"
           rel="noopener noreferrer"
           className="mobile-bar-item"

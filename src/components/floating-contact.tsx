@@ -11,13 +11,13 @@ export const FloatingContact = () => {
     {
       icon: <MessageCircle size={20} />,
       label: "WhatsApp",
-      href: "https://wa.me/905322521010",
+      href: "https://wa.me/905322342686",
       bg: "#25d366",
     },
     {
       icon: <Phone size={20} />,
       label: "Ara",
-      href: "tel:+902326761010",
+      href: "tel:+902328261112",
       bg: "var(--olive)",
     },
     {

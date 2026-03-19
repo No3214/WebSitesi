@@ -74,10 +74,10 @@ export function EventsClient() {
                       </div>
                       <p style={{ color: "#555", lineHeight: 1.7, marginBottom: "20px" }}>{event.description}</p>
                       <div style={{ display: "flex", gap: "12px" }}>
-                        <Link href="https://wa.me/905322521010" className="button primary" target="_blank" rel="noreferrer">
+                        <Link href="https://wa.me/905322342686" className="button primary" target="_blank" rel="noreferrer">
                           Rezervasyon Yap
                         </Link>
-                        <Link href="tel:+902326761010" className="button secondary">
+                        <Link href="tel:+902328261112" className="button secondary">
                           Bilgi Al
                         </Link>
                       </div>

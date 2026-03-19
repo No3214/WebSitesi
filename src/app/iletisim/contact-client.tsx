@@ -6,12 +6,12 @@ import { SectionTitle } from "@/components/section-title";
 import { Phone, Mail, MapPin, MessageCircle, Clock, Instagram } from "lucide-react";
 
 const contactInfo = [
-  { icon: Phone, label: "Telefon", value: "+90 (232) 676 10 10", href: "tel:+902326761010" },
-  { icon: MessageCircle, label: "WhatsApp", value: "+90 (532) 252 10 10", href: "https://wa.me/905322521010" },
-  { icon: Mail, label: "E-posta", value: "info@kozbeylikonagi.com.tr", href: "mailto:info@kozbeylikonagi.com.tr" },
+  { icon: Phone, label: "Telefon", value: "+90 (232) 826 11 12", href: "tel:+902328261112" },
+  { icon: MessageCircle, label: "WhatsApp", value: "+90 (532) 234 26 86", href: "https://wa.me/905322342686" },
+  { icon: Mail, label: "E-posta", value: "info@kozbeylikonagi.com", href: "mailto:info@kozbeylikonagi.com" },
   { icon: Instagram, label: "Instagram", value: "@kozbeylikonagi", href: "https://www.instagram.com/kozbeylikonagi/" },
-  { icon: Clock, label: "Resepsiyon", value: "07:00 – 23:00 (Her gün)", href: null },
-  { icon: MapPin, label: "Adres", value: "Kozbeyli Köyü İç Yolu, Foça, İzmir 35680", href: "https://maps.app.goo.gl/kozbeylikonagi" },
+  { icon: Clock, label: "Resepsiyon", value: "08:30 – 23:00 (Her gün)", href: null },
+  { icon: MapPin, label: "Adres", value: "Kozbeyli Küme Evleri No:188, Foça, İzmir 35680", href: "https://maps.app.goo.gl/DXMWQg8aJHt3KNcTA" },
 ];
 
 export function ContactClient() {
@@ -70,10 +70,10 @@ export function ContactClient() {
                     </p>
                   </div>
                   <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                    <a href="https://maps.app.goo.gl/kozbeylikonagi" target="_blank" rel="noreferrer" className="button primary">
+                    <a href="https://maps.app.goo.gl/DXMWQg8aJHt3KNcTA" target="_blank" rel="noreferrer" className="button primary">
                       <MapPin size={16} style={{ marginRight: "8px" }} /> Haritada Gör
                     </a>
-                    <a href="https://wa.me/905322521010" target="_blank" rel="noreferrer" className="button secondary">
+                    <a href="https://wa.me/905322342686" target="_blank" rel="noreferrer" className="button secondary">
                       <MessageCircle size={16} style={{ marginRight: "8px" }} /> WhatsApp
                     </a>
                   </div>
