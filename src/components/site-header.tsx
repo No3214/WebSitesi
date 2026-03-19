@@ -34,11 +34,12 @@ export function SiteHeader() {
   const nav = dict.Navigation as Record<string, string>;
 
   const links = [
-    { href: "/hikayemiz", label: nav.history || "Hikayemiz" },
     { href: "/odalar", label: nav.rooms || "Odalar" },
-    { href: "/gastronomi", label: nav.dining || "Gastronomi" },
-    { href: "/organizasyonlar", label: nav.events || "Organizasyonlar" },
-    { href: "/misafir-rehberi", label: "Rehber" },
+    { href: "/gastronomi", label: nav.dining || "Restoran" },
+    { href: "/deneyimler", label: "Deneyimler" },
+    { href: "/etkinlikler", label: "Etkinlikler" },
+    { href: "/galeri", label: "Galeri" },
+    { href: "/iletisim", label: "İletişim" },
   ];
 
   return (

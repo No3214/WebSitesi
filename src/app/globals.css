@@ -3,22 +3,22 @@
 /* Fonts loaded via next/font in layout.tsx */
 
 @theme {
-  --color-olive: #3d4a3b;
-  --color-gold: #b3925c;
-  --color-ivory: #faf9f6;
-  --color-soft: #f0ede6;
+  --color-olive: #505D4B;
+  --color-gold: #C4A265;
+  --color-ivory: #F8F5F0;
+  --color-soft: #F0EDE6;
 }
 
 :root {
-  --olive: #3d4a3b;
-  --gold: #b3925c;
-  --ivory: #faf9f6;
-  --soft: #f0ede6;
+  --olive: #505D4B;
+  --gold: #C4A265;
+  --ivory: #F8F5F0;
+  --soft: #F0EDE6;
   --text: #1a1a1a;
   --white: #ffffff;
-  --border: rgba(61, 74, 59, 0.08);
-  --serif: "Playfair Display", serif;
-  --sans: "Inter", sans-serif;
+  --border: rgba(80, 93, 75, 0.08);
+  --serif: "Cormorant Garamond", serif;
+  --sans: "Raleway", sans-serif;
 }
 
 * {

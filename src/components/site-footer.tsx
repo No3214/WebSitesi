@@ -38,17 +38,23 @@ export function SiteFooter() {
           <div className="footer-links-col">
             <h4 className="footer-title">{t.explore}</h4>
             <ul>
-              <li><Link href="/odalar">Odalarımız</Link></li>
-              <li><Link href="/menu">Gastronomi</Link></li>
-              <li><Link href="/organizasyonlar">Organizasyonlar</Link></li>
-              <li><Link href="/#rezervasyon">Rezervasyon</Link></li>
+              <li><Link href="/odalar">Odalar</Link></li>
+              <li><Link href="/gastronomi">Restoran</Link></li>
+              <li><Link href="/deneyimler">Deneyimler</Link></li>
+              <li><Link href="/etkinlikler">Etkinlikler</Link></li>
+              <li><Link href="/galeri">Galeri</Link></li>
+              <li><Link href="/hikayemiz">Hikayemiz</Link></li>
+              <li><Link href="/dugun-organizasyon">Düğün</Link></li>
+              <li><Link href="/kurumsal">Kurumsal</Link></li>
             </ul>
           </div>
 
           <div className="footer-links-col">
             <h4 className="footer-title">{t.legal}</h4>
             <ul>
+              <li><Link href="/sss">Sık Sorulan Sorular</Link></li>
               <li><Link href="/kvkk">KVKK Aydınlatma Metni</Link></li>
+              <li><Link href="/gizlilik-politikasi">Gizlilik Politikası</Link></li>
               <li><Link href="/mesafeli-satis-sozlesmesi">Mesafeli Satış Sözleşmesi</Link></li>
             </ul>
           </div>
