@@ -63,7 +63,11 @@ export const env = {
 };
 
 export function getAllowedOrigins() {
-  return Array.from(new Set([env.NEXT_PUBLIC_SITE_URL, "http://localhost:3000"]))
+  const origins = [env.NEXT_PUBLIC_SITE_URL];
+  if (process.env.NODE_ENV !== "production") {
+    origins.push("http://localhost:3000");
+  }
+  return Array.from(new Set(origins))
     .filter(Boolean)
     .map((origin) => origin.replace(/\/$/, ""));
 }

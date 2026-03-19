@@ -108,7 +108,7 @@ export async function POST(req: Request) {
 
     const parsed = leadSchema.safeParse(payloadData);
     if (!parsed.success) {
-      return NextResponse.json({ ok: false, errors: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json({ ok: false, message: "Lütfen formu eksiksiz doldurunuz." }, { status: 400 });
     }
 
     if (!parsed.data.consent) {
@@ -164,10 +164,19 @@ export async function POST(req: Request) {
     await payload.create({
       collection: "organization-leads",
       data: {
-        ...parsed.data,
         name: sanitizedName,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
         type: sanitizedType,
         message: sanitizedMessage,
+        eventDate: parsed.data.eventDate,
+        guestCount: parsed.data.guestCount,
+        estimatedBudget: parsed.data.estimatedBudget,
+        consent: parsed.data.consent,
+        utmSource: parsed.data.utmSource,
+        utmMedium: parsed.data.utmMedium,
+        utmCampaign: parsed.data.utmCampaign,
+        referrer: parsed.data.referrer,
         source: "website",
         ipAddress,
         userAgent: req.headers.get("user-agent") || "unknown",
