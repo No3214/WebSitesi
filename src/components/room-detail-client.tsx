@@ -100,7 +100,14 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                 <div className="booking-card-premium">
                   <div className="price-stack">
                     <span className="price-eyebrow">DİREKT REZERVASYON AVANTAJI</span>
-                    <span className="price-main">Lütfen Tarih Seçiniz</span>
+                    {room.price ? (
+                      <>
+                        <span className="price-main">₺{room.price.toLocaleString('tr-TR')}</span>
+                        <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', display: 'block', marginTop: '4px' }}>/ gece · serpme kahvaltı dahil</span>
+                      </>
+                    ) : (
+                      <span className="price-main">Fiyat İçin Arayınız</span>
+                    )}
                   </div>
                   <Link href="/#rezervasyon" className="button premium-cta full">
                     EN İYİ FİYATLA YERİNİZİ AYIRIN

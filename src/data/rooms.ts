@@ -83,6 +83,22 @@ export const rooms: Room[] = [
     price: 3500,
   },
   {
+    slug: "superior-oda",
+    title: "Superior Oda",
+    short: "Konağın en seçkin odası. Geniş alan, premium donanım ve panoramik manzara.",
+    description:
+      "Kozbeyli Konağı'nın sunduğu en yüksek konfor standartlarını temsil eden Superior Oda. Yaklaşık 35 m² geniş alanıyla, özel tasarım detaylar ve premium buklet ürünleriyle donatılmıştır. 500 yıllık taş mimarinin en seçkin örneği olan bu oda, özellikle balayı çiftleri ve özel yıl dönümü kutlamaları için tercih edilmektedir. Serpme kahvaltı dahildir.",
+    capacity: "2-3 Kişi",
+    size: "~35 m²",
+    view: "Panoramik Manzara",
+    amenities: [...standardAmenities, "Premium Buklet Seti", "Geniş Yaşam Alanı"],
+    images: [
+      "/images/rooms/deniz-1.jpeg",
+      "/images/rooms/deniz-2.jpeg",
+    ],
+    price: 4850,
+  },
+  {
     slug: "uc-kisilik-oda",
     title: "Üç Kişilik Oda",
     short: "3 kişiye kadar konfor, geniş ve ferah taş mimari.",

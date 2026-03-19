@@ -17,18 +17,31 @@ const categories = [
 ];
 
 const photos = [
-  { src: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=900&q=80", alt: "Kozbeyli Konağı dış görünüm", category: "konak" },
-  { src: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=900&q=80", alt: "Standart oda iç mekan", category: "odalar" },
-  { src: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=900&q=80", alt: "Deniz manzaralı oda", category: "odalar" },
-  { src: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=900&q=80", alt: "Superior süit", category: "odalar" },
-  { src: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80", alt: "Restoran akşam yemeği", category: "restoran" },
-  { src: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=900&q=80", alt: "Organik köy kahvaltısı", category: "restoran" },
-  { src: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=900&q=80", alt: "Aile odası", category: "odalar" },
-  { src: "https://images.unsplash.com/photo-1518173946687-a4c8a492e7e0?auto=format&fit=crop&w=900&q=80", alt: "Bahçe ve avlu", category: "bahce" },
-  { src: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=900&q=80", alt: "Ege denizi manzarası", category: "manzara" },
-  { src: "https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=900&q=80", alt: "Üç kişilik oda", category: "odalar" },
-  { src: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=900&q=80", alt: "Konak giriş", category: "konak" },
-  { src: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=900&q=80", alt: "Kozbeyli köyü panorama", category: "manzara" },
+  // Standart Oda
+  { src: "/images/rooms/standart-1.jpeg", alt: "Standart Oda", category: "odalar" },
+  { src: "/images/rooms/standart-2.jpeg", alt: "Standart Oda detay", category: "odalar" },
+  { src: "/images/rooms/standart-3.jpeg", alt: "Standart Oda iç mekan", category: "odalar" },
+  // Bahçe Manzaralı Oda
+  { src: "/images/rooms/bahce-1.jpeg", alt: "Bahçe Manzaralı Oda", category: "odalar" },
+  { src: "/images/rooms/bahce-2.jpeg", alt: "Bahçe Manzaralı Oda detay", category: "odalar" },
+  // Deniz Manzaralı Oda
+  { src: "/images/rooms/deniz-1.jpeg", alt: "Deniz Manzaralı Oda", category: "odalar" },
+  { src: "/images/rooms/deniz-2.jpeg", alt: "Deniz Manzaralı Oda detay", category: "odalar" },
+  { src: "/images/rooms/deniz-3.jpeg", alt: "Foça Körfezi manzarası", category: "manzara" },
+  // Üç Kişilik Oda
+  { src: "/images/rooms/uc-kisilik-1.jpeg", alt: "Üç Kişilik Oda", category: "odalar" },
+  { src: "/images/rooms/uc-kisilik-2.jpeg", alt: "Üç Kişilik Oda detay", category: "odalar" },
+  // Aile Odası
+  { src: "/images/rooms/aile-1.jpeg", alt: "Aile Odası", category: "odalar" },
+  { src: "/images/rooms/aile-2.jpeg", alt: "Aile Odası detay", category: "odalar" },
+  { src: "/images/rooms/aile-3.jpeg", alt: "Aile Odası iç mekan", category: "odalar" },
+  // Balkonlu Aile Odası
+  { src: "/images/rooms/balkonlu-aile-1.jpeg", alt: "Balkonlu Aile Odası", category: "odalar" },
+  { src: "/images/rooms/balkonlu-aile-2.jpeg", alt: "Balkonlu Aile Odası balkon", category: "bahce" },
+  // Üç kişilik & Aile ekstra
+  { src: "/images/rooms/uc-kisilik-3.jpeg", alt: "Konak iç mekan detay", category: "konak" },
+  { src: "/images/rooms/aile-4.jpeg", alt: "Konak taş duvar detay", category: "konak" },
+  { src: "/images/rooms/standart-4.jpeg", alt: "Oda banyo detay", category: "odalar" },
 ];
 
 export function GalleryClient() {

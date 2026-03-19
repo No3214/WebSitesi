@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SectionTitle } from "@/components/section-title";
-import { rooms as fallbackRooms } from "@/data/rooms";
+import { rooms as fallbackRooms, roomSummary } from "@/data/rooms";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
@@ -33,6 +33,18 @@ export function RoomsClient() {
               title={t.title}
               text={t.text}
             />
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', flexWrap: 'wrap', marginBottom: '48px' }}>
+              <div style={{ textAlign: 'center', padding: '16px 24px', background: 'var(--soft)', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--olive)', display: 'block' }}>{roomSummary.total}</span>
+                <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#999' }}>Toplam Oda</span>
+              </div>
+              {roomSummary.types.map((t, i) => (
+                <div key={i} style={{ textAlign: 'center', padding: '16px 24px', background: 'var(--soft)', border: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--olive)', display: 'block' }}>{t.count}</span>
+                  <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#999' }}>{t.type}</span>
+                </div>
+              ))}
+            </div>
           </FadeIn>
 
           <StaggerContainer delay={0.2}>
@@ -57,6 +69,12 @@ export function RoomsClient() {
                       <span className="meta">{room.capacity} · {room.view}</span>
                       <h3>{room.title}</h3>
                       <p>{room.short}</p>
+                      {room.price && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', padding: '12px 0', borderTop: '1px solid var(--border)' }}>
+                          <span style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--olive)', fontFamily: 'var(--serif)' }}>₺{room.price.toLocaleString('tr-TR')}</span>
+                          <span style={{ fontSize: '0.7rem', color: '#999', textTransform: 'uppercase' }}>/ gece · kahvaltı dahil</span>
+                        </div>
+                      )}
                       <span className="button secondary" style={{ width: '100%', padding: '10px' }}>{t.detail}</span>
                     </div>
                   </Link>
