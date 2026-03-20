@@ -147,7 +147,7 @@ export function LeadForm() {
       {/* Cloudflare Turnstile Widget */}
       <div 
         className="cf-turnstile" 
-        data-sitekey={process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || ""}
+        data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
         style={{ marginBottom: '16px' }}
       ></div>
 
@@ -160,9 +160,11 @@ export function LeadForm() {
         {status === 'loading' ? 'Gönderiliyor...' : 'Teklif Talebini Gönder'}
       </button>
       
-      {status === 'error' && (
-        <p style={{ color: 'red', marginTop: '10px' }}>Bir hata oluştu. Lütfen tekrar deneyin.</p>
-      )}
+      <div aria-live="polite" role="status">
+        {status === 'error' && (
+          <p style={{ color: 'red', marginTop: '10px' }}>Bir hata oluştu. Lütfen tekrar deneyin.</p>
+        )}
+      </div>
     </form>
   );
 }

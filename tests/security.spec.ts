@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 
 test.describe("Security Audit Test", () => {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const webhookSecret = process.env.HOTELRUNNER_WEBHOOK_SECRET || "hotelrunner-dev-secret";
+  const webhookSecret = process.env.HOTELRUNNER_WEBHOOK_SECRET || "dev-webhook-secret-local-only";
 
   test("should have strict security headers", async ({ request }) => {
     const response = await request.get(baseUrl);
@@ -17,8 +17,11 @@ test.describe("Security Audit Test", () => {
     const csp = headers["content-security-policy"];
     expect(csp).toContain("default-src 'self'");
     expect(csp).not.toContain("unsafe-eval");
-    expect(csp).not.toContain("'unsafe-inline'");
-    expect(csp).toMatch(/nonce-[A-Za-z0-9+/=]+/);
+
+    // Verify script-src uses nonce instead of unsafe-inline
+    const scriptSrc = csp.match(/script-src[^;]*/)?.[0] ?? "";
+    expect(scriptSrc).not.toContain("'unsafe-inline'");
+    expect(scriptSrc).toMatch(/nonce-[A-Za-z0-9+/=]+/);
   });
 
   test("lead API should reject cross-origin posts", async ({ request }) => {

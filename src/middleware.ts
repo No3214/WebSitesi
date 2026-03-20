@@ -18,7 +18,7 @@ function buildCsp(nonce: string): string {
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self' https://app.hotelrunner.com",
-    "frame-ancestors 'self'",
+    "frame-ancestors 'none'",
     "upgrade-insecure-requests",
   ].join("; ");
 }
