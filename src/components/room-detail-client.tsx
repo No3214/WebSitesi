@@ -5,25 +5,52 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { FadeIn } from "@/components/animations";
-import { useEffect, useState } from "react";
-import { getDictionary } from "@/lib/dictionary";
+import { useDictionary } from "@/hooks/use-dictionary";
 import { SiteHeader } from "@/components/site-header";
-import { rooms as fallbackRooms } from "@/data/rooms";
+import { RoomCard } from "@/components/room-card";
+import { rooms as allRooms, localizeRoom } from "@/data/rooms";
+
+const t = {
+  tr: {
+    home: "Ana Sayfa",
+    rooms: "Odalar",
+    badge: "MÜHÜRLÜ TAŞ KONAK",
+    size: "Büyüklük",
+    capacity: "Kapasite",
+    view: "Manzara",
+    experience: "Oda Deneyimi",
+    bookingAdvantage: "DİREKT REZERVASYON AVANTAJI",
+    perNight: "/ gece · serpme kahvaltı dahil",
+    callForPrice: "Fiyat İçin Arayınız",
+    bookCta: "EN İYİ FİYATLA YERİNİZİ AYIRIN",
+    otherRooms: "Diğer Odalarımız",
+  },
+  en: {
+    home: "Home",
+    rooms: "Rooms",
+    badge: "SEALED STONE MANSION",
+    size: "Size",
+    capacity: "Capacity",
+    view: "View",
+    experience: "Room Experience",
+    bookingAdvantage: "DIRECT BOOKING ADVANTAGE",
+    perNight: "/ night · spread breakfast included",
+    callForPrice: "Call for Price",
+    bookCta: "BOOK AT THE BEST PRICE",
+    otherRooms: "Our Other Rooms",
+  },
+} as const;
 
 export function RoomDetailClient({ slug }: { slug: string }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(null);
-  const room = fallbackRooms.find((item) => item.slug === slug);
+  const { dict, locale } = useDictionary();
+  const rawRoom = allRooms.find((item) => item.slug === slug);
 
-  useEffect(() => {
-    const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
-    getDictionary(locale).then(setDict);
-  }, []);
-
-  if (!room) notFound();
+  if (!rawRoom) notFound();
   if (!dict) return <div className="loading-screen" />;
 
-  const otherRooms = fallbackRooms.filter((r) => r.slug !== slug).slice(0, 3);
+  const room = localizeRoom(rawRoom, locale);
+  const labels = t[locale];
+  const otherRooms = allRooms.filter((r) => r.slug !== slug).slice(0, 3);
 
   return (
     <>
@@ -32,9 +59,9 @@ export function RoomDetailClient({ slug }: { slug: string }) {
         <div className="container">
           {/* Breadcrumb */}
           <nav style={{ marginBottom: '32px', fontSize: '0.82rem', color: '#999' }} aria-label="Breadcrumb">
-            <Link href="/" style={{ color: '#999' }}>Ana Sayfa</Link>
+            <Link href="/" style={{ color: '#999' }}>{labels.home}</Link>
             <span style={{ margin: '0 8px' }}>/</span>
-            <Link href="/odalar" style={{ color: '#999' }}>Odalar</Link>
+            <Link href="/odalar" style={{ color: '#999' }}>{labels.rooms}</Link>
             <span style={{ margin: '0 8px' }}>/</span>
             <span style={{ color: 'var(--olive)' }}>{room.title}</span>
           </nav>
@@ -43,7 +70,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
               <div className="detail-media">
                  <div className="main-image-wrapper">
                     <Image
-                      src={room.images[0]}
+                      src={rawRoom.images[0]}
                       alt={room.title}
                       fill
                       className="object-cover"
@@ -52,9 +79,9 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                     />
                  </div>
                  <div className="image-strip">
-                   {room.images.map((img, i) => (
-                     <div key={i} className="strip-item hover-scale">
-                       <Image src={img} alt={`${room.title} view ${i}`} fill className="object-cover" />
+                   {rawRoom.images.map((img, i) => (
+                     <div key={i} className="strip-item hover-scale" role="img" aria-label={`${room.title} ${i + 1}`}>
+                       <Image src={img} alt={`${room.title} ${i + 1}`} fill className="object-cover" sizes="120px" />
                      </div>
                    ))}
                  </div>
@@ -63,30 +90,30 @@ export function RoomDetailClient({ slug }: { slug: string }) {
 
             <FadeIn direction="right" delay={0.2}>
               <div className="detail-content">
-                <div className="premium-badge">MÜHÜRLÜ TAŞ KONAK</div>
+                <div className="premium-badge">{labels.badge}</div>
                 <h1 className="serif h1-premium">{room.title}</h1>
                 <p className="description-premium">{room.description}</p>
 
                 <div className="specs-row">
                   <div className="spec-card">
                     <div className="spec-icon">📏</div>
-                    <span className="spec-label">Büyüklük</span>
-                    <span className="spec-value">{room.size}</span>
+                    <span className="spec-label">{labels.size}</span>
+                    <span className="spec-value">{rawRoom.size}</span>
                   </div>
                   <div className="spec-card">
                     <div className="spec-icon">👥</div>
-                    <span className="spec-label">Kapasite</span>
+                    <span className="spec-label">{labels.capacity}</span>
                     <span className="spec-value">{room.capacity}</span>
                   </div>
                   <div className="spec-card">
                     <div className="spec-icon">🪟</div>
-                    <span className="spec-label">Manzara</span>
+                    <span className="spec-label">{labels.view}</span>
                     <span className="spec-value">{room.view}</span>
                   </div>
                 </div>
 
                 <div className="amenities-grid-premium">
-                  <h3 className="serif text-xl mb-4">Oda Deneyimi</h3>
+                  <h3 className="serif text-xl mb-4">{labels.experience}</h3>
                   <div className="amenities-list">
                     {room.amenities.map((item, i) => (
                       <div key={i} className="amenity-item-premium">
@@ -99,18 +126,18 @@ export function RoomDetailClient({ slug }: { slug: string }) {
 
                 <div className="booking-card-premium">
                   <div className="price-stack">
-                    <span className="price-eyebrow">DİREKT REZERVASYON AVANTAJI</span>
-                    {room.price ? (
+                    <span className="price-eyebrow">{labels.bookingAdvantage}</span>
+                    {rawRoom.price ? (
                       <>
-                        <span className="price-main">₺{room.price.toLocaleString('tr-TR')}</span>
-                        <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', display: 'block', marginTop: '4px' }}>/ gece · serpme kahvaltı dahil</span>
+                        <span className="price-main">₺{rawRoom.price.toLocaleString('tr-TR')}</span>
+                        <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', display: 'block', marginTop: '4px' }}>{labels.perNight}</span>
                       </>
                     ) : (
-                      <span className="price-main">Fiyat İçin Arayınız</span>
+                      <span className="price-main">{labels.callForPrice}</span>
                     )}
                   </div>
                   <Link href="/#rezervasyon" className="button premium-cta full">
-                    EN İYİ FİYATLA YERİNİZİ AYIRIN
+                    {labels.bookCta}
                   </Link>
                 </div>
               </div>
@@ -120,20 +147,24 @@ export function RoomDetailClient({ slug }: { slug: string }) {
           {/* Other Rooms */}
           {otherRooms.length > 0 && (
             <div style={{ marginTop: '80px' }}>
-              <h2 className="serif" style={{ fontSize: '1.8rem', color: 'var(--olive)', marginBottom: '32px' }}>Diğer Odalarımız</h2>
+              <h2 className="serif" style={{ fontSize: '1.8rem', color: 'var(--olive)', marginBottom: '32px' }}>{labels.otherRooms}</h2>
               <div className="card-grid">
-                {otherRooms.map((r) => (
-                  <Link key={r.slug} href={`/odalar/${r.slug}`} className="card">
-                    <div style={{ position: 'relative', height: '220px' }}>
-                      <Image src={r.images[0]} alt={r.title} fill className="object-cover" sizes="33vw" />
-                      <span style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(0,0,0,0.6)', color: '#fff', padding: '4px 10px', fontSize: '0.7rem', fontWeight: 600 }}>{r.size}</span>
-                    </div>
-                    <div className="card-body" style={{ padding: '20px' }}>
-                      <span className="meta">{r.capacity} · {r.view}</span>
-                      <h3 style={{ fontSize: '1.1rem' }}>{r.title}</h3>
-                    </div>
-                  </Link>
-                ))}
+                {otherRooms.map((r) => {
+                  const lr = localizeRoom(r, locale);
+                  return (
+                    <RoomCard
+                      key={r.slug}
+                      slug={r.slug}
+                      title={lr.title}
+                      capacity={lr.capacity}
+                      view={lr.view}
+                      size={r.size}
+                      image={r.images[0]}
+                      locale={locale}
+                      compact
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -171,7 +202,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
           cursor: pointer;
           transition: transform 0.3s ease;
         }
-        
+
         .hover-scale:hover { transform: scale(1.05); }
 
         .premium-badge {
@@ -262,13 +293,9 @@ export function RoomDetailClient({ slug }: { slug: string }) {
           .h1-premium { font-size: 3rem; }
         }
 
-        @media (max-width: 1024px) {
-          .detail-layout {
-            grid-template-columns: 1fr;
-          }
-          .main-image-wrapper {
-            height: 450px;
-          }
+        @media (max-width: 768px) {
+          .h1-premium { font-size: 2rem; }
+          .description-premium { font-size: 1rem; }
         }
       `}</style>
     </>

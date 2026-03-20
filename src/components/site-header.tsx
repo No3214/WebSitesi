@@ -1,46 +1,76 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { getDictionary } from "@/lib/dictionary";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useDictionary } from "@/hooks/use-dictionary";
 import { LanguageSwitcher } from "./language-switcher";
 import { Menu, X } from "lucide-react";
 
+const navLinks = {
+  tr: [
+    { href: "/odalar", key: "rooms" },
+    { href: "/gastronomi", key: "dining" },
+    { href: "/deneyimler", label: "Deneyimler" },
+    { href: "/etkinlikler", label: "Etkinlikler" },
+    { href: "/galeri", label: "Galeri" },
+    { href: "/iletisim", label: "İletişim" },
+  ],
+  en: [
+    { href: "/odalar", key: "rooms" },
+    { href: "/gastronomi", key: "dining" },
+    { href: "/deneyimler", label: "Experiences" },
+    { href: "/etkinlikler", label: "Events" },
+    { href: "/galeri", label: "Gallery" },
+    { href: "/iletisim", label: "Contact" },
+  ],
+} as const;
+
+const whatsappLabel = { tr: "WhatsApp ile Ulaşın", en: "Contact via WhatsApp" } as const;
+
 export function SiteHeader() {
-  const [dict, setDict] = useState<Record<string, unknown> | null>(null);
+  const { dict, locale } = useDictionary();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const menuRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
-    getDictionary(locale).then(setDict);
-
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
+  // Lock body scroll when mobile menu is open
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
-  if (!dict) return <header className="header premium-header" />;
-  const nav = dict.Navigation as Record<string, string>;
+  // Escape key closes menu
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape" && mobileOpen) {
+      setMobileOpen(false);
+      toggleRef.current?.focus();
+    }
+  }, [mobileOpen]);
 
-  const links = [
-    { href: "/odalar", label: nav.rooms || "Odalar" },
-    { href: "/gastronomi", label: nav.dining || "Restoran" },
-    { href: "/deneyimler", label: "Deneyimler" },
-    { href: "/etkinlikler", label: "Etkinlikler" },
-    { href: "/galeri", label: "Galeri" },
-    { href: "/iletisim", label: "İletişim" },
-  ];
+  useEffect(() => {
+    if (mobileOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+      // Focus first link in menu
+      const firstLink = menuRef.current?.querySelector("a, button") as HTMLElement | null;
+      firstLink?.focus();
+    }
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [mobileOpen, handleKeyDown]);
+
+  if (!dict) return <header className="header premium-header" />;
+  const nav = dict.Navigation;
+
+  const links = navLinks[locale].map((link) => ({
+    href: link.href,
+    label: "key" in link ? (nav[link.key as keyof typeof nav] || link.key) : link.label,
+  }));
 
   return (
     <>
@@ -65,6 +95,7 @@ export function SiteHeader() {
               {nav.booking || "Rezervasyon"}
             </Link>
             <button
+              ref={toggleRef}
               className="mobile-toggle"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? "Menüyü kapat" : "Menüyü aç"}
@@ -79,7 +110,7 @@ export function SiteHeader() {
       {/* Mobile Menu Overlay */}
       {mobileOpen && (
         <div className="mobile-menu-overlay" onClick={() => setMobileOpen(false)}>
-          <nav className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+          <nav ref={menuRef} className="mobile-menu" onClick={(e) => e.stopPropagation()} aria-label="Mobile navigation">
             {links.map((link) => (
               <Link
                 key={link.href}
@@ -101,8 +132,8 @@ export function SiteHeader() {
             <a href="tel:+902328261112" className="mobile-menu-link mobile-phone">
               +90 (232) 826 11 12
             </a>
-            <a href="https://wa.me/905322342686" className="mobile-menu-link mobile-whatsapp" target="_blank" rel="noreferrer">
-              WhatsApp ile Ulaşın
+            <a href="https://wa.me/905322342686" className="mobile-menu-link mobile-whatsapp" target="_blank" rel="noopener noreferrer">
+              {whatsappLabel[locale]}
             </a>
           </nav>
         </div>

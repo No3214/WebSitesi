@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -8,8 +8,8 @@ import { FadeIn, StaggerContainer } from "@/components/animations";
 import { HotelRunnerEmbed } from "@/components/hotel-runner-embed";
 import { SectionTitle } from "@/components/section-title";
 import { SiteHeader } from "@/components/site-header";
-import { rooms } from "@/data/rooms";
-import { getDictionary } from "@/lib/dictionary";
+import { rooms, localizeRoom } from "@/data/rooms";
+import { useDictionary } from "@/hooks/use-dictionary";
 import { Star, ArrowRight, Utensils, Gem, MapPin, CalendarDays, Users, Wine, ChevronDown } from "lucide-react";
 
 const experiences = [
@@ -99,15 +99,8 @@ const faqs = [
 ];
 
 export function HomeClient() {
-  const [dict, setDict] = useState<Record<string, Record<string, string>> | null>(null);
-  const [locale, setLocale] = useState<"tr" | "en">("tr");
+  const { dict, locale } = useDictionary();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  useEffect(() => {
-    const currentLocale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
-    setLocale(currentLocale);
-    getDictionary(currentLocale).then(setDict);
-  }, []);
 
   if (!dict) return <div style={{ minHeight: "100vh" }} />;
 
@@ -206,16 +199,18 @@ export function HomeClient() {
             </FadeIn>
             <StaggerContainer delay={0.1}>
               <div className="card-grid">
-                {featuredRooms.map((room) => (
+                {featuredRooms.map((room) => {
+                  const r = localizeRoom(room, locale);
+                  return (
                   <FadeIn key={room.slug}>
                     <Link href={`/odalar/${room.slug}`} className="card">
                       <div style={{ position: "relative", height: "280px" }}>
-                        <Image src={room.images[0]} alt={room.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                        <Image src={room.images[0]} alt={r.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
                       </div>
                       <div className="card-body">
-                        <span className="meta">{room.size} · {room.capacity} · {room.view}</span>
-                        <h3>{room.title}</h3>
-                        <p>{room.short}</p>
+                        <span className="meta">{room.size} · {r.capacity} · {r.view}</span>
+                        <h3>{r.title}</h3>
+                        <p>{r.short}</p>
                         {room.price && (
                           <span style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--olive)", fontFamily: "var(--serif)" }}>
                             ₺{room.price.toLocaleString("tr-TR")} <span style={{ fontSize: "0.7rem", color: "#999", fontWeight: 400 }}>/ {locale === "tr" ? "gece" : "night"}</span>
@@ -227,7 +222,8 @@ export function HomeClient() {
                       </div>
                     </Link>
                   </FadeIn>
-                ))}
+                  );
+                })}
               </div>
             </StaggerContainer>
             <FadeIn>
