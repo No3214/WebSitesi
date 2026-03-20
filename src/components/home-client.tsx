@@ -102,7 +102,17 @@ export function HomeClient() {
   const { dict, locale } = useDictionary();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  if (!dict) return <div style={{ minHeight: "100vh" }} />;
+  if (!dict) return (
+    <div style={{ minHeight: "100vh" }}>
+      <div className="skeleton skeleton-header" />
+      <div className="skeleton skeleton-hero" />
+      <div className="container">
+        <div className="card-grid">
+          {[1,2,3].map(i => <div key={i} className="skeleton skeleton-card" />)}
+        </div>
+      </div>
+    </div>
+  );
 
   const nav = dict.Navigation;
   const featuredRooms = rooms.slice(0, 4);

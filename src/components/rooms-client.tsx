@@ -12,7 +12,16 @@ const summaryLabel = { tr: "Toplam Oda", en: "Total Rooms" } as const;
 export function RoomsClient() {
   const { dict, locale } = useDictionary();
 
-  if (!dict) return <div className="loading-screen" />;
+  if (!dict) return (
+    <div className="loading-screen">
+      <div className="container" style={{ paddingTop: '120px' }}>
+        <div className="skeleton skeleton-text" style={{ margin: '0 auto 40px', width: '300px' }} />
+        <div className="card-grid">
+          {[1,2,3].map(i => <div key={i} className="skeleton skeleton-card" />)}
+        </div>
+      </div>
+    </div>
+  );
 
   const t = dict.Rooms;
 

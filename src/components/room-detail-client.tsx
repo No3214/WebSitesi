@@ -3,11 +3,13 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { useState } from "react";
 import { Check } from "lucide-react";
 import { FadeIn } from "@/components/animations";
 import { useDictionary } from "@/hooks/use-dictionary";
 import { SiteHeader } from "@/components/site-header";
 import { RoomCard } from "@/components/room-card";
+import { ImageLightbox } from "@/components/image-lightbox";
 import { rooms as allRooms, localizeRoom } from "@/data/rooms";
 
 const t = {
@@ -43,10 +45,26 @@ const t = {
 
 export function RoomDetailClient({ slug }: { slug: string }) {
   const { dict, locale } = useDictionary();
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const rawRoom = allRooms.find((item) => item.slug === slug);
 
   if (!rawRoom) notFound();
-  if (!dict) return <div className="loading-screen" />;
+  if (!dict) return (
+    <div className="loading-screen">
+      <div className="container" style={{ paddingTop: '120px' }}>
+        <div className="skeleton skeleton-text-short" />
+        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '80px' }}>
+          <div className="skeleton" style={{ height: '650px' }} />
+          <div>
+            <div className="skeleton skeleton-text" />
+            <div className="skeleton" style={{ height: '40px', width: '80%', marginBottom: '16px' }} />
+            <div className="skeleton" style={{ height: '120px', marginBottom: '24px' }} />
+            <div className="skeleton" style={{ height: '200px' }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   const room = localizeRoom(rawRoom, locale);
   const labels = t[locale];
@@ -68,7 +86,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
           <div className="detail-layout">
             <FadeIn direction="left">
               <div className="detail-media">
-                 <div className="main-image-wrapper">
+                 <div className="main-image-wrapper" onClick={() => setLightboxIndex(0)} style={{ cursor: 'zoom-in' }}>
                     <Image
                       src={rawRoom.images[0]}
                       alt={room.title}
@@ -80,7 +98,15 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                  </div>
                  <div className="image-strip">
                    {rawRoom.images.map((img, i) => (
-                     <div key={i} className="strip-item hover-scale" role="img" aria-label={`${room.title} ${i + 1}`}>
+                     <div
+                       key={i}
+                       className="strip-item hover-scale"
+                       role="button"
+                       tabIndex={0}
+                       aria-label={`${room.title} ${i + 1}`}
+                       onClick={() => setLightboxIndex(i)}
+                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLightboxIndex(i); } }}
+                     >
                        <Image src={img} alt={`${room.title} ${i + 1}`} fill className="object-cover" sizes="120px" />
                      </div>
                    ))}
@@ -170,6 +196,15 @@ export function RoomDetailClient({ slug }: { slug: string }) {
           )}
         </div>
       </main>
+
+      {lightboxIndex !== null && (
+        <ImageLightbox
+          images={rawRoom.images}
+          initialIndex={lightboxIndex}
+          alt={room.title}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
 
       <style jsx>{`
         .detail-layout {

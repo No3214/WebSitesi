@@ -1,6 +1,7 @@
 import { env } from "@/lib/env";
 import { absoluteUrl } from "./utils";
 import { ReputationData } from "./ai/reputation-intelligence";
+import type { Room } from "@/data/rooms";
 
 /**
  * Hotel Schema (SEO & Reputation Integrated)
@@ -15,9 +16,9 @@ export function hotelSchema() {
     url: absoluteUrl("/"),
     logo: absoluteUrl("/logo.svg"),
     image: [
-      absoluteUrl("/img/hero-main.jpg"),
-      absoluteUrl("/img/stone-room.jpg"),
-      absoluteUrl("/img/breakfast-spread.jpg"),
+      absoluteUrl("/images/rooms/bahce-1.jpeg"),
+      absoluteUrl("/images/rooms/deniz-1.jpeg"),
+      absoluteUrl("/images/rooms/aile-1.jpeg"),
     ],
     telephone: "+90-232-826-11-12",
     email: "info@kozbeylikonagi.com",
@@ -88,4 +89,65 @@ export function hotelSchema() {
   };
 
   return [base, breadcrumbs];
+}
+
+/**
+ * Individual Room Schema for room detail pages
+ */
+export function roomSchema(room: Room) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HotelRoom",
+    name: room.title,
+    description: room.description,
+    occupancy: {
+      "@type": "QuantitativeValue",
+      value: parseInt(room.capacity) || 2,
+    },
+    floorSize: {
+      "@type": "QuantitativeValue",
+      value: parseInt(room.size.replace(/\D/g, "")) || 25,
+      unitCode: "MTK",
+    },
+    image: room.images.map((img) => absoluteUrl(img)),
+    ...(room.price
+      ? {
+          offers: {
+            "@type": "Offer",
+            price: room.price,
+            priceCurrency: "TRY",
+            availability: "https://schema.org/InStock",
+            url: absoluteUrl(`/odalar/${room.slug}`),
+          },
+        }
+      : {}),
+    amenityFeature: room.amenities.map((a) => ({
+      "@type": "LocationFeatureSpecification",
+      name: a,
+      value: true,
+    })),
+    containedInPlace: {
+      "@type": "Hotel",
+      name: "Kozbeyli Konağı",
+      url: absoluteUrl("/"),
+    },
+  };
+}
+
+/**
+ * FAQ Schema for the homepage and SSS page
+ */
+export function faqSchema(faqs: Array<{ q: string; a: string }>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.a,
+      },
+    })),
+  };
 }

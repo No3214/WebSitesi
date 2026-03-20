@@ -9,6 +9,7 @@ import { FloatingContact } from "@/components/floating-contact";
 import { MobileActionBar } from "@/components/mobile-action-bar";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
+import { Providers } from "@/components/providers";
 
 export const metadata = defaultMetadata;
 
@@ -27,12 +28,14 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <a href="#main-content" className="skip-nav">İçeriğe Geç</a>
         <ErrorBoundary>
           <CSPostHogProvider>
-            <TrackingScripts />
-            <div id="main-content">{children}</div>
-            <SiteFooter />
-            <FloatingContact />
-            <MobileActionBar />
-            <CookieConsent />
+            <Providers>
+              <TrackingScripts />
+              <div id="main-content">{children}</div>
+              <SiteFooter />
+              <FloatingContact />
+              <MobileActionBar />
+              <CookieConsent />
+            </Providers>
           </CSPostHogProvider>
         </ErrorBoundary>
       </body>
