@@ -17,6 +17,7 @@
   --text: #1a1a1a;
   --white: #ffffff;
   --border: rgba(80, 93, 75, 0.08);
+  --display: "Playfair Display", serif;
   --serif: "Cormorant Garamond", serif;
   --sans: "Raleway", sans-serif;
 }
@@ -47,7 +48,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, .serif {
+h1, h2, .serif {
+  font-family: var(--display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h3, h4 {
   font-family: var(--serif);
   font-weight: 500;
   letter-spacing: -0.01em;
@@ -703,6 +710,21 @@ img {
   font-weight: 600;
   letter-spacing: 0.05em;
   backdrop-filter: blur(4px);
+}
+
+/* Two-column responsive grids used by many pages */
+.two-col-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .two-col-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
 }
 
 @keyframes fadeIn {

@@ -26,7 +26,7 @@ export const FloatingContact = () => {
     {
       icon: <Phone size={20} />,
       label: "Ara",
-      href: "tel:+902328261112",
+      href: "tel:+905322342686",
       bg: "var(--olive)",
     },
     {

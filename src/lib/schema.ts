@@ -20,7 +20,7 @@ export function hotelSchema() {
       absoluteUrl("/images/rooms/deniz-1.jpeg"),
       absoluteUrl("/images/rooms/aile-1.jpeg"),
     ],
-    telephone: "+90-232-826-11-12",
+    telephone: "+905322342686",
     email: "info@kozbeylikonagi.com",
     address: {
       "@type": "PostalAddress",

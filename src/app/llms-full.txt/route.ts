@@ -34,7 +34,7 @@ export async function GET() {
 - Languages Spoken: Turkish, English
 
 ## Contact Information
-- Phone: +90 (232) 826 11 12
+- Phone: 0532 234 26 86
 - Mobile/WhatsApp: +90 (532) 234 26 86
 - Email: info@kozbeylikonagi.com
 - Address: Kozbeyli Küme Evleri No:188, Foça, İzmir, 35680, Turkey

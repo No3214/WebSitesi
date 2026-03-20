@@ -129,8 +129,8 @@ export function SiteHeader() {
             >
               {nav.booking || "Rezervasyon"}
             </Link>
-            <a href="tel:+902328261112" className="mobile-menu-link mobile-phone">
-              +90 (232) 826 11 12
+            <a href="tel:+905322342686" className="mobile-menu-link mobile-phone">
+              0532 234 26 86
             </a>
             <a href="https://wa.me/905322342686" className="mobile-menu-link mobile-whatsapp" target="_blank" rel="noopener noreferrer">
               {whatsappLabel[locale]}

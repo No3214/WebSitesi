@@ -35,7 +35,7 @@ const restaurantSchema = {
   name: "Kozbeyli Konağı Restoran",
   description: "Antakya ve Ege mutfağının buluşma noktası. İnci Hanım'ın imza reçeteleri ve 180 yıllık taş dibek kahvesi.",
   url: "https://www.kozbeylikonagi.com/gastronomi",
-  telephone: "+90-232-826-11-12",
+  telephone: "+905322342686",
   address: {
     "@type": "PostalAddress",
     streetAddress: "Kozbeyli Küme Evleri No:188",

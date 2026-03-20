@@ -109,7 +109,7 @@ export function EventsClient() {
                         <Link href="https://wa.me/905322342686" className="button primary" target="_blank" rel="noreferrer">
                           {t[locale].reserve}
                         </Link>
-                        <Link href="tel:+902328261112" className="button secondary">
+                        <Link href="tel:+905322342686" className="button secondary">
                           {t[locale].getInfo}
                         </Link>
                       </div>

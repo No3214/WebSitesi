@@ -8,7 +8,7 @@ export const MobileActionBar = () => {
   return (
     <div className="mobile-bar-wrap">
       <div className="mobile-bar">
-        <a href="tel:+902328261112" className="mobile-bar-item" aria-label="Telefon ile ara">
+        <a href="tel:+905322342686" className="mobile-bar-item" aria-label="Telefon ile ara">
           <Phone size={18} />
           <span>Ara</span>
         </a>

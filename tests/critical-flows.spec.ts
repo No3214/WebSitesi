@@ -66,7 +66,6 @@ test.describe("Kritik Kullanıcı Akışları", () => {
   test("İletişim bilgileri doğru gösteriliyor", async ({ page }) => {
     await page.goto("/iletisim");
 
-    await expect(page.getByText("0232 826 11 12")).toBeVisible();
     await expect(page.getByText("0532 234 26 86")).toBeVisible();
     await expect(page.getByText("info@kozbeylikonagi.com")).toBeVisible();
   });

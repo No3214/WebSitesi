@@ -8,7 +8,7 @@ import { useDictionary } from "@/hooks/use-dictionary";
 
 const contactInfo = {
   tr: [
-    { icon: Phone, label: "Telefon", value: "+90 (232) 826 11 12", href: "tel:+902328261112" },
+    { icon: Phone, label: "Telefon", value: "0532 234 26 86", href: "tel:+905322342686" },
     { icon: MessageCircle, label: "WhatsApp", value: "+90 (532) 234 26 86", href: "https://wa.me/905322342686" },
     { icon: Mail, label: "E-posta", value: "info@kozbeylikonagi.com", href: "mailto:info@kozbeylikonagi.com" },
     { icon: Instagram, label: "Instagram", value: "@kozbeylikonagi", href: "https://www.instagram.com/kozbeylikonagi/" },
@@ -16,7 +16,7 @@ const contactInfo = {
     { icon: MapPin, label: "Adres", value: "Kozbeyli Küme Evleri No:188, Foça, İzmir 35680", href: "https://maps.app.goo.gl/DXMWQg8aJHt3KNcTA" },
   ],
   en: [
-    { icon: Phone, label: "Phone", value: "+90 (232) 826 11 12", href: "tel:+902328261112" },
+    { icon: Phone, label: "Phone", value: "0532 234 26 86", href: "tel:+905322342686" },
     { icon: MessageCircle, label: "WhatsApp", value: "+90 (532) 234 26 86", href: "https://wa.me/905322342686" },
     { icon: Mail, label: "Email", value: "info@kozbeylikonagi.com", href: "mailto:info@kozbeylikonagi.com" },
     { icon: Instagram, label: "Instagram", value: "@kozbeylikonagi", href: "https://www.instagram.com/kozbeylikonagi/" },

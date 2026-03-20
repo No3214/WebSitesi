@@ -99,11 +99,11 @@ export function SiteFooter() {
             <h4 className="footer-title">{t.contact}</h4>
             <div className="contact-item">
               <MapPin size={18} />
-              <span>Kozbeyli Küme Evleri No:188, Foça, İzmir</span>
+              <span>Kozbeyli Köyü, Foça, İzmir, Türkiye</span>
             </div>
             <div className="contact-item">
               <Phone size={18} />
-              <span>+90 (232) 826 11 12</span>
+              <span>0532 234 26 86</span>
             </div>
             <div className="contact-item">
               <Mail size={18} />
@@ -113,7 +113,7 @@ export function SiteFooter() {
         </div>
 
         <div className="footer-bottom-bar">
-          <p>© {currentYear} Kozbeyli Konağı Luxury Hotel. {copyright[locale]}</p>
+          <p>© {currentYear} Kozbeyli Konağı Taş Otel & Restoran. {copyright[locale]}</p>
           <div className="developer-tag">Designed for Excellence</div>
         </div>
       </div>
