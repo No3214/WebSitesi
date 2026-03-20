@@ -10,6 +10,7 @@ import { SectionTitle } from "@/components/section-title";
 import { SiteHeader } from "@/components/site-header";
 import { rooms, localizeRoom } from "@/data/rooms";
 import { useDictionary } from "@/hooks/use-dictionary";
+import { StatsCounter } from "@/components/stats-counter";
 import { Star, ArrowRight, Utensils, Gem, MapPin, CalendarDays, Users, Wine, ChevronDown } from "lucide-react";
 
 const experiences = [
@@ -171,6 +172,13 @@ export function HomeClient() {
 
           <div style={{ position: "absolute", bottom: "40px", left: "50%", transform: "translateX(-50%)", zIndex: 2, animation: "bounce 2s infinite" }}>
             <ChevronDown size={28} color="rgba(255,255,255,0.5)" />
+          </div>
+        </section>
+
+        {/* === STATS COUNTER === */}
+        <section style={{ background: "var(--white)", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)" }}>
+          <div className="container">
+            <StatsCounter locale={locale} />
           </div>
         </section>
 
