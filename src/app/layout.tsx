@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { headers } from "next/headers";
 import { CookieConsent } from "@/components/cookie-consent";
 import { SiteFooter } from "@/components/site-footer";
 import { TrackingScripts } from "@/components/tracking-scripts";
@@ -15,7 +16,9 @@ import { Providers } from "@/components/providers";
 
 export const metadata = defaultMetadata;
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const nonce = (await headers()).get("x-nonce") ?? "";
+
   return (
     <html lang="tr">
       <head>
@@ -36,7 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           <CSPostHogProvider>
             <Providers>
               <ScrollProgress />
-              <TrackingScripts />
+              <TrackingScripts nonce={nonce} />
               <div id="main-content">{children}</div>
               <SiteFooter />
               <FloatingContact />

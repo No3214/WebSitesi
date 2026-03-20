@@ -9,12 +9,16 @@ test.describe("Security Audit Test", () => {
     const response = await request.get(baseUrl);
     const headers = response.headers();
 
-    expect(headers["x-frame-options"]).toBe("SAMEORIGIN");
+    expect(headers["x-frame-options"]).toBe("DENY");
     expect(headers["x-content-type-options"]).toBe("nosniff");
-    expect(headers["strict-transport-security"]).toContain("max-age=31536000");
-    expect(headers["content-security-policy"]).toContain("default-src 'self'");
-    expect(headers["content-security-policy"]).not.toContain("unsafe-eval");
-    expect(headers["x-xss-protection"]).toBeUndefined();
+    expect(headers["strict-transport-security"]).toContain("max-age=63072000");
+    expect(headers["x-xss-protection"]).toBe("1; mode=block");
+
+    const csp = headers["content-security-policy"];
+    expect(csp).toContain("default-src 'self'");
+    expect(csp).not.toContain("unsafe-eval");
+    expect(csp).not.toContain("'unsafe-inline'");
+    expect(csp).toMatch(/nonce-[A-Za-z0-9+/=]+/);
   });
 
   test("lead API should reject cross-origin posts", async ({ request }) => {

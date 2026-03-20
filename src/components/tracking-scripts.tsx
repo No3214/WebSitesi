@@ -6,7 +6,7 @@ import Script from "next/script";
 import { env } from "@/lib/env";
 import { CONSENT_STORAGE_KEY, getDefaultConsent, parseConsent, type ConsentState } from "@/lib/consent";
 
-export function TrackingScripts() {
+export function TrackingScripts({ nonce }: { nonce: string }) {
   const [consent, setConsent] = useState<ConsentState>(getDefaultConsent());
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export function TrackingScripts() {
     <>
       {consent.analytics && env.NEXT_PUBLIC_GTM_ID ? (
         <>
-          <Script id="gtm-loader" strategy="afterInteractive">
+          <Script id="gtm-loader" strategy="afterInteractive" nonce={nonce}>
             {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -51,12 +51,13 @@ export function TrackingScripts() {
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js"
         strategy="lazyOnload"
+        nonce={nonce}
         async
       />
 
       {consent.marketing && env.NEXT_PUBLIC_META_PIXEL_ID ? (
         <>
-          <Script id="fb-pixel" strategy="afterInteractive">
+          <Script id="fb-pixel" strategy="afterInteractive" nonce={nonce}>
             {`!function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};

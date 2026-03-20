@@ -22,7 +22,7 @@
     "framer-motion": "^12.38.0",
     "graphql": "^16.13.1",
     "lucide-react": "^0.577.0",
-    "next": "15.4.11",
+    "next": "^15.4.11",
     "payload": "^3.79.1",
     "posthog-js": "^1.363.0",
     "react": "^19.2.4",
@@ -31,10 +31,13 @@
     "tailwind-merge": "^3.5.0",
     "zod": "^3.25.76"
   },
+  "overrides": {
+    "undici": "^7.24.5"
+  },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.2",
     "@eslint/eslintrc": "^3.3.5",
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.53.2",
     "@storybook/addon-a11y": "^10.3.1",
     "@storybook/addon-docs": "^10.3.1",
     "@storybook/addon-onboarding": "^10.3.1",
@@ -51,7 +54,7 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "15.4.11",
     "eslint-plugin-storybook": "^10.3.1",
-    "playwright": "^1.51.0",
+    "playwright": "^1.53.2",
     "postcss": "^8.5.8",
     "storybook": "^10.3.1",
     "tailwindcss": "^4.2.2",

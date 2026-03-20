@@ -1,21 +1,8 @@
 import { withPayload } from "@payloadcms/next/withPayload";
 import type { NextConfig } from "next";
 
-const csp = [
-  "default-src 'self'",
-  "img-src 'self' data: https: blob:",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src 'self' https://fonts.gstatic.com data:",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://eu-assets.i.posthog.com https://challenges.cloudflare.com",
-  "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://connect.facebook.net https://graph.facebook.net https://graph.facebook.com https://app.hotelrunner.com https://eu.i.posthog.com https://eu-assets.i.posthog.com https://challenges.cloudflare.com",
-  "frame-src 'self' https://www.googletagmanager.com https://www.facebook.com https://app.hotelrunner.com https://challenges.cloudflare.com",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self' https://app.hotelrunner.com",
-  "frame-ancestors 'self'",
-  "upgrade-insecure-requests",
-].join("; ");
-
+// CSP is now generated per-request in middleware.ts with a nonce.
+// Only static security headers remain here.
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -23,7 +10,6 @@ const securityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
-  { key: "Content-Security-Policy", value: csp },
 ];
 
 const nextConfig: NextConfig = {
