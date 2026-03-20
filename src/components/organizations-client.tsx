@@ -51,11 +51,12 @@ export function OrganizationsClient() {
                 <FadeIn key={item.title}>
                   <div className="org-card">
                     <div className="org-image-wrapper">
-                      <Image 
-                        src={item.image} 
-                        alt={item.title} 
-                        fill 
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
                         className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         priority={index === 0}
                       />
                     </div>

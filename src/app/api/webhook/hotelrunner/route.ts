@@ -157,7 +157,7 @@ export async function POST(req: Request) {
 
   const payload = await getPayloadClient();
   if (!payload) {
-    throw new Error("Payload client could not be initialized");
+    return NextResponse.json({ ok: false, error: "Service unavailable" }, { status: 503 });
   }
 
   const reservationId = String(reservation.id);

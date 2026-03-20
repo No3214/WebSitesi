@@ -110,13 +110,13 @@ export function LeadForm() {
         <input name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <input name="name" placeholder="Tam Adınız" required onFocus={() => trackInquiryFormStart("contact")} />
-      <input name="phone" placeholder="Telefon Numaranız" required />
-      <input name="email" placeholder="E-posta Adresiniz" type="email" />
-      <input name="eventDate" placeholder="Etkinlik Tarihi" />
-      <input name="guestCount" type="number" min={1} placeholder="Tahmini Kişi Sayısı" />
-      
-      <select name="estimatedBudget" defaultValue="">
+      <input name="name" placeholder="Tam Adınız" required aria-label="Tam Adınız" onFocus={() => trackInquiryFormStart("contact")} />
+      <input name="phone" placeholder="Telefon Numaranız" required aria-label="Telefon Numaranız" />
+      <input name="email" placeholder="E-posta Adresiniz" type="email" aria-label="E-posta Adresiniz" />
+      <input name="eventDate" placeholder="Etkinlik Tarihi" aria-label="Etkinlik Tarihi" />
+      <input name="guestCount" type="number" min={1} placeholder="Tahmini Kişi Sayısı" aria-label="Tahmini Kişi Sayısı" />
+
+      <select name="estimatedBudget" defaultValue="" aria-label="Tahmini Bütçe">
         <option value="" disabled>Tahmini Bütçe</option>
         <option value="under-100k">100.000 TL altı</option>
         <option value="100k-250k">100.000 - 250.000 TL</option>
@@ -124,7 +124,7 @@ export function LeadForm() {
         <option value="over-500k">500.000 TL üzeri</option>
       </select>
 
-      <select name="type" required defaultValue="">
+      <select name="type" required defaultValue="" aria-label="Organizasyon Tercihi">
         <option value="" disabled>Organizasyon Tercihi</option>
         <option value="dugun">Butik Düğün</option>
         <option value="nisan">Nişan / Söz</option>
@@ -136,6 +136,7 @@ export function LeadForm() {
         name="message"
         placeholder="Özel talepleriniz ve diğer notlar..."
         required
+        aria-label="Özel talepleriniz ve diğer notlar"
       />
 
       <label className="consent-row">

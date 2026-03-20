@@ -70,7 +70,7 @@ export const HeritageArchive = () => {
             className="flex flex-col gap-6"
           >
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000 border border-zinc-800">
-              <Image src={item.image} alt={item.title} fill className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[2000ms]" />
+              <Image src={item.image} alt={item.title} fill className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[2000ms]" sizes="(max-width: 768px) 100vw, 33vw" />
               <div className="absolute inset-x-4 bottom-4 bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-white/5">
                 <div className="grid grid-cols-2 gap-2">
                   {item.specs.map((spec, j) => (
