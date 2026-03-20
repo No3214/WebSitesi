@@ -10,7 +10,8 @@ export const Media: CollectionConfig = {
   },
   upload: {
     staticDir: "media",
-    mimeTypes: ["image/*"]
+    mimeTypes: ["image/jpeg", "image/png", "image/webp", "image/avif"],
+    filesRequiredOnCreate: true,
   },
   fields: [
     {

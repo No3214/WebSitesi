@@ -14,8 +14,8 @@ export function sanitizeMessages(input: unknown): ChatMessage[] {
       const role = typeof item.role === 'string' ? item.role : 'user';
       const content = typeof item.content === 'string' ? item.content.trim() : '';
       return {
-        role: role === 'assistant' || role === 'system' ? role : 'user',
-        content,
+        role: role === 'assistant' ? 'assistant' : 'user',
+        content: content.slice(0, 2000),
       } as ChatMessage;
     })
     .filter((item) => item.content.length > 0)

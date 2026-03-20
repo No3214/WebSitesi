@@ -26,7 +26,7 @@ export const GrowthEngine = {
    * Scans site context vs Brand Identity to detect experience drift.
    */
   runDriftCheck: (currentPath: string, content: string) => {
-    console.log(`[GrowthEngine] Scanning ${currentPath} for identity alignment...`);
+    if (process.env.NODE_ENV === 'development') console.log(`[GrowthEngine] Scanning ${currentPath} for identity alignment...`);
     // Logic to ensure keywords like 'Horasan', 'İnci Hanım', 'Slow Living' are present
     const identityTokens = ['Horasan', 'İnci Hanım', 'Slow Living', 'Merchant', 'Dibek'];
     const foundTokens = identityTokens.filter(token => content.includes(token));

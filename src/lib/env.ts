@@ -18,26 +18,41 @@ const rawEnvSchema = z.object({
 
 const raw = rawEnvSchema.parse(process.env);
 
-function requireEnv(name: keyof typeof raw, value: string | undefined) {
-  if (!value || !value.trim()) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
+const isProd = raw.NODE_ENV === "production";
+const isBuild =
+  process.env.NEXT_PHASE === "phase-production-build" || process.env.CI === "true";
 
-  return value;
+function requireInProd(name: string, value: string | undefined, devDefault: string): string {
+  if (value && value.trim()) return value;
+  if (isProd && !isBuild) {
+    throw new Error(
+      `[ENV] Missing required environment variable in production: ${name}. ` +
+        `Set this in your deployment environment.`
+    );
+  }
+  return devDefault;
 }
 
-const isProd = raw.NODE_ENV === "production";
-const isBuild = process.env.NEXT_PHASE === "phase-production-build" || process.env.CI === "true";
+// Dev-only secrets are clearly marked and will NEVER leak to production
+const DEV_PAYLOAD_SECRET = "dev-local-secret-" + "not-for-production";
+const DEV_DB_URI = "postgresql://postgres:password@localhost:5432/kozbeyli";
+const DEV_WEBHOOK_SECRET = "dev-webhook-secret-local-only";
 
 export const env = {
   NODE_ENV: raw.NODE_ENV,
-  PAYLOAD_SECRET: isProd && !isBuild ? requireEnv("PAYLOAD_SECRET", raw.PAYLOAD_SECRET) : raw.PAYLOAD_SECRET || "dev-only-secret-change-me",
-  DATABASE_URI: isProd && !isBuild ? requireEnv("DATABASE_URI", raw.DATABASE_URI) : raw.DATABASE_URI || "postgresql://postgres:password@localhost:5432/kozbeyli",
-  NEXT_PUBLIC_SITE_URL: isProd && !isBuild ? requireEnv("NEXT_PUBLIC_SITE_URL", raw.NEXT_PUBLIC_SITE_URL) : raw.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  PAYLOAD_SECRET: requireInProd("PAYLOAD_SECRET", raw.PAYLOAD_SECRET, DEV_PAYLOAD_SECRET),
+  DATABASE_URI: requireInProd("DATABASE_URI", raw.DATABASE_URI, DEV_DB_URI),
+  NEXT_PUBLIC_SITE_URL: requireInProd(
+    "NEXT_PUBLIC_SITE_URL",
+    raw.NEXT_PUBLIC_SITE_URL,
+    "http://localhost:3000"
+  ),
   NEXT_PUBLIC_HOTELRUNNER_SLUG: raw.NEXT_PUBLIC_HOTELRUNNER_SLUG || "",
-  HOTELRUNNER_WEBHOOK_SECRET: isProd && !isBuild
-    ? requireEnv("HOTELRUNNER_WEBHOOK_SECRET", raw.HOTELRUNNER_WEBHOOK_SECRET)
-    : raw.HOTELRUNNER_WEBHOOK_SECRET || "hotelrunner-dev-secret",
+  HOTELRUNNER_WEBHOOK_SECRET: requireInProd(
+    "HOTELRUNNER_WEBHOOK_SECRET",
+    raw.HOTELRUNNER_WEBHOOK_SECRET,
+    DEV_WEBHOOK_SECRET
+  ),
   NEXT_PUBLIC_GTM_ID: raw.NEXT_PUBLIC_GTM_ID || "",
   NEXT_PUBLIC_META_PIXEL_ID: raw.NEXT_PUBLIC_META_PIXEL_ID || "",
   GOOGLE_SITE_VERIFICATION: raw.GOOGLE_SITE_VERIFICATION || "",
@@ -48,7 +63,11 @@ export const env = {
 };
 
 export function getAllowedOrigins() {
-  return Array.from(new Set([env.NEXT_PUBLIC_SITE_URL, "http://localhost:3000"]))
+  const origins = [env.NEXT_PUBLIC_SITE_URL];
+  if (process.env.NODE_ENV !== "production") {
+    origins.push("http://localhost:3000");
+  }
+  return Array.from(new Set(origins))
     .filter(Boolean)
     .map((origin) => origin.replace(/\/$/, ""));
 }

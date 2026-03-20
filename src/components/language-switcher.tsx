@@ -1,6 +1,7 @@
 "use client";
 
 import { Languages } from "lucide-react";
+import { trackLanguageSwitch } from "@/lib/analytics";
 
 export function LanguageSwitcher() {
   // const router = useRouter();
@@ -11,6 +12,7 @@ export function LanguageSwitcher() {
     const currentLocale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
     const nextLocale = currentLocale === "en" ? "tr" : "en";
     
+    trackLanguageSwitch(currentLocale, nextLocale);
     document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000`;
     window.location.reload();
   };

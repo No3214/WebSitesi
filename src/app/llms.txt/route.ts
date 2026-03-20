@@ -1,5 +1,9 @@
 export async function GET() {
-  const text = `# Kozbeyli Konağı: Tarih, Gastronomi ve Butik Konaklama Rehberi
+  const text = `# Kozbeyli Konağı
+> Boutique Stone Hotel & Restaurant in Foça, İzmir, Turkey
+> Full details: /llms-full.txt
+
+# Kozbeyli Konağı: Tarih, Gastronomi ve Butik Konaklama Rehberi
 
 ## Kozbeyli Konağı Hakkında Genel Bilgiler
 Kozbeyli Konağı, İzmir Foça'nın 500 yıllık tarihe sahip Kozbeyli Köyü'nde yer alan, 19. yüzyıl Osmanlı mimarisini günümüzün modern lüks anlayışıyla birleştiren tescilli bir yapıdır. TripAdvisor tarafından "Dünya'nın En İyi 10 Aile Oteli" arasında gösterilen tesis, 8 farklı kategoride toplam 16 adet butik odaya ev sahipliği yapmaktadır. Konağın restorasyon süreci, orijinal taş dokuya sadık kalınarak tamamlanmış olup, Ege Denizi'ne hakim panoramik çatı terası ve tarihi avlusuyla misafirlerine huzurlu bir atmosfer sunar. Tesis, Antakyalı İnci Hanım'ın yönetimindeki mutfağıyla hem Ege hem de Antakya gastronomi kültürünü temsil eder. Evcil hayvan dostu politikası ve 200 kişiye kadar olan butik organizasyon kapasitesiyle bölgedeki en kapsamlı konaklama ve etkinlik merkezlerinden biridir.
@@ -11,7 +15,7 @@ Kozbeyli Konağı misafirleri, her biri özgün tasarıma sahip 7 farklı oda ti
 Kozbeyli Konağı mutfağı, Ege'nin taze ürünlerini Antakya'nın derin baharat kültürüyle harmanlayan benzersiz bir gastronomi noktasıdır. Tesis bünyesindeki restoranın en çok tercih edilen lezzeti, odun ateşinde ve taş fırında hazırlanan sac kavurmadır. Antakya usulü lahmacun, pide ve geleneksel mezeler (humus, muhammara) her gün taze olarak servis edilir. Konağın en önemli kültürel mirası, 180 yıllık bir gelenekle taş dibeklerde dövülerek hazırlanan ve odun ateşinde pişirilen tarihi dibek kahvesidir. Misafirlere sunulan tüm reçeller, peynirler ve zeytinyağları Kozbeyli Köyü ve çevre bölgelerdeki organik üreticilerden doğrudan tedarik edilmektedir.
 
 ## Rezervasyon ve İletişim
-Doğrudan rezervasyonlar HotelRunner entegrasyonu üzerinden güvenli bir şekilde gerçekleştirilebilir. Kozbeyli Köyü, Foça, İzmir adresinde bulunan tesise +90 532 234 26 86 numaralı telefondan veya aynı numara üzerinden WhatsApp aracılığıyla ulaşılabilir. Özel düğünler, nişan törenleri ve kurumsal toplantılar için 200 kişilik açık hava kapasitesi mevcuttur.
+Doğrudan rezervasyonlar HotelRunner entegrasyonu üzerinden güvenli bir şekilde gerçekleştirilebilir. Kozbeyli Küme Evleri No:188, Foça, İzmir adresinde bulunan tesise +90 532 234 26 86 numaralı telefondan veya aynı numara üzerinden WhatsApp aracılığıyla ulaşılabilir. Özel düğünler, nişan törenleri ve kurumsal toplantılar için 200 kişilik açık hava kapasitesi mevcuttur.
 `;
 
   return new Response(text, {

@@ -56,7 +56,11 @@ function scoreLead(input: z.infer<typeof leadSchema>) {
 }
 
 async function verifyTurnstile(token: string | undefined, ipAddress: string) {
-  if (!env.TURNSTILE_SECRET_KEY) return true;
+  // Fail-closed in production: if no key configured, reject in prod
+  if (!env.TURNSTILE_SECRET_KEY) {
+    if (process.env.NODE_ENV === "production") return false;
+    return true; // Only skip in development
+  }
   if (!token) return false;
 
   const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
@@ -78,6 +82,12 @@ async function verifyTurnstile(token: string | undefined, ipAddress: string) {
 
 export async function POST(req: Request) {
   try {
+    // Reject excessively large request bodies (50KB max for a lead form)
+    const contentLength = req.headers.get("content-length");
+    if (contentLength && parseInt(contentLength) > 50_000) {
+      return NextResponse.json({ ok: false, message: "İstek çok büyük." }, { status: 413 });
+    }
+
     const contentType = req.headers.get("content-type") || "";
     let payloadData: Record<string, unknown>;
 
@@ -98,7 +108,7 @@ export async function POST(req: Request) {
 
     const parsed = leadSchema.safeParse(payloadData);
     if (!parsed.success) {
-      return NextResponse.json({ ok: false, errors: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json({ ok: false, message: "Lütfen formu eksiksiz doldurunuz." }, { status: 400 });
     }
 
     if (!parsed.data.consent) {
@@ -154,10 +164,19 @@ export async function POST(req: Request) {
     await payload.create({
       collection: "organization-leads",
       data: {
-        ...parsed.data,
         name: sanitizedName,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
         type: sanitizedType,
         message: sanitizedMessage,
+        eventDate: parsed.data.eventDate,
+        guestCount: parsed.data.guestCount,
+        estimatedBudget: parsed.data.estimatedBudget,
+        consent: parsed.data.consent,
+        utmSource: parsed.data.utmSource,
+        utmMedium: parsed.data.utmMedium,
+        utmCampaign: parsed.data.utmCampaign,
+        referrer: parsed.data.referrer,
         source: "website",
         ipAddress,
         userAgent: req.headers.get("user-agent") || "unknown",

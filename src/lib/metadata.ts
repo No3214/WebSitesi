@@ -17,11 +17,11 @@ const verification = {
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {
-    default: "Kozbeyli Konağı | Taş Butik Otel & Restoran | Foça",
+    default: "Kozbeyli Konağı | Taş Butik Otel & Restoran | Foça, İzmir",
     template: "%s | Kozbeyli Konağı",
   },
   description:
-    "Foça Kozbeyli’de 500 yıllık Osmanlı taş mimarisiyle butik konaklama ve gurme restoran deneyimi. Köy kahvaltısı, Ege & Antakya mutfağı ve huzur dolu bir tatil.",
+    "Foça Kozbeyli'de 500 yıllık Osmanlı taş mimarisiyle butik konaklama ve gurme restoran deneyimi. Köy kahvaltısı, Ege & Antakya mutfağı ve huzur dolu bir tatil.",
   keywords: [
     "kozbeyli konağı",
     "foça butik otel",
@@ -33,8 +33,12 @@ export const defaultMetadata: Metadata = {
     "ege mutfağı restoran",
     "doğa tatili foça",
     "evcil hayvan dostu butik otel",
+    "foça düğün mekanı",
+    "izmir romantik otel",
+    "ege tatili",
+    "butik otel foça izmir",
   ],
-  authors: [{ name: "Kozbeyli Konağı Team" }],
+  authors: [{ name: "Kozbeyli Konağı" }],
   creator: "Kozbeyli Konağı",
   publisher: "Kozbeyli Konağı",
   formatDetection: {
@@ -43,16 +47,23 @@ export const defaultMetadata: Metadata = {
     telephone: true,
   },
   verification,
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
+  manifest: "/manifest.json",
   alternates: {
     canonical: "/",
     languages: {
       "tr-TR": "/",
-      "en-US": "/en",
+      "x-default": "/",
     },
   },
   openGraph: {
     type: "website",
     locale: "tr_TR",
+    alternateLocale: "en_US",
     url: absoluteUrl("/"),
     siteName: "Kozbeyli Konağı",
     title: "Kozbeyli Konağı | Lüks Taş Butik Otel & Gurme Restoran | Foça",
@@ -60,16 +71,16 @@ export const defaultMetadata: Metadata = {
       "Tarihin kalbinde, lüks ve konforun buluşma noktası. Taş mimari odalar, ödüllü mutfak ve Ege'nin en huzurlu köyü Kozbeyli'de sizi bekliyoruz.",
     images: [
       {
-        url: absoluteUrl("/img/hero-main.jpg"),
+        url: absoluteUrl("/images/rooms/bahce-1.jpeg"),
         width: 1200,
         height: 630,
-        alt: "Kozbeyli Konağı Genel Görünüm",
+        alt: "Kozbeyli Konağı - Bahçe Manzaralı Taş Butik Otel",
       },
       {
-        url: absoluteUrl("/img/stone-room-premium.jpg"),
+        url: absoluteUrl("/images/rooms/deniz-1.jpeg"),
         width: 1200,
         height: 630,
-        alt: "Lüks Taş Oda Deneyimi",
+        alt: "Kozbeyli Konağı - Foça Körfezi Deniz Manzarası",
       },
     ],
   },
@@ -79,9 +90,15 @@ export const defaultMetadata: Metadata = {
     creator: "@kozbeylikonagi",
     title: "Kozbeyli Konağı | Foça'nın En Prestijli Butik Oteli",
     description: "Taş mimari, gurme lezzetler ve eşsiz bir Ege köyü hikayesi.",
-    images: [absoluteUrl("/img/hero-main.jpg")],
+    images: [absoluteUrl("/images/rooms/bahce-1.jpeg")],
   },
   category: "travel",
+  other: {
+    "geo.region": "TR-35",
+    "geo.placename": "Foça, İzmir",
+    "geo.position": "38.7275;26.7456",
+    ICBM: "38.7275, 26.7456",
+  },
   robots: {
     index: true,
     follow: true,

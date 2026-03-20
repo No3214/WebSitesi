@@ -3,59 +3,116 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { FadeIn } from "@/components/animations";
-import { useEffect, useState } from "react";
-import { getDictionary } from "@/lib/dictionary";
+import { useDictionary } from "@/hooks/use-dictionary";
 import { SiteHeader } from "@/components/site-header";
-import { rooms as fallbackRooms } from "@/data/rooms";
+import { whatsappLink } from "@/lib/constants";
+import { trackRoomDetailView, trackWhatsAppClick } from "@/lib/analytics";
+import { RoomCard } from "@/components/room-card";
+import { ImageLightbox } from "@/components/image-lightbox";
+import { rooms as allRooms, localizeRoom } from "@/data/rooms";
+
+const t = {
+  tr: {
+    home: "Ana Sayfa",
+    rooms: "Odalar",
+    badge: "MÜHÜRLÜ TAŞ KONAK",
+    size: "Büyüklük",
+    capacity: "Kapasite",
+    view: "Manzara",
+    experience: "Oda Deneyimi",
+    bookingAdvantage: "DİREKT REZERVASYON AVANTAJI",
+    perNight: "/ gece · serpme kahvaltı dahil",
+    callForPrice: "Fiyat İçin Arayınız",
+    bookCta: "EN İYİ FİYATLA YERİNİZİ AYIRIN",
+    whatsappCta: "WhatsApp ile Bilgi Alın",
+    otherRooms: "Diğer Odalarımız",
+  },
+  en: {
+    home: "Home",
+    rooms: "Rooms",
+    badge: "SEALED STONE MANSION",
+    size: "Size",
+    capacity: "Capacity",
+    view: "View",
+    experience: "Room Experience",
+    bookingAdvantage: "DIRECT BOOKING ADVANTAGE",
+    perNight: "/ night · spread breakfast included",
+    callForPrice: "Call for Price",
+    bookCta: "BOOK AT THE BEST PRICE",
+    whatsappCta: "Inquire via WhatsApp",
+    otherRooms: "Our Other Rooms",
+  },
+} as const;
 
 export function RoomDetailClient({ slug }: { slug: string }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(null);
-  const room = fallbackRooms.find((item) => item.slug === slug);
+  const { dict, locale } = useDictionary();
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const rawRoom = allRooms.find((item) => item.slug === slug);
 
-  useEffect(() => {
-    const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
-    getDictionary(locale).then(setDict);
-  }, []);
+  useEffect(() => { trackRoomDetailView(slug); }, [slug]);
 
-  if (!room) notFound();
-  if (!dict) return <div className="loading-screen" />;
+  if (!rawRoom) notFound();
+  if (!dict) return (
+    <div className="loading-screen">
+      <div className="container" style={{ paddingTop: '120px' }}>
+        <div className="skeleton skeleton-text-short" />
+        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '80px' }}>
+          <div className="skeleton" style={{ height: '650px' }} />
+          <div>
+            <div className="skeleton skeleton-text" />
+            <div className="skeleton" style={{ height: '40px', width: '80%', marginBottom: '16px' }} />
+            <div className="skeleton" style={{ height: '120px', marginBottom: '24px' }} />
+            <div className="skeleton" style={{ height: '200px' }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const room = localizeRoom(rawRoom, locale);
+  const labels = t[locale];
+  const otherRooms = allRooms.filter((r) => r.slug !== slug).slice(0, 3);
 
   return (
     <>
       <SiteHeader />
-      <main className="section" style={{ paddingTop: '150px' }}>
+      <main className="section" style={{ paddingTop: '120px' }}>
         <div className="container">
+          {/* Breadcrumb */}
+          <nav style={{ marginBottom: '32px', fontSize: '0.82rem', color: '#999' }} aria-label="Breadcrumb">
+            <Link href="/" style={{ color: '#999' }}>{labels.home}</Link>
+            <span style={{ margin: '0 8px' }}>/</span>
+            <Link href="/odalar" style={{ color: '#999' }}>{labels.rooms}</Link>
+            <span style={{ margin: '0 8px' }}>/</span>
+            <span style={{ color: 'var(--olive)' }}>{room.title}</span>
+          </nav>
           <div className="detail-layout">
             <FadeIn direction="left">
               <div className="detail-media">
-                 <div className="main-image-wrapper">
-                    {room.video ? (
-                      <video 
-                        src={room.video} 
-                        autoPlay 
-                        muted 
-                        loop 
-                        playsInline 
-                        className="object-cover absolute inset-0 w-full h-full"
-                      />
-                    ) : (
-                      <Image 
-                        src={room.images[0]} 
-                        alt={room.title} 
-                        fill 
-                        className="object-cover"
-                        priority
-                      />
-                    )}
+                 <div className="main-image-wrapper" onClick={() => setLightboxIndex(0)} style={{ cursor: 'zoom-in' }}>
+                    <Image
+                      src={rawRoom.images[0]}
+                      alt={room.title}
+                      fill
+                      className="object-cover"
+                      priority
+                      sizes="(max-width: 1200px) 100vw, 55vw"
+                    />
                  </div>
                  <div className="image-strip">
-                   {room.images.map((img, i) => (
-                     <div key={i} className="strip-item hover-scale">
-                       <Image src={img} alt={`${room.title} view ${i}`} fill className="object-cover" />
-                     </div>
+                   {rawRoom.images.map((img, i) => (
+                     <button
+                       key={i}
+                       type="button"
+                       className="strip-item hover-scale"
+                       aria-label={`${room.title} ${i + 1}`}
+                       onClick={() => setLightboxIndex(i)}
+                     >
+                       <Image src={img} alt={`${room.title} ${i + 1}`} fill className="object-cover" sizes="120px" />
+                     </button>
                    ))}
                  </div>
               </div>
@@ -63,30 +120,30 @@ export function RoomDetailClient({ slug }: { slug: string }) {
 
             <FadeIn direction="right" delay={0.2}>
               <div className="detail-content">
-                <div className="premium-badge">MÜHÜRLÜ TAŞ KONAK</div>
+                <div className="premium-badge">{labels.badge}</div>
                 <h1 className="serif h1-premium">{room.title}</h1>
                 <p className="description-premium">{room.description}</p>
 
                 <div className="specs-row">
                   <div className="spec-card">
                     <div className="spec-icon">📏</div>
-                    <span className="spec-label">Büyüklük</span>
-                    <span className="spec-value">{room.size}</span>
+                    <span className="spec-label">{labels.size}</span>
+                    <span className="spec-value">{rawRoom.size}</span>
                   </div>
                   <div className="spec-card">
                     <div className="spec-icon">👥</div>
-                    <span className="spec-label">Kapasite</span>
+                    <span className="spec-label">{labels.capacity}</span>
                     <span className="spec-value">{room.capacity}</span>
                   </div>
                   <div className="spec-card">
                     <div className="spec-icon">🪟</div>
-                    <span className="spec-label">Manzara</span>
+                    <span className="spec-label">{labels.view}</span>
                     <span className="spec-value">{room.view}</span>
                   </div>
                 </div>
 
                 <div className="amenities-grid-premium">
-                  <h3 className="serif text-xl mb-4">Oda Deneyimi</h3>
+                  <h3 className="serif text-xl mb-4">{labels.experience}</h3>
                   <div className="amenities-list">
                     {room.amenities.map((item, i) => (
                       <div key={i} className="amenity-item-premium">
@@ -99,18 +156,72 @@ export function RoomDetailClient({ slug }: { slug: string }) {
 
                 <div className="booking-card-premium">
                   <div className="price-stack">
-                    <span className="price-eyebrow">DİREKT REZERVASYON AVANTAJI</span>
-                    <span className="price-main">Lütfen Tarih Seçiniz</span>
+                    <span className="price-eyebrow">{labels.bookingAdvantage}</span>
+                    {rawRoom.price ? (
+                      <>
+                        <span className="price-main">₺{rawRoom.price.toLocaleString('tr-TR')}</span>
+                        <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', display: 'block', marginTop: '4px' }}>{labels.perNight}</span>
+                      </>
+                    ) : (
+                      <span className="price-main">{labels.callForPrice}</span>
+                    )}
                   </div>
                   <Link href="/#rezervasyon" className="button premium-cta full">
-                    EN İYİ FİYATLA YERİNİZİ AYIRIN
+                    {labels.bookCta}
                   </Link>
+                  <a
+                    href={whatsappLink(
+                      locale === "tr"
+                        ? `Merhaba, ${room.title} hakkında bilgi almak istiyorum.`
+                        : `Hello, I would like to inquire about the ${room.title}.`
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="whatsapp-cta"
+                    onClick={() => trackWhatsAppClick(`/odalar/${slug}`)}
+                  >
+                    💬 {labels.whatsappCta}
+                  </a>
                 </div>
               </div>
             </FadeIn>
           </div>
+
+          {/* Other Rooms */}
+          {otherRooms.length > 0 && (
+            <div style={{ marginTop: '80px' }}>
+              <h2 className="serif" style={{ fontSize: '1.8rem', color: 'var(--olive)', marginBottom: '32px' }}>{labels.otherRooms}</h2>
+              <div className="card-grid">
+                {otherRooms.map((r) => {
+                  const lr = localizeRoom(r, locale);
+                  return (
+                    <RoomCard
+                      key={r.slug}
+                      slug={r.slug}
+                      title={lr.title}
+                      capacity={lr.capacity}
+                      view={lr.view}
+                      size={r.size}
+                      image={r.images[0]}
+                      locale={locale}
+                      compact
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </main>
+
+      {lightboxIndex !== null && (
+        <ImageLightbox
+          images={rawRoom.images}
+          initialIndex={lightboxIndex}
+          alt={room.title}
+          onClose={() => setLightboxIndex(null)}
+        />
+      )}
 
       <style jsx>{`
         .detail-layout {
@@ -142,8 +253,16 @@ export function RoomDetailClient({ slug }: { slug: string }) {
           overflow: hidden;
           cursor: pointer;
           transition: transform 0.3s ease;
+          border: none;
+          padding: 0;
+          background: transparent;
+          width: 100%;
         }
-        
+        .strip-item:focus-visible {
+          outline: 3px solid var(--gold);
+          outline-offset: 2px;
+        }
+
         .hover-scale:hover { transform: scale(1.05); }
 
         .premium-badge {
@@ -180,11 +299,11 @@ export function RoomDetailClient({ slug }: { slug: string }) {
         }
 
         .spec-card {
-          background: #fdfaf6;
+          background: var(--soft);
           padding: 24px;
-          border-radius: 12px;
+          border-radius: 0;
           text-align: center;
-          border: 1px solid #f1ece1;
+          border: 1px solid var(--border);
         }
 
         .spec-icon { font-size: 1.5rem; margin-bottom: 12px; }
@@ -207,7 +326,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
         }
 
         .booking-card-premium {
-          background: var(--zinc-900);
+          background: var(--olive);
           color: white;
           padding: 40px;
           border-radius: 16px;
@@ -228,19 +347,35 @@ export function RoomDetailClient({ slug }: { slug: string }) {
         }
         .premium-cta:hover { background: var(--gold); color: white; }
 
+        .whatsapp-cta {
+          display: block;
+          text-align: center;
+          margin-top: 12px;
+          padding: 14px;
+          border: 1px solid rgba(255,255,255,0.2);
+          border-radius: 8px;
+          color: rgba(255,255,255,0.85);
+          font-size: 0.85rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.3s ease;
+        }
+        .whatsapp-cta:hover {
+          background: rgba(37, 211, 102, 0.15);
+          border-color: #25d366;
+          color: #25d366;
+          opacity: 1;
+        }
+
         @media (max-width: 1200px) {
           .detail-layout { grid-template-columns: 1fr; gap: 40px; }
           .main-image-wrapper { height: 450px; }
           .h1-premium { font-size: 3rem; }
         }
 
-        @media (max-width: 1024px) {
-          .detail-layout {
-            grid-template-columns: 1fr;
-          }
-          .main-image-wrapper {
-            height: 450px;
-          }
+        @media (max-width: 768px) {
+          .h1-premium { font-size: 2rem; }
+          .description-premium { font-size: 1rem; }
         }
       `}</style>
     </>

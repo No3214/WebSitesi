@@ -1,0 +1,19 @@
+{
+  "name": "Kozbeyli Konağı | Taş Butik Otel & Restoran",
+  "short_name": "Kozbeyli Konağı",
+  "description": "Foça'da 500 yıllık Osmanlı taş mimarisiyle butik konaklama ve gurme restoran.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F5F0",
+  "theme_color": "#505D4B",
+  "orientation": "portrait-primary",
+  "categories": ["travel", "food"],
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

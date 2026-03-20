@@ -1,7 +1,13 @@
-"use client";
-
+import { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
+
+export const metadata: Metadata = {
+  title: "Gizlilik Politikası | Kozbeyli Konağı",
+  description: "Kozbeyli Konağı gizlilik politikası. Kişisel verilerinizin korunması ve işlenmesi hakkında bilgilendirme.",
+  alternates: { canonical: "/gizlilik-politikasi" },
+  robots: { index: true, follow: true },
+};
 
 export default function PrivacyPolicyPage() {
   return (
@@ -11,7 +17,7 @@ export default function PrivacyPolicyPage() {
         <div className="container max-w-4xl">
           <FadeIn>
             <h1 className="serif text-4xl mb-12">Gizlilik Politikası</h1>
-            
+
             <div className="prose prose-zinc prose-sm leading-relaxed text-zinc-600 space-y-8">
               <section>
                 <h2 className="text-zinc-900 font-bold mb-4">GİZLİLİK TAAHHÜDÜ</h2>

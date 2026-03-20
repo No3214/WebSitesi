@@ -19,7 +19,7 @@ export const LivingMuseumMap = () => {
       y: 150, 
       title: "Taşın Hafızası: Horasan", 
       detail: "500 yıldır bu konağı ayakta tutan Horasan harcı, taşların birbiriyle sessizce konuştuğu bir mirastır. Çimento girmemiş bu duvarlar, konağın her mevsim nefes almasını sağlar.",
-      image: "https://images.unsplash.com/photo-1518173946687-a4c8a483592e?auto=format&fit=crop&w=800&q=80"
+      image: "/images/rooms/standart-3.jpeg"
     },
     { 
       id: 2, 
@@ -27,7 +27,7 @@ export const LivingMuseumMap = () => {
       y: 300, 
       title: "Zamanın Tortusu: Dibek", 
       detail: "180 yıllık taş dibek, Kozbeyli'nin en eski tanıklarından biridir. Hala her sabah, İnci Hanım'ın kahve öğütme ritüeliyle uyanır ve o tanıdık sesi avluda yankılatır.",
-      image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80"
+      image: "/images/rooms/aile-1.jpeg"
     },
     { 
       id: 3, 
@@ -35,7 +35,7 @@ export const LivingMuseumMap = () => {
       y: 450, 
       title: "Köyün Gizli Mahzeni", 
       detail: "Eski tüccarların zeytinyağı ve şarap küplerini sakladığı bu serin mahzen, dışarıdaki kavurucu sıcağa rağmen Kozbeyli'nin en serin ve en sessiz köşesidir.",
-      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"
+      image: "/images/rooms/uc-kisilik-2.jpeg"
     },
     { 
       id: 4, 
@@ -43,7 +43,7 @@ export const LivingMuseumMap = () => {
       y: 350, 
       title: "Sıvı Altın: Kozbeyli Zeytinyağı", 
       detail: "Konağımızın bahçesindeki asırlık ağaçlardan süzülen, markalaşmamış ama el değmemiş saflıktaki zeytinyağımız. Toprağın bu cömert hediyesi, soframızın baş tacıdır.",
-      image: "https://images.unsplash.com/photo-1474979266404-7eaacbadb8c5?auto=format&fit=crop&w=800&q=80"
+      image: "/images/rooms/bahce-4.jpeg"
     }
   ];
 
@@ -98,11 +98,12 @@ export const LivingMuseumMap = () => {
             className="absolute top-8 right-8 w-80 bg-zinc-900/95 backdrop-blur-2xl border border-white/10 p-5 rounded-2xl z-20 shadow-2xl pointer-events-none"
           >
           <div className="relative h-40 w-full mb-4 rounded-xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
-             <Image 
-                src={heritagePoints.find(p => p.id === activePoint)?.image || ""} 
-                alt="Discovery" 
-                fill 
+             <Image
+                src={heritagePoints.find(p => p.id === activePoint)?.image || ""}
+                alt={heritagePoints.find(p => p.id === activePoint)?.title || "Heritage point"}
+                fill
                 className="object-cover"
+                sizes="320px"
              />
           </div>
           <div className="flex items-center gap-3 text-gold mb-2">

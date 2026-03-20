@@ -7,8 +7,8 @@ export const AgentPerformanceLogs: CollectionConfig = {
     group: "Growth",
   },
   access: {
-    read: () => true,
-    create: () => true, // Allow agents to create logs
+    read: ({ req }) => Boolean(req.user),
+    create: ({ req }) => Boolean(req.user),
   },
   fields: [
     {

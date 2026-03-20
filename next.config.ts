@@ -6,9 +6,9 @@ const csp = [
   "img-src 'self' data: https: blob:",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com data:",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://eu-assets.i.posthog.com",
-  "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://connect.facebook.net https://graph.facebook.net https://graph.facebook.com https://app.hotelrunner.com https://eu.i.posthog.com https://eu-assets.i.posthog.com",
-  "frame-src 'self' https://www.googletagmanager.com https://www.facebook.com https://app.hotelrunner.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://eu-assets.i.posthog.com https://challenges.cloudflare.com",
+  "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://connect.facebook.net https://graph.facebook.net https://graph.facebook.com https://app.hotelrunner.com https://eu.i.posthog.com https://eu-assets.i.posthog.com https://challenges.cloudflare.com",
+  "frame-src 'self' https://www.googletagmanager.com https://www.facebook.com https://app.hotelrunner.com https://challenges.cloudflare.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self' https://app.hotelrunner.com",
@@ -17,15 +17,17 @@ const csp = [
 ].join("; ");
 
 const securityHeaders = [
-  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+  { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-XSS-Protection", value: "1; mode=block" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-  { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" },
+  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "Content-Security-Policy", value: csp },
 ];
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   outputFileTracingRoot: __dirname,
   images: {
     remotePatterns: [

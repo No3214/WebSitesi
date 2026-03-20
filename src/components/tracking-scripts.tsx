@@ -47,6 +47,13 @@ export function TrackingScripts() {
         </>
       ) : null}
 
+      {/* Cloudflare Turnstile — always loaded (functional, not marketing) */}
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        strategy="lazyOnload"
+        async
+      />
+
       {consent.marketing && env.NEXT_PUBLIC_META_PIXEL_ID ? (
         <>
           <Script id="fb-pixel" strategy="afterInteractive">

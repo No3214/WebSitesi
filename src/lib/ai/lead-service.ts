@@ -40,7 +40,7 @@ export const LeadService = {
    * Syncs lead to Payload CMS.
    */
   syncLeadToCRM: async (leadData: { budget?: number; guests: number; intent: string; score: number }) => {
-    console.log('[LeadService] Syncing lead to Payload CMS...', leadData);
+    if (process.env.NODE_ENV === 'development') console.log('[LeadService] Syncing lead to Payload CMS...', { intent: leadData.intent, guests: leadData.guests });
     // Simulated fetch call to Payload endpoint
     // await fetch('/api/leads', { method: 'POST', body: JSON.stringify(leadData) });
     return { success: true, leadId: 'lead_' + Math.random().toString(36).substr(2, 9) };

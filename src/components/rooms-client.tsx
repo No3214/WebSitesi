@@ -1,24 +1,27 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { SectionTitle } from "@/components/section-title";
-import { rooms as fallbackRooms } from "@/data/rooms";
+import { rooms as allRooms, roomSummary, localizeRoom } from "@/data/rooms";
 import { FadeIn, StaggerContainer } from "@/components/animations";
-import { useEffect, useState } from "react";
-import { getDictionary } from "@/lib/dictionary";
+import { useDictionary } from "@/hooks/use-dictionary";
 import { SiteHeader } from "@/components/site-header";
+import { RoomCard } from "@/components/room-card";
+
+const summaryLabel = { tr: "Toplam Oda", en: "Total Rooms" } as const;
 
 export function RoomsClient() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(null);
+  const { dict, locale } = useDictionary();
 
-  useEffect(() => {
-    const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
-    getDictionary(locale).then(setDict);
-  }, []);
-
-  if (!dict) return <div className="loading-screen" />;
+  if (!dict) return (
+    <div className="loading-screen">
+      <div className="container" style={{ paddingTop: '120px' }}>
+        <div className="skeleton skeleton-text" style={{ margin: '0 auto 40px', width: '300px' }} />
+        <div className="card-grid">
+          {[1,2,3].map(i => <div key={i} className="skeleton skeleton-card" />)}
+        </div>
+      </div>
+    </div>
+  );
 
   const t = dict.Rooms;
 
@@ -28,46 +31,48 @@ export function RoomsClient() {
       <main className="section" style={{ paddingTop: '120px' }}>
         <div className="container">
           <FadeIn>
+            <h1 className="sr-only">{locale === "en" ? "Our Rooms" : "Odalarımız"}</h1>
             <SectionTitle
               eyebrow={t.eyebrow}
               title={t.title}
               text={t.text}
             />
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', flexWrap: 'wrap', marginBottom: '48px' }}>
+              <div style={{ textAlign: 'center', padding: '16px 24px', background: 'var(--soft)', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--olive)', display: 'block' }}>{roomSummary.total}</span>
+                <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#999' }}>{summaryLabel[locale]}</span>
+              </div>
+              {roomSummary.types.map((item, i) => (
+                <div key={i} style={{ textAlign: 'center', padding: '16px 24px', background: 'var(--soft)', border: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--olive)', display: 'block' }}>{item.count}</span>
+                  <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: '#999' }}>{locale === "en" ? item.typeEn : item.type}</span>
+                </div>
+              ))}
+            </div>
           </FadeIn>
 
           <StaggerContainer delay={0.2}>
             <div className="card-grid">
-              {fallbackRooms.map((room, index) => (
-                <FadeIn key={room.slug}>
-                  <Link href={`/odalar/${room.slug}`} className="card">
-                    <div style={{ position: 'relative', height: '350px', overflow: 'hidden' }}>
-                      <Image 
-                        src={room.images[0]} 
-                        alt={room.title} 
-                        fill 
-                        className="object-cover"
-                        priority={index < 3}
-                      />
-                      {room.video && (
-                        <video
-                          src={room.video}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          className="absolute inset-0 w-full h-full object-cover opacity-0 hover:opacity-100 transition-opacity duration-700"
-                        />
-                      )}
-                    </div>
-                    <div className="card-body">
-                      <span className="meta">{room.capacity} · {room.view}</span>
-                      <h3>{room.title}</h3>
-                      <p>{room.short}</p>
-                      <span className="button secondary" style={{ width: '100%', padding: '10px' }}>{t.detail}</span>
-                    </div>
-                  </Link>
-                </FadeIn>
-              ))}
+              {allRooms.map((room, index) => {
+                const r = localizeRoom(room, locale);
+                return (
+                  <FadeIn key={room.slug}>
+                    <RoomCard
+                      slug={room.slug}
+                      title={r.title}
+                      short={r.short}
+                      capacity={r.capacity}
+                      view={r.view}
+                      size={room.size}
+                      image={room.images[0]}
+                      price={room.price}
+                      locale={locale}
+                      detailLabel={t.detail}
+                      priority={index < 3}
+                    />
+                  </FadeIn>
+                );
+              })}
             </div>
           </StaggerContainer>
         </div>

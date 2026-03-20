@@ -12,21 +12,21 @@ const fallbackPackages = [
     short: "19. yüzyıl tescilli taş konak avlusunda, asırlık zeytin ağaçları eşliğinde masalsı bir imza düğünü.",
     description: "Kozbeyli Konağı, Rum ve Türk mimarisinin ortak mirasından süzülen tescilli bir yapıdır. 150-200 kişiye kadar ağırlama kapasitesine sahip geniş avlumuzda, aslına uygun restore edilmiş taş duvarlar ve geleneksel Horasan harcı işçiliği arasında, her detayı 'Uzman' ekibimizce planlanan prestijli düğünlere ev sahipliği yapıyoruz.",
     category: "Düğün & Nişan",
-    image: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80"
+    image: "/images/rooms/balkonlu-aile-1.jpeg"
   },
   {
     title: "Kurumsal 'Off-Site' Deneyimi",
     short: "İzmir'e 15 dakika mesafede, Kozbeyli taşının termal konforuyla yaratıcı kurumsal buluşmalar.",
     description: "Şehrin gürültüsünden arınmış, Kozbeyli taşının doğal nefes alma özelliği sayesinde yaz aylarında bile doğal serinlik sunan toplantı alanlarımızda verimliliği artırın. 40 kişiye kadar butik toplantı kapasitemiz, yüksek hızlı internet ve şömineli kapalı alanımızla kurumsal prestiji tarihle birleştiriyoruz.",
     category: "Kurumsal",
-    image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80"
+    image: "/images/rooms/deniz-2.jpeg"
   },
   {
     title: "Gurme Gastronomi Kutlamaları",
     short: "İnci Hanım'ın Antakya mutfağı ve 180 yıllık dibek taşında dövülen kahve eşliğinde kutlamalar.",
     description: "Doğum günü veya yıl dönümü gibi özel anlarınızı, Antakya ve Ege mutfağının hibritleştiği gurme lezzetlerle taçlandırın. Konak avlusundaki 180 yıllık orijinal dibek taşında elde dövülen ve odun ateşinde ağır ağır pişen imza Dibek kahvemiz, kutlamanıza gerçek bir tarihsel doku katacak.",
     category: "Özel Gün",
-    image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80"
+    image: "/images/rooms/aile-2.jpeg"
   }
 ];
 
@@ -37,6 +37,7 @@ export function OrganizationsClient() {
       <main className="section" style={{ paddingTop: '120px' }}>
         <div className="container">
           <FadeIn>
+            <h1 className="sr-only">Sizin Hikayeniz, Bizim Mekanımız</h1>
             <SectionTitle
               eyebrow="ORGANİZASYON"
               title="Sizin Hikayeniz, Bizim Mekanımız"
@@ -50,11 +51,12 @@ export function OrganizationsClient() {
                 <FadeIn key={item.title}>
                   <div className="org-card">
                     <div className="org-image-wrapper">
-                      <Image 
-                        src={item.image} 
-                        alt={item.title} 
-                        fill 
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
                         className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 33vw"
                         priority={index === 0}
                       />
                     </div>

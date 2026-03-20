@@ -18,7 +18,7 @@ export const HeritageArchive = () => {
         "Taşın Nefesi"
       ],
       description: "Bu duvarlar sadece taş ve kum değil; 500 yılın yorgunluğunu ve huzurunu emmiş bir hayattır. Geleneksel Horasan harcının o yumuşak dokusu, konağımıza o &apos;yaşayan bina&apos; ruhunu veren asıl sırdır.",
-      image: "https://images.unsplash.com/photo-1518173946687-a4c8a483592e?auto=format&fit=crop&w=800&q=80"
+      image: "/images/rooms/standart-1.jpeg"
     },
     {
       id: "zeytinyagi",
@@ -30,7 +30,7 @@ export const HeritageArchive = () => {
         "Hasat Mirası"
       ],
       description: "Marka etiketlerinin ötesinde, toprağımızın bize sunduğu en saf hali. Her damlasında Kozbeyli toprağının karakterini taşıyan, el değmemiş, dürüst ve kadim bir tat.",
-      image: "https://images.unsplash.com/photo-1474979266404-7eaacbadb8c5?auto=format&fit=crop&w=800&q=80"
+      image: "/images/rooms/deniz-4.jpeg"
     },
     {
       title: "Ahşabın Şiiri",
@@ -41,7 +41,7 @@ export const HeritageArchive = () => {
         "Eski Pithoi Küpleri"
       ],
       description: "Zemin katın devasa taş kemerleri altındaki ahşap detaylar, konağın tüccar geçmişinin sessiz temsilcileridir. Ahşabın kokusu, tarihin içinden süzülüp bugüne ulaşan bir zaman yolculuğudur.",
-      image: "https://images.unsplash.com/photo-1464146072230-91cabc968266?auto=format&fit=crop&w=800&q=80"
+      image: "/images/rooms/uc-kisilik-4.jpeg"
     }
   ];
 
@@ -70,7 +70,7 @@ export const HeritageArchive = () => {
             className="flex flex-col gap-6"
           >
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000 border border-zinc-800">
-              <Image src={item.image} alt={item.title} fill className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[2000ms]" />
+              <Image src={item.image} alt={item.title} fill className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[2000ms]" sizes="(max-width: 768px) 100vw, 33vw" />
               <div className="absolute inset-x-4 bottom-4 bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-white/5">
                 <div className="grid grid-cols-2 gap-2">
                   {item.specs.map((spec, j) => (

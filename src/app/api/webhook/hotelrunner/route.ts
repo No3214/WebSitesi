@@ -67,7 +67,7 @@ async function writeAuditLog(data: Record<string, unknown>) {
 }
 
 export async function GET() {
-  return NextResponse.json({ status: "active" });
+  return new NextResponse(null, { status: 404 });
 }
 
 export async function POST(req: Request) {
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
   }
 
   // Security Hardening: Ensure we are using a real secret in production
-  if (process.env.NODE_ENV === "production" && env.HOTELRUNNER_WEBHOOK_SECRET === "hotelrunner-dev-secret") {
+  if (process.env.NODE_ENV === "production" && (env.HOTELRUNNER_WEBHOOK_SECRET === "hotelrunner-dev-secret" || env.HOTELRUNNER_WEBHOOK_SECRET === "dev-webhook-secret-local-only")) {
     console.error("[WEBHOOK] CRITICAL: Webhook attempting to run with dev secret in production!");
     return NextResponse.json({ ok: false, error: "Configuration Error" }, { status: 500 });
   }
@@ -99,7 +99,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, duplicate: true }, { status: 200 });
   }
 
+  const contentLength = parseInt(req.headers.get("content-length") || "0", 10);
+  if (contentLength > 102400) {
+    return NextResponse.json({ ok: false, error: "Payload too large" }, { status: 413 });
+  }
+
   const bodyText = await req.text();
+  if (bodyText.length > 102400) {
+    return NextResponse.json({ ok: false, error: "Payload too large" }, { status: 413 });
+  }
   const expectedSignature = createDigest(bodyText);
 
   if (!safeCompare(signature, expectedSignature)) {
@@ -149,7 +157,7 @@ export async function POST(req: Request) {
 
   const payload = await getPayloadClient();
   if (!payload) {
-    throw new Error("Payload client could not be initialized");
+    return NextResponse.json({ ok: false, error: "Service unavailable" }, { status: 503 });
   }
 
   const reservationId = String(reservation.id);

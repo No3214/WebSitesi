@@ -1,50 +1,49 @@
 import type { ReactNode } from "react";
-import { Suspense } from "react";
-import { ConversionMotivators } from "@/components/conversion-motivators";
 import { CookieConsent } from "@/components/cookie-consent";
-import { DigitalConcierge } from "@/components/digital-concierge";
 import { SiteFooter } from "@/components/site-footer";
 import { TrackingScripts } from "@/components/tracking-scripts";
 import { defaultMetadata } from "@/lib/metadata";
 import "./globals.css";
 
 import { FloatingContact } from "@/components/floating-contact";
-import { ExitIntent } from "@/components/exit-intent";
-import { SunsetMode } from "@/components/sunset-mode";
 import { MobileActionBar } from "@/components/mobile-action-bar";
-import { LoadingBar } from "@/components/loading-bar";
+import { ScrollProgress } from "@/components/scroll-progress";
+import { BackToTop } from "@/components/back-to-top";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
-
-import { ReputationRibbon } from "@/components/reputation-ribbon";
-
-import { ConversionVelocity } from "@/components/conversion-velocity";
-import { AtmosphericImmersion } from "@/components/atmospheric-immersion";
+import { Providers } from "@/components/providers";
 
 export const metadata = defaultMetadata;
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="tr">
+      <head>
+        <meta name="theme-color" content="#505D4B" />
+        <meta name="color-scheme" content="light" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600&family=Raleway:wght@300;400;500;600;700&display=swap"
+        />
+      </head>
       <body>
+        <a href="#main-content" className="skip-nav">İçeriğe Geç</a>
         <ErrorBoundary>
           <CSPostHogProvider>
-            <Suspense fallback={null}>
-              <LoadingBar />
-            </Suspense>
-            <ReputationRibbon />
-            <ConversionVelocity />
-            <AtmosphericImmersion />
-            <TrackingScripts />
-            {children}
-            <SiteFooter />
-            <FloatingContact />
-            <ExitIntent />
-            <SunsetMode />
-            <MobileActionBar />
-            <DigitalConcierge />
-            <ConversionMotivators />
-            <CookieConsent />
+            <Providers>
+              <ScrollProgress />
+              <TrackingScripts />
+              <div id="main-content">{children}</div>
+              <SiteFooter />
+              <FloatingContact />
+              <BackToTop />
+              <MobileActionBar />
+              <CookieConsent />
+            </Providers>
           </CSPostHogProvider>
         </ErrorBoundary>
       </body>

@@ -1,8 +1,15 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+
+export const metadata: Metadata = {
+  title: "Ödeme | Kozbeyli Konağı",
+  description: "Kozbeyli Konağı ödeme sayfası.",
+  robots: { index: false, follow: false },
+};
 
 export default function PaymentPage() {
   return (
@@ -26,8 +33,8 @@ export default function PaymentPage() {
               <div style={{ padding: 20 }}>
                 <h2 className="serif" style={{ marginBottom: 12, color: "#92400e" }}>Ödeme Simülasyonu / Demo</h2>
                 <p style={{ color: "#92400e", fontSize: "0.95rem", lineHeight: 1.6 }}>
-                  Bu sayfa <strong>yalnızca demonstrasyon</strong> amacıyla tasarlanmıştır. 
-                  Bu arayüz üzerinden gerçek bir kart tahsilatı yapılmaz ve herhangi bir rezervasyon kaydı oluşmaz. 
+                  Bu sayfa <strong>yalnızca demonstrasyon</strong> amacıyla tasarlanmıştır.
+                  Bu arayüz üzerinden gerçek bir kart tahsilatı yapılmaz ve herhangi bir rezervasyon kaydı oluşmaz.
                   Resmi rezervasyonunuzu tamamlamak için lütfen butik otelimizin ana rezervasyon motorunu kullanın.
                 </p>
               </div>
@@ -38,7 +45,7 @@ export default function PaymentPage() {
                 Rezervasyonunuzu tamamlamak için lütfen resmi rezervasyon akışını veya WhatsApp teyidini kullanın.
               </p>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                <Link href="/rezervasyon" className="button primary">Rezervasyona Git</Link>
+                <Link href="/odalar" className="button primary">Odaları İncele</Link>
                 <Link href="/iletisim" className="button secondary">İletişim</Link>
               </div>
             </div>

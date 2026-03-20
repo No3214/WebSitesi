@@ -1,19 +1,66 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { getDictionary } from "@/lib/dictionary";
+import { useDictionary } from "@/hooks/use-dictionary";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
+import { CONTACT } from "@/lib/constants";
+
+const exploreLinks = {
+  tr: [
+    { href: "/odalar", label: "Odalar" },
+    { href: "/gastronomi", label: "Restoran" },
+    { href: "/deneyimler", label: "Deneyimler" },
+    { href: "/etkinlikler", label: "Etkinlikler" },
+    { href: "/galeri", label: "Galeri" },
+    { href: "/hikayemiz", label: "Hikayemiz" },
+    { href: "/dugun-organizasyon", label: "Düğün" },
+    { href: "/kurumsal", label: "Kurumsal" },
+    { href: "/misafir-rehberi", label: "Misafir Rehberi" },
+    { href: "/iletisim", label: "İletişim" },
+    { href: "/blog", label: "Blog" },
+  ],
+  en: [
+    { href: "/odalar", label: "Rooms" },
+    { href: "/gastronomi", label: "Restaurant" },
+    { href: "/deneyimler", label: "Experiences" },
+    { href: "/etkinlikler", label: "Events" },
+    { href: "/galeri", label: "Gallery" },
+    { href: "/hikayemiz", label: "Our Story" },
+    { href: "/dugun-organizasyon", label: "Weddings" },
+    { href: "/kurumsal", label: "Corporate" },
+    { href: "/misafir-rehberi", label: "Guest Guide" },
+    { href: "/iletisim", label: "Contact" },
+    { href: "/blog", label: "Blog" },
+  ],
+} as const;
+
+const legalLinks = {
+  tr: [
+    { href: "/sss", label: "Sık Sorulan Sorular" },
+    { href: "/kvkk", label: "KVKK Aydınlatma Metni" },
+    { href: "/gizlilik-politikasi", label: "Gizlilik Politikası" },
+    { href: "/mesafeli-satis-sozlesmesi", label: "Mesafeli Satış Sözleşmesi" },
+    { href: "/cerez-politikasi", label: "Çerez Politikası" },
+    { href: "/kullanim-sartlari", label: "Kullanım Şartları" },
+  ],
+  en: [
+    { href: "/sss", label: "FAQ" },
+    { href: "/kvkk", label: "Privacy Notice (KVKK)" },
+    { href: "/gizlilik-politikasi", label: "Privacy Policy" },
+    { href: "/mesafeli-satis-sozlesmesi", label: "Distance Sales Agreement" },
+    { href: "/cerez-politikasi", label: "Cookie Policy" },
+    { href: "/kullanim-sartlari", label: "Terms of Use" },
+  ],
+} as const;
+
+const copyright = {
+  tr: "Tüm hakları saklıdır.",
+  en: "All rights reserved.",
+} as const;
 
 export function SiteFooter() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(null);
+  const { dict, locale } = useDictionary();
   const currentYear = new Date().getFullYear();
-
-  useEffect(() => {
-    const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
-    getDictionary(locale).then(setDict);
-  }, []);
 
   if (!dict) return null;
   const t = dict.Footer;
@@ -26,10 +73,10 @@ export function SiteFooter() {
             <h3 className="brand-serif">Kozbeyli Konağı</h3>
             <p className="brand-tagline">{t.description}</p>
             <div className="social-links">
-              <a href="https://instagram.com/kozbeylikonagi" target="_blank" rel="noreferrer" aria-label="Instagram">
+              <a href={CONTACT.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <Instagram size={20} />
               </a>
-              <a href="https://facebook.com/kozbeylikonagi" target="_blank" rel="noreferrer" aria-label="Facebook">
+              <a href="https://facebook.com/kozbeylikonagi" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                 <Facebook size={20} />
               </a>
             </div>
@@ -38,18 +85,18 @@ export function SiteFooter() {
           <div className="footer-links-col">
             <h4 className="footer-title">{t.explore}</h4>
             <ul>
-              <li><Link href="/odalar">Odalarımız</Link></li>
-              <li><Link href="/menu">Gastronomi</Link></li>
-              <li><Link href="/organizasyonlar">Organizasyonlar</Link></li>
-              <li><Link href="/#rezervasyon">Rezervasyon</Link></li>
+              {exploreLinks[locale].map((link) => (
+                <li key={link.href}><Link href={link.href}>{link.label}</Link></li>
+              ))}
             </ul>
           </div>
 
           <div className="footer-links-col">
             <h4 className="footer-title">{t.legal}</h4>
             <ul>
-              <li><Link href="/kvkk">KVKK Aydınlatma Metni</Link></li>
-              <li><Link href="/mesafeli-satis-sozlesmesi">Mesafeli Satış Sözleşmesi</Link></li>
+              {legalLinks[locale].map((link) => (
+                <li key={link.href}><Link href={link.href}>{link.label}</Link></li>
+              ))}
             </ul>
           </div>
 
@@ -57,21 +104,21 @@ export function SiteFooter() {
             <h4 className="footer-title">{t.contact}</h4>
             <div className="contact-item">
               <MapPin size={18} />
-              <span>Kozbeyli Köyü, Foça, İzmir</span>
+              <span>Kozbeyli Köyü, Foça, İzmir, Türkiye</span>
             </div>
             <div className="contact-item">
               <Phone size={18} />
-              <span>+90 (232) 826 12 34</span>
+              <a href={`tel:${CONTACT.phone}`} style={{ color: "inherit", textDecoration: "none" }}>{CONTACT.phoneDisplay}</a>
             </div>
             <div className="contact-item">
               <Mail size={18} />
-              <span>info@kozbeylikonagi.com</span>
+              <a href={`mailto:${CONTACT.email}`} style={{ color: "inherit", textDecoration: "none" }}>{CONTACT.email}</a>
             </div>
           </div>
         </div>
 
         <div className="footer-bottom-bar">
-          <p>© {currentYear} Kozbeyli Konağı Luxury Hotel. Tüm hakları saklıdır.</p>
+          <p>© {currentYear} Kozbeyli Konağı Taş Otel & Restoran. {copyright[locale]}</p>
           <div className="developer-tag">Designed for Excellence</div>
         </div>
       </div>

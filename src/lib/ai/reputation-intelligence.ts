@@ -33,7 +33,7 @@ export const ReputationData = {
       maxScore: 5,
       reviewCount: 122,
       stars: 5,
-      url: "#"
+      url: "https://www.google.com/maps/place/Kozbeyli+Konağı"
     }
   ],
   featuredReviews: [
