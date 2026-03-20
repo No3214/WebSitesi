@@ -5,9 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Instagram, X, MessageCircle } from "lucide-react";
 
 function isBusinessHours() {
-  const now = new Date();
-  const hour = now.getHours();
-  return hour >= 8 && hour < 23; // 08:00 - 23:00
+  const h = parseInt(
+    new Date().toLocaleString("en-US", { hour: "numeric", hour12: false, timeZone: "Europe/Istanbul" }),
+    10
+  );
+  return h >= 8 && h < 23; // 08:00 - 23:00 Turkey time
 }
 
 export const FloatingContact = () => {

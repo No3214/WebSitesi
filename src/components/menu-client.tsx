@@ -7,7 +7,7 @@ export default function MenuClient() {
   const sections = [
     {
       title: "Meşhur Organik Köy Kahvaltısı",
-      description: "Kozbeyli Köyü&apos;nun bereketli topraklarından gelen, ev yapımı reçeller ve taze ürünlerle hazırlanan zengin soframız.",
+      description: "Kozbeyli Köyü'nün bereketli topraklarından gelen, ev yapımı reçeller ve taze ürünlerle hazırlanan zengin soframız.",
       items: [
         { name: "Serpme Köy Kahvaltısı", description: "Ev yapımı reçeller, köy peynirleri, sıcak pişi, sahanda yumurta, taze sebzeler ve sınırsız çay eşliğinde.", priceLabel: "Dahil" },
         { name: "Konak Sıcak Tabağı", description: "Sucuklu yumurta, hellim peyniri ve ızgara zeytin.", priceLabel: "Özel" },

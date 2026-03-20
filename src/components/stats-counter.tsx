@@ -25,6 +25,7 @@ function AnimatedNumber({ target, suffix, decimals = 0 }: { target: number; suff
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    let timer: ReturnType<typeof setInterval> | null = null;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -34,11 +35,12 @@ function AnimatedNumber({ target, suffix, decimals = 0 }: { target: number; suff
           const steps = 60;
           const increment = target / steps;
           let current = 0;
-          const timer = setInterval(() => {
+          timer = setInterval(() => {
             current += increment;
             if (current >= target) {
               setCount(target);
-              clearInterval(timer);
+              if (timer) clearInterval(timer);
+              timer = null;
             } else {
               setCount(current);
             }
@@ -49,7 +51,10 @@ function AnimatedNumber({ target, suffix, decimals = 0 }: { target: number; suff
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (timer) clearInterval(timer);
+    };
   }, [target]);
 
   return (
@@ -61,7 +66,7 @@ function AnimatedNumber({ target, suffix, decimals = 0 }: { target: number; suff
 
 export function StatsCounter({ locale }: { locale: Locale }) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "40px", textAlign: "center", padding: "60px 0" }}>
+    <div className="stats-grid">
       {stats.map((stat, i) => (
         <div key={i}>
           <AnimatedNumber target={stat.value} suffix={stat.suffix} decimals={stat.decimals} />
@@ -71,10 +76,17 @@ export function StatsCounter({ locale }: { locale: Locale }) {
         </div>
       ))}
       <style jsx>{`
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 40px;
+          text-align: center;
+          padding: 60px 0;
+        }
         @media (max-width: 768px) {
-          div {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 32px !important;
+          .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
           }
         }
       `}</style>
