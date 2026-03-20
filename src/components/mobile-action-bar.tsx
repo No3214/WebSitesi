@@ -3,18 +3,20 @@
 import React from "react";
 import Link from "next/link";
 import { Phone, MapPin, Calendar } from "lucide-react";
+import { CONTACT } from "@/lib/constants";
+import { trackPhoneClick, trackCTAClick } from "@/lib/analytics";
 
 export const MobileActionBar = () => {
   return (
     <div className="mobile-bar-wrap">
       <div className="mobile-bar">
-        <a href="tel:+905322342686" className="mobile-bar-item" aria-label="Telefon ile ara">
+        <a href={`tel:${CONTACT.phone}`} className="mobile-bar-item" aria-label="Telefon ile ara" onClick={() => trackPhoneClick(typeof window !== "undefined" ? window.location.pathname : "/")}>
           <Phone size={18} />
           <span>Ara</span>
         </a>
 
         <a
-          href="https://maps.app.goo.gl/DXMWQg8aJHt3KNcTA"
+          href={CONTACT.mapsUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="mobile-bar-item"
@@ -24,7 +26,7 @@ export const MobileActionBar = () => {
           <span>Konum</span>
         </a>
 
-        <Link href="/#rezervasyon" className="mobile-bar-book">
+        <Link href="/#rezervasyon" className="mobile-bar-book" onClick={() => trackCTAClick("mobile_bar")}>
           <Calendar size={16} />
           <span>Rezervasyon</span>
         </Link>

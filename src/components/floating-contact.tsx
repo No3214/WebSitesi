@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Instagram, X, MessageCircle } from "lucide-react";
 import { CONTACT } from "@/lib/constants";
+import { trackWhatsAppClick, trackPhoneClick } from "@/lib/analytics";
 
 function isBusinessHours() {
   const h = parseInt(
@@ -17,24 +18,29 @@ export const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
   const available = isBusinessHours();
 
+  const page = typeof window !== "undefined" ? window.location.pathname : "/";
+
   const contactOptions = [
     {
       icon: <MessageCircle size={20} />,
       label: "WhatsApp",
       href: CONTACT.whatsappUrl,
       bg: "#25d366",
+      onClick: () => trackWhatsAppClick(page),
     },
     {
       icon: <Phone size={20} />,
       label: "Ara",
       href: `tel:${CONTACT.phone}`,
       bg: "var(--olive)",
+      onClick: () => trackPhoneClick(page),
     },
     {
       icon: <Instagram size={20} />,
       label: "Instagram",
       href: CONTACT.instagramUrl,
       bg: "#e1306c",
+      onClick: undefined,
     },
   ];
 
@@ -60,6 +66,7 @@ export const FloatingContact = () => {
                 className="floating-opt-btn"
                 style={{ background: opt.bg }}
                 aria-label={opt.label}
+                onClick={opt.onClick}
               >
                 <span className="floating-opt-label">{opt.label}</span>
                 {opt.icon}

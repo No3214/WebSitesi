@@ -6,6 +6,7 @@ import { useDictionary } from "@/hooks/use-dictionary";
 import { LanguageSwitcher } from "./language-switcher";
 import { Menu, X } from "lucide-react";
 import { CONTACT } from "@/lib/constants";
+import { trackCTAClick, trackPhoneClick } from "@/lib/analytics";
 
 const navLinks = {
   tr: [
@@ -92,7 +93,7 @@ export function SiteHeader() {
 
           <div className="header-actions">
             <LanguageSwitcher />
-            <Link className="button primary header-cta" href="/#rezervasyon">
+            <Link className="button primary header-cta" href="/#rezervasyon" onClick={() => trackCTAClick("header")}>
               {nav.booking || "Rezervasyon"}
             </Link>
             <button

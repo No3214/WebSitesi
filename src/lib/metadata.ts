@@ -57,7 +57,7 @@ export const defaultMetadata: Metadata = {
     canonical: "/",
     languages: {
       "tr-TR": "/",
-      "en-US": "/en",
+      "x-default": "/",
     },
   },
   openGraph: {

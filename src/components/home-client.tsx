@@ -9,6 +9,8 @@ import { FadeIn, StaggerContainer } from "@/components/animations";
 import { HotelRunnerEmbed } from "@/components/hotel-runner-embed";
 import { SectionTitle } from "@/components/section-title";
 import { CONTACT } from "@/lib/constants";
+import { trackCTAClick } from "@/lib/analytics";
+import { useScrollDepth } from "@/hooks/use-scroll-depth";
 import { SiteHeader } from "@/components/site-header";
 import { rooms, localizeRoom } from "@/data/rooms";
 import { useDictionary } from "@/hooks/use-dictionary";
@@ -105,6 +107,7 @@ export function HomeClient() {
   const { dict, locale } = useDictionary();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const heroRef = useRef<HTMLElement>(null);
+  useScrollDepth();
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);

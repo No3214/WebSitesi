@@ -3,12 +3,13 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { FadeIn } from "@/components/animations";
 import { useDictionary } from "@/hooks/use-dictionary";
 import { SiteHeader } from "@/components/site-header";
 import { whatsappLink } from "@/lib/constants";
+import { trackRoomDetailView, trackWhatsAppClick } from "@/lib/analytics";
 import { RoomCard } from "@/components/room-card";
 import { ImageLightbox } from "@/components/image-lightbox";
 import { rooms as allRooms, localizeRoom } from "@/data/rooms";
@@ -50,6 +51,8 @@ export function RoomDetailClient({ slug }: { slug: string }) {
   const { dict, locale } = useDictionary();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const rawRoom = allRooms.find((item) => item.slug === slug);
+
+  useEffect(() => { trackRoomDetailView(slug); }, [slug]);
 
   if (!rawRoom) notFound();
   if (!dict) return (
@@ -177,6 +180,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="whatsapp-cta"
+                    onClick={() => trackWhatsAppClick(`/odalar/${slug}`)}
                   >
                     💬 {labels.whatsappCta}
                   </a>

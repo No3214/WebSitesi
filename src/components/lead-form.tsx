@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { trackInquiryFormStart, trackInquiryFormComplete } from '@/lib/analytics';
 
 type LeadStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -61,7 +62,8 @@ export function LeadForm() {
 
       if (res.ok) {
         setStatus('success');
-        
+        trackInquiryFormComplete((String(data.type) || 'contact') as "contact" | "wedding" | "event");
+
         // Trigger Marketing Events with typed window
         const mWindow = window as unknown as MarketingWindow;
         
@@ -108,7 +110,7 @@ export function LeadForm() {
         <input name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <input name="name" placeholder="Tam Adınız" required />
+      <input name="name" placeholder="Tam Adınız" required onFocus={() => trackInquiryFormStart("contact")} />
       <input name="phone" placeholder="Telefon Numaranız" required />
       <input name="email" placeholder="E-posta Adresiniz" type="email" />
       <input name="eventDate" placeholder="Etkinlik Tarihi" />
