@@ -15,7 +15,8 @@ export function HotelRunnerEmbed() {
           <Script src="https://app.hotelrunner.com/widgets/booker.js" strategy="afterInteractive" />
           <Script id="hotelrunner-init" strategy="afterInteractive">
             {`
-              (function initHR() {
+              (function initHR(attempts) {
+                if (attempts > 20) { console.warn("HotelRunner widget failed to load after 10s"); return; }
                 if (window.HotelRunnerBooker) {
                   window.HotelRunnerBooker.init({
                     hotelSlug: "${slug}",
@@ -23,9 +24,9 @@ export function HotelRunnerEmbed() {
                     language: document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr"
                   });
                 } else {
-                  setTimeout(initHR, 500);
+                  setTimeout(function() { initHR(attempts + 1); }, 500);
                 }
-              })();
+              })(0);
             `}
           </Script>
         </>

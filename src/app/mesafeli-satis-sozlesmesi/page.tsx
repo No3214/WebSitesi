@@ -1,7 +1,13 @@
-"use client";
-
+import { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
+
+export const metadata: Metadata = {
+  title: "Mesafeli Satış Sözleşmesi | Kozbeyli Konağı",
+  description: "Kozbeyli Konağı mesafeli satış sözleşmesi. 6502 sayılı Tüketicinin Korunması Hakkında Kanun kapsamında bilgilendirme.",
+  alternates: { canonical: "/mesafeli-satis-sozlesmesi" },
+  robots: { index: true, follow: true },
+};
 
 export default function SalesAgreementPage() {
   return (
@@ -11,7 +17,7 @@ export default function SalesAgreementPage() {
         <div className="container max-w-4xl">
           <FadeIn>
             <h1 className="serif text-4xl mb-12">Mesafeli Satış Sözleşmesi</h1>
-            
+
             <div className="prose prose-zinc prose-sm leading-relaxed text-zinc-600 space-y-8">
               <section>
                 <h2 className="text-zinc-900 font-bold mb-4">1. TARAFLAR</h2>

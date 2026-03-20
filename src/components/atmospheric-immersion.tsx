@@ -103,7 +103,7 @@ export const AtmosphericImmersion = () => {
         >
           {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
           <span className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 px-3 py-1 rounded text-[9px] whitespace-nowrap border border-white/5">
-            {isMuted ? "SESİ AÇ" : "SESİ SİS"}
+            {isMuted ? "SESİ AÇ" : "SESİ KAPAT"}
           </span>
         </button>
 

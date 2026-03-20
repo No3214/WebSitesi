@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 
 export function WhatsAppBridge() {
-  const WHATSAPP_NUMBER = "905001234567"; // Hotel's official WhatsApp
+  const WHATSAPP_NUMBER = "905322342686"; // Hotel's official WhatsApp
   const DEFAULT_MESSAGE = encodeURIComponent(
     "Merhabalar, Kozbeyli Konağı'nın uzman organizasyon ekibiyle tescilli mimari ve gurme davetler hakkında görüşmek istiyorum."
   );

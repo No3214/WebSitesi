@@ -42,7 +42,7 @@ export function DigitalConcierge() {
   const handleSend = async () => {
     if (!input.trim()) return;
 
-    const userMessage: Message = { role: 'user' as "user" | "assistant", content: input };
+    const userMessage: Message = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
@@ -51,11 +51,15 @@ export function DigitalConcierge() {
     trackEvent('concierge_message_sent', { length: input.length });
 
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...messages, userMessage] })
+        body: JSON.stringify({ messages: [...messages, userMessage] }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
       if (!response.ok) throw new Error('Network response was not ok');
       
@@ -69,7 +73,7 @@ export function DigitalConcierge() {
         setIsNegotiating(true);
       }
 
-      setMessages(prev => [...prev, { role: 'assistant' as "user" | "assistant", content: assistantResponse }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: assistantResponse }]);
       trackEvent('concierge_response_received', { provider: data.meta?.provider });
     } catch (error) {
       console.error('Chat Error:', error);
@@ -124,7 +128,7 @@ export function DigitalConcierge() {
               placeholder="Sorunuzu buraya yazın..." 
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             />
             <button onClick={handleSend}>Gönder</button>
           </div>
