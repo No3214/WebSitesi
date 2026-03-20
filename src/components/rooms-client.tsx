@@ -31,6 +31,7 @@ export function RoomsClient() {
       <main className="section" style={{ paddingTop: '120px' }}>
         <div className="container">
           <FadeIn>
+            <h1 className="sr-only">{locale === "en" ? "Our Rooms" : "Odalarımız"}</h1>
             <SectionTitle
               eyebrow={t.eyebrow}
               title={t.title}

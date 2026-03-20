@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
@@ -78,6 +79,7 @@ export function GalleryClient() {
         <section className="section">
           <div className="container">
             <FadeIn>
+              <h1 className="sr-only">{locale === "en" ? "Photo Gallery" : "Fotoğraf Galerisi"}</h1>
               <SectionTitle eyebrow={t.eyebrow} title={t.title} text={t.text} />
             </FadeIn>
 
@@ -97,19 +99,26 @@ export function GalleryClient() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
               {filtered.map((photo, idx) => (
                 <FadeIn key={photo.src} delay={idx * 0.05}>
-                  <div
-                    role="button"
-                    tabIndex={0}
+                  <button
+                    type="button"
                     aria-label={getAlt(photo)}
-                    style={{ position: "relative", aspectRatio: "4/3", cursor: "zoom-in", overflow: "hidden" }}
+                    className="gallery-thumb"
                     onClick={() => setLightbox(idx)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLightbox(idx); } }}
                   >
-                    <Image src={photo.src} alt={getAlt(photo)} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" style={{ transition: "transform 0.4s ease" }} />
-                  </div>
+                    <Image src={photo.src} alt={getAlt(photo)} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                  </button>
                 </FadeIn>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* Cross-links */}
+        <section className="section" style={{ paddingTop: 0 }}>
+          <div className="container" style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/odalar" className="button secondary">{locale === "en" ? "Explore Rooms" : "Odaları Keşfedin"}</Link>
+            <Link href="/hikayemiz" className="button secondary">{locale === "en" ? "Our Story" : "Hikayemiz"}</Link>
+            <Link href="/#rezervasyon" className="button primary">{locale === "en" ? "Book Now" : "Hemen Rezervasyon"}</Link>
           </div>
         </section>
 

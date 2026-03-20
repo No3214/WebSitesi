@@ -15,6 +15,8 @@ const exploreLinks = {
     { href: "/hikayemiz", label: "Hikayemiz" },
     { href: "/dugun-organizasyon", label: "Düğün" },
     { href: "/kurumsal", label: "Kurumsal" },
+    { href: "/misafir-rehberi", label: "Misafir Rehberi" },
+    { href: "/iletisim", label: "İletişim" },
     { href: "/blog", label: "Blog" },
   ],
   en: [
@@ -26,6 +28,8 @@ const exploreLinks = {
     { href: "/hikayemiz", label: "Our Story" },
     { href: "/dugun-organizasyon", label: "Weddings" },
     { href: "/kurumsal", label: "Corporate" },
+    { href: "/misafir-rehberi", label: "Guest Guide" },
+    { href: "/iletisim", label: "Contact" },
     { href: "/blog", label: "Blog" },
   ],
 } as const;

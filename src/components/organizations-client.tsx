@@ -37,6 +37,7 @@ export function OrganizationsClient() {
       <main className="section" style={{ paddingTop: '120px' }}>
         <div className="container">
           <FadeIn>
+            <h1 className="sr-only">Sizin Hikayeniz, Bizim Mekanımız</h1>
             <SectionTitle
               eyebrow="ORGANİZASYON"
               title="Sizin Hikayeniz, Bizim Mekanımız"

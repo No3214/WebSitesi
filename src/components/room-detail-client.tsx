@@ -104,17 +104,15 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                  </div>
                  <div className="image-strip">
                    {rawRoom.images.map((img, i) => (
-                     <div
+                     <button
                        key={i}
+                       type="button"
                        className="strip-item hover-scale"
-                       role="button"
-                       tabIndex={0}
                        aria-label={`${room.title} ${i + 1}`}
                        onClick={() => setLightboxIndex(i)}
-                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLightboxIndex(i); } }}
                      >
                        <Image src={img} alt={`${room.title} ${i + 1}`} fill className="object-cover" sizes="120px" />
-                     </div>
+                     </button>
                    ))}
                  </div>
               </div>
@@ -255,6 +253,14 @@ export function RoomDetailClient({ slug }: { slug: string }) {
           overflow: hidden;
           cursor: pointer;
           transition: transform 0.3s ease;
+          border: none;
+          padding: 0;
+          background: transparent;
+          width: 100%;
+        }
+        .strip-item:focus-visible {
+          outline: 3px solid var(--gold);
+          outline-offset: 2px;
         }
 
         .hover-scale:hover { transform: scale(1.05); }

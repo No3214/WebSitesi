@@ -87,6 +87,7 @@ export function EventsClient() {
         <section className="section">
           <div className="container">
             <FadeIn>
+              <h1 className="sr-only">{t[locale].title}</h1>
               <SectionTitle eyebrow={t[locale].eyebrow} title={t[locale].title} text={t[locale].text} />
             </FadeIn>
 
@@ -118,6 +119,13 @@ export function EventsClient() {
                   </div>
                 </FadeIn>
               ))}
+            </div>
+
+            {/* Cross-links */}
+            <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap", marginTop: "60px" }}>
+              <Link href="/dugun-organizasyon" className="button secondary">{locale === "en" ? "Weddings" : "Düğün Organizasyon"}</Link>
+              <Link href="/kurumsal" className="button secondary">{locale === "en" ? "Corporate Events" : "Kurumsal Etkinlikler"}</Link>
+              <Link href="/deneyimler" className="button secondary">{locale === "en" ? "Experiences" : "Deneyimler"}</Link>
             </div>
           </div>
         </section>

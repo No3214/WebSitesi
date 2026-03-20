@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { Clock, Coffee, Wifi, MapPin, ShieldCheck, HeartPulse } from "lucide-react";
@@ -75,6 +76,14 @@ export function GuestGuideClient() {
                 ))}
               </div>
             </StaggerContainer>
+          </div>
+        </section>
+
+        <section className="section" style={{ paddingBottom: 0 }}>
+          <div className="container" style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href="/sss" className="button secondary">Sık Sorulan Sorular</Link>
+            <Link href="/iletisim" className="button secondary">İletişim</Link>
+            <Link href="/deneyimler" className="button secondary">Deneyimler</Link>
           </div>
         </section>
 

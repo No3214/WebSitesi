@@ -57,6 +57,7 @@ export function CorporateClient() {
         <section className="section">
           <div className="container">
             <FadeIn>
+              <h1 className="sr-only">{text.sectionTitle}</h1>
               <SectionTitle eyebrow={text.sectionEyebrow} title={text.sectionTitle} text={text.sectionText} />
             </FadeIn>
 

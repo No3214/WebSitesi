@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { StoryHero, StorySegment } from "@/components/storytelling";
 import { SiteHeader } from "@/components/site-header";
 import { LivingMuseumMap } from "@/components/living-museum-map";
@@ -100,6 +101,13 @@ export function HistoryClient() {
           side={seg.side}
         />
       ))}
+
+      <section className="py-16 px-6 max-w-7xl mx-auto" style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
+        <Link href="/galeri" className="button secondary">{locale === "en" ? "Photo Gallery" : "Fotoğraf Galerisi"}</Link>
+        <Link href="/odalar" className="button secondary">{locale === "en" ? "Our Rooms" : "Odalarımız"}</Link>
+        <Link href="/gastronomi" className="button secondary">{locale === "en" ? "Gastronomy" : "Gastronomi"}</Link>
+        <Link href="/#rezervasyon" className="button primary">{locale === "en" ? "Book Now" : "Hemen Rezervasyon"}</Link>
+      </section>
     </main>
   );
 }

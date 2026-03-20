@@ -224,6 +224,27 @@ img {
   color: #555;
 }
 
+.gallery-thumb {
+  position: relative;
+  aspect-ratio: 4/3;
+  width: 100%;
+  cursor: zoom-in;
+  overflow: hidden;
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+.gallery-thumb img {
+  transition: transform 0.4s ease;
+}
+.gallery-thumb:hover img {
+  transform: scale(1.05);
+}
+.gallery-thumb:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -570,6 +591,19 @@ img {
 .skip-nav:focus {
   top: 16px;
   opacity: 1;
+}
+
+/* Screen-reader only (visually hidden, accessible) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* Focus styles for keyboard navigation */

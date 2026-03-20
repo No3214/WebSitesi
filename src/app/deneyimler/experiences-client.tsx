@@ -103,6 +103,7 @@ export function ExperiencesClient() {
         <section className="section">
           <div className="container">
             <FadeIn>
+              <h1 className="sr-only">{t[locale].title}</h1>
               <SectionTitle eyebrow={t[locale].eyebrow} title={t[locale].title} text={t[locale].text} />
             </FadeIn>
 
@@ -134,6 +135,13 @@ export function ExperiencesClient() {
                   </FadeIn>
                 );
               })}
+            </div>
+
+            {/* Cross-links */}
+            <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap", marginTop: "60px" }}>
+              <Link href="/gastronomi" className="button secondary">{locale === "en" ? "Gastronomy" : "Gastronomi"}</Link>
+              <Link href="/odalar" className="button secondary">{locale === "en" ? "Our Rooms" : "Odalarımız"}</Link>
+              <Link href="/#rezervasyon" className="button primary">{locale === "en" ? "Book Now" : "Hemen Rezervasyon"}</Link>
             </div>
           </div>
         </section>

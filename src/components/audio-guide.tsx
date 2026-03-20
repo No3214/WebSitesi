@@ -14,7 +14,9 @@ export const AudioGuide = () => {
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
     // Real implementation would use TTS API or pre-recorded CDN assets
-    console.log("[AudioGuide] Toggled audio narration");
+    if (process.env.NODE_ENV === 'development') {
+      console.log("[AudioGuide] Toggled audio narration");
+    }
   };
 
   return (
