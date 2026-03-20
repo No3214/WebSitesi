@@ -2,6 +2,7 @@
 
 import Script from "next/script";
 import { Phone, MessageCircle, Shield, Gift, Clock } from "lucide-react";
+import { CONTACT } from "@/lib/constants";
 
 export function HotelRunnerEmbed() {
   const slug = process.env.NEXT_PUBLIC_HOTELRUNNER_SLUG;
@@ -56,10 +57,10 @@ export function HotelRunnerEmbed() {
             : "Rezervasyon ve fiyat bilgisi için bize doğrudan ulaşabilirsiniz."}
         </p>
         <div className="booking-buttons">
-          <a className="button secondary" href="tel:+905322342686" aria-label="Telefon ile rezervasyon">
+          <a className="button secondary" href={`tel:${CONTACT.phone}`} aria-label="Telefon ile rezervasyon">
             <Phone size={16} /> Rezervasyon Hattı
           </a>
-          <a className="button primary" href="https://wa.me/905322342686" target="_blank" rel="noreferrer" aria-label="WhatsApp ile rezervasyon">
+          <a className="button primary" href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer" aria-label="WhatsApp ile rezervasyon">
             <MessageCircle size={16} /> WhatsApp
           </a>
         </div>

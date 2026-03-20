@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
+import { CONTACT } from "@/lib/constants";
 import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
@@ -106,7 +107,7 @@ export function EventsClient() {
                       </div>
                       <p style={{ color: "#555", lineHeight: 1.7, marginBottom: "20px" }}>{event.description[locale]}</p>
                       <div style={{ display: "flex", gap: "12px" }}>
-                        <Link href="https://wa.me/905322342686" className="button primary" target="_blank" rel="noreferrer">
+                        <Link href={CONTACT.whatsappUrl} className="button primary" target="_blank" rel="noreferrer">
                           {t[locale].reserve}
                         </Link>
                         <Link href="tel:+905322342686" className="button secondary">

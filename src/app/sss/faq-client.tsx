@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
+import { CONTACT } from "@/lib/constants";
 import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 import { ChevronDown, MessageCircle } from "lucide-react";
@@ -94,7 +95,7 @@ export function FAQClient() {
               <div style={{ textAlign: "center", padding: "40px", background: "var(--soft)", marginTop: "20px" }}>
                 <p style={{ fontSize: "1.1rem", marginBottom: "16px", color: "var(--olive)" }} className="serif">Sorunuzun cevabını bulamadınız mı?</p>
                 <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-                  <Link href="https://wa.me/905322342686" className="button primary" target="_blank" rel="noreferrer">
+                  <Link href={CONTACT.whatsappUrl} className="button primary" target="_blank" rel="noreferrer">
                     <MessageCircle size={16} style={{ marginRight: "8px" }} /> WhatsApp ile Sorun
                   </Link>
                   <Link href="/iletisim" className="button secondary">İletişim Sayfası</Link>

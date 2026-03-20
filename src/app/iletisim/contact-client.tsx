@@ -5,23 +5,24 @@ import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 import { Phone, Mail, MapPin, MessageCircle, Clock, Instagram } from "lucide-react";
 import { useDictionary } from "@/hooks/use-dictionary";
+import { CONTACT } from "@/lib/constants";
 
 const contactInfo = {
   tr: [
-    { icon: Phone, label: "Telefon", value: "0532 234 26 86", href: "tel:+905322342686" },
-    { icon: MessageCircle, label: "WhatsApp", value: "+90 (532) 234 26 86", href: "https://wa.me/905322342686" },
-    { icon: Mail, label: "E-posta", value: "info@kozbeylikonagi.com", href: "mailto:info@kozbeylikonagi.com" },
-    { icon: Instagram, label: "Instagram", value: "@kozbeylikonagi", href: "https://www.instagram.com/kozbeylikonagi/" },
+    { icon: Phone, label: "Telefon", value: CONTACT.phoneDisplay, href: `tel:${CONTACT.phone}` },
+    { icon: MessageCircle, label: "WhatsApp", value: CONTACT.phoneInternational, href: CONTACT.whatsappUrl },
+    { icon: Mail, label: "E-posta", value: CONTACT.email, href: `mailto:${CONTACT.email}` },
+    { icon: Instagram, label: "Instagram", value: `@${CONTACT.instagram}`, href: CONTACT.instagramUrl },
     { icon: Clock, label: "Resepsiyon", value: "08:30 – 23:00 (Her gün)", href: null },
-    { icon: MapPin, label: "Adres", value: "Kozbeyli Küme Evleri No:188, Foça, İzmir 35680", href: "https://maps.app.goo.gl/DXMWQg8aJHt3KNcTA" },
+    { icon: MapPin, label: "Adres", value: CONTACT.address.full, href: CONTACT.mapsUrl },
   ],
   en: [
-    { icon: Phone, label: "Phone", value: "0532 234 26 86", href: "tel:+905322342686" },
-    { icon: MessageCircle, label: "WhatsApp", value: "+90 (532) 234 26 86", href: "https://wa.me/905322342686" },
-    { icon: Mail, label: "Email", value: "info@kozbeylikonagi.com", href: "mailto:info@kozbeylikonagi.com" },
-    { icon: Instagram, label: "Instagram", value: "@kozbeylikonagi", href: "https://www.instagram.com/kozbeylikonagi/" },
+    { icon: Phone, label: "Phone", value: CONTACT.phoneDisplay, href: `tel:${CONTACT.phone}` },
+    { icon: MessageCircle, label: "WhatsApp", value: CONTACT.phoneInternational, href: CONTACT.whatsappUrl },
+    { icon: Mail, label: "Email", value: CONTACT.email, href: `mailto:${CONTACT.email}` },
+    { icon: Instagram, label: "Instagram", value: `@${CONTACT.instagram}`, href: CONTACT.instagramUrl },
     { icon: Clock, label: "Reception", value: "08:30 – 23:00 (Every day)", href: null },
-    { icon: MapPin, label: "Address", value: "Kozbeyli Küme Evleri No:188, Foça, İzmir 35680", href: "https://maps.app.goo.gl/DXMWQg8aJHt3KNcTA" },
+    { icon: MapPin, label: "Address", value: CONTACT.address.full, href: CONTACT.mapsUrl },
   ],
 };
 
@@ -68,6 +69,7 @@ export function ContactClient() {
         <section className="section">
           <div className="container">
             <FadeIn>
+              <h1 className="sr-only">{text.title}</h1>
               <SectionTitle eyebrow={text.eyebrow} title={text.title} text={text.text} />
             </FadeIn>
 
@@ -119,7 +121,7 @@ export function ContactClient() {
                     <a href="https://maps.app.goo.gl/DXMWQg8aJHt3KNcTA" target="_blank" rel="noreferrer" className="button primary">
                       <MapPin size={16} style={{ marginRight: "8px" }} /> {text.viewOnMap}
                     </a>
-                    <a href="https://wa.me/905322342686" target="_blank" rel="noreferrer" className="button secondary">
+                    <a href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer" className="button secondary">
                       <MessageCircle size={16} style={{ marginRight: "8px" }} /> WhatsApp
                     </a>
                   </div>

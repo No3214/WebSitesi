@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useDictionary } from "@/hooks/use-dictionary";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
+import { CONTACT } from "@/lib/constants";
 
 const exploreLinks = {
   tr: [
@@ -68,7 +69,7 @@ export function SiteFooter() {
             <h3 className="brand-serif">Kozbeyli Konağı</h3>
             <p className="brand-tagline">{t.description}</p>
             <div className="social-links">
-              <a href="https://instagram.com/kozbeylikonagi" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <a href={CONTACT.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <Instagram size={20} />
               </a>
               <a href="https://facebook.com/kozbeylikonagi" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
@@ -103,11 +104,11 @@ export function SiteFooter() {
             </div>
             <div className="contact-item">
               <Phone size={18} />
-              <span>0532 234 26 86</span>
+              <a href={`tel:${CONTACT.phone}`} style={{ color: "inherit", textDecoration: "none" }}>{CONTACT.phoneDisplay}</a>
             </div>
             <div className="contact-item">
               <Mail size={18} />
-              <span>info@kozbeylikonagi.com</span>
+              <a href={`mailto:${CONTACT.email}`} style={{ color: "inherit", textDecoration: "none" }}>{CONTACT.email}</a>
             </div>
           </div>
         </div>

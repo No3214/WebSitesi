@@ -8,6 +8,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { HotelRunnerEmbed } from "@/components/hotel-runner-embed";
 import { SectionTitle } from "@/components/section-title";
+import { CONTACT } from "@/lib/constants";
 import { SiteHeader } from "@/components/site-header";
 import { rooms, localizeRoom } from "@/data/rooms";
 import { useDictionary } from "@/hooks/use-dictionary";
@@ -463,7 +464,7 @@ export function HomeClient() {
                 <a href="https://maps.app.goo.gl/DXMWQg8aJHt3KNcTA" target="_blank" rel="noreferrer" className="button primary">
                   {locale === "tr" ? "HARİTADA GÖR" : "VIEW ON MAP"}
                 </a>
-                <a href="https://wa.me/905322342686" target="_blank" rel="noreferrer" className="button secondary">
+                <a href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer" className="button secondary">
                   {locale === "tr" ? "WHATSAPP İLE ULAŞIN" : "CONTACT VIA WHATSAPP"}
                 </a>
               </div>

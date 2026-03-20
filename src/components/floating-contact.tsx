@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Instagram, X, MessageCircle } from "lucide-react";
+import { CONTACT } from "@/lib/constants";
 
 function isBusinessHours() {
   const h = parseInt(
@@ -20,19 +21,19 @@ export const FloatingContact = () => {
     {
       icon: <MessageCircle size={20} />,
       label: "WhatsApp",
-      href: "https://wa.me/905322342686",
+      href: CONTACT.whatsappUrl,
       bg: "#25d366",
     },
     {
       icon: <Phone size={20} />,
       label: "Ara",
-      href: "tel:+905322342686",
+      href: `tel:${CONTACT.phone}`,
       bg: "var(--olive)",
     },
     {
       icon: <Instagram size={20} />,
       label: "Instagram",
-      href: "https://www.instagram.com/kozbeylikonagi/",
+      href: CONTACT.instagramUrl,
       bg: "#e1306c",
     },
   ];

@@ -5,6 +5,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useDictionary } from "@/hooks/use-dictionary";
 import { LanguageSwitcher } from "./language-switcher";
 import { Menu, X } from "lucide-react";
+import { CONTACT } from "@/lib/constants";
 
 const navLinks = {
   tr: [
@@ -129,10 +130,10 @@ export function SiteHeader() {
             >
               {nav.booking || "Rezervasyon"}
             </Link>
-            <a href="tel:+905322342686" className="mobile-menu-link mobile-phone">
-              0532 234 26 86
+            <a href={`tel:${CONTACT.phone}`} className="mobile-menu-link mobile-phone">
+              {CONTACT.phoneDisplay}
             </a>
-            <a href="https://wa.me/905322342686" className="mobile-menu-link mobile-whatsapp" target="_blank" rel="noopener noreferrer">
+            <a href={CONTACT.whatsappUrl} className="mobile-menu-link mobile-whatsapp" target="_blank" rel="noopener noreferrer">
               {whatsappLabel[locale]}
             </a>
           </nav>

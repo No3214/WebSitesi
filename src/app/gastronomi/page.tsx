@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { GastronomyClient } from "./gastronomy-client";
 import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
+import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Gastronomi & Antakya Mutfağı | Kozbeyli Konağı",
@@ -34,7 +35,7 @@ const restaurantSchema = {
   "@type": "Restaurant",
   name: "Kozbeyli Konağı Restoran",
   description: "Antakya ve Ege mutfağının buluşma noktası. İnci Hanım'ın imza reçeteleri ve 180 yıllık taş dibek kahvesi.",
-  url: "https://www.kozbeylikonagi.com/gastronomi",
+  url: absoluteUrl("/gastronomi"),
   telephone: "+905322342686",
   address: {
     "@type": "PostalAddress",

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
+import { CONTACT } from "@/lib/constants";
 import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 import { Wine, Leaf, Utensils, Compass, Coffee, Music } from "lucide-react";
@@ -125,7 +126,7 @@ export function ExperiencesClient() {
                           <span>⏱ {exp.duration[locale]}</span>
                           <span>👥 {exp.capacity[locale]}</span>
                         </div>
-                        <Link href="https://wa.me/905322342686" className="button primary" target="_blank" rel="noreferrer">
+                        <Link href={CONTACT.whatsappUrl} className="button primary" target="_blank" rel="noreferrer">
                           {t[locale].cta}
                         </Link>
                       </div>

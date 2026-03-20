@@ -8,6 +8,7 @@ import { Check } from "lucide-react";
 import { FadeIn } from "@/components/animations";
 import { useDictionary } from "@/hooks/use-dictionary";
 import { SiteHeader } from "@/components/site-header";
+import { whatsappLink } from "@/lib/constants";
 import { RoomCard } from "@/components/room-card";
 import { ImageLightbox } from "@/components/image-lightbox";
 import { rooms as allRooms, localizeRoom } from "@/data/rooms";
@@ -168,11 +169,11 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                     {labels.bookCta}
                   </Link>
                   <a
-                    href={`https://wa.me/905322342686?text=${encodeURIComponent(
+                    href={whatsappLink(
                       locale === "tr"
                         ? `Merhaba, ${room.title} hakkında bilgi almak istiyorum.`
                         : `Hello, I would like to inquire about the ${room.title}.`
-                    )}`}
+                    )}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="whatsapp-cta"
