@@ -98,11 +98,12 @@ export const LivingMuseumMap = () => {
             className="absolute top-8 right-8 w-80 bg-zinc-900/95 backdrop-blur-2xl border border-white/10 p-5 rounded-2xl z-20 shadow-2xl pointer-events-none"
           >
           <div className="relative h-40 w-full mb-4 rounded-xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
-             <Image 
-                src={heritagePoints.find(p => p.id === activePoint)?.image || ""} 
-                alt="Discovery" 
-                fill 
+             <Image
+                src={heritagePoints.find(p => p.id === activePoint)?.image || ""}
+                alt={heritagePoints.find(p => p.id === activePoint)?.title || "Heritage point"}
+                fill
                 className="object-cover"
+                sizes="320px"
              />
           </div>
           <div className="flex items-center gap-3 text-gold mb-2">
