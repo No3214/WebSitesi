@@ -1,5 +1,6 @@
 import { env } from "@/lib/env";
 import { absoluteUrl } from "./utils";
+import { CONTACT } from "@/lib/constants";
 import { ReputationData } from "./ai/reputation-intelligence";
 import type { Room } from "@/data/rooms";
 
@@ -20,20 +21,20 @@ export function hotelSchema() {
       absoluteUrl("/images/rooms/deniz-1.jpeg"),
       absoluteUrl("/images/rooms/aile-1.jpeg"),
     ],
-    telephone: "+905322342686",
-    email: "info@kozbeylikonagi.com",
+    telephone: CONTACT.phone,
+    email: CONTACT.email,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Kozbeyli Küme Evleri No:188",
-      addressLocality: "Foça",
-      addressRegion: "İzmir",
-      postalCode: "35680",
-      addressCountry: "TR",
+      streetAddress: CONTACT.address.street,
+      addressLocality: CONTACT.address.district,
+      addressRegion: CONTACT.address.city,
+      postalCode: CONTACT.address.postalCode,
+      addressCountry: CONTACT.address.country,
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 38.7275,
-      longitude: 26.7456,
+      latitude: CONTACT.coordinates.latitude,
+      longitude: CONTACT.coordinates.longitude,
     },
     numberOfRooms: 16,
     checkinTime: "14:00",

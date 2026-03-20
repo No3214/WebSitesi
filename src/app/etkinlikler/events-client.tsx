@@ -111,7 +111,7 @@ export function EventsClient() {
                         <Link href={CONTACT.whatsappUrl} className="button primary" target="_blank" rel="noreferrer">
                           {t[locale].reserve}
                         </Link>
-                        <Link href="tel:+905322342686" className="button secondary">
+                        <Link href={`tel:${CONTACT.phone}`} className="button secondary">
                           {t[locale].getInfo}
                         </Link>
                       </div>

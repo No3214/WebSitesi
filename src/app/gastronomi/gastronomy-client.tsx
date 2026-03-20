@@ -7,6 +7,7 @@ import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 import { Coffee, Leaf, Sun, Utensils, Wine } from "lucide-react";
 import { useDictionary } from "@/hooks/use-dictionary";
+import { CONTACT } from "@/lib/constants";
 
 const highlights = [
   {
@@ -194,7 +195,7 @@ export function GastronomyClient() {
                   </p>
                   <div style={{ display: "flex", gap: "12px", marginTop: "28px", flexWrap: "wrap" }}>
                     <Link href="/menu" className="button primary">{text.menuBtn}</Link>
-                    <a href="tel:+905322342686" className="button secondary">{text.reserveBtn}</a>
+                    <a href={`tel:${CONTACT.phone}`} className="button secondary">{text.reserveBtn}</a>
                   </div>
                 </div>
               </FadeIn>

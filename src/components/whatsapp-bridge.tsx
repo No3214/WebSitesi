@@ -2,16 +2,12 @@
 
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
+import { whatsappLink } from "@/lib/constants";
 
 export function WhatsAppBridge() {
-  const WHATSAPP_NUMBER = "905322342686"; // Hotel's official WhatsApp
-  const DEFAULT_MESSAGE = encodeURIComponent(
-    "Merhabalar, Kozbeyli Konağı'nın uzman organizasyon ekibiyle tescilli mimari ve gurme davetler hakkında görüşmek istiyorum."
-  );
-
   return (
     <motion.a
-      href={`https://wa.me/${WHATSAPP_NUMBER}?text=${DEFAULT_MESSAGE}`}
+      href={whatsappLink("Merhabalar, Kozbeyli Konağı'nın uzman organizasyon ekibiyle tescilli mimari ve gurme davetler hakkında görüşmek istiyorum.")}
       target="_blank"
       rel="noopener noreferrer"
       className="whatsapp-bridge"
