@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { RoomsClient } from "@/components/rooms-client";
+import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Lüks Taş Odalar & Konaklama | Kozbeyli Konağı",
@@ -9,5 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default function RoomsPage() {
-  return <RoomsClient />;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([
+        { name: "Ana Sayfa", url: "/" },
+        { name: "Odalar" },
+      ])} />
+      <RoomsClient />
+    </>
+  );
 }

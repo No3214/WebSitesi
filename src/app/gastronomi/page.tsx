@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { GastronomyClient } from "./gastronomy-client";
+import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Gastronomi & Antakya Mutfağı | Kozbeyli Konağı",
@@ -13,6 +14,19 @@ export const metadata: Metadata = {
     "gurme ege kahvaltısı",
   ],
   alternates: { canonical: "/gastronomi" },
+  openGraph: {
+    title: "Gastronomi & Antakya Mutfağı | Kozbeyli Konağı",
+    description:
+      "Foça'da Antakya ve Ege mutfağının buluşma noktası. 500 yıllık taş dibek kahvesi ve İnci Hanım'ın imza reçeteleriyle gurme bir lezzet serüveni.",
+    images: [
+      {
+        url: "/images/rooms/bahce-2.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Kozbeyli Konağı Restoran",
+      },
+    ],
+  },
 };
 
 const restaurantSchema = {
@@ -40,9 +54,14 @@ const restaurantSchema = {
 export default function GastronomyPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantSchema) }}
+      <JsonLd
+        data={[
+          breadcrumbSchema([
+            { name: "Ana Sayfa", url: "/" },
+            { name: "Gastronomi" },
+          ]),
+          restaurantSchema,
+        ]}
       />
       <GastronomyClient />
     </>

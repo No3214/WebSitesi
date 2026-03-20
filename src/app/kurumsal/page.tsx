@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { CorporateClient } from "./corporate-client";
+import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Kurumsal Etkinlikler & Retreat",
@@ -9,5 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default function CorporatePage() {
-  return <CorporateClient />;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([
+        { name: "Ana Sayfa", url: "/" },
+        { name: "Kurumsal" },
+      ])} />
+      <CorporateClient />
+    </>
+  );
 }

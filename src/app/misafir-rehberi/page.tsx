@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { GuestGuideClient } from "@/components/guest-guide-client";
+import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Misafir Rehberi",
@@ -9,5 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default function GuestGuidePage() {
-  return <GuestGuideClient />;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([
+        { name: "Ana Sayfa", url: "/" },
+        { name: "Misafir Rehberi" },
+      ])} />
+      <GuestGuideClient />
+    </>
+  );
 }

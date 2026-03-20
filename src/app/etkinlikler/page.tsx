@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { EventsClient } from "./events-client";
+import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Etkinlikler & Canlı Müzik",
@@ -9,5 +10,17 @@ export const metadata: Metadata = {
 };
 
 export default function EventsPage() {
-  return <EventsClient />;
+  return (
+    <>
+      <JsonLd
+        data={[
+          breadcrumbSchema([
+            { name: "Ana Sayfa", url: "/" },
+            { name: "Etkinlikler & Canlı Müzik" },
+          ]),
+        ]}
+      />
+      <EventsClient />
+    </>
+  );
 }

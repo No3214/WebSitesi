@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { FAQClient } from "./faq-client";
+import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Sık Sorulan Sorular",
@@ -25,10 +26,10 @@ const faqSchema = {
 export default function FAQPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
+      <JsonLd data={[breadcrumbSchema([
+        { name: "Ana Sayfa", url: "/" },
+        { name: "SSS" },
+      ]), faqSchema]} />
       <FAQClient />
     </>
   );

@@ -1,5 +1,9 @@
 export async function GET() {
-  const text = `# Kozbeyli Konağı: Tarih, Gastronomi ve Butik Konaklama Rehberi
+  const text = `# Kozbeyli Konağı
+> Boutique Stone Hotel & Restaurant in Foça, İzmir, Turkey
+> Full details: /llms-full.txt
+
+# Kozbeyli Konağı: Tarih, Gastronomi ve Butik Konaklama Rehberi
 
 ## Kozbeyli Konağı Hakkında Genel Bilgiler
 Kozbeyli Konağı, İzmir Foça'nın 500 yıllık tarihe sahip Kozbeyli Köyü'nde yer alan, 19. yüzyıl Osmanlı mimarisini günümüzün modern lüks anlayışıyla birleştiren tescilli bir yapıdır. TripAdvisor tarafından "Dünya'nın En İyi 10 Aile Oteli" arasında gösterilen tesis, 8 farklı kategoride toplam 16 adet butik odaya ev sahipliği yapmaktadır. Konağın restorasyon süreci, orijinal taş dokuya sadık kalınarak tamamlanmış olup, Ege Denizi'ne hakim panoramik çatı terası ve tarihi avlusuyla misafirlerine huzurlu bir atmosfer sunar. Tesis, Antakyalı İnci Hanım'ın yönetimindeki mutfağıyla hem Ege hem de Antakya gastronomi kültürünü temsil eder. Evcil hayvan dostu politikası ve 200 kişiye kadar olan butik organizasyon kapasitesiyle bölgedeki en kapsamlı konaklama ve etkinlik merkezlerinden biridir.

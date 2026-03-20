@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { ExperiencesClient } from "./experiences-client";
+import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Deneyimler",
@@ -9,5 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default function ExperiencesPage() {
-  return <ExperiencesClient />;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([
+        { name: "Ana Sayfa", url: "/" },
+        { name: "Deneyimler" },
+      ])} />
+      <ExperiencesClient />
+    </>
+  );
 }

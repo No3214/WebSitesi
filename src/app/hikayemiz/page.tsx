@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { HistoryClient } from "@/components/history-client";
+import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Beyaz Saray'dan Kozbeyli'ye: Tarihimiz | Kozbeyli Konağı",
@@ -9,5 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default function HistoryPage() {
-  return <HistoryClient />;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([
+        { name: "Ana Sayfa", url: "/" },
+        { name: "Hikayemiz" },
+      ])} />
+      <HistoryClient />
+    </>
+  );
 }

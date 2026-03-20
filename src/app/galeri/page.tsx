@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { GalleryClient } from "./gallery-client";
+import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
 
 export const metadata: Metadata = {
   title: "Fotoğraf Galerisi",
@@ -9,5 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default function GalleryPage() {
-  return <GalleryClient />;
+  return (
+    <>
+      <JsonLd data={breadcrumbSchema([
+        { name: "Ana Sayfa", url: "/" },
+        { name: "Galeri" },
+      ])} />
+      <GalleryClient />
+    </>
+  );
 }
