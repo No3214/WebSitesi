@@ -25,6 +25,16 @@
   box-sizing: border-box;
 }
 
+::selection {
+  background: var(--gold);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--gold);
+  color: white;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -123,12 +133,21 @@ img {
 .button.primary:hover {
   background: transparent;
   color: var(--olive);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(80, 93, 75, 0.15);
 }
 
 .button.secondary {
   background: transparent;
   color: var(--olive);
   border: 1px solid var(--olive);
+}
+
+.button.secondary:hover {
+  background: var(--olive);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(80, 93, 75, 0.15);
 }
 
 .hero {
@@ -213,6 +232,13 @@ img {
 
 .card:hover {
   transform: translateY(-8px);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.08);
+}
+
+.card:hover img,
+.card:hover .object-cover {
+  transform: scale(1.03);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card img {
@@ -260,9 +286,31 @@ img {
   background-color: var(--white);
   padding: 32px;
   border: 1px solid var(--border);
-  transition: all 0.4s ease;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
+}
+
+.feature-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  border-color: var(--gold);
+}
+
+.feature-box::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.feature-box:hover::after {
+  transform: scaleX(1);
 }
 
 .feature-box h3 {

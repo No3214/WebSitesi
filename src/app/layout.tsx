@@ -7,6 +7,8 @@ import "./globals.css";
 
 import { FloatingContact } from "@/components/floating-contact";
 import { MobileActionBar } from "@/components/mobile-action-bar";
+import { ScrollProgress } from "@/components/scroll-progress";
+import { BackToTop } from "@/components/back-to-top";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
 import { Providers } from "@/components/providers";
@@ -29,10 +31,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <ErrorBoundary>
           <CSPostHogProvider>
             <Providers>
+              <ScrollProgress />
               <TrackingScripts />
               <div id="main-content">{children}</div>
               <SiteFooter />
               <FloatingContact />
+              <BackToTop />
               <MobileActionBar />
               <CookieConsent />
             </Providers>

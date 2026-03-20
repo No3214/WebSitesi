@@ -4,8 +4,15 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, Instagram, X, MessageCircle } from "lucide-react";
 
+function isBusinessHours() {
+  const now = new Date();
+  const hour = now.getHours();
+  return hour >= 8 && hour < 23; // 08:00 - 23:00
+}
+
 export const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const available = isBusinessHours();
 
   const contactOptions = [
     {
@@ -65,6 +72,7 @@ export const FloatingContact = () => {
         aria-label={isOpen ? "İletişim menüsünü kapat" : "İletişim"}
       >
         {isOpen ? <X size={22} /> : <MessageCircle size={22} />}
+        {!isOpen && available && <span className="availability-dot" />}
       </button>
 
       <style jsx>{`
@@ -109,6 +117,23 @@ export const FloatingContact = () => {
         .floating-trigger-open {
           background: #333;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .availability-dot {
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: #22c55e;
+          border: 2px solid white;
+          animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.15); opacity: 0.8; }
         }
       `}</style>
 
