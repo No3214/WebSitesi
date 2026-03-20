@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { blogPosts } from "@/data/blog-posts";
 import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
+import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Blog | Ege, Tarih ve Gastronomi Yazıları",
@@ -16,6 +17,16 @@ export const metadata: Metadata = {
     "kozbeyli köyü",
     "izmir seyahat rehberi",
   ],
+  openGraph: {
+    images: [
+      {
+        url: absoluteUrl("/images/rooms/bahce-2.jpeg"),
+        width: 1200,
+        height: 630,
+        alt: "Kozbeyli Konağı Blog - Ege, Tarih ve Gastronomi",
+      },
+    ],
+  },
 };
 
 export default function BlogPage() {

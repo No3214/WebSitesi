@@ -1,12 +1,23 @@
 import { Metadata } from "next";
 import { FAQClient } from "./faq-client";
 import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
+import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Sık Sorulan Sorular",
   description:
     "Kozbeyli Konağı hakkında merak ettikleriniz: check-in, ulaşım, restoran, evcil hayvan politikası ve daha fazlası.",
   alternates: { canonical: "/sss" },
+  openGraph: {
+    images: [
+      {
+        url: absoluteUrl("/images/rooms/standart-1.jpeg"),
+        width: 1200,
+        height: 630,
+        alt: "Kozbeyli Konağı - Sık Sorulan Sorular",
+      },
+    ],
+  },
 };
 
 const faqSchema = {

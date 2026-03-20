@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { rooms as fallbackRooms } from "@/data/rooms";
 import { RoomDetailClient } from "@/components/room-detail-client";
 import { roomSchema } from "@/lib/schema";
+import { JsonLd, breadcrumbSchema } from "@/components/json-ld";
 import { absoluteUrl } from "@/lib/utils";
 
 type Props = {
@@ -44,10 +45,14 @@ export default async function RoomDetailPage({ params }: Props) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(roomSchema(room)) }}
-      />
+      <JsonLd data={[
+        roomSchema(room),
+        breadcrumbSchema([
+          { name: "Ana Sayfa", url: "/" },
+          { name: "Odalar", url: "/odalar" },
+          { name: room.title },
+        ]),
+      ]} />
       <RoomDetailClient slug={slug} />
     </>
   );
