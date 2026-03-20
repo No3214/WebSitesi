@@ -25,6 +25,7 @@ const t = {
     perNight: "/ gece · serpme kahvaltı dahil",
     callForPrice: "Fiyat İçin Arayınız",
     bookCta: "EN İYİ FİYATLA YERİNİZİ AYIRIN",
+    whatsappCta: "WhatsApp ile Bilgi Alın",
     otherRooms: "Diğer Odalarımız",
   },
   en: {
@@ -39,6 +40,7 @@ const t = {
     perNight: "/ night · spread breakfast included",
     callForPrice: "Call for Price",
     bookCta: "BOOK AT THE BEST PRICE",
+    whatsappCta: "Inquire via WhatsApp",
     otherRooms: "Our Other Rooms",
   },
 } as const;
@@ -165,6 +167,18 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                   <Link href="/#rezervasyon" className="button premium-cta full">
                     {labels.bookCta}
                   </Link>
+                  <a
+                    href={`https://wa.me/905322342686?text=${encodeURIComponent(
+                      locale === "tr"
+                        ? `Merhaba, ${room.title} hakkında bilgi almak istiyorum.`
+                        : `Hello, I would like to inquire about the ${room.title}.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="whatsapp-cta"
+                  >
+                    💬 {labels.whatsappCta}
+                  </a>
                 </div>
               </div>
             </FadeIn>
@@ -321,6 +335,26 @@ export function RoomDetailClient({ slug }: { slug: string }) {
           height: 60px;
         }
         .premium-cta:hover { background: var(--gold); color: white; }
+
+        .whatsapp-cta {
+          display: block;
+          text-align: center;
+          margin-top: 12px;
+          padding: 14px;
+          border: 1px solid rgba(255,255,255,0.2);
+          border-radius: 8px;
+          color: rgba(255,255,255,0.85);
+          font-size: 0.85rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.3s ease;
+        }
+        .whatsapp-cta:hover {
+          background: rgba(37, 211, 102, 0.15);
+          border-color: #25d366;
+          color: #25d366;
+          opacity: 1;
+        }
 
         @media (max-width: 1200px) {
           .detail-layout { grid-template-columns: 1fr; gap: 40px; }
