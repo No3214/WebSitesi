@@ -20,3 +20,63 @@ yarn-error.log*
 
 *storybook.log
 storybook-static
+
+# =============================================================================
+# Security — NEVER commit these
+# =============================================================================
+
+# Environment & Secrets
+.env*
+!.env.example
+!.env.local.example
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+*.jks
+
+# Credentials & tokens
+credentials.json
+service-account*.json
+**/secrets/
+*.secret
+token.json
+.npmrc
+.yarnrc
+
+# IDE & OS
+.idea/
+.vscode/settings.json
+.vscode/launch.json
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Debug & profiling
+*.heapsnapshot
+*.cpuprofile
+.clinic/
+*.trace
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+data/
+media/
+
+# Coverage & reports
+coverage/
+.nyc_output/
+*.lcov
+
+# Temp files
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
