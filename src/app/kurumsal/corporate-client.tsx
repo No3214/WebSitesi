@@ -5,17 +5,51 @@ import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 import { LeadForm } from "@/components/lead-form";
 import { Building, Coffee, Leaf, Users, Wifi, Utensils } from "lucide-react";
+import { useDictionary } from "@/hooks/use-dictionary";
 
-const features = [
-  { icon: Building, title: "Özel Toplantı Alanı", text: "Tarihi taş konakta 30 kişiye kadar toplantı ve sunum imkanı." },
-  { icon: Users, title: "Team Building", text: "Şarap tadımı, zeytin hasadı, yemek atölyesi gibi takım aktiviteleri." },
-  { icon: Leaf, title: "Doğa Retreat", text: "Şehir stresinden uzakta, Ege'nin huzurunda stratejik planlama." },
-  { icon: Coffee, title: "Dibek Kahvesi Molası", text: "180 yıllık gelenek ile kahve molalarınızı özelleştirin." },
-  { icon: Utensils, title: "Özel Menü", text: "Kurumsal etkinliğinize özel tasarlanmış Antakya & Ege menüsü." },
-  { icon: Wifi, title: "Teknik Altyapı", text: "Yüksek hızlı Wi-Fi, projeksiyon, beyaz tahta ve ses sistemi." },
-];
+const features = {
+  tr: [
+    { icon: Building, title: "Özel Toplantı Alanı", text: "Tarihi taş konakta 30 kişiye kadar toplantı ve sunum imkanı." },
+    { icon: Users, title: "Team Building", text: "Şarap tadımı, zeytin hasadı, yemek atölyesi gibi takım aktiviteleri." },
+    { icon: Leaf, title: "Doğa Retreat", text: "Şehir stresinden uzakta, Ege'nin huzurunda stratejik planlama." },
+    { icon: Coffee, title: "Dibek Kahvesi Molası", text: "180 yıllık gelenek ile kahve molalarınızı özelleştirin." },
+    { icon: Utensils, title: "Özel Menü", text: "Kurumsal etkinliğinize özel tasarlanmış Antakya & Ege menüsü." },
+    { icon: Wifi, title: "Teknik Altyapı", text: "Yüksek hızlı Wi-Fi, projeksiyon, beyaz tahta ve ses sistemi." },
+  ],
+  en: [
+    { icon: Building, title: "Private Meeting Space", text: "Meeting and presentation facilities for up to 30 guests in a historic stone manor." },
+    { icon: Users, title: "Team Building", text: "Team activities such as wine tasting, olive harvesting, and cooking workshops." },
+    { icon: Leaf, title: "Nature Retreat", text: "Strategic planning in the serenity of the Aegean, away from city stress." },
+    { icon: Coffee, title: "Dibek Coffee Break", text: "Customize your coffee breaks with a 180-year-old tradition." },
+    { icon: Utensils, title: "Custom Menu", text: "A bespoke Antakya & Aegean menu tailored for your corporate event." },
+    { icon: Wifi, title: "Technical Infrastructure", text: "High-speed Wi-Fi, projector, whiteboard, and sound system." },
+  ],
+};
+
+const t = {
+  tr: {
+    sectionEyebrow: "KURUMSAL",
+    sectionTitle: "İş Dünyası İçin Eşsiz Bir Mekan",
+    sectionText: "Tarihin ve doğanın buluştuğu yerde, verimli toplantılar ve unutulmaz ekip deneyimleri.",
+    formEyebrow: "TEKLİF ALIN",
+    formTitle: "Kurumsal Etkinliğinizi Planlayalım",
+    formText: "İhtiyaçlarınıza özel fiyat teklifi için formu doldurun.",
+  },
+  en: {
+    sectionEyebrow: "CORPORATE",
+    sectionTitle: "A Unique Venue for Business",
+    sectionText: "Productive meetings and unforgettable team experiences where history meets nature.",
+    formEyebrow: "GET A QUOTE",
+    formTitle: "Let Us Plan Your Corporate Event",
+    formText: "Fill out the form to receive a custom quote tailored to your needs.",
+  },
+};
 
 export function CorporateClient() {
+  const { locale } = useDictionary();
+  const text = t[locale];
+  const featureList = features[locale];
+
   return (
     <>
       <SiteHeader />
@@ -23,11 +57,11 @@ export function CorporateClient() {
         <section className="section">
           <div className="container">
             <FadeIn>
-              <SectionTitle eyebrow="KURUMSAL" title="İş Dünyası İçin Eşsiz Bir Mekan" text="Tarihin ve doğanın buluştuğu yerde, verimli toplantılar ve unutulmaz ekip deneyimleri." />
+              <SectionTitle eyebrow={text.sectionEyebrow} title={text.sectionTitle} text={text.sectionText} />
             </FadeIn>
 
             <div className="feature-grid">
-              {features.map((item, idx) => {
+              {featureList.map((item, idx) => {
                 const Icon = item.icon;
                 return (
                   <FadeIn key={idx} delay={idx * 0.08}>
@@ -46,7 +80,7 @@ export function CorporateClient() {
         <section className="section section-alt" id="kurumsal-teklif">
           <div className="container" style={{ maxWidth: "900px" }}>
             <FadeIn>
-              <SectionTitle eyebrow="TEKLİF ALIN" title="Kurumsal Etkinliğinizi Planlayalım" text="İhtiyaçlarınıza özel fiyat teklifi için formu doldurun." />
+              <SectionTitle eyebrow={text.formEyebrow} title={text.formTitle} text={text.formText} />
               <LeadForm />
             </FadeIn>
           </div>

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { HotelRunnerEmbed } from "@/components/hotel-runner-embed";
@@ -102,6 +103,10 @@ const faqs = [
 export function HomeClient() {
   const { dict, locale } = useDictionary();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   if (!dict) return (
     <div style={{ minHeight: "100vh" }}>
@@ -123,8 +128,8 @@ export function HomeClient() {
       <SiteHeader />
       <main>
         {/* === HERO === */}
-        <section className="hero" style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-          <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+        <section ref={heroRef} className="hero" style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+          <motion.div style={{ position: "absolute", inset: "-20%", zIndex: 0, y: heroY }}>
             <Image
               src="/images/rooms/bahce-1.jpeg"
               alt="Kozbeyli Konağı - 500 yıllık taş butik otel"
@@ -136,9 +141,9 @@ export function HomeClient() {
               blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
             />
             <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%)" }} />
-          </div>
+          </motion.div>
 
-          <div className="container" style={{ position: "relative", zIndex: 2, textAlign: "center", paddingTop: "80px" }}>
+          <motion.div className="container" style={{ position: "relative", zIndex: 2, textAlign: "center", paddingTop: "80px", opacity: heroOpacity }}>
             <FadeIn direction="down">
               <span className="eyebrow" style={{ color: "rgba(255,255,255,0.7)" }}>
                 {locale === "tr" ? "FOÇA · KOZBEYLİ KÖYÜ · 1870" : "FOÇA · KOZBEYLİ VILLAGE · 1870"}
@@ -168,11 +173,11 @@ export function HomeClient() {
                 </Link>
               </div>
             </FadeIn>
-          </div>
+          </motion.div>
 
-          <div style={{ position: "absolute", bottom: "40px", left: "50%", transform: "translateX(-50%)", zIndex: 2, animation: "bounce 2s infinite" }}>
+          <motion.div style={{ position: "absolute", bottom: "40px", left: "50%", transform: "translateX(-50%)", zIndex: 2, animation: "bounce 2s infinite", opacity: heroOpacity }}>
             <ChevronDown size={28} color="rgba(255,255,255,0.5)" />
-          </div>
+          </motion.div>
         </section>
 
         {/* === STATS COUNTER === */}

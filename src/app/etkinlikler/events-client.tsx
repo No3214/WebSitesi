@@ -6,47 +6,79 @@ import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { useDictionary } from "@/hooks/use-dictionary";
 
 const upcomingEvents = [
   {
-    title: "Canlı Müzik: Ege Akşamı",
-    date: "Her Cuma & Cumartesi",
+    title: { tr: "Canlı Müzik: Ege Akşamı", en: "Live Music: Aegean Evening" },
+    date: { tr: "Her Cuma & Cumartesi", en: "Every Friday & Saturday" },
     time: "20:30 – 23:00",
-    location: "Avlu",
-    description: "Akustik gitar ve Ege şarkıları eşliğinde özel menü. Meze tabağı, ana yemek ve şarap dahil.",
+    location: { tr: "Avlu", en: "Courtyard" },
+    description: {
+      tr: "Akustik gitar ve Ege şarkıları eşliğinde özel menü. Meze tabağı, ana yemek ve şarap dahil.",
+      en: "Special menu with acoustic guitar and Aegean songs. Meze platter, main course and wine included.",
+    },
     image: "/images/rooms/balkonlu-aile-2.jpeg",
-    capacity: "Sınırlı kontenjan",
+    capacity: { tr: "Sınırlı kontenjan", en: "Limited capacity" },
   },
   {
-    title: "Şarap & Peynir Akşamı",
-    date: "Ayda 2 kez (Cumartesi)",
+    title: { tr: "Şarap & Peynir Akşamı", en: "Wine & Cheese Evening" },
+    date: { tr: "Ayda 2 kez (Cumartesi)", en: "Twice a month (Saturday)" },
     time: "19:00 – 21:30",
-    location: "Restoran",
-    description: "Ege bağlarından seçme şaraplar, yerel peynirler ve somelier rehberliğinde tadım deneyimi.",
+    location: { tr: "Restoran", en: "Restaurant" },
+    description: {
+      tr: "Ege bağlarından seçme şaraplar, yerel peynirler ve somelier rehberliğinde tadım deneyimi.",
+      en: "Selected wines from Aegean vineyards, local cheeses and a tasting experience guided by a sommelier.",
+    },
     image: "/images/rooms/aile-5.jpeg",
-    capacity: "20 kişi",
+    capacity: { tr: "20 kişi", en: "20 guests" },
   },
   {
-    title: "Gastronomi Workshop: Antakya Mutfağı",
-    date: "Ayda 1 kez (Pazar)",
+    title: { tr: "Gastronomi Workshop: Antakya Mutfağı", en: "Gastronomy Workshop: Antakya Cuisine" },
+    date: { tr: "Ayda 1 kez (Pazar)", en: "Once a month (Sunday)" },
     time: "11:00 – 14:00",
-    location: "Mutfak",
-    description: "İnci Hanım'la birlikte Antakya mutfağının sırlarını öğrenin. Sac kavurma, lahmacun ve ev baklavası.",
+    location: { tr: "Mutfak", en: "Kitchen" },
+    description: {
+      tr: "İnci Hanım'la birlikte Antakya mutfağının sırlarını öğrenin. Sac kavurma, lahmacun ve ev baklavası.",
+      en: "Learn the secrets of Antakya cuisine with İnci Hanım. Sac kavurma, lahmacun and homemade baklava.",
+    },
     image: "/images/rooms/standart-4.jpeg",
-    capacity: "12 kişi",
+    capacity: { tr: "12 kişi", en: "12 guests" },
   },
   {
-    title: "Mevsimsel: Zeytin Hasadı Festivali",
-    date: "Kasım – Aralık",
+    title: { tr: "Mevsimsel: Zeytin Hasadı Festivali", en: "Seasonal: Olive Harvest Festival" },
+    date: { tr: "Kasım – Aralık", en: "November – December" },
     time: "10:00 – 16:00",
-    location: "Bahçe & Zeytin Tarlası",
-    description: "Zeytinyağı üretim sürecine katılın, hasat yapın ve kendi zeytinyağınızı eve götürün. Öğle yemeği dahil.",
+    location: { tr: "Bahçe & Zeytin Tarlası", en: "Garden & Olive Grove" },
+    description: {
+      tr: "Zeytinyağı üretim sürecine katılın, hasat yapın ve kendi zeytinyağınızı eve götürün. Öğle yemeği dahil.",
+      en: "Join the olive oil production process, harvest olives and take your own olive oil home. Lunch included.",
+    },
     image: "/images/rooms/bahce-2.jpeg",
-    capacity: "15 kişi",
+    capacity: { tr: "15 kişi", en: "15 guests" },
   },
 ];
 
+const t = {
+  tr: {
+    eyebrow: "ETKİNLİKLER",
+    title: "Yaklaşan Etkinlikler",
+    text: "Kozbeyli Konağı'nda kültür, gastronomi ve müzik bir arada.",
+    reserve: "Rezervasyon Yap",
+    getInfo: "Bilgi Al",
+  },
+  en: {
+    eyebrow: "EVENTS",
+    title: "Upcoming Events",
+    text: "Culture, gastronomy and music come together at Kozbeyli Konağı.",
+    reserve: "Make a Reservation",
+    getInfo: "Get Info",
+  },
+};
+
 export function EventsClient() {
+  const { locale } = useDictionary();
+
   return (
     <>
       <SiteHeader />
@@ -54,7 +86,7 @@ export function EventsClient() {
         <section className="section">
           <div className="container">
             <FadeIn>
-              <SectionTitle eyebrow="ETKİNLİKLER" title="Yaklaşan Etkinlikler" text="Kozbeyli Konağı'nda kültür, gastronomi ve müzik bir arada." />
+              <SectionTitle eyebrow={t[locale].eyebrow} title={t[locale].title} text={t[locale].text} />
             </FadeIn>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
@@ -62,23 +94,23 @@ export function EventsClient() {
                 <FadeIn key={idx} delay={idx * 0.08}>
                   <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: "32px", background: "var(--white)", border: "1px solid var(--border)", overflow: "hidden" }} className="event-card">
                     <div style={{ position: "relative", minHeight: "240px" }}>
-                      <Image src={event.image} alt={event.title} fill className="object-cover" sizes="320px" />
+                      <Image src={event.image} alt={event.title[locale]} fill className="object-cover" sizes="320px" />
                     </div>
                     <div style={{ padding: "32px 32px 32px 0" }}>
-                      <h3 className="serif" style={{ fontSize: "1.4rem", marginBottom: "16px", color: "var(--olive)" }}>{event.title}</h3>
+                      <h3 className="serif" style={{ fontSize: "1.4rem", marginBottom: "16px", color: "var(--olive)" }}>{event.title[locale]}</h3>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginBottom: "16px", fontSize: "0.85rem", color: "#888" }}>
-                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><Calendar size={14} /> {event.date}</span>
+                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><Calendar size={14} /> {event.date[locale]}</span>
                         <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><Clock size={14} /> {event.time}</span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><MapPin size={14} /> {event.location}</span>
-                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><Users size={14} /> {event.capacity}</span>
+                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><MapPin size={14} /> {event.location[locale]}</span>
+                        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><Users size={14} /> {event.capacity[locale]}</span>
                       </div>
-                      <p style={{ color: "#555", lineHeight: 1.7, marginBottom: "20px" }}>{event.description}</p>
+                      <p style={{ color: "#555", lineHeight: 1.7, marginBottom: "20px" }}>{event.description[locale]}</p>
                       <div style={{ display: "flex", gap: "12px" }}>
                         <Link href="https://wa.me/905322342686" className="button primary" target="_blank" rel="noreferrer">
-                          Rezervasyon Yap
+                          {t[locale].reserve}
                         </Link>
                         <Link href="tel:+902328261112" className="button secondary">
-                          Bilgi Al
+                          {t[locale].getInfo}
                         </Link>
                       </div>
                     </div>
