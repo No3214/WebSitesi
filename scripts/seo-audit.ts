@@ -6,7 +6,7 @@ interface AuditPage {
   altCheck: { total: number; missing: number };
 }
 
-async function runAudit() {
+export async function runAudit() {
   const localPages = ['/', '/odalar', '/menu'];
   const results = {
     timestamp: new Date().toISOString(),

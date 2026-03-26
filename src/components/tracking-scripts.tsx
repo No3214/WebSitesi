@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Script from "next/script";
+import Image from "next/image";
 
 import { env } from "@/lib/env";
 import { CONSENT_STORAGE_KEY, getDefaultConsent, parseConsent, type ConsentState } from "@/lib/consent";
@@ -62,12 +63,13 @@ export function TrackingScripts() {
             fbq('track', 'PageView');`}
           </Script>
           <noscript>
-            <img
-              height="1"
-              width="1"
+            <Image
+              height={1}
+              width={1}
               style={{ display: "none" }}
               src={`https://www.facebook.com/tr?id=${env.NEXT_PUBLIC_META_PIXEL_ID}&ev=PageView&noscript=1`}
               alt=""
+              unoptimized
             />
           </noscript>
         </>

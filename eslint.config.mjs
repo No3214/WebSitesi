@@ -8,8 +8,16 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    ignores: ["payload-types.ts", ".next/**", "dist/**"],
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
-  ...storybook.configs["flat/recommended"]
+  ...storybook.configs["flat/recommended"],
+  {
+    rules: {
+      "@typescript-eslint/triple-slash-reference": "off",
+    },
+  },
 ];
 
 export default eslintConfig;

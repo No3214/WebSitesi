@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Script from "next/script";
+import Image from "next/image";
 
 export function ConsentGatedScripts() {
   const [consent, setConsent] = useState<{ analytics: boolean; marketing: boolean } | null>(null);
@@ -70,10 +71,13 @@ export function ConsentGatedScripts() {
             fbq('track', 'PageView');`}
           </Script>
           <noscript>
-            <img 
-              height="1" width="1" style={{ display: 'none' }}
-              src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_FB_PIXEL_ID || ''}&ev=PageView&noscript=1`}
+            <Image
+              height={1}
+              width={1}
+              style={{ display: "none" }}
+              src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_FB_PIXEL_ID || ""}&ev=PageView&noscript=1`}
               alt=""
+              unoptimized
             />
           </noscript>
         </>

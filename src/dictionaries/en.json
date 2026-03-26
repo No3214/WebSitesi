@@ -3,7 +3,52 @@
     "title": "A Luxurious Escape in the Heart of History",
     "eyebrow": "OLD FOÇA, KOZBEYLİ",
     "cta": "DISCOVER OUR ROOMS",
-    "story": "OUR STORY"
+    "story": "OUR STORY",
+    "heroTitle": "Elegant Aegean Experience\nIn a Premium Stone Mansion",
+    "heroText": "Within 500-year-old registered stone architecture, 12 km from the sea, personalized service and a refined escape.",
+    "bookNow": "BOOK NOW",
+    "planEvent": "PLAN AN EVENT",
+    "kpiGuestExperience": "GUEST EXPERIENCE",
+    "kpiBookingTrust": "DIRECT BOOKING TRUST",
+    "kpiResponseTime": "RESPONSE TIME",
+    "roomsTitle": "Serenity & Comfort",
+    "roomsText": "Feel the texture of history in our soulfully designed rooms.",
+    "conciergeEyebrow": "CONCIERGE",
+    "conciergeTitle": "Premium Experience Packages",
+    "conciergeText": "Not just a stay; specially designed services for you to collect memories that last a lifetime.",
+    "bookingTitle": "Reserve Your Stay",
+    "bookingText": "Direct booking advantage with best price guarantee, flexible cancellation, and concierge support.",
+    "faqEyebrow": "FAQ",
+    "faqTitle": "Shorten the Decision Process",
+    "faqText": "Details that might cross your mind before booking.",
+    "experiences": [
+      {
+        "title": "Antakya & Aegean Gastronomy",
+        "text": "İnci Hanım's special recipes, sac kavurma, and fresh coffee ground in a 500-year-old stone dibek."
+      },
+      {
+        "title": "VIP Transfer & Fast Check-in",
+        "text": "Airport transfer and direct room entry privilege."
+      },
+      {
+        "title": "Curated Foça Escape",
+        "text": "Boat tour, village route, and gastronomy experience in one package."
+      }
+    ],
+    "faqs": [
+      {
+        "q": "What are the check-in / check-out times?",
+        "a": "Check-in is from 14:00, and check-out is by 12:00."
+      },
+      {
+        "q": "Is it suitable for families with children?",
+        "a": "Yes, we have family rooms and child-friendly menus available."
+      },
+      {
+        "q": "How to make an event booking?",
+        "a": "Our sales team will contact you within 24 hours of form submission."
+      }
+    ]
   },
   "Navigation": {
     "history": "Our Story",
@@ -16,12 +61,96 @@
     "title": "Refined Rooms & Suites",
     "eyebrow": "Accommodation",
     "text": "Discover our accommodations that combine the stone architecture of Kozbeyli Mansion with the peaceful Aegean view.",
-    "detail": "View Details"
+    "detail": "View Details",
+    "size": "Size",
+    "capacity": "Capacity",
+    "view": "View",
+    "experience": "Room Experience",
+    "directBookingAdvantage": "DIRECT BOOKING ADVANTAGE",
+    "selectDates": "Please Select Dates",
+    "bestPriceBook": "BOOK NOW WITH BEST PRICE",
+    "muehuerlueTasKonak": "REGISTERED STONE MANSION"
   },
   "Footer": {
     "description": "A refined stop at the heart of Foça, where a 200-year-old story is reinterpreted with luxury and comfort.",
     "explore": "Explore",
     "legal": "Legal",
     "contact": "Contact"
+  },
+  "Common": {
+    "hours": "HOURS",
+    "loading": "Loading...",
+    "error": "An error occurred."
+  },
+  "LeadForm": {
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "date": "Event Date",
+    "guests": "Estimated Guest Count",
+    "budget": "Estimated Budget",
+    "budgetUnder100": "Under 100,000 TL",
+    "budget100to250": "100,000 - 250,000 TL",
+    "budget250to500": "250,000 - 500,000 TL",
+    "budgetOver500": "Over 500,000 TL",
+    "type": "Organization Type",
+    "typeWedding": "Boutique Wedding",
+    "typeEngagement": "Engagement",
+    "typeCorporate": "Corporate Event",
+    "typeSpecial": "Special Celebration",
+    "message": "Special requests and other notes...",
+    "consent": "I agree to the processing of my personal data for the purpose of offer and information.",
+    "submit": "Submit Request",
+    "submitting": "Submitting...",
+    "successTitle": "Request Received",
+    "successText": "Our sales team will share availability and price information shortly. Thank you.",
+    "newRequest": "Send New Request",
+    "error": "An error occurred. Please try again."
+  },
+  "Organizations": {
+    "eyebrow": "ORGANIZATION",
+    "title": "Your Story, Our Venue",
+    "text": "In the heart of the Aegean, we host unforgettable events in the lap of history and nature.",
+    "contactEyebrow": "CONTACT",
+    "contactTitle": "Let's Plan Your Dream",
+    "contactText": "Share the details with us, our expert team will prepare a special offer for you as soon as possible.",
+    "requestOffer": "REQUEST OFFER",
+    "packages": [
+      {
+        "title": "Boutique Wedding in Registered Heritage",
+        "category": "Wedding & Engagement",
+        "description": "Kozbeyli Mansion is a registered building filtered from the common heritage of Greek and Turkish architecture. In our large courtyard with a capacity of up to 150-200 people, we host prestigious weddings where every detail is planned by our 'Expert' team among the faithfully restored stone walls and traditional Horasan mortar craftsmanship."
+      },
+      {
+        "title": "Corporate 'Off-Site' Experience",
+        "category": "Corporate",
+        "description": "Creative corporate meetings with the thermal comfort of Kozbeyli stone, 15 minutes from Izmir. We combine corporate prestige with history with our boutique meeting capacity for up to 40 people, high-speed internet, and our indoor area with a fireplace."
+      },
+      {
+        "title": "Gourmet Gastronomy Celebrations",
+        "category": "Special Day",
+        "description": "Crown your special moments such as birthdays or anniversaries with gourmet flavors where Antakya and Aegean cuisines hybridize. Our signature Dibek coffee, hand-pounded in the 180-year-old original stone dibek in the mansion courtyard and slowly cooked over a wood fire, will add a real historical texture to your celebration."
+      }
+    ]
+  },
+  "Gastronomy": {
+    "heroTitle": "Gastronomy Heritage",
+    "heroSubtitle": "A FLAVOR BRIDGE FROM ANTAKYA TO THE AEGEAN",
+    "inciTitle": "İnci Hanım's Kitchen",
+    "inciContent": "The kitchen of Kozbeyli Mansion is not just a dining area; it is a 'Gastronomy Laboratory' that combines İnci Hanım's Antakya-based family heritage with the ancient lands of the Aegean.",
+    "dibekTitle": "Original Stone Dibek",
+    "dibekContent": "Dibek Coffee, pounded fresh every day in the 500-year-old original stone dibek, is a ritual that we are the only real practitioners of in the village.",
+    "breakfastTitle": "Farm-to-Table Breakfast",
+    "breakfastContent": "Our spread village breakfast is a completely organic cycle filtered from the ancient olive trees of Kozbeyli and İnci Hanım's traditional jam recipes."
+  },
+  "History": {
+    "heroTitle": "Our Story",
+    "heroSubtitle": "WHISPER OF 500-YEAR-OLD STONES",
+    "textureTitle": "Historical Texture",
+    "textureContent": "Kozbeyli Mansion is not just a hotel; it is a 500-year-old registered masterpiece of Ottoman architecture interwoven with Horasan mortar. It is one of the oldest examples of civil architecture in the village.",
+    "merchantTitle": "Merchant Heritage",
+    "merchantContent": "Built between 1870 and 1891 for the wealthiest merchant families of the region, the building reflects the commercial power of the period with its massive wine and olive oil cellars on the ground floor.",
+    "restorationTitle": "Modern Restoration",
+    "restorationContent": "The restoration, which started in 2012, was completed under the supervision of the Monuments Board, using original techniques without using cement. With the 'Living Museum' philosophy, every stone was preserved by staying true to its original."
   }
 }

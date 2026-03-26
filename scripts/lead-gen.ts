@@ -7,7 +7,7 @@ import { getPayloadClient } from "../src/lib/payload";
  * 3. Prep Node: Generate personalized drafts using brand/voice-and-tone.md.
  */
 
-async function runPilot() {
+export async function runPilot() {
   console.log("🚀 Starting Pilot Lead Generation Pipeline...");
   
   // Placeholder for Search & Validation logic
@@ -35,10 +35,9 @@ async function runPilot() {
         phone: "0000000000",
         type: lead.sector,
         message: "SYSTEM_PILOT: AI-Generated outreach pending review.",
-        consent: true,
-        source: "agent_discovery"
-      } as any,
-      overrideAccess: true
+        source: "agent_discovery",
+      },
+      overrideAccess: true,
     });
   }
 
