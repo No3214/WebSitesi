@@ -1,4 +1,6 @@
-import { test } from '@playwright/test';
+import { test, expect } from "@playwright/test";
+
+test.skip(!!process.env.PW_BASE_URL, "Stres/monkey testleri canli prod ortaminda kosulmaz");
 
 test.describe('Monkey Stability Test', () => {
   test('should survive random interactions for 2 minutes', async ({ page }) => {

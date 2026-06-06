@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import { expect, test } from "@playwright/test";
 
 test.describe("Security Audit Test", () => {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const baseUrl = process.env.PW_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const webhookSecret = process.env.HOTELRUNNER_WEBHOOK_SECRET || "hotelrunner-dev-secret";
 
   test("should have strict security headers", async ({ request }) => {
@@ -58,6 +58,7 @@ test.describe("Security Audit Test", () => {
   });
 
   test("hotelrunner webhook should reject missing signature", async ({ request }) => {
+    test.skip(!!process.env.PW_BASE_URL, "HotelRunner legacy - HMS gecisi sonrasi canlida atlanir");
     const response = await request.post(`${baseUrl}/api/webhook/hotelrunner`, {
       headers: {
         "content-type": "application/json",
@@ -70,6 +71,7 @@ test.describe("Security Audit Test", () => {
   });
 
   test("hotelrunner webhook should accept valid signature", async ({ request }) => {
+    test.skip(!!process.env.PW_BASE_URL, "HotelRunner legacy - HMS gecisi sonrasi canlida atlanir");
     const body = JSON.stringify({
       reservation: {
         id: "abc-123",

@@ -8,6 +8,7 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  { ignores: [".next/**", "dist/**", "build/**", "storybook-static/**", "test-results/**", "playwright-report/**", "src/payload-types.ts", "next-env.d.ts", "public/**", "*.log"] },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   ...storybook.configs["flat/recommended"]
 ];

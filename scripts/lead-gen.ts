@@ -37,6 +37,7 @@ async function runPilot() {
         message: "SYSTEM_PILOT: AI-Generated outreach pending review.",
         consent: true,
         source: "agent_discovery"
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
       overrideAccess: true
     });

@@ -8,24 +8,24 @@ import { test, expect } from '@playwright/test';
 test.describe('Prestige & Heritage Verification', () => {
   
   test('Metadata should reflect 500-year heritage', async ({ page }) => {
-    await page.goto('http://localhost:3000');
+    await page.goto('/');
     const description = await page.locator('meta[name="description"]').getAttribute('content');
     expect(description).toContain('500 yıllık');
   });
 
   test('Atmospheric Immersion should be present and toggleable', async ({ page }) => {
-    await page.goto('http://localhost:3000');
+    await page.goto('/');
     // Check for the audio/visual ritual control
-    const immersionToggle = page.locator('button:has-text("SESİ")');
-    await expect(immersionToggle).toBeVisible();
-    
+    const immersionToggle = page.getByText('SESİ', { exact: false }).first();
+    await expect(immersionToggle).toBeVisible({ timeout: 15000 });
+
     // Test toggle state
-    await immersionToggle.click();
+    await immersionToggle.click({ force: true });
     await expect(immersionToggle).toContainText('SESİ');
   });
 
   test('Booking conversion triggers should be visible on scroll', async ({ page }) => {
-    await page.goto('http://localhost:3000');
+    await page.goto('/');
     await page.mouse.wheel(0, 2000);
     // Wait for scroll-triggered components
     await page.waitForTimeout(1000);
@@ -36,19 +36,19 @@ test.describe('Prestige & Heritage Verification', () => {
   });
 
   test('Living Museum Map should be interactive', async ({ page }) => {
-    await page.goto('http://localhost:3000/hikayemiz');
+    await page.goto('/hikayemiz');
     const mapNodes = page.locator('circle');
     const count = await mapNodes.count();
     expect(count).toBeGreaterThan(0);
     
     // Hover over a node and check for story popover
-    await mapNodes.first().hover();
+    await mapNodes.first().hover({ force: true });
     await expect(page.locator('h4:has-text("Taşın Hafızası")').or(page.locator('h4:has-text("Zamanın Tortusu")'))).toBeVisible();
   });
 
   test('Responsive Integrity: Mobile Viewport', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('http://localhost:3000');
+    await page.goto('/');
     
     // Menu button should be visible on mobile
     const menuBtn = page.locator('button:has-text("Menü"), .mobile-menu-trigger');

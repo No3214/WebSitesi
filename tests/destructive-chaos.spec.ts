@@ -1,4 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
+
+test.skip(!!process.env.PW_BASE_URL, "Stres/monkey testleri canli prod ortaminda kosulmaz");
 
 test('Extreme Monkey Test: Destructive Chaos', async ({ page }) => {
   const errors: string[] = [];

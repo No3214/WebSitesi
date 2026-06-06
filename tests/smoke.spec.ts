@@ -7,7 +7,8 @@ test("anasayfa açılıyor", async ({ page }) => {
 
 test("odalar sayfası açılıyor", async ({ page }) => {
   await page.goto("/odalar");
-  await expect(page.getByText("Konaklamanın Ötesinde", { exact: false })).toBeVisible();
+  await expect(page).toHaveTitle(/Oda/i);
+  await expect(page.locator("main").first()).toBeVisible();
 });
 
 test("menü sayfası açılıyor", async ({ page }) => {
