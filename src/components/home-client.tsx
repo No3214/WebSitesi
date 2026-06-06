@@ -129,7 +129,7 @@ export function HomeClient() {
             </FadeIn>
             <FadeIn delay={0.4} direction="up">
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-                 <Link href="/#rezervasyon" className="button primary">
+                 <Link href="/rezervasyon" className="button primary">
                    {locale === 'tr' ? "HEMEN REZERVASYON" : "BOOK NOW"}
                  </Link>
                  <Link href="/organizasyonlar" className="button secondary" style={{ color: 'var(--white)', borderColor: 'var(--white)' }}>

@@ -29,7 +29,7 @@ export const MobileActionBar = () => {
         </a>
 
         <Link 
-          href="/#rezervasyon" 
+          href="/rezervasyon"
           className="bg-gold text-white px-6 py-3 rounded-full flex items-center gap-2 shadow-lg shadow-gold/20 active:scale-95 transition-transform"
         >
           <Calendar size={18} />
