@@ -8,6 +8,7 @@ import { FadeIn } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
+import { WeatherRibbon } from "@/components/weather-ribbon";
 import { rooms as fallbackRooms } from "@/data/rooms";
 
 export function RoomDetailClient({ slug }: { slug: string }) {
@@ -97,12 +98,13 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                   </div>
                 </div>
 
+                <WeatherRibbon />
                 <div className="booking-card-premium">
                   <div className="price-stack">
                     <span className="price-eyebrow">DİREKT REZERVASYON AVANTAJI</span>
                     <span className="price-main">Lütfen Tarih Seçiniz</span>
                   </div>
-                  <Link href="/#rezervasyon" className="button premium-cta full">
+                  <Link href="/rezervasyon" className="button premium-cta full">
                     EN İYİ FİYATLA YERİNİZİ AYIRIN
                   </Link>
                 </div>
