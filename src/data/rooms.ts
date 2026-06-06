@@ -21,7 +21,7 @@ export const rooms: Room[] = [
     size: "24 m²",
     view: "İç Bahçe",
     amenities: ["Bahçe Manzarası", "Klima", "LCD TV", "Wi-Fi", "Özel Banyo"],
-    images: ["https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=1200&q=80"],
+    images: ["/images/odalar/standart-bahce-manzarali-oda/1.jpg"],
     video: "https://assets.mixkit.co/videos/preview/mixkit-luxury-resort-with-a-swimming-pool-and-palm-trees-4148-large.mp4"
   },
   {
@@ -33,7 +33,7 @@ export const rooms: Room[] = [
     size: "24 m²",
     view: "Ege Denizi",
     amenities: ["Deniz Manzarası", "Klima", "LCD TV", "Wi-Fi", "Özel Banyo"],
-    images: ["https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&q=80"]
+    images: ["/images/odalar/standart-deniz-manzarali-oda/1.jpg"]
   },
   {
     slug: "uc-kisilik-oda",
@@ -44,7 +44,7 @@ export const rooms: Room[] = [
     size: "28 m²",
     view: "Köy ve Doğa",
     amenities: ["Çift + Tek Kişilik Yatak", "Klima", "LCD TV", "Wi-Fi", "Minibar"],
-    images: ["https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80"]
+    images: ["/images/odalar/3-kisilik-oda/1.jpg"]
   },
   {
     slug: "4-kisilik-aile-odasi",
@@ -55,7 +55,7 @@ export const rooms: Room[] = [
     size: "45 m²",
     view: "Bahçe ve Avlu",
     amenities: ["Geniş Yaşam Alanı", "Bebek Yatağı Opsiyonu", "Özel Banyo", "Klima", "Smart TV"],
-    images: ["https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1200&q=80"]
+    images: ["/images/odalar/aile-odasi-4-kisilik/1.jpg"]
   },
   {
     slug: "4-kisilik-aile-odasi-balkonlu",
@@ -66,7 +66,7 @@ export const rooms: Room[] = [
     size: "50 m²",
     view: "Bahçe/Köy",
     amenities: ["Özel Balkon", "Geniş Yaşam Alanı", "Bebek Yatağı Opsiyonu", "Klima", "Smart TV"],
-    images: ["https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=80"]
+    images: ["/images/odalar/balkonlu-aile-odasi-4-kisilik/1.jpg"]
   },
   {
     slug: "superior-2-kisilik-oda",
@@ -77,7 +77,7 @@ export const rooms: Room[] = [
     size: "40 m²",
     view: "Panoramik Deniz",
     amenities: ["Küvet & Duş", "Deniz Manzarası", "Premium Buklet Seti", "Bose Ses Sistemi", "Nespresso Makinesi"],
-    images: ["https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80"]
+    images: ["/images/odalar/superrior-oda-deniz-manzarali/1.jpg"]
   },
   {
     slug: "superior-3-kisilik-oda",
@@ -88,6 +88,6 @@ export const rooms: Room[] = [
     size: "42 m²",
     view: "Panoramik Deniz",
     amenities: ["Küvet & Duş", "3 Kişilik Yatak Düzeni", "Deniz Manzarası", "Premium Buklet Seti", "Nespresso Makinesi"],
-    images: ["https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1200&q=80"]
+    images: ["/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/1.jpg"]
   }
 ];
