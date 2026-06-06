@@ -97,7 +97,7 @@ export function HomeClient() {
             }}
           >
             <Image
-              src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1920&q=80"
+              src="/images/hero.jpg"
               alt="Kozbeyli Konağı Luxury Escape"
               fill
               className="object-cover"
