@@ -1,45 +1,45 @@
-# Kozbeyli Konağı — Tur 3 (Autopilot): Görsel Sahiplik + PWA + Posterler
+# Kozbeyli Konağı — Tur 4 (Autopilot): Regresyon Ağı + Zengin Sonuçlar + 404
 
-Önceki tur: 3b7ab61 (i18n, CTA birleştirme, OG, README, ECC testleri, e2e 2/2).
+Önceki tur: 754ead7 (gerçek görseller, posterler, favicon/manifest).
 
 ## Wave 1 (paralel)
 
-### T1 — Unsplash bağımlılığını gerçek fotoğraflarla değiştir
+### T1 — Site geneli e2e smoke + API kontrat testi
 - id: T1
 - depends_on: []
-- location: src/components/atmospheric-immersion.tsx, src/components/heritage-archive.tsx, src/components/history-client.tsx, src/components/living-museum-map.tsx, src/components/organizations-client.tsx, src/data/rooms.ts
-- description: images.unsplash.com URL'lerini public/images/odalar altındaki gerçek fotoğraflarla değiştir (önce klasörleri listele, bağlama uygun seç; rooms.ts'te gerçek foto path'leri zaten varsa yalnız unsplash kalıntılarını değiştir). next.config.ts remotePatterns'a dokunma.
-- validation: src altında grep "unsplash" → 0 sonuç; değiştirilen path'lerin dosyaları public altında mevcut.
+- location: tests/e2e/site-smoke.spec.ts (yeni)
+- description: Playwright: /, /odalar, /gastronomi, /menu, /organizasyonlar, /misafir-rehberi, /hikayemiz sayfaları 200 + ana başlık görünür; /odalar/standart-oda detayı açılır; /rezervasyon'da HMS URL boşken WhatsApp fallback butonu görünür; request.get("/api/local-pulse") → 200 + JSON'da generatedAt alanı string.
+- validation: dosya mevcut; ≥9 test; mevcut e2e stiliyle uyumlu (PW_BASE_URL deseni).
 - status: pending
 - log:
 
-### T2 — Video posterleri (ffmpeg) + gastronomi entegrasyonu
+### T2 — FAQPage JSON-LD (zengin sonuç)
 - id: T2
 - depends_on: []
-- location: public/videos/kahvalti-poster.jpg, public/videos/mihlama-poster.jpg, src/app/gastronomi/page.tsx
-- description: Sandbox ffmpeg ile her videodan temsil karesi (~2sn) jpg poster üret (kalite -q:v 3, genişlik 1280); gastronomi sayfasındaki iki <video>'ya poster attribute ekle.
-- validation: iki poster dosyası >20KB; gastronomi page.tsx'te poster="/videos/..." iki kez geçer.
+- location: src/data/faqs.ts (yeni), src/components/home-client.tsx, src/app/page.tsx
+- description: home-client'taki faqs dizisini src/data/faqs.ts'e çıkar (TR+EN aynen), home-client oradan import etsin (davranış birebir). src/app/page.tsx'e TR içerikle FAQPage JSON-LD script'i ekle (mainEntity: Question/acceptedAnswer).
+- validation: page.tsx'te "FAQPage" geçer; home-client'ta lokal faqs tanımı kalmaz, '@/data/faqs' import edilir; build kırılmaz (sözdizimi tutarlı).
 - status: pending
 - log:
 
-### T3 — Favicon + PWA manifest
+### T3 — Markalı 404 sayfası
 - id: T3
 - depends_on: []
-- location: src/app/icon.svg, src/app/manifest.ts
-- description: public/logo.svg'yi src/app/icon.svg olarak kopyala (Next App Router otomatik favicon). src/app/manifest.ts: MetadataRoute.Manifest — name "Kozbeyli Konağı", short_name, description, start_url "/", display "standalone", background_color "#faf8f4", theme_color "#6b725c", icons [icon.svg any]. 
-- validation: iki dosya mevcut; manifest.ts default export MetadataRoute.Manifest döner.
+- location: src/app/not-found.tsx
+- description: Mevcut not-found'u oku; marka diliyle (taş konak/Ege tonunda, başlık + kısa metin TR) yeniden tasarla: SiteHeader + section + "Aradığınız sayfa taşınmış olabilir" + /  /odalar  /rezervasyon  /iletisim butonları. Layout footer'ı zaten global; footer EKLEME.
+- validation: not-found.tsx'te "/rezervasyon" linki var, "SiteFooter" geçmez.
 - status: pending
 - log:
 
 ## Wave 2
 
-### T4 — Gate: pull --rebase + build + e2e + push
+### T4 — Gate: lint sıfır + vitest + build + e2e (genişlemiş) + push
 - id: T4
 - depends_on: [T1, T2, T3]
-- description: Windows: git pull --rebase; npm run build EXIT:0; temiz next start + playwright e2e 2/2; görev commit'leri + push.
-- validation: BUILD_EXIT:0; PW 0 failed; push main -> main.
+- description: npm run lint → warning'leri makul şekilde sıfırla (tracking-scripts img için gerekçeli eslint-disable); vitest unit; build EXIT:0; temiz next start + tüm tests/e2e; commit'ler + push.
+- validation: lint EXIT:0; vitest PASS; BUILD_EXIT:0; PW 0 failed; push main -> main.
 - status: pending
 - log:
 
 ## Coverage
-- "devam geliştir" → T1 (marka görsel sahipliği + dış bağımlılık sıfırlama), T2 (gastronomi UX), T3 (favicon/PWA eksiği), T4 (yayın güvencesi).
+- "devam" → T1 (regresyon ağı), T2 (SEO zengin sonuç), T3 (404 UX), T4 (kalite kapısı + yayın).
