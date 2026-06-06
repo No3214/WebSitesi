@@ -1,0 +1,10 @@
+import { rawEnv } from "@/lib/env.shared";
+
+export const publicEnv = {
+  NODE_ENV: rawEnv.NODE_ENV,
+  NEXT_PUBLIC_SITE_URL: rawEnv.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  NEXT_PUBLIC_HOTELRUNNER_SLUG: rawEnv.NEXT_PUBLIC_HOTELRUNNER_SLUG || "",
+  NEXT_PUBLIC_GTM_ID: rawEnv.NEXT_PUBLIC_GTM_ID || "",
+  NEXT_PUBLIC_META_PIXEL_ID: rawEnv.NEXT_PUBLIC_META_PIXEL_ID || "",
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY: rawEnv.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "",
+};

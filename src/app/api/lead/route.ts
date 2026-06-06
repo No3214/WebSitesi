@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { env } from "@/lib/env";
+import { env } from "@/lib/env.server";
 import { getPayloadClient } from "@/lib/payload";
 import {
   enforceRateLimit,

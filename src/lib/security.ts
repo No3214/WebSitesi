@@ -35,7 +35,12 @@ export function safeText(value: string, maxLength: number) {
 export function validateSameOrigin(request: Request) {
   const origin = request.headers.get("origin");
   const host = request.headers.get("host");
-  if (!origin || !host) return true;
+
+  if (!host) return false;
+
+  // Accept same-host browser requests and server-side form posts without Origin.
+  if (!origin) return true;
+
   try {
     const originUrl = new URL(origin);
     return normalizeHost(originUrl.host) === normalizeHost(host);
