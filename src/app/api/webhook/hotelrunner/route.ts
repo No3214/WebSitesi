@@ -48,9 +48,11 @@ function createDigest(bodyText: string) {
 }
 
 function safeCompare(a: string, b: string) {
-  const left = Buffer.from(a);
-  const right = Buffer.from(b);
-  if (left.length !== right.length) return false;
+  // Constant-time comparison without a length-based early return:
+  // both inputs are hashed to fixed-length digests first, so neither the
+  // byte comparison nor a length mismatch leaks timing information.
+  const left = crypto.createHash("sha256").update(a, "utf8").digest();
+  const right = crypto.createHash("sha256").update(b, "utf8").digest();
   return crypto.timingSafeEqual(left, right);
 }
 

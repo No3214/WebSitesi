@@ -41,7 +41,8 @@ export function SiteFooter() {
               <li><Link href="/odalar">Odalarımız</Link></li>
               <li><Link href="/menu">Gastronomi</Link></li>
               <li><Link href="/organizasyonlar">Organizasyonlar</Link></li>
-              <li><Link href="/#rezervasyon">Rezervasyon</Link></li>
+              <li><Link href="/rezervasyon">Rezervasyon</Link></li>
+              <li><Link href="/iletisim">İletişim</Link></li>
             </ul>
           </div>
 

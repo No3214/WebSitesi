@@ -21,11 +21,11 @@ export function hotelSchema() {
       absoluteUrl("/img/stone-room.jpg"),
       absoluteUrl("/img/breakfast-spread.jpg")
     ],
-    telephone: "+90 532 234 26 86",
+    telephone: "+905322342686",
     email: "info@kozbeylikonagi.com",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Kozbeyli Köyü İç Yolu",
+      streetAddress: "Kozbeyli Köyü",
       addressLocality: "Foça",
       addressRegion: "İzmir",
       postalCode: "35680",
@@ -33,9 +33,11 @@ export function hotelSchema() {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 38.7456,
-      longitude: 26.9632,
+      latitude: 38.737,
+      longitude: 26.885,
     },
+    checkinTime: "14:00",
+    checkoutTime: "12:00",
     priceRange: "₺₺₺",
     servesCuisine: "Aegean, Turkish, Breakfast, Antakya",
     starRating: {
@@ -65,11 +67,25 @@ export function hotelSchema() {
       { "@type": "LocationFeatureSpecification", name: "500 Yıllık Taş Dibek Kahvesi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Yavaş Yaşam (Slow Living) Deneyimi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Evcil Hayvan Dostu", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Ücretsiz Otopark", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Kahvaltı", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Klima", value: true },
     ],
     award: [
       "Foça'nın En Otantik Butik Oteli",
       "Geleneksel Antakya Mutfağı Miras Koruyucusu"
     ],
+    potentialAction: {
+      "@type": "ReserveAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: "https://www.kozbeylikonagi.com/rezervasyon",
+        actionPlatform: [
+          "https://schema.org/DesktopWebPlatform",
+          "https://schema.org/MobileWebPlatform",
+        ],
+      },
+    },
     hasMenu: absoluteUrl("/restoran"),
     ...(env.GOOGLE_MAPS_URL ? { hasMap: env.GOOGLE_MAPS_URL } : {}),
   };

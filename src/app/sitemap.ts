@@ -6,16 +6,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticPages = [
     '',
+    '/rezervasyon',
     '/odalar',
     '/menu',
+    '/gastronomi',
+    '/hikayemiz',
     '/organizasyonlar',
+    '/misafir-rehberi',
+    '/iletisim',
     '/kvkk',
+    '/gizlilik-politikasi',
     '/mesafeli-satis-sozlesmesi',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
-    priority: route === '' ? 1 : 0.8,
+    priority: route === '' ? 1 : route === '/rezervasyon' ? 0.9 : 0.8,
   }));
 
   const roomPages = rooms.map((room) => ({

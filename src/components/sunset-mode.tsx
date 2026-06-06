@@ -10,11 +10,33 @@ export const SunsetMode = () => {
 
   useEffect(() => {
     setMounted(true);
+
+    // Gerçek gün batımı saati (sunrise-sunset.org → /api/local-pulse, ücretsiz)
+    let sunTimes: { sunrise: number; sunset: number } | null = null;
+
     const checkTime = () => {
-      const hour = new Date().getHours();
-      // Sunset mode active between 18:00 and 06:00
-      setIsSunset(hour >= 18 || hour < 6);
+      if (sunTimes) {
+        const now = Date.now();
+        setIsSunset(now >= sunTimes.sunset || now < sunTimes.sunrise);
+      } else {
+        const hour = new Date().getHours();
+        // Fallback: 18:00 - 06:00
+        setIsSunset(hour >= 18 || hour < 6);
+      }
     };
+
+    fetch("/api/local-pulse")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.sun?.sunset && data?.sun?.sunrise) {
+          sunTimes = {
+            sunrise: new Date(data.sun.sunrise).getTime(),
+            sunset: new Date(data.sun.sunset).getTime(),
+          };
+          checkTime();
+        }
+      })
+      .catch(() => {});
 
     checkTime();
     const interval = setInterval(checkTime, 60000); // Check every minute

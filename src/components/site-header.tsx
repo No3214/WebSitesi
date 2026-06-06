@@ -45,7 +45,7 @@ export function SiteHeader() {
 
         <div className="header-actions">
             <LanguageSwitcher />
-            <Link className="button primary" href="/#rezervasyon">
+            <Link className="button primary" href="/rezervasyon">
                 {navigationDict.booking}
             </Link>
         </div>

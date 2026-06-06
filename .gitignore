@@ -20,3 +20,7 @@ yarn-error.log*
 
 *storybook.log
 storybook-static
+
+# Lokal calisma dosyalari
+_legacy-emergent/
+memory/

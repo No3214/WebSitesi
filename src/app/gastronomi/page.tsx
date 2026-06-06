@@ -30,11 +30,50 @@ export default function GastronomyPage() {
         side="right"
       />
 
-      <StorySegment 
+      <StorySegment
         title="Farm-to-Table Kahvaltı"
         content="Serpme köy kahvaltımız, Kozbeyli'nin asırlık zeytin ağaçlarından ve İnci Hanım'ın geleneksel reçel tariflerinden süzülen tam organik bir döngüdür."
         side="left"
       />
+
+      <section style={{ padding: "72px 24px", maxWidth: 1080, margin: "0 auto" }}>
+        <h2 style={{ color: "#f5f1e8", fontSize: "1.8rem", textAlign: "center", marginBottom: 12, fontFamily: "var(--font-serif, serif)" }}>
+          Mutfaktan Canlı Kareler
+        </h2>
+        <p style={{ color: "rgba(245,241,232,0.7)", textAlign: "center", marginBottom: 40 }}>
+          Serpme köy kahvaltısı ve taş ateşinde mıhlama — Kozbeyli sabahlarının gerçek hali.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 28 }}>
+          <figure style={{ margin: 0 }}>
+            <video
+              controls
+              preload="metadata"
+              playsInline
+              style={{ width: "100%", borderRadius: 16, display: "block", background: "#111" }}
+              data-event="video_play_kahvalti"
+            >
+              <source src="/videos/kahvalti.mp4" type="video/mp4" />
+            </video>
+            <figcaption style={{ color: "rgba(245,241,232,0.6)", fontSize: "0.9rem", marginTop: 10, textAlign: "center" }}>
+              Serpme Köy Kahvaltısı
+            </figcaption>
+          </figure>
+          <figure style={{ margin: 0 }}>
+            <video
+              controls
+              preload="metadata"
+              playsInline
+              style={{ width: "100%", borderRadius: 16, display: "block", background: "#111" }}
+              data-event="video_play_mihlama"
+            >
+              <source src="/videos/mihlama.mp4" type="video/mp4" />
+            </video>
+            <figcaption style={{ color: "rgba(245,241,232,0.6)", fontSize: "0.9rem", marginTop: 10, textAlign: "center" }}>
+              Taş Ateşinde Mıhlama
+            </figcaption>
+          </figure>
+        </div>
+      </section>
     </main>
   );
 }
