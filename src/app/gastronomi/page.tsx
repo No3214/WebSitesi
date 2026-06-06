@@ -47,8 +47,9 @@ export default function GastronomyPage() {
           <figure style={{ margin: 0 }}>
             <video
               controls
-              preload="metadata"
+              preload="none"
               playsInline
+              poster="/videos/kahvalti-poster.jpg"
               style={{ width: "100%", borderRadius: 16, display: "block", background: "#111" }}
               data-event="video_play_kahvalti"
             >
@@ -61,8 +62,9 @@ export default function GastronomyPage() {
           <figure style={{ margin: 0 }}>
             <video
               controls
-              preload="metadata"
+              preload="none"
               playsInline
+              poster="/videos/mihlama-poster.jpg"
               style={{ width: "100%", borderRadius: 16, display: "block", background: "#111" }}
               data-event="video_play_mihlama"
             >
