@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 
 import { FadeIn, StaggerContainer } from "@/components/animations";
-import { HotelRunnerEmbed } from "@/components/hotel-runner-embed";
+import { HMSBookingEmbed } from "@/components/hms-booking-embed";
 import { SectionTitle } from "@/components/section-title";
 import { SiteHeader } from "@/components/site-header";
 import { rooms } from "@/data/rooms";
@@ -218,7 +218,7 @@ export function HomeClient() {
                 title={locale === 'tr' ? "Yerinizi Ayırtın" : "Reserve Your Stay"}
                 text={locale === 'tr' ? "En iyi fiyat garantisi, esnek iptal ve concierge desteği ile direkt rezervasyon avantajı." : "Direct booking advantage with best price guarantee, flexible cancellation, and concierge support."}
               />
-              <HotelRunnerEmbed />
+              <HMSBookingEmbed />
             </FadeIn>
           </div>
         </section>
