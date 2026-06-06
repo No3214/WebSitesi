@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Inter, Playfair_Display } from "next/font/google";
 import { Suspense } from "react";
 import { ConversionMotivators } from "@/components/conversion-motivators";
 import { CookieConsent } from "@/components/cookie-consent";
@@ -22,11 +23,14 @@ import { ReputationRibbon } from "@/components/reputation-ribbon";
 import { ConversionVelocity } from "@/components/conversion-velocity";
 import { AtmosphericImmersion } from "@/components/atmospheric-immersion";
 
+const inter = Inter({ subsets: ["latin", "latin-ext"], display: "swap", variable: "--font-inter" });
+const playfair = Playfair_Display({ subsets: ["latin", "latin-ext"], display: "swap", variable: "--font-playfair" });
+
 export const metadata = defaultMetadata;
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="tr">
+    <html lang="tr" className={`${inter.variable} ${playfair.variable}`}>
       <body>
         <script
           type="application/ld+json"
