@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { HomeClient } from "@/components/home-client";
 import { faqs } from "@/data/faqs";
+import { getDictionary } from "@/lib/dictionary";
 import { defaultMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = {
@@ -22,14 +23,17 @@ const faqJsonLd = {
   })),
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  // SSR/SSG: TR sözlüğü build'de gömülür → ilk boyamada içerik dolu (loading-screen yok).
+  const initialDict = await getDictionary("tr");
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <HomeClient />
+      <HomeClient initialDict={initialDict} initialLocale="tr" />
     </>
   );
 }

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 
 import { SiteHeader } from "@/components/site-header";
 import { ContactClient } from "@/components/contact-client";
+import { getDictionary } from "@/lib/dictionary";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 
 export const metadata: Metadata = {
@@ -15,7 +16,8 @@ export const metadata: Metadata = {
 const PHONE_E164 = "+905322342686";
 const EMAIL = "info@kozbeylikonagi.com";
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const initialDict = await getDictionary("tr");
   const { lat, lng } = KOZBEYLI_COORDS;
 
   const jsonLd = {
@@ -40,7 +42,7 @@ export default function ContactPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SiteHeader />
       <main className="section">
-        <ContactClient />
+        <ContactClient initialDict={initialDict} initialLocale="tr" />
       </main>
     </>
   );

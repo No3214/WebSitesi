@@ -23,16 +23,23 @@ const FALLBACK = {
   },
 };
 
-export function ReservationClient() {
+type ReservationClientProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(null);
-  const [locale, setLocale] = useState<'tr' | 'en'>('tr');
+  initialDict?: any;
+  initialLocale?: 'tr' | 'en';
+};
+
+export function ReservationClient({ initialDict, initialLocale = 'tr' }: ReservationClientProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [dict, setDict] = useState<any>(initialDict ?? null);
+  const [locale, setLocale] = useState<'tr' | 'en'>(initialLocale);
 
   useEffect(() => {
     const currentLocale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    if (currentLocale === initialLocale && initialDict) return; // SSR sözlüğü zaten doğru
     setLocale(currentLocale as 'tr' | 'en');
     getDictionary(currentLocale as 'tr' | 'en').then(setDict);
-  }, []);
+  }, [initialDict, initialLocale]);
 
   if (!dict) return <div className="loading-screen" />;
 

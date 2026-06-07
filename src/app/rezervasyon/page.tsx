@@ -2,6 +2,7 @@ import { Metadata } from "next";
 
 import { SiteHeader } from "@/components/site-header";
 import { ReservationClient } from "@/components/reservation-client";
+import { getDictionary } from "@/lib/dictionary";
 
 export const metadata: Metadata = {
   title: "Rezervasyon | En İyi Fiyat Garantisi",
@@ -16,7 +17,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/rezervasyon" },
 };
 
-export default function ReservationPage() {
+export default async function ReservationPage() {
+  const initialDict = await getDictionary("tr");
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -48,7 +50,7 @@ export default function ReservationPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SiteHeader />
       <main className="section">
-        <ReservationClient />
+        <ReservationClient initialDict={initialDict} initialLocale="tr" />
       </main>
     </>
   );
