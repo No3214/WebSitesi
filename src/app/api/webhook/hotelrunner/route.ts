@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
 import { getPayloadClient } from "@/lib/payload";
-import { safeText } from "@/lib/security";
+import { safeText, verifyEs256Signature } from "@/lib/security";
 
 type ReservationBody = {
   reservation?: {
@@ -102,9 +102,16 @@ export async function POST(req: Request) {
   }
 
   const bodyText = await req.text();
-  const expectedSignature = createDigest(bodyText);
 
-  if (!safeCompare(signature, expectedSignature)) {
+  // İmza doğrulama çatallaması:
+  // - HMS_WEBHOOK_ES256_PUBLIC_KEY DOLU ise ECC (ES256) modu: ham bodyText'i
+  //   SPKI PEM public key ile doğrula (HMS/PSP ECC imzalı gönderdiğinde).
+  // - BOŞ ise mevcut HMAC safeCompare akışı birebir korunur (geriye dönük uyum).
+  const signatureValid = env.HMS_WEBHOOK_ES256_PUBLIC_KEY
+    ? await verifyEs256Signature(bodyText, signature, env.HMS_WEBHOOK_ES256_PUBLIC_KEY)
+    : safeCompare(signature, createDigest(bodyText));
+
+  if (!signatureValid) {
     await writeAuditLog({
       provider: "hotelrunner",
       messageUid,
