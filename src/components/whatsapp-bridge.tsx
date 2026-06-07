@@ -3,15 +3,15 @@
 import { motion } from "framer-motion";
 import { MessageCircle } from "lucide-react";
 
+import { getWhatsAppHref } from "@/lib/contact";
+
 export function WhatsAppBridge() {
-  const WHATSAPP_NUMBER = "905001234567"; // Hotel's official WhatsApp
-  const DEFAULT_MESSAGE = encodeURIComponent(
-    "Merhabalar, Kozbeyli Konağı'nın uzman organizasyon ekibiyle tescilli mimari ve gurme davetler hakkında görüşmek istiyorum."
-  );
+  const DEFAULT_MESSAGE =
+    "Merhabalar, Kozbeyli Konağı'nın uzman organizasyon ekibiyle tescilli mimari ve gurme davetler hakkında görüşmek istiyorum.";
 
   return (
     <motion.a
-      href={`https://wa.me/${WHATSAPP_NUMBER}?text=${DEFAULT_MESSAGE}`}
+      href={getWhatsAppHref(DEFAULT_MESSAGE)}
       target="_blank"
       rel="noopener noreferrer"
       className="whatsapp-bridge"

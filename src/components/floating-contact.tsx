@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Phone, Instagram, X, MessageSquare } from "lucide-react";
 
+import { WHATSAPP_BASE } from "@/lib/contact";
+
 export const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,7 +25,7 @@ export const FloatingContact = () => {
     {
       icon: <MessageCircle className="w-5 h-5" />,
       label: "WhatsApp",
-      href: "https://wa.me/905322521010", // Note: Ensure number is correct from live audit
+      href: WHATSAPP_BASE,
       color: "bg-green-500",
     },
   ];

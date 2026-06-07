@@ -2,6 +2,8 @@
 
 import Script from "next/script";
 
+import { WHATSAPP_BASE } from "@/lib/contact";
+
 export function HotelRunnerEmbed() {
   const slug = process.env.NEXT_PUBLIC_HOTELRUNNER_SLUG || "KOZBEYLI_KONAGI_SLUG";
   const hasLiveSlug = slug !== "KOZBEYLI_KONAGI_SLUG";
@@ -32,7 +34,7 @@ export function HotelRunnerEmbed() {
         <a className="button secondary" href="tel:+902328261234">
           Rezervasyon Hattı
         </a>
-        <a className="button primary" href="https://wa.me/905300000000" target="_blank" rel="noreferrer">
+        <a className="button primary" href={WHATSAPP_BASE} target="_blank" rel="noreferrer">
           WhatsApp Concierge
         </a>
       </div>

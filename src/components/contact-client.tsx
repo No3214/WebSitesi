@@ -5,6 +5,7 @@ import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { SectionTitle } from "@/components/section-title";
 import { LeadForm } from "@/components/lead-form";
+import { getWhatsAppHref } from "@/lib/contact";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { getDictionary } from "@/lib/dictionary";
 
@@ -57,7 +58,7 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
   const t = dict.Contact;
   const f = FALLBACK[locale];
 
-  const whatsappHref = `https://wa.me/905322342686?text=${encodeURIComponent(f.whatsappMessage)}`;
+  const whatsappHref = getWhatsAppHref(f.whatsappMessage);
 
   const { lat, lng } = KOZBEYLI_COORDS;
   const bbox = `${lng - 0.02},${lat - 0.012},${lng + 0.02},${lat + 0.012}`;

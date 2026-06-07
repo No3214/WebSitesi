@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { Clock, Coffee, Wifi, MapPin, ShieldCheck, HeartPulse } from "lucide-react";
+import { getWhatsAppHref } from "@/lib/contact";
 
 export const metadata: Metadata = {
   openGraph: {
@@ -95,7 +96,7 @@ export default function GuestGuidePage() {
                <p className="text-zinc-400 mb-10 max-w-xl mx-auto">
                  Kozbeyli Konağı Dijital Asistanı (AI Concierge) WhatsApp üzerinden de hizmetinizdedir.
                </p>
-               <a href="https://wa.me/905322342686" className="button secondary invert">WHATSAPP İLE SORUN</a>
+               <a href={getWhatsAppHref("Merhaba, misafir rehberinden ulaşıyorum.")} className="button secondary invert">WHATSAPP İLE SORUN</a>
             </FadeIn>
           </div>
         </section>
