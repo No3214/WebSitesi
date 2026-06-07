@@ -8,12 +8,31 @@ export const ExitIntent = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [hasShown, setHasShown] = useState(false);
 
+  const target =
+    process.env.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL || "/rezervasyon";
+
   useEffect(() => {
+    if (hasShown) return;
+
+    // Frequency cap: show at most once per browser session
+    let alreadyShown = false;
+    try {
+      alreadyShown = sessionStorage.getItem("exitIntentShown") === "1";
+    } catch {
+      // sessionStorage unavailable (e.g. privacy mode) — fall back to in-memory flag
+    }
+    if (alreadyShown) return;
+
     const handleMouseLeave = (e: MouseEvent) => {
       // Trigger when mouse leaves the top of the viewport (intent to close/change tab)
-      if (e.clientY <= 0 && !hasShown) {
+      if (e.clientY <= 0) {
         setIsVisible(true);
         setHasShown(true);
+        try {
+          sessionStorage.setItem("exitIntentShown", "1");
+        } catch {
+          // ignore storage errors
+        }
       }
     };
 
@@ -44,27 +63,27 @@ export const ExitIntent = () => {
               <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center mb-4">
                 <Gift className="text-gold w-8 h-8" />
               </div>
-              <h3 className="serif text-2xl mb-2">Özel Teklif</h3>
-              <p className="text-xs text-zinc-400">Sadece Direkt Rezervasyonlarda</p>
+              <h3 className="serif text-2xl mb-2">Direkt Rezervasyon</h3>
+              <p className="text-xs text-zinc-400">Web Sitemize Özel Ayrıcalıklar</p>
             </div>
 
             <div className="md:w-3/5 p-8">
               <h2 className="serif text-2xl text-zinc-900 mb-4">Gitmeden Önce Keşfedin!</h2>
               <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
-                Kozbeyli Konağı web sitemiz üzerinden yapacağınız direkt rezervasyonlarda 
-                <strong> %10 İndirim</strong> ve <strong>Hoşgeldin Kokteyli</strong> sizi bekliyor.
+                Kozbeyli Konağı web sitemiz üzerinden yapacağınız direkt rezervasyonlarda
+                <strong> En İyi Fiyat Garantisi</strong> ve kişisel <strong>WhatsApp Concierge</strong> hizmeti sizi bekliyor.
               </p>
-              
+
               <div className="bg-zinc-50 border border-gold/20 rounded-lg p-4 mb-6 text-center">
-                <span className="text-[10px] uppercase tracking-widest text-zinc-400 block mb-1">PROMO KODU</span>
-                <span className="text-xl font-bold text-gold tracking-widest">DIREKT10</span>
+                <span className="text-[10px] uppercase tracking-widest text-zinc-400 block mb-1">DİREKT REZERVASYON AYRICALIĞI</span>
+                <span className="text-xl font-bold text-gold tracking-widest">En İyi Fiyat Garantisi</span>
               </div>
 
-              <a 
-                href="https://kozbeyli-konagi-1.hotelrunner.com/bv3/search"
+              <a
+                href={target}
                 className="btn-premium-solid w-full flex items-center justify-center gap-2 group"
               >
-                HEMEN KULLAN
+                REZERVASYON YAP
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </a>
             </div>
