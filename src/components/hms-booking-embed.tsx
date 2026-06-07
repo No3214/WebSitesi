@@ -7,10 +7,24 @@ function withBookingUtm(url: string) {
   return `${url}?utm_source=website&utm_medium=booking_engine`;
 }
 
-export function HMSBookingEmbed() {
+function withRoomParam(url: string, roomSlug?: string) {
+  if (!roomSlug) return url;
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}room=${encodeURIComponent(roomSlug)}`;
+}
+
+type HMSBookingEmbedProps = {
+  roomSlug?: string;
+  roomLabel?: string;
+};
+
+export function HMSBookingEmbed({ roomSlug, roomLabel }: HMSBookingEmbedProps) {
   const bookingUrl = process.env.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL || "";
   const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_URL || "https://wa.me/905322342686";
-  const whatsappHref = `${whatsapp}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+  const whatsappMessage = roomLabel
+    ? `Merhaba, ${roomLabel} için müsaitlik öğrenmek istiyorum.`
+    : WHATSAPP_MESSAGE;
+  const whatsappHref = `${whatsapp}?text=${encodeURIComponent(whatsappMessage)}`;
 
   if (!bookingUrl) {
     return (
@@ -37,7 +51,7 @@ export function HMSBookingEmbed() {
   return (
     <div className="embed-box">
       <iframe
-        src={withBookingUtm(bookingUrl)}
+        src={withRoomParam(withBookingUtm(bookingUrl), roomSlug)}
         title="Kozbeyli Konağı Rezervasyon"
         style={{ width: "100%", minHeight: 720, border: 0 }}
         data-event="booking_engine_open"

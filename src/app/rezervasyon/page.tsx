@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { ReservationClient } from "@/components/reservation-client";
 import { getDictionary } from "@/lib/dictionary";
+import { rooms } from "@/data/rooms";
 
 export const metadata: Metadata = {
   title: "Rezervasyon | En İyi Fiyat Garantisi",
@@ -17,7 +18,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "/rezervasyon" },
 };
 
-export default async function ReservationPage() {
+export default async function ReservationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ oda?: string }>;
+}) {
+  const { oda } = await searchParams;
+  const selectedRoom = oda ? rooms.find((room) => room.slug === oda) : undefined;
   const initialDict = await getDictionary("tr");
   const jsonLd = {
     "@context": "https://schema.org",
@@ -50,7 +57,12 @@ export default async function ReservationPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SiteHeader />
       <main className="section">
-        <ReservationClient initialDict={initialDict} initialLocale="tr" />
+        <ReservationClient
+          initialDict={initialDict}
+          initialLocale="tr"
+          roomSlug={oda}
+          roomTitle={selectedRoom?.title}
+        />
       </main>
     </>
   );

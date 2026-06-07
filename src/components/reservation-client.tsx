@@ -27,9 +27,11 @@ type ReservationClientProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialDict?: any;
   initialLocale?: 'tr' | 'en';
+  roomSlug?: string;
+  roomTitle?: string;
 };
 
-export function ReservationClient({ initialDict, initialLocale = 'tr' }: ReservationClientProps) {
+export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug, roomTitle }: ReservationClientProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(initialDict ?? null);
   const [locale, setLocale] = useState<'tr' | 'en'>(initialLocale);
@@ -68,9 +70,20 @@ export function ReservationClient({ initialDict, initialLocale = 'tr' }: Reserva
     <div className="container" style={{ maxWidth: 980 }}>
       <SectionTitle eyebrow={t.eyebrow} title={t.title} text={t.text} />
 
+      {roomTitle ? (
+        <div
+          className="embed-box"
+          style={{ display: "inline-block", padding: "10px 18px", marginBottom: 18 }}
+        >
+          <span className="muted" style={{ fontSize: "0.9rem" }}>
+            Seçiminiz: <strong>{roomTitle}</strong>
+          </span>
+        </div>
+      ) : null}
+
       <WeatherRibbon />
 
-      <HMSBookingEmbed />
+      <HMSBookingEmbed roomSlug={roomSlug} roomLabel={roomTitle} />
 
       <div
         style={{

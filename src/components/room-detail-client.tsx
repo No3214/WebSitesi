@@ -104,7 +104,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                     <span className="price-eyebrow">DİREKT REZERVASYON AVANTAJI</span>
                     <span className="price-main">Lütfen Tarih Seçiniz</span>
                   </div>
-                  <Link href="/rezervasyon" className="button premium-cta full">
+                  <Link href={`/rezervasyon?oda=${slug}`} className="button premium-cta full">
                     EN İYİ FİYATLA YERİNİZİ AYIRIN
                   </Link>
                 </div>
