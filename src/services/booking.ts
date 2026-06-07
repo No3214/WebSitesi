@@ -53,7 +53,21 @@ export async function processHotelRunnerWebhook(messageUid: string, body: any) {
   // 3. Domain Logic - Sync to Leads
   if (body.reservation) {
     const res: HotelRunnerReservation = body.reservation;
-    
+
+    // Dedupe: same reservation may arrive again with a different x-message-uid
+    const existingLead = await payload.find({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      collection: "organization-leads" as any,
+      where: {
+        source: { equals: `hotelrunner:${res.id}` }
+      },
+      limit: 1
+    });
+
+    if (existingLead.totalDocs > 0) {
+      return { status: 200, ok: true, duplicate: true };
+    }
+
     await payload.create({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       collection: "organization-leads" as any,
