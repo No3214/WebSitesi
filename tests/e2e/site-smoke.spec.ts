@@ -13,11 +13,17 @@ const smokePages = [
 test.describe("Site geneli smoke", () => {
   for (const path of smokePages) {
     test(`${path} sayfasi yuklenir ve baslik render olur`, async ({ page }) => {
+      const cspErrors: string[] = [];
+      page.on("console", (m) => {
+        if (m.type() === "error" && /Content Security Policy/i.test(m.text())) cspErrors.push(m.text());
+      });
+
       const response = await page.goto(path);
 
       expect(response, `${path} icin response alinamadi`).toBeTruthy();
       expect(response?.status(), `${path} HTTP hata kodu dondurdu`).toBeLessThan(400);
       await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10000 });
+      expect(cspErrors, cspErrors.join("\n")).toHaveLength(0);
     });
   }
 });
@@ -43,6 +49,17 @@ test.describe("Rezervasyon fallback", () => {
   test("HMS URL tanimli degilken WhatsApp linki gorunur", async ({ page }) => {
     await page.goto("/rezervasyon");
 
+    await expect(page.getByRole("link", { name: /WhatsApp/i }).first()).toBeVisible({ timeout: 10000 });
+  });
+});
+
+test.describe("Rezervasyon oda parametresi", () => {
+  test("?oda= parametresi ile sayfa yuklenir ve WhatsApp linki gorunur", async ({ page }) => {
+    const response = await page.goto("/rezervasyon?oda=standart-bahce-manzarali-oda");
+
+    expect(response, "rezervasyon oda parametresi icin response alinamadi").toBeTruthy();
+    expect(response?.status(), "rezervasyon oda parametresi HTTP hata kodu dondurdu").toBeLessThan(400);
+    await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10000 });
     await expect(page.getByRole("link", { name: /WhatsApp/i }).first()).toBeVisible({ timeout: 10000 });
   });
 });
