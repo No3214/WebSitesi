@@ -26,6 +26,9 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
       },
     ],
+    formats: ["image/avif", "image/webp"],
+    deviceSizes: [320, 640, 750, 1080, 1280, 1536],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   eslint: {
     ignoreDuringBuilds: false,

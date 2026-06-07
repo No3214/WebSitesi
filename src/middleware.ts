@@ -16,8 +16,10 @@ export function middleware(request: NextRequest) {
   const isEnPreferred = acceptLanguage.toLowerCase().includes('en') || country !== 'TR';
   const hasLocaleCookie = request.cookies.has('NEXT_LOCALE');
   
-  // Log telemetry (Simulated)
-  console.log(`[Middleware] Target: ${url.pathname} | Geo: ${country} | Language: ${acceptLanguage} | EN_Preferred: ${isEnPreferred} | Cookie: ${hasLocaleCookie}`);
+  // Log telemetry (Simulated) — dev only, never in production
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[Middleware] Target: ${url.pathname} | Geo: ${country} | Language: ${acceptLanguage} | EN_Preferred: ${isEnPreferred} | Cookie: ${hasLocaleCookie}`);
+  }
 
   // In a real production environment, we could rewrite the URL here 
   // currently we just pass through as the client-side language switcher handles state.

@@ -78,6 +78,7 @@ export function HomeClient() {
               src="/images/hero.jpg"
               alt="Kozbeyli Konağı Luxury Escape"
               fill
+              sizes="100vw"
               className="object-cover"
               priority
               placeholder="blur"
@@ -149,6 +150,7 @@ export function HomeClient() {
                           src={room.images[0]}
                           alt={room.title}
                           fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           className="object-cover"
                         />
                       </div>
