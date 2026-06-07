@@ -1,12 +1,23 @@
 import { withPayload } from "@payloadcms/next/withPayload";
 import type { NextConfig } from "next";
 
-// CSP intentionally limited to frame controls only.
-// script-src/style-src are deliberately omitted so GTM, Meta Pixel and PostHog
-// keep working without a domain whitelist. "frame-src https: blob:" allows the
-// HMS booking engine iframe (domain not yet known) and the
-// www.openstreetmap.org embed without further config changes.
-const csp = ["frame-src https: blob:", "frame-ancestors 'self'"].join("; ");
+// CSP — gradual tightening: default-src/style-src deliberately omitted.
+// script-src: 'unsafe-inline' is required for the GTM/Meta Pixel inline
+// bootstrap snippets; external script hosts are GTM (gtm.js), Meta
+// (fbevents.js) and Cloudflare Turnstile (api.js).
+// connect-src: PostHog ingest (eu.i.posthog.com), GA4 collect beacons
+// (*.google-analytics.com incl. regional endpoints), GTM config fetches and
+// Meta Pixel beacons (connect.facebook.net / www.facebook.com/tr).
+// img-src: data:/blob:/https: keeps tracking pixels and external images working.
+// "frame-src https: blob:" allows the HMS booking engine iframe (domain not
+// yet known) and the www.openstreetmap.org embed without further config changes.
+const csp = [
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://challenges.cloudflare.com https://*.posthog.com",
+  "connect-src 'self' https://*.posthog.com https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://connect.facebook.net https://www.facebook.com",
+  "img-src 'self' data: blob: https:",
+  "frame-src https: blob:",
+  "frame-ancestors 'self'",
+].join("; ");
 
 const securityHeaders = [
   { key: "X-Frame-Options", value: "SAMEORIGIN" },

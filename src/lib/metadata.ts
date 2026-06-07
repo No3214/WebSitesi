@@ -45,10 +45,7 @@ export const defaultMetadata: Metadata = {
   verification,
   alternates: {
     canonical: "/",
-    languages: {
-      "tr-TR": "/",
-      "en-US": "/en",
-    },
+    // EN rotaları yayınlanınca hreflang geri eklenecek
   },
   openGraph: {
     type: "website",
