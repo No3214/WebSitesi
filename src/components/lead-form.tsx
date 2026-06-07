@@ -43,8 +43,8 @@ export function LeadForm() {
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
 
-    // Get Turnstile token
-    const cfToken = formData.get('cf-turnstile-response');
+    // Get Turnstile token (null -> undefined so the server schema omits it when widget is absent)
+    const turnstileToken = formData.get('cf-turnstile-response') ?? undefined;
 
     // Honeypot check
     if (data.website) {
@@ -56,7 +56,7 @@ export function LeadForm() {
       const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, ...meta, cfToken })
+        body: JSON.stringify({ ...data, ...meta, turnstileToken })
       });
 
       if (res.ok) {
@@ -141,12 +141,14 @@ export function LeadForm() {
         <span>Kişisel verilerimin teklif ve bilgilendirme amacıyla işlenmesini kabul ediyorum.</span>
       </label>
 
-      {/* Cloudflare Turnstile Widget */}
-      <div 
-        className="cf-turnstile" 
-        data-sitekey={process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || ""}
-        style={{ marginBottom: '16px' }}
-      ></div>
+      {/* Cloudflare Turnstile Widget — only render when sitekey is configured */}
+      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+        <div
+          className="cf-turnstile"
+          data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+          style={{ marginBottom: '16px' }}
+        ></div>
+      )}
 
       <button
         className="button primary"
