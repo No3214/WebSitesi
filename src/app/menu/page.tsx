@@ -1,7 +1,17 @@
-"use client";
-
+import { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
+
+export const metadata: Metadata = {
+  openGraph: {
+    images: [
+      {
+        url: "/videos/mihlama-poster.jpg",
+        alt: "Taş ateşinde hazırlanan mıhlama — Kozbeyli Konağı mutfağı",
+      },
+    ],
+  },
+};
 
 export default function MenuPage() {
   const sections = [
@@ -92,7 +102,7 @@ export default function MenuPage() {
         </div>
       </main>
 
-      <style jsx>{`
+      <style>{`
         .menu-layout {
           max-width: 1000px;
           margin: 60px auto 0;

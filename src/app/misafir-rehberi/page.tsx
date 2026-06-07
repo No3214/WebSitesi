@@ -1,8 +1,18 @@
-"use client";
-
+import { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { Clock, Coffee, Wifi, MapPin, ShieldCheck, HeartPulse } from "lucide-react";
+
+export const metadata: Metadata = {
+  openGraph: {
+    images: [
+      {
+        url: "/images/odalar/superrior-oda-deniz-manzarali/1.jpg",
+        alt: "Kozbeyli Konağı'nda manzaralı taş oda",
+      },
+    ],
+  },
+};
 
 const guideItems = [
   {
@@ -91,7 +101,7 @@ export default function GuestGuidePage() {
         </section>
       </main>
 
-      <style jsx>{`
+      <style>{`
         .guest-guide-page { min-height: 100vh; }
         .guide-card { cursor: default; }
       `}</style>
