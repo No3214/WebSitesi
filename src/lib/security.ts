@@ -35,7 +35,10 @@ export function safeText(value: string, maxLength: number) {
 export function validateSameOrigin(request: Request) {
   const origin = request.headers.get("origin");
   const host = request.headers.get("host");
-  if (!origin || !host) return true;
+  // Fail-closed: state değiştiren isteklerde Origin yoksa reddet.
+  // (Tarayıcı form/fetch POST'ları her zaman Origin gönderir; göndermeyenler
+  // curl/script gibi otomasyonlardır ve CSRF korumasını atlamamalıdır.)
+  if (!origin || !host) return false;
   try {
     const originUrl = new URL(origin);
     return normalizeHost(originUrl.host) === normalizeHost(host);
