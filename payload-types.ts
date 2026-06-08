@@ -73,6 +73,8 @@ export interface Config {
     'menu-sections': MenuSection;
     'organization-packages': OrganizationPackage;
     'organization-leads': OrganizationLead;
+    'agent-performance-logs': AgentPerformanceLog;
+    'webhook-events': WebhookEvent;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -86,6 +88,8 @@ export interface Config {
     'menu-sections': MenuSectionsSelect<false> | MenuSectionsSelect<true>;
     'organization-packages': OrganizationPackagesSelect<false> | OrganizationPackagesSelect<true>;
     'organization-leads': OrganizationLeadsSelect<false> | OrganizationLeadsSelect<true>;
+    'agent-performance-logs': AgentPerformanceLogsSelect<false> | AgentPerformanceLogsSelect<true>;
+    'webhook-events': WebhookEventsSelect<false> | WebhookEventsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -235,11 +239,64 @@ export interface OrganizationLead {
   id: number;
   name: string;
   phone: string;
+  normalizedPhone?: string | null;
   email?: string | null;
+  normalizedEmail?: string | null;
   eventDate?: string | null;
+  guestCount?: number | null;
+  estimatedBudget?: ('under-100k' | '100k-250k' | '250k-500k' | 'over-500k') | null;
   type: string;
+  leadPriority?: ('low' | 'normal' | 'high') | null;
+  leadScore?: number | null;
+  dedupeHash?: string | null;
   message: string;
+  consent: boolean;
   source?: string | null;
+  utmSource?: string | null;
+  utmMedium?: string | null;
+  utmCampaign?: string | null;
+  referrer?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "agent-performance-logs".
+ */
+export interface AgentPerformanceLog {
+  id: number;
+  agentName: string;
+  actionType: 'lead_hunt' | 'seo_audit' | 'content_gen' | 'sales_bridge';
+  status: 'success' | 'warning' | 'error';
+  details?: string | null;
+  impactScore?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "webhook-events".
+ */
+export interface WebhookEvent {
+  id: number;
+  provider: string;
+  messageUid: string;
+  status: 'received' | 'rejected' | 'processed' | 'duplicate';
+  signatureValid?: boolean | null;
+  reservationId?: string | null;
+  errorMessage?: string | null;
+  payloadJson?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  receivedAt: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -290,6 +347,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'organization-leads';
         value: number | OrganizationLead;
+      } | null)
+    | ({
+        relationTo: 'agent-performance-logs';
+        value: number | AgentPerformanceLog;
+      } | null)
+    | ({
+        relationTo: 'webhook-events';
+        value: number | WebhookEvent;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -435,11 +500,54 @@ export interface OrganizationPackagesSelect<T extends boolean = true> {
 export interface OrganizationLeadsSelect<T extends boolean = true> {
   name?: T;
   phone?: T;
+  normalizedPhone?: T;
   email?: T;
+  normalizedEmail?: T;
   eventDate?: T;
+  guestCount?: T;
+  estimatedBudget?: T;
   type?: T;
+  leadPriority?: T;
+  leadScore?: T;
+  dedupeHash?: T;
   message?: T;
+  consent?: T;
   source?: T;
+  utmSource?: T;
+  utmMedium?: T;
+  utmCampaign?: T;
+  referrer?: T;
+  ipAddress?: T;
+  userAgent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "agent-performance-logs_select".
+ */
+export interface AgentPerformanceLogsSelect<T extends boolean = true> {
+  agentName?: T;
+  actionType?: T;
+  status?: T;
+  details?: T;
+  impactScore?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "webhook-events_select".
+ */
+export interface WebhookEventsSelect<T extends boolean = true> {
+  provider?: T;
+  messageUid?: T;
+  status?: T;
+  signatureValid?: T;
+  reservationId?: T;
+  errorMessage?: T;
+  payloadJson?: T;
+  receivedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
