@@ -21,6 +21,7 @@ export const AudioGuide = () => {
     <div className="flex items-center gap-4 bg-zinc-900/50 backdrop-blur-md border border-zinc-800 p-4 rounded-full px-6">
       <button 
         onClick={togglePlay}
+        aria-label={isPlaying ? "Sesi Durdur" : "Sesi Oynat"}
         className="w-10 h-10 rounded-full bg-gold text-black flex items-center justify-center hover:scale-105 transition-transform"
       >
         {isPlaying ? <Pause size={18} /> : <Play size={18} className="translate-x-0.5" />}

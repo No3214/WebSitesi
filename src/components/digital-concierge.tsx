@@ -101,7 +101,7 @@ export function DigitalConcierge() {
                 <p>Growth Architect & Concierge</p>
               </div>
             </div>
-            <button className="close-button" onClick={() => setIsOpen(false)}>✕</button>
+            <button className="close-button" aria-label="Kapat" onClick={() => setIsOpen(false)}>✕</button>
           </div>
 
           <div className="concierge-messages">

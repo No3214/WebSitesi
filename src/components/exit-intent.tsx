@@ -53,6 +53,7 @@ export const ExitIntent = () => {
         >
           <button 
             onClick={() => setIsVisible(false)}
+            aria-label="Kapat"
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-zinc-100 transition-colors"
           >
             <X size={20} className="text-zinc-400" />
