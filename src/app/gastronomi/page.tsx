@@ -40,10 +40,10 @@ export const metadata: Metadata = {
 
 export default function GastronomyPage() {
   return (
-    <main className="min-h-screen bg-black">
-      <SiteHeader />
-      
-      <StoryHero 
+    <main className="min-h-screen" style={{ background: "var(--ink)" }}>
+      <SiteHeader variant="overlay" />
+
+      <StoryHero
         title="Gastronomi Mirası" 
         subtitle="ANTAKYA'DAN EGE'YE BİR LEZZET KÖPRÜSÜ" 
       />

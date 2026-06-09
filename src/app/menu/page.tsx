@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
+import { PageHero } from "@/components/page-hero";
 import { FadeIn } from "@/components/animations";
 
 import { absoluteUrl } from "@/lib/utils";
@@ -74,20 +75,15 @@ export default function MenuPage() {
 
   return (
     <>
-      <SiteHeader />
-      <main className="section" style={{ paddingTop: '120px' }}>
+      <SiteHeader variant="overlay" />
+      <PageHero
+        eyebrow="GASTRONOMİ"
+        title="Doğadan Tabağa Ege Lezzetleri"
+        text="Geleneksel tariflerin modern dokunuşlarla buluştuğu, Kozbeyli'nin ruhunu taşıyan gurme bir yolculuk."
+      />
+      <main className="section">
         <div className="container">
-          <FadeIn>
-            <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-              <span className="eyebrow">GASTRONOMİ</span>
-              <h1 className="serif" style={{ fontSize: '3.5rem', marginTop: '16px' }}>Doğadan Tabağa Ege Lezzetleri</h1>
-              <p style={{ color: '#666', maxWidth: '700px', margin: '24px auto 0' }}>
-                Geleneksel tariflerin modern dokunuşlarla buluştuğu, Kozbeyli&apos;nin ruhunu taşıyan gurme bir yolculuk.
-              </p>
-            </div>
-          </FadeIn>
-
-          <div className="menu-layout">
+          <div className="menu-layout" style={{ marginTop: 0 }}>
             {sections.map((section, idx) => (
               <FadeIn key={section.title} delay={idx * 0.2}>
                 <div className="menu-section-box">

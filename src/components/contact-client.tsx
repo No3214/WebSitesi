@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
-import { SectionTitle } from "@/components/section-title";
 import { LeadForm } from "@/components/lead-form";
 import { getWhatsAppHref, PHONE_DISPLAY, PHONE_E164 } from "@/lib/contact";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
@@ -67,8 +66,6 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
 
   return (
     <div className="container" style={{ maxWidth: 1040 }}>
-      <SectionTitle eyebrow={t.eyebrow} title={t.title} text={t.text} />
-
       <div
         style={{
           display: "grid",

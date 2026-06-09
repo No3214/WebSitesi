@@ -4,6 +4,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
 
+const EASE_LUX = [0.16, 1, 0.3, 1] as const;
+
 interface StorySegmentProps {
   title: string;
   content: string;
@@ -11,42 +13,89 @@ interface StorySegmentProps {
   side?: "left" | "right";
 }
 
+/**
+ * Scroll'a bağlı editoryal hikaye bloğu — marka dili:
+ * Playfair serif başlık, gold ayraç, ivory metin, çerçeveli görsel.
+ */
 export const StorySegment = ({ title, content, image, side = "left" }: StorySegmentProps) => {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start end", "end start"]
+    offset: ["start end", "end start"],
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const x = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [side === "left" ? -50 : 50, 0, 0, side === "left" ? -50 : 50]);
+  const opacity = useTransform(scrollYProgress, [0, 0.22, 0.78, 1], [0, 1, 1, 0.35]);
+  const x = useTransform(
+    scrollYProgress,
+    [0, 0.22, 0.78, 1],
+    [side === "left" ? -40 : 40, 0, 0, side === "left" ? -24 : 24]
+  );
 
   return (
-    <motion.div 
+    <motion.div
       ref={ref}
       style={{ opacity, x }}
-      className={`flex flex-col ${side === "left" ? "md:flex-row" : "md:flex-row-reverse"} items-center gap-12 py-24 px-6 max-w-7xl mx-auto`}
+      className={`flex flex-col ${side === "left" ? "md:flex-row" : "md:flex-row-reverse"} items-center gap-12 py-20 px-6 max-w-7xl mx-auto`}
     >
-      <div className="flex-1 space-y-6">
-        <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase leading-none">
+      <div className="flex-1">
+        <span
+          className="eyebrow"
+          style={{ color: "var(--gold)", fontSize: "0.68rem", letterSpacing: "0.3em" }}
+        >
+          KOZBEYLİ KONAĞI
+        </span>
+        <h2
+          className="serif"
+          style={{
+            fontSize: "clamp(1.9rem, 3.4vw, 2.9rem)",
+            color: "var(--ivory)",
+            lineHeight: 1.15,
+            margin: "0 0 20px",
+            textWrap: "balance",
+          }}
+        >
           {title}
         </h2>
-        <div className="h-1 w-20 bg-zinc-800" />
-        <p className="text-zinc-400 text-lg leading-relaxed font-serif italic">
+        <div
+          aria-hidden
+          style={{
+            height: 1,
+            width: 72,
+            background: "linear-gradient(90deg, var(--gold), transparent)",
+            marginBottom: 24,
+          }}
+        />
+        <p
+          style={{
+            color: "rgba(250, 249, 246, 0.72)",
+            fontSize: "1.08rem",
+            lineHeight: 1.9,
+            margin: 0,
+          }}
+        >
           {content}
         </p>
       </div>
-      
+
       {image && (
-        <div className="flex-1 relative aspect-square w-full rounded-3xl overflow-hidden border border-zinc-800 grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl">
-          <Image 
-            src={image} 
-            alt={title} 
-            fill 
-            className="object-cover"
+        <div className="flex-1 relative aspect-square w-full overflow-hidden shadow-2xl group">
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover transition-transform duration-1000 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, 50vw"
             placeholder="blur"
             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+          />
+          <span
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: 14,
+              border: "1px solid rgba(250, 249, 246, 0.3)",
+              pointerEvents: "none",
+            }}
           />
         </div>
       )}
@@ -54,25 +103,68 @@ export const StorySegment = ({ title, content, image, side = "left" }: StorySegm
   );
 };
 
+/**
+ * Hikaye sayfaları için sinematik giriş — ink zemin, gold ışıma, serif başlık.
+ */
 export const StoryHero = ({ title, subtitle }: { title: string; subtitle: string }) => {
   return (
-    <div className="h-[70vh] flex flex-col items-center justify-center text-center px-6 relative overflow-hidden bg-black">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(24,24,27,0.5)_0%,rgba(0,0,0,1)_100%)] opacity-50" />
-      <motion.h1 
-        initial={{ opacity: 0, y: 20 }}
+    <div
+      className="grain"
+      style={{
+        minHeight: "72vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        padding: "140px 24px 80px",
+        position: "relative",
+        overflow: "hidden",
+        background:
+          "radial-gradient(1100px 480px at 75% -10%, rgba(179, 146, 92, 0.16), transparent 60%), radial-gradient(800px 400px at 10% 110%, rgba(46, 93, 107, 0.16), transparent 55%), var(--ink)",
+      }}
+    >
+      <motion.span
+        initial={{ opacity: 0, y: -14 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter z-10"
-      >
-        {title}
-      </motion.h1>
-      <motion.p 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="text-zinc-500 font-mono tracking-widest text-xs mt-6 z-10"
+        transition={{ duration: 0.7, ease: EASE_LUX }}
+        className="eyebrow"
+        style={{ position: "relative", zIndex: 2 }}
       >
         {subtitle}
-      </motion.p>
+      </motion.span>
+      <span style={{ display: "block", overflow: "hidden", position: "relative", zIndex: 2 }}>
+        <motion.h1
+          initial={{ y: "108%" }}
+          animate={{ y: 0 }}
+          transition={{ duration: 1, delay: 0.1, ease: EASE_LUX }}
+          className="serif"
+          style={{
+            fontSize: "clamp(2.8rem, 7vw, 5.6rem)",
+            color: "var(--ivory)",
+            margin: 0,
+            lineHeight: 1.08,
+            textWrap: "balance",
+          }}
+        >
+          {title}
+        </motion.h1>
+      </span>
+      <motion.div
+        aria-hidden
+        initial={{ scaleY: 0 }}
+        animate={{ scaleY: 1 }}
+        transition={{ duration: 0.9, delay: 0.6, ease: EASE_LUX }}
+        style={{
+          width: 1,
+          height: 64,
+          marginTop: 40,
+          transformOrigin: "top",
+          background: "linear-gradient(180deg, var(--gold), transparent)",
+          position: "relative",
+          zIndex: 2,
+        }}
+      />
     </div>
   );
 };

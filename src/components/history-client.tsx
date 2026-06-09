@@ -8,9 +8,9 @@ import { HeritageArchive } from "@/components/heritage-archive";
 
 export function HistoryClient() {
   return (
-    <main className="min-h-screen bg-black">
-      <SiteHeader />
-      
+    <main className="min-h-screen" style={{ background: "var(--ink)" }}>
+      <SiteHeader variant="overlay" />
+
       <div className="relative">
         <StoryHero 
           title="Hikayemiz" 

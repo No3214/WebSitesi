@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
+import { PageHero } from "@/components/page-hero";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { Clock, Coffee, Wifi, MapPin, ShieldCheck, HeartPulse } from "lucide-react";
 import { getWhatsAppHref } from "@/lib/contact";
@@ -72,20 +73,13 @@ const guideItems = [
 export default function GuestGuidePage() {
   return (
     <>
-      <SiteHeader />
+      <SiteHeader variant="overlay" />
       <main className="guest-guide-page">
-        <section className="section bg-fdfaf6 pt-32 pb-20 border-b border-zinc-100">
-          <div className="container text-center">
-            <FadeIn>
-              <span className="eyebrow tracking-widest text-zinc-400 uppercase text-xs mb-4 block">SERVİS STANDARTLARIMIZ</span>
-              <h1 className="serif text-5xl md:text-6xl text-zinc-900 mb-6">Misafir Rehberi</h1>
-              <p className="max-w-2xl mx-auto text-zinc-600 leading-relaxed text-lg">
-                Konaklamanız süresince ihtiyacınız olabilecek tüm teknik detaylar ve servis saatlerimizi aşağıda bulabilirsiniz. 
-                Daha fazlası için AI Concierge her an yanınızda.
-              </p>
-            </FadeIn>
-          </div>
-        </section>
+        <PageHero
+          eyebrow="SERVİS STANDARTLARIMIZ"
+          title="Misafir Rehberi"
+          text="Konaklamanız süresince ihtiyacınız olabilecek tüm teknik detaylar ve servis saatleri. Daha fazlası için AI Concierge her an yanınızda."
+        />
 
         <section className="section py-24 bg-white">
           <div className="container">
@@ -110,14 +104,20 @@ export default function GuestGuidePage() {
         </section>
         
         {/* LOCAL TIPS BANNER */}
-        <section className="section bg-zinc-900 py-20 overflow-hidden">
-          <div className="container relative text-center text-white">
+        <section className="section section-dark grain py-20 overflow-hidden">
+          <div className="container relative text-center" style={{ zIndex: 2 }}>
             <FadeIn>
                <h2 className="serif text-3xl md:text-5xl mb-8">Henüz Cevap Almadınız mı?</h2>
-               <p className="text-zinc-400 mb-10 max-w-xl mx-auto">
+               <p className="mb-10 max-w-xl mx-auto" style={{ color: "rgba(250,249,246,0.7)" }}>
                  Kozbeyli Konağı Dijital Asistanı (AI Concierge) WhatsApp üzerinden de hizmetinizdedir.
                </p>
-               <a href={getWhatsAppHref("Merhaba, misafir rehberinden ulaşıyorum.")} className="button secondary invert">WHATSAPP İLE SORUN</a>
+               <a
+                 href={getWhatsAppHref("Merhaba, misafir rehberinden ulaşıyorum.")}
+                 className="button ghost-light"
+                 data-event="whatsapp_click"
+               >
+                 WHATSAPP İLE SORUN
+               </a>
             </FadeIn>
           </div>
         </section>

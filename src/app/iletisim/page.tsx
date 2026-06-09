@@ -1,9 +1,12 @@
 import { Metadata } from "next";
 
 import { SiteHeader } from "@/components/site-header";
+import { PageHero } from "@/components/page-hero";
 import { ContactClient } from "@/components/contact-client";
 import { getDictionary } from "@/lib/dictionary";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
+import { PHONE_E164 } from "@/lib/contact";
+import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "İletişim & Ulaşım Yol Tarifi | Kozbeyli Konağı",
@@ -13,7 +16,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/iletisim" },
 };
 
-const PHONE_E164 = "+905322342686";
 const EMAIL = "info@kozbeylikonagi.com";
 
 export default async function ContactPage() {
@@ -34,14 +36,19 @@ export default async function ContactPage() {
       addressCountry: "TR",
     },
     geo: { "@type": "GeoCoordinates", latitude: lat, longitude: lng },
-    url: "https://www.kozbeylikonagi.com/iletisim",
+    url: absoluteUrl("/iletisim"),
   };
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <SiteHeader />
-      <main className="section">
+      <SiteHeader variant="overlay" />
+      <PageHero
+        eyebrow="İLETİŞİM"
+        title="Konağa Ulaşın"
+        text="Telefon, WhatsApp concierge ve yol tarifi — sorularınız için aynı gün dönüş yapıyoruz."
+      />
+      <main className="section" style={{ paddingTop: 56 }}>
         <ContactClient initialDict={initialDict} initialLocale="tr" />
       </main>
     </>
