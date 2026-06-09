@@ -4,6 +4,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Check } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { FadeIn } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
@@ -14,6 +15,7 @@ import { rooms as fallbackRooms } from "@/data/rooms";
 export function RoomDetailClient({ slug }: { slug: string }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
+  const [activeImg, setActiveImg] = useState(0);
   const room = fallbackRooms.find((item) => item.slug === slug);
 
   useEffect(() => {
@@ -33,32 +35,51 @@ export function RoomDetailClient({ slug }: { slug: string }) {
             <FadeIn direction="left">
               <div className="detail-media">
                  <div className="main-image-wrapper">
-                    {room.video ? (
-                      <video 
-                        src={room.video} 
-                        autoPlay 
-                        muted 
-                        loop 
-                        playsInline 
-                        className="object-cover absolute inset-0 w-full h-full"
-                      />
-                    ) : (
-                      <Image 
-                        src={room.images[0]} 
-                        alt={room.title} 
-                        fill 
-                        className="object-cover"
-                        priority
-                      />
-                    )}
+                    <AnimatePresence mode="popLayout" initial={false}>
+                      <motion.div
+                        key={activeImg}
+                        initial={{ opacity: 0, scale: 1.04 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                        style={{ position: "absolute", inset: 0 }}
+                      >
+                        <Image
+                          src={room.images[activeImg] ?? room.images[0]}
+                          alt={`${room.title} — görsel ${activeImg + 1}`}
+                          fill
+                          sizes="(max-width: 1200px) 100vw, 55vw"
+                          className="object-cover"
+                          priority
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                    <span className="image-counter" aria-hidden>
+                      {activeImg + 1} / {room.images.length}
+                    </span>
                  </div>
-                 <div className="image-strip">
-                   {room.images.map((img, i) => (
-                     <div key={i} className="strip-item hover-scale">
-                       <Image src={img} alt={`${room.title} view ${i}`} fill className="object-cover" />
-                     </div>
-                   ))}
-                 </div>
+                 {room.images.length > 1 && (
+                   <div className="image-strip" role="group" aria-label="Oda galerisi">
+                     {room.images.map((img, i) => (
+                       <button
+                         type="button"
+                         key={i}
+                         className={`strip-item hover-scale ${i === activeImg ? "active" : ""}`}
+                         onClick={() => setActiveImg(i)}
+                         aria-label={`${room.title} görsel ${i + 1}`}
+                         aria-pressed={i === activeImg}
+                       >
+                         <Image
+                           src={img}
+                           alt=""
+                           fill
+                           sizes="120px"
+                           className="object-cover"
+                         />
+                       </button>
+                     ))}
+                   </div>
+                 )}
               </div>
             </FadeIn>
 
@@ -143,10 +164,35 @@ export function RoomDetailClient({ slug }: { slug: string }) {
           border-radius: 8px;
           overflow: hidden;
           cursor: pointer;
-          transition: transform 0.3s ease;
+          transition: transform 0.3s ease, outline-color 0.3s ease, opacity 0.3s ease;
+          border: none;
+          padding: 0;
+          background: none;
+          outline: 2px solid transparent;
+          outline-offset: -2px;
+          opacity: 0.75;
         }
-        
-        .hover-scale:hover { transform: scale(1.05); }
+
+        .strip-item.active {
+          outline-color: var(--gold);
+          opacity: 1;
+        }
+
+        .hover-scale:hover { transform: scale(1.05); opacity: 1; }
+
+        .image-counter {
+          position: absolute;
+          right: 14px;
+          bottom: 14px;
+          z-index: 2;
+          background: rgba(20, 22, 26, 0.6);
+          color: var(--ivory);
+          font-size: 0.72rem;
+          letter-spacing: 0.14em;
+          padding: 6px 12px;
+          border-radius: 40px;
+          backdrop-filter: blur(6px);
+        }
 
         .premium-badge {
           display: inline-block;
@@ -209,8 +255,10 @@ export function RoomDetailClient({ slug }: { slug: string }) {
         }
 
         .booking-card-premium {
-          background: var(--zinc-900);
-          color: white;
+          background:
+            radial-gradient(420px 200px at 90% -20%, rgba(179, 146, 92, 0.18), transparent 60%),
+            var(--ink, #14161a);
+          color: var(--ivory, #faf9f6);
           padding: 40px;
           border-radius: 16px;
           box-shadow: 0 40px 80px -20px rgba(0,0,0,0.3);
@@ -222,7 +270,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
 
         .premium-cta {
           background: var(--white);
-          color: var(--black);
+          color: var(--ink, #14161a);
           width: 100%;
           justify-content: center;
           font-weight: 700;

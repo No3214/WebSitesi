@@ -48,6 +48,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         />
         <ErrorBoundary>
           <CSPostHogProvider>
+            <a href="#icerik" className="skip-link">
+              İçeriğe atla
+            </a>
             <Suspense fallback={null}>
               <LoadingBar />
             </Suspense>
@@ -55,7 +58,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             <ConversionVelocity />
             <AtmosphericImmersion />
             <TrackingScripts />
-            {children}
+            <div id="icerik">{children}</div>
             <SiteFooter />
             <FloatingContact />
             <ExitIntent />

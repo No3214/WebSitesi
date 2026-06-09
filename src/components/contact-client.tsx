@@ -5,12 +5,10 @@ import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { SectionTitle } from "@/components/section-title";
 import { LeadForm } from "@/components/lead-form";
-import { getWhatsAppHref } from "@/lib/contact";
+import { getWhatsAppHref, PHONE_DISPLAY, PHONE_E164 } from "@/lib/contact";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { getDictionary } from "@/lib/dictionary";
 
-const PHONE_DISPLAY = "+90 532 234 26 86";
-const PHONE_E164 = "+905322342686";
 const EMAIL = "info@kozbeylikonagi.com";
 
 // Keys not present in the dictionary Contact section — component-level fallback.

@@ -586,6 +586,51 @@
     100% { top: 110%; }
   }
 
+  /* ---------- Page hero (iç sayfa girişi) ---------- */
+  .page-hero {
+    padding: 168px 0 88px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-hero h1 {
+    font-size: clamp(2.4rem, 1.2rem + 4.5vw, 4.2rem);
+    color: var(--ivory);
+    margin: 0;
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+
+  .page-hero p {
+    max-width: 620px;
+    margin: 20px auto 0;
+    color: rgba(250, 249, 246, 0.72);
+    line-height: 1.8;
+    font-size: 1.02rem;
+  }
+
+  /* ---------- Skip link (a11y) ---------- */
+  .skip-link {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 2000;
+    background: var(--olive);
+    color: var(--white);
+    padding: 12px 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    border-radius: 4px;
+    transform: translateY(-200%);
+    transition: transform 0.3s var(--ease-lux);
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+
   /* ---------- Typography blocks ---------- */
   .section-title {
     text-align: center;

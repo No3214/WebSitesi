@@ -5,6 +5,7 @@ import { SectionTitle } from "@/components/section-title";
 import { LeadForm } from "@/components/lead-form";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { SiteHeader } from "@/components/site-header";
+import { PageHero } from "@/components/page-hero";
 
 const fallbackPackages = [
   {
@@ -33,18 +34,15 @@ const fallbackPackages = [
 export function OrganizationsClient() {
   return (
     <>
-      <SiteHeader />
-      <main className="section" style={{ paddingTop: '120px' }}>
+      <SiteHeader variant="overlay" />
+      <PageHero
+        eyebrow="ORGANİZASYON"
+        title="Sizin Hikayeniz, Bizim Mekanımız"
+        text="Ege'nin kalbinde, tarihin ve doğanın kucağında unutulmaz etkinliklere imza atıyoruz."
+      />
+      <main className="section">
         <div className="container">
-          <FadeIn>
-            <SectionTitle
-              eyebrow="ORGANİZASYON"
-              title="Sizin Hikayeniz, Bizim Mekanımız"
-              text="Ege'nin kalbinde, tarihin ve doğanın kucağında unutulmaz etkinliklere imza atıyoruz."
-            />
-          </FadeIn>
-
-          <StaggerContainer delay={0.2}>
+          <StaggerContainer delay={0.1}>
             <div className="org-grid">
               {fallbackPackages.map((item, index) => (
                 <FadeIn key={item.title}>

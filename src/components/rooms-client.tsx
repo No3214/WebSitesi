@@ -2,20 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { SectionTitle } from "@/components/section-title";
 import { rooms as fallbackRooms } from "@/data/rooms";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
+import { PageHero } from "@/components/page-hero";
 
 export function RoomsClient() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
+  const [locale, setLocale] = useState<"tr" | "en">("tr");
 
   useEffect(() => {
-    const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
-    getDictionary(locale).then(setDict);
+    const current = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    setLocale(current);
+    getDictionary(current).then(setDict);
   }, []);
 
   if (!dict) return <div className="loading-screen" />;
@@ -24,52 +26,55 @@ export function RoomsClient() {
 
   return (
     <>
-      <SiteHeader />
-      <main className="section" style={{ paddingTop: '120px' }}>
-        <div className="container">
-          <FadeIn>
-            <SectionTitle
-              eyebrow={t.eyebrow}
-              title={t.title}
-              text={t.text}
-            />
-          </FadeIn>
+      <SiteHeader variant="overlay" />
+      <PageHero eyebrow={t.eyebrow} title={t.title} text={t.text} />
 
-          <StaggerContainer delay={0.2}>
+      <main className="section" id="icerik-odalar">
+        <div className="container">
+          <StaggerContainer delay={0.1}>
             <div className="card-grid">
               {fallbackRooms.map((room, index) => (
                 <FadeIn key={room.slug}>
                   <Link href={`/odalar/${room.slug}`} className="card">
-                    <div style={{ position: 'relative', height: '350px', overflow: 'hidden' }}>
-                      <Image 
-                        src={room.images[0]} 
-                        alt={room.title} 
-                        fill 
+                    <div className="card-media">
+                      <Image
+                        src={room.images[0]}
+                        alt={room.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover"
                         priority={index < 3}
                       />
-                      {room.video && (
-                        <video
-                          src={room.video}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          className="absolute inset-0 w-full h-full object-cover opacity-0 hover:opacity-100 transition-opacity duration-700"
-                        />
-                      )}
                     </div>
                     <div className="card-body">
-                      <span className="meta">{room.capacity} · {room.view}</span>
+                      <span className="meta">
+                        {room.size} · {room.capacity} · {room.view}
+                      </span>
                       <h3>{room.title}</h3>
                       <p>{room.short}</p>
-                      <span className="button secondary" style={{ width: '100%', padding: '10px' }}>{t.detail}</span>
+                      <span className="card-link">
+                        {t.detail}
+                        <span className="arrow" aria-hidden>→</span>
+                      </span>
                     </div>
                   </Link>
                 </FadeIn>
               ))}
             </div>
           </StaggerContainer>
+
+          <FadeIn delay={0.15}>
+            <div style={{ textAlign: "center", marginTop: 64 }}>
+              <p style={{ color: "var(--muted)", marginBottom: 20 }}>
+                {locale === "tr"
+                  ? "Hangi odanın size uygun olduğundan emin değil misiniz? Concierge ekibimiz yardımcı olsun."
+                  : "Not sure which room suits you best? Let our concierge team help."}
+              </p>
+              <Link href="/rezervasyon" className="button gold">
+                {locale === "tr" ? "Müsaitlik Sorgula" : "Check Availability"}
+              </Link>
+            </div>
+          </FadeIn>
         </div>
       </main>
     </>
