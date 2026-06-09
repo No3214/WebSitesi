@@ -11,19 +11,19 @@ export const FloatingContact = () => {
 
   const contactOptions = [
     {
-      icon: <Instagram className="w-5 h-5" />,
+      icon: <Instagram className="w-5 h-5" aria-hidden={true} />,
       label: "Instagram",
       href: "https://www.instagram.com/kozbeylikonagi/",
       color: "bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7]",
     },
     {
-      icon: <Phone className="w-5 h-5" />,
+      icon: <Phone className="w-5 h-5" aria-hidden={true} />,
       label: "Bize Ulaşın",
       href: "tel:+902326761010",
       color: "bg-blue-600",
     },
     {
-      icon: <MessageCircle className="w-5 h-5" />,
+      icon: <MessageCircle className="w-5 h-5" aria-hidden={true} />,
       label: "WhatsApp",
       href: WHATSAPP_BASE,
       color: "bg-green-500",
@@ -64,8 +64,9 @@ export const FloatingContact = () => {
         className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl transition-all duration-300 ${
           isOpen ? "bg-zinc-900 rotate-90" : "bg-gold"
         }`}
+        aria-label="İletişim Seçeneklerini Aç/Kapat"
       >
-        {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
+        {isOpen ? <X className="w-6 h-6" aria-hidden={true} /> : <MessageSquare className="w-6 h-6" aria-hidden={true} />}
       </button>
 
       <style jsx global>{`
