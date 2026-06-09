@@ -59,13 +59,13 @@ export const SunsetMode = () => {
       </AnimatePresence>
       
       {/* Visual Indicator/Toggle in Corner (Optional Premium Touch) */}
-      <div className="fixed top-24 right-8 z-[100] hidden lg:block">
+      <div className="fixed top-24 right-8 z-[100] hidden lg:block" aria-hidden={true}>
         <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-full shadow-2xl flex items-center gap-2">
            <div className={`p-1.5 rounded-full transition-colors ${!isSunset ? "bg-gold text-white" : "text-zinc-400"}`}>
-             <Sun size={14} />
+             <Sun size={14} aria-hidden={true} />
            </div>
            <div className={`p-1.5 rounded-full transition-colors ${isSunset ? "bg-[#1a0f00] text-gold" : "text-zinc-600"}`}>
-             <Moon size={14} />
+             <Moon size={14} aria-hidden={true} />
            </div>
         </div>
       </div>

@@ -22,8 +22,9 @@ export const AudioGuide = () => {
       <button 
         onClick={togglePlay}
         className="w-10 h-10 rounded-full bg-gold text-black flex items-center justify-center hover:scale-105 transition-transform"
+        aria-label="Sesli Rehberi Oynat/Durdur"
       >
-        {isPlaying ? <Pause size={18} /> : <Play size={18} className="translate-x-0.5" />}
+        {isPlaying ? <Pause size={18} aria-hidden={true} /> : <Play size={18} className="translate-x-0.5" aria-hidden={true} />}
       </button>
       
       <div>

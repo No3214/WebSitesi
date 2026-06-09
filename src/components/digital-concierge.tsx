@@ -86,7 +86,7 @@ export function DigitalConcierge() {
     <div className="concierge-wrapper">
       {!isOpen && (
         <button className="concierge-trigger" onClick={() => setIsOpen(true)}>
-          <div className="trigger-icon">✨</div>
+          <div className="trigger-icon" aria-hidden={true}>✨</div>
           <span className="trigger-text">Dijital Kâhya</span>
         </button>
       )}
@@ -101,7 +101,7 @@ export function DigitalConcierge() {
                 <p>Growth Architect & Concierge</p>
               </div>
             </div>
-            <button className="close-button" onClick={() => setIsOpen(false)}>✕</button>
+            <button className="close-button" onClick={() => setIsOpen(false)} aria-label="Kapat">✕</button>
           </div>
 
           <div className="concierge-messages">
