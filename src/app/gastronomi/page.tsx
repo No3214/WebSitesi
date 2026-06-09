@@ -5,17 +5,18 @@ import { Metadata } from "next";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Gastronomi & Antakya Mutfağı | Kozbeyli Konağı",
-  description: "Foça'da Antakya ve Ege mutfağının buluşma noktası. 500 yıllık taş dibek kahvesi ve İnci Hanım'ın imza reçeteleriyle gurme bir lezzet serüveni.",
+  title: "Gastronomi & Taş Fırın | Kozbeyli Konağı",
+  description: "Kozbeyli Köyü'nün geleneksel taş fırın lezzetleri, inci hanım mutfağı ve egeye özgü serpme kahvaltı deneyimi. Tarihi dokuda gurme lezzetler.",
   keywords: [
     "kozbeyli köy kahvaltısı",
     "kozbeyli dibek kahvesi",
-    "antakya mutfağı izmir",
     "foça gurme restoran",
     "ege mutfağı akşam yemeği",
-    "kozbeyli konağı kahvaltı",
     "inci hanım mutfağı",
-    "taş fırın lezzetleri"
+    "taş fırın lezzetleri",
+    "özgün gastronomi deneyimi",
+    "foça butik otel kahvaltı",
+    "ege yöresel lezzetler"
   ],
   alternates: { canonical: "/gastronomi" },
   openGraph: {
