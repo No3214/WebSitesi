@@ -163,6 +163,28 @@ export async function POST(req: Request) {
 
   const reservationId = String(reservation.id);
 
+  const existingLead = await payload.find({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    collection: "organization-leads" as any,
+    where: {
+      source: { equals: `hotelrunner:${reservationId}` }
+    },
+    limit: 1
+  });
+
+  if (existingLead.totalDocs > 0) {
+    await writeAuditLog({
+      provider: "hotelrunner",
+      messageUid,
+      reservationId,
+      status: "processed",
+      signatureValid: true,
+      payloadJson: { ...body, note: "Duplicate reservation ID detected" },
+      receivedAt,
+    });
+    return NextResponse.json({ ok: true, duplicate: true });
+  }
+
   await payload.create({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     collection: "organization-leads" as any,

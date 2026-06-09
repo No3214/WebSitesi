@@ -6,7 +6,7 @@ import { getDictionary } from "@/lib/dictionary";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 
 export const metadata: Metadata = {
-  title: "İletişim & Ulaşım",
+  title: "İletişim & Ulaşım Yol Tarifi | Kozbeyli Konağı",
   description:
     "Kozbeyli Konağı'na ulaşın: Kozbeyli Köyü, Foça / İzmir. Telefon, WhatsApp concierge, e-posta ve yol tarifi. İzmir Adnan Menderes Havalimanı'na 55 dakika.",
   keywords: ["kozbeyli konağı iletişim", "kozbeyli köyü ulaşım", "foça otel telefon", "kozbeyli yol tarifi"],

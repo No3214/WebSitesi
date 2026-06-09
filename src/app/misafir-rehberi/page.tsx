@@ -4,15 +4,36 @@ import { FadeIn, StaggerContainer } from "@/components/animations";
 import { Clock, Coffee, Wifi, MapPin, ShieldCheck, HeartPulse } from "lucide-react";
 import { getWhatsAppHref } from "@/lib/contact";
 
+import { absoluteUrl } from "@/lib/utils";
+
 export const metadata: Metadata = {
+  title: "Misafir Rehberi & Konaklama Bilgileri | Kozbeyli Konağı",
+  description: "Kozbeyli Konağı giriş-çıkış saatleri, serpme köy kahvaltısı saatleri, fiber internet, konaklama ve iptal politikaları gibi ihtiyacınız olan tüm pratik bilgiler.",
+  keywords: [
+    "kozbeyli konağı misafir rehberi",
+    "foça otel kuralları",
+    "kozbeyli serpme kahvaltı saatleri",
+    "butik otel giriş çıkış saatleri",
+    "kozbeyli konağı iletişim"
+  ],
+  alternates: { canonical: "/misafir-rehberi" },
   openGraph: {
+    title: "Misafir Rehberi & Konaklama Bilgileri | Kozbeyli Konağı",
+    description: "Kozbeyli Konağı giriş-çıkış saatleri, serpme köy kahvaltısı saatleri, fiber internet, konaklama ve iptal politikaları.",
+    url: absoluteUrl("/misafir-rehberi"),
     images: [
       {
-        url: "/images/odalar/superrior-oda-deniz-manzarali/1.jpg",
+        url: absoluteUrl("/images/odalar/superrior-oda-deniz-manzarali/1.jpg"),
         alt: "Kozbeyli Konağı'nda manzaralı taş oda",
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kozbeyli Konağı Misafir Rehberi",
+    description: "Konağımızın servis standartları, kahvaltı saatleri ve pratik konaklama rehberi.",
+    images: [absoluteUrl("/images/odalar/superrior-oda-deniz-manzarali/1.jpg")],
+  }
 };
 
 const guideItems = [

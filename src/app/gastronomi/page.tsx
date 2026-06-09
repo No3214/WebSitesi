@@ -2,18 +2,39 @@ import { StoryHero, StorySegment } from "@/components/storytelling";
 import { SiteHeader } from "@/components/site-header";
 import { Metadata } from "next";
 
+import { absoluteUrl } from "@/lib/utils";
+
 export const metadata: Metadata = {
   title: "Gastronomi & Antakya Mutfağı | Kozbeyli Konağı",
   description: "Foça'da Antakya ve Ege mutfağının buluşma noktası. 500 yıllık taş dibek kahvesi ve İnci Hanım'ın imza reçeteleriyle gurme bir lezzet serüveni.",
-  keywords: ["antakya mutfağı izmir", "dibek kahvesi", "kozbeyli restoran", "inci hanım mutfağı", "gurme ege kahvaltısı"],
+  keywords: [
+    "kozbeyli köy kahvaltısı",
+    "kozbeyli dibek kahvesi",
+    "antakya mutfağı izmir",
+    "foça gurme restoran",
+    "ege mutfağı akşam yemeği",
+    "kozbeyli konağı kahvaltı",
+    "inci hanım mutfağı",
+    "taş fırın lezzetleri"
+  ],
+  alternates: { canonical: "/gastronomi" },
   openGraph: {
+    title: "Gastronomi & Ege-Antakya Mutfağı | Kozbeyli Konağı",
+    description: "Foça'da Antakya ve Ege mutfağının buluşma noktası. Taş fırında pişen lezzetler ve taze çekilmiş dibek kahvesi.",
+    url: absoluteUrl("/gastronomi"),
     images: [
       {
-        url: "/videos/kahvalti-poster.jpg",
+        url: absoluteUrl("/videos/kahvalti-poster.jpg"),
         alt: "Kozbeyli Konağı'nda serpme köy kahvaltısı sofrası",
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Gastronomi & Antakya Mutfağı | Kozbeyli Konağı",
+    description: "Foça'da Antakya ve Ege lezzetlerinin en otantik buluşması.",
+    images: [absoluteUrl("/videos/kahvalti-poster.jpg")],
+  }
 };
 
 export default function GastronomyPage() {

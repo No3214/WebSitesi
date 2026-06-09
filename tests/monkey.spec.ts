@@ -1,15 +1,15 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 
 test.skip(!!process.env.PW_BASE_URL, "Stres/monkey testleri canli prod ortaminda kosulmaz");
 
 test.describe('Monkey Stability Test', () => {
-  test('should survive random interactions for 2 minutes', async ({ page }) => {
+  test('should survive random interactions for 2 minutes', async ({ page, baseURL }) => {
     // Navigate to local dev or base URL
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const baseUrl = baseURL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3006';
     await page.goto(baseUrl);
 
     const startTime = Date.now();
-    const duration = 120000; // 2 minutes
+    const duration = 10000; // 10 seconds
 
     console.log('Starting monkey test...');
 

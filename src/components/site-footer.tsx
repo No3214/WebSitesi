@@ -15,8 +15,7 @@ export function SiteFooter() {
     getDictionary(locale).then(setDict);
   }, []);
 
-  if (!dict) return null;
-  const t = dict.Footer;
+  const t = dict?.Footer;
 
   return (
     <footer className="footer-premium">
@@ -24,7 +23,7 @@ export function SiteFooter() {
         <div className="footer-grid">
           <div className="footer-brand-col">
             <h3 className="brand-serif">Kozbeyli Konağı</h3>
-            <p className="brand-tagline">{t.description}</p>
+            <p className="brand-tagline">{t?.description || "Foça'nın kalbinde, 200 yıllık bir hikayenin lüks ve konforla yeniden yorumlandığı rafine bir durak."}</p>
             <div className="social-links">
               <a href="https://instagram.com/kozbeylikonagi" target="_blank" rel="noreferrer" aria-label="Instagram">
                 <Instagram size={20} />
@@ -36,7 +35,7 @@ export function SiteFooter() {
           </div>
 
           <div className="footer-links-col">
-            <h4 className="footer-title">{t.explore}</h4>
+            <h4 className="footer-title">{t?.explore || "Keşfedin"}</h4>
             <ul>
               <li><Link href="/odalar">Odalarımız</Link></li>
               <li><Link href="/menu">Gastronomi</Link></li>
@@ -47,7 +46,7 @@ export function SiteFooter() {
           </div>
 
           <div className="footer-links-col">
-            <h4 className="footer-title">{t.legal}</h4>
+            <h4 className="footer-title">{t?.legal || "Hukuki"}</h4>
             <ul>
               <li><Link href="/kvkk">KVKK Aydınlatma Metni</Link></li>
               <li><Link href="/mesafeli-satis-sozlesmesi">Mesafeli Satış Sözleşmesi</Link></li>
@@ -55,7 +54,7 @@ export function SiteFooter() {
           </div>
 
           <div className="footer-contact-col">
-            <h4 className="footer-title">{t.contact}</h4>
+            <h4 className="footer-title">{t?.contact || "İletişim"}</h4>
             <div className="contact-item">
               <MapPin size={18} />
               <span>Kozbeyli Köyü, Foça, İzmir</span>

@@ -7,7 +7,9 @@ const smokePages = [
   "/menu",
   "/organizasyonlar",
   "/misafir-rehberi",
-  "/hikayemiz"
+  "/hikayemiz",
+  "/deneyim-tasarimcisi",
+  "/rezervasyon"
 ];
 
 test.describe("Site geneli smoke", () => {

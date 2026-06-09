@@ -2,15 +2,37 @@ import { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
 
+import { absoluteUrl } from "@/lib/utils";
+
 export const metadata: Metadata = {
+  title: "Gurme Yemek Menüsü | Taş Fırın & Kahvaltı | Kozbeyli Konağı",
+  description: "Kozbeyli Konağı restoran menüsü: tescilli serpme köy kahvaltısı, Antakya mezeleri, odun ateşinde taş fırın pide ve pizzalar, közde sıcak künefe ve meşhur dibek kahvesi.",
+  keywords: [
+    "kozbeyli konağı menü",
+    "serpme kahvaltı menüsü foça",
+    "antakya yemekleri izmir",
+    "taş fırın pizza izmir",
+    "foça akşam yemeği mekanları",
+    "sıcak künefe izmir"
+  ],
+  alternates: { canonical: "/menu" },
   openGraph: {
+    title: "Gurme Yemek Menüsü | Taş Fırın & Kahvaltı | Kozbeyli Konağı",
+    description: "Kozbeyli Konağı gurme restoran menüsü. Tescilli köy kahvaltısı, Antakya mezeleri ve odun ateşinde taş fırın lezzetleri.",
+    url: absoluteUrl("/menu"),
     images: [
       {
-        url: "/videos/mihlama-poster.jpg",
+        url: absoluteUrl("/videos/mihlama-poster.jpg"),
         alt: "Taş ateşinde hazırlanan mıhlama — Kozbeyli Konağı mutfağı",
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kozbeyli Konağı Gurme Restoran Menüsü",
+    description: "Serpme kahvaltı, taş fırın lezzetleri ve Antakya mezeleri.",
+    images: [absoluteUrl("/videos/mihlama-poster.jpg")],
+  }
 };
 
 export default function MenuPage() {

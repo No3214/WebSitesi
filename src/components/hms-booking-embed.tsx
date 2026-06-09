@@ -2,6 +2,10 @@
 
 const WHATSAPP_MESSAGE = "Merhaba, web sitesinden geldim. Müsaitlik öğrenmek istiyorum.";
 
+import { PaymentWizard } from "./payment-wizard";
+
+import { getWhatsAppHref } from "@/lib/contact";
+
 function withBookingUtm(url: string) {
   if (url.includes("?")) return url;
   return `${url}?utm_source=website&utm_medium=booking_engine`;
@@ -20,28 +24,24 @@ type HMSBookingEmbedProps = {
 
 export function HMSBookingEmbed({ roomSlug, roomLabel }: HMSBookingEmbedProps) {
   const bookingUrl = process.env.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL || "";
-  const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_URL || "https://wa.me/905322342686";
   const whatsappMessage = roomLabel
     ? `Merhaba, ${roomLabel} için müsaitlik öğrenmek istiyorum.`
     : WHATSAPP_MESSAGE;
-  const whatsappHref = `${whatsapp}?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappHref = getWhatsAppHref(whatsappMessage);
 
   if (!bookingUrl) {
     return (
-      <div className="embed-box">
-        <p className="muted" style={{ marginTop: "16px" }}>
-          Canlı rezervasyon motoru hazırlanıyor. Müsaitlik ve en iyi fiyat için
-          WhatsApp üzerinden anında yanıt alabilirsiniz.
-        </p>
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "20px" }}>
+      <div style={{ display: "grid", gap: 20 }}>
+        <PaymentWizard />
+        <div style={{ display: "flex", justifyContent: "center" }}>
           <a
-            className="button primary"
+            className="button secondary"
             href={whatsappHref}
             target="_blank"
             rel="noreferrer"
             data-event="whatsapp_click"
           >
-            WhatsApp&apos;tan Müsaitlik Al
+            Hızlı Destek & Teyit için WhatsApp Concierge
           </a>
         </div>
       </div>

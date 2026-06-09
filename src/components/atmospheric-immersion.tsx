@@ -1,8 +1,13 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useCallback } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { 
+  Volume2, VolumeX, Sliders, X, 
+  Bird, Flame, Droplet, Check
+} from "lucide-react";
+
+type RitualType = "morning" | "evening" | "ritual";
 
 /**
  * Atmospheric Immersion Component
@@ -10,74 +15,162 @@ import { Volume2, VolumeX } from "lucide-react";
  * Includes 'Liquid Gold' (Olive Oil) and 'Mansion Rhythms'.
  */
 export const AtmosphericImmersion = () => {
+  const [isMounted, setIsMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const [activeRitual, setActiveRitual] = useState<"morning" | "evening" | "ritual" | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.4);
+  const [activeRitual, setActiveRitual] = useState<RitualType>("morning");
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const triggerRitual = useCallback((type: "morning" | "evening" | "ritual") => {
-    if (activeRitual === type || isTransitioning) return;
-    
-    setIsTransitioning(true);
-    // Chaos Guard: Force a minimum 2s separation between rituals
-    setActiveRitual(type);
-    
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, 2000);
-  }, [activeRitual, isTransitioning]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  const rituals = useMemo(() => ({
+    morning: {
+      id: "morning" as RitualType,
+      title: "Kozbeyli Sabahı",
+      description: "Köyün uyanışı, taze kuş sesleri ve taş duvarlara düşen ilk güneş ışığı.",
+      sound: "https://assets.mixkit.co/sfx/preview/mixkit-forest-bird-chirping-with-wind-1216.mp3",
+      video: "/images/odalar/superrior-oda-deniz-manzarali/2.jpg",
+      icon: Bird
+    },
+    evening: {
+      id: "evening" as RitualType,
+      title: "Konakta Akşam",
+      description: "Avluda yanan ateş, gaz lambasının sıcaklığı ve 500 yıllık sessizliğin huzuru.",
+      sound: "https://assets.mixkit.co/sfx/preview/mixkit-crackling-fireplace-754.mp3",
+      video: "/images/odalar/3-kisilik-oda/2.jpg",
+      icon: Flame
+    },
+    ritual: {
+      id: "ritual" as RitualType,
+      title: "Sıvı Altın Ritüeli",
+      description: "Bahçemizden süzülen el değmemiş zeytinyağının, taş kaselere dökülen o yoğun dokusu.",
+      sound: "https://assets.mixkit.co/sfx/preview/mixkit-water-pour-into-glass-3037.mp3",
+      video: "/images/hero.jpg",
+      icon: Droplet
+    }
+  }), []);
+
+  const current = rituals[activeRitual];
+
+  // Prevent hydration mismatch
   useEffect(() => {
+    setIsMounted(true);
     // Initial ritual based on time
     const hour = new Date().getHours();
     setActiveRitual(hour >= 6 && hour < 18 ? "morning" : "evening");
+  }, []);
 
-    // Scroll-based ritual trigger (Chaos Guarded)
+  // Sync state to HTML5 Audio Element
+  useEffect(() => {
+    if (!isMounted) return;
+
+    if (!audioRef.current) {
+      audioRef.current = new Audio(current.sound);
+      audioRef.current.loop = true;
+    } else {
+      // Smoothly crossfade sound source
+      const wasPlaying = !audioRef.current.paused;
+      audioRef.current.src = current.sound;
+      if (wasPlaying && !isMuted) {
+        audioRef.current.play().catch(() => setIsPlaying(false));
+      }
+    }
+
+    audioRef.current.volume = isMuted ? 0 : volume;
+  }, [activeRitual, isMounted, current.sound, isMuted, volume]);
+
+  // Sync volume adjustments
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume;
+    }
+  }, [volume, isMuted]);
+
+  // Handle Play/Pause
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+
+    if (isMuted) {
+      setIsMuted(false);
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(() => setIsPlaying(false));
+    } else {
+      setIsMuted(true);
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const selectRitual = useCallback((type: RitualType) => {
+    if (activeRitual === type || isTransitioning) return;
+    
+    setIsTransitioning(true);
+    setActiveRitual(type);
+    
+    if (audioRef.current && !isMuted) {
+      audioRef.current.src = rituals[type].sound;
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(() => setIsPlaying(false));
+    }
+
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 1200);
+  }, [activeRitual, isTransitioning, isMuted, rituals]);
+
+  // Scroll-based ritual trigger (Chaos Guarded)
+  useEffect(() => {
+    if (!isMounted) return;
+
     const handleScroll = () => {
-      if (isTransitioning) return;
+      if (isTransitioning || isOpen) return;
       const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
       
-      if (scrollPercent > 0.4 && scrollPercent < 0.6) {
-        triggerRitual("ritual");
+      if (scrollPercent > 0.45 && scrollPercent < 0.55 && activeRitual !== "ritual") {
+        selectRitual("ritual");
       }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isTransitioning, triggerRitual]);
+  }, [isTransitioning, selectRitual, activeRitual, isOpen, isMounted]);
 
-  const rituals = {
-    morning: {
-      title: "Kozbeyli Sabahı",
-      description: "Köyün uyanışı, taze kuş sesleri ve taş duvarlara düşen ilk güneş ışığı.",
-      sound: "https://assets.mixkit.co/sfx/preview/mixkit-forest-bird-chirping-with-wind-1216.mp3",
-      video: "/images/odalar/superrior-oda-deniz-manzarali/2.jpg"
-    },
-    evening: {
-      title: "Konakta Akşam",
-      description: "Avluda yanan ateş, gaz lambasının sıcaklığı ve 500 yıllık sessizliğin huzuru.",
-      sound: "https://assets.mixkit.co/sfx/preview/mixkit-crackling-fireplace-754.mp3",
-      video: "/images/odalar/3-kisilik-oda/2.jpg"
-    },
-    ritual: {
-      title: "Sıvı Altın Ritüeli",
-      description: "Bahçemizden süzülen el değmemiş zeytinyağının, taş kaselere dökülen o yoğun dokusu.",
-      sound: "https://assets.mixkit.co/sfx/preview/mixkit-water-pour-into-glass-3037.mp3",
-      video: "/images/hero.jpg"
-    }
-  };
-
-  const current = activeRitual ? rituals[activeRitual] : null;
+  if (!isMounted) return null;
 
   return (
-    <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-      <AnimatePresence mode="wait">
-        {current && (
+    <>
+      <style>{`
+        @keyframes custom-soundwave {
+          0%, 100% { height: 4px; }
+          50% { height: 16px; }
+        }
+        .soundwave-bar {
+          width: 2px;
+          background-color: var(--gold);
+          border-radius: 2px;
+          display: inline-block;
+        }
+        .soundwave-bar.animating {
+          animation: custom-soundwave 1s ease-in-out infinite;
+        }
+        .soundwave-bar:nth-child(2).animating { animation-delay: 0.15s; }
+        .soundwave-bar:nth-child(3).animating { animation-delay: 0.3s; }
+        .soundwave-bar:nth-child(4).animating { animation-delay: 0.45s; }
+      `}</style>
+
+      {/* Atmospheric Background Image Layer */}
+      <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <AnimatePresence mode="wait">
           <motion.div
             key={activeRitual}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.15 }}
+            animate={{ opacity: 0.12 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 2 }}
+            transition={{ duration: 1.5 }}
             className="absolute inset-0"
           >
             <div 
@@ -85,42 +178,168 @@ export const AtmosphericImmersion = () => {
               style={{ backgroundImage: `url(${current.video})` }}
             />
           </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="absolute bottom-10 right-10 pointer-events-auto flex items-center gap-4">
-        <motion.div 
-           initial={{ opacity: 0, x: 20 }}
-           animate={{ opacity: 1, x: 0 }}
-           className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-[10px] text-ivory/50 uppercase tracking-[0.2em]"
-        >
-          {current?.title}
-        </motion.div>
-        
-        <button 
-          onClick={() => setIsMuted(!isMuted)}
-          className="w-10 h-10 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold hover:bg-gold hover:text-white transition-all group shadow-lg"
-        >
-          {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-          <span className="absolute -top-12 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 px-3 py-1 rounded text-[9px] whitespace-nowrap border border-white/5">
-            {isMuted ? "SESİ AÇ" : "SESİ SİS"}
-          </span>
-        </button>
-
-        {!isMuted && current && (
-           <audio autoPlay loop src={current.sound} />
-        )}
+        </AnimatePresence>
       </div>
 
-      {/* RITUAL TRIGGER HOTSPOT (Invisible) */}
-      <div 
-        className="absolute top-1/2 left-10 w-2 h-2 cursor-help pointer-events-auto"
-        onMouseEnter={() => setActiveRitual("ritual")}
-        onMouseLeave={() => {
-           const hour = new Date().getHours();
-           setActiveRitual(hour >= 6 && hour < 18 ? "morning" : "evening");
-        }}
-      />
-    </div>
+      {/* Floating Control Trigger & Menu Panel */}
+      <div className="fixed bottom-10 right-10 z-[100] flex flex-col items-end gap-3 pointer-events-auto">
+        
+        {/* Customizer Sidebar/Menu */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.95 }}
+              transition={{ type: "spring", damping: 20 }}
+              className="bg-black/85 backdrop-blur-xl border border-white/10 rounded-2xl p-6 w-[320px] shadow-2xl text-white flex flex-col gap-5"
+              style={{ boxShadow: "0 20px 50px rgba(0, 0, 0, 0.4)" }}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center border-bottom border-white/5 pb-3">
+                <div className="flex items-center gap-2">
+                  <Sliders size={15} className="text-gold" />
+                  <span className="serif text-[0.95rem] tracking-wider uppercase font-semibold text-ivory">Atmosfer Paneli</span>
+                </div>
+                <button 
+                  onClick={() => setIsOpen(false)}
+                  className="text-white/40 hover:text-white transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Ritual Selector Cards */}
+              <div className="flex flex-col gap-2.5">
+                {(Object.keys(rituals) as RitualType[]).map((key) => {
+                  const item = rituals[key];
+                  const Icon = item.icon;
+                  const isSelected = activeRitual === key;
+
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => selectRitual(key)}
+                      className={`text-left p-3.5 rounded-xl border flex items-start gap-3 transition-all ${
+                        isSelected 
+                          ? "bg-gold/10 border-gold/40 text-white" 
+                          : "bg-white/5 border-white/5 text-white/70 hover:bg-white/10"
+                      }`}
+                    >
+                      <div className={`p-2 rounded-lg ${isSelected ? "bg-gold/20 text-gold" : "bg-white/5 text-white/50"}`}>
+                        <Icon size={16} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center">
+                          <span className="serif text-[0.85rem] font-medium tracking-wide">{item.title}</span>
+                          {isSelected && <Check size={12} className="text-gold" />}
+                        </div>
+                        <p className="text-[0.7rem] text-white/40 leading-normal mt-1">{item.description}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Volume & Audio Controls */}
+              <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col gap-3">
+                <div className="flex justify-between items-center text-[0.75rem] text-white/50 uppercase tracking-widest">
+                  <span>Ses Düzeyi</span>
+                  <span>{isMuted ? "Sessiz" : `${Math.round(volume * 100)}%`}</span>
+                </div>
+                
+                <div className="flex items-center gap-3.5">
+                  <button 
+                    onClick={togglePlay}
+                    className="w-8 h-8 rounded-full bg-gold/15 border border-gold/30 flex items-center justify-center text-gold hover:bg-gold hover:text-black transition-all"
+                  >
+                    {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                  </button>
+
+                  <input 
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={volume}
+                    onChange={(e) => {
+                      setVolume(Number(e.target.value));
+                      if (isMuted) setIsMuted(false);
+                    }}
+                    className="flex-1 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-gold"
+                    style={{
+                      accentColor: "var(--gold)"
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Bottom Brand Slogan */}
+              <div className="text-center text-[0.65rem] text-white/30 tracking-widest uppercase">
+                500 Yıllık Taş Konakta Yavaş Rota
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Floating Quick Action Row */}
+        <div className="flex items-center gap-2">
+          
+          {/* Active Sound Indicator Pill */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            onClick={() => setIsOpen(!isOpen)}
+            className="bg-black/75 backdrop-blur-md px-4 py-2.5 rounded-full border border-white/10 text-[10px] text-white uppercase tracking-[0.2em] flex items-center gap-2.5 cursor-pointer hover:bg-black/90 hover:border-gold/30 transition-all shadow-xl"
+          >
+            {/* Animated Soundwave lines */}
+            <div className="flex items-center gap-0.5 h-4 w-4">
+              <span className={`soundwave-bar ${!isMuted && isPlaying ? "animating" : ""}`} style={{ height: "6px" }} />
+              <span className={`soundwave-bar ${!isMuted && isPlaying ? "animating" : ""}`} style={{ height: "12px" }} />
+              <span className={`soundwave-bar ${!isMuted && isPlaying ? "animating" : ""}`} style={{ height: "8px" }} />
+              <span className={`soundwave-bar ${!isMuted && isPlaying ? "animating" : ""}`} style={{ height: "10px" }} />
+            </div>
+            <span className="text-white/80 font-medium">{current.title}</span>
+          </motion.div>
+
+          {/* Quick Toggle Mute/Play Button */}
+          <button 
+            onClick={togglePlay}
+            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all group shadow-xl border relative ${
+              isMuted 
+                ? "bg-black/70 border-white/10 text-white/60 hover:text-white" 
+                : "bg-gold text-black border-gold hover:bg-white hover:text-black"
+            }`}
+          >
+            {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+            <span style={{
+              position: "absolute",
+              width: "1px",
+              height: "1px",
+              padding: 0,
+              margin: "-1px",
+              overflow: "hidden",
+              clip: "rect(0, 0, 0, 0)",
+              whiteSpace: "nowrap",
+              borderWidth: 0,
+            }}>{isMuted ? "SESİ AÇ" : "SESİ SİS"}</span>
+          </button>
+
+          {/* Panel Open/Close Button */}
+          <button 
+            onClick={() => setIsOpen(!isOpen)}
+            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all group shadow-xl border ${
+              isOpen 
+                ? "bg-gold text-black border-gold" 
+                : "bg-black/70 border-white/10 text-white hover:border-gold/30 hover:text-gold"
+            }`}
+          >
+            <Sliders size={15} />
+          </button>
+
+        </div>
+      </div>
+    </>
   );
 };
+

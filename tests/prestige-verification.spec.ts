@@ -29,10 +29,6 @@ test.describe('Prestige & Heritage Verification', () => {
     await page.mouse.wheel(0, 2000);
     // Wait for scroll-triggered components
     await page.waitForTimeout(1000);
-    
-    // Check for social proof or scarcity badges (if implemented)
-    const toast = page.locator('.toast, [role="alert"]');
-    // This is optional based on whether they are triggered
   });
 
   test('Living Museum Map should be interactive', async ({ page }) => {
@@ -50,8 +46,6 @@ test.describe('Prestige & Heritage Verification', () => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
     
-    // Menu button should be visible on mobile
-    const menuBtn = page.locator('button:has-text("Menü"), .mobile-menu-trigger');
     // Ensure no horizontal overflow
     const bodyWidth = await page.evaluate(() => document.body.scrollWidth);
     expect(bodyWidth).toBeLessThanOrEqual(375);

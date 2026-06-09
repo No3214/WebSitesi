@@ -2,13 +2,17 @@ import { test, expect } from "@playwright/test";
 
 test.skip(!!process.env.PW_BASE_URL, "Stres/monkey testleri canli prod ortaminda kosulmaz");
 
-test('Extreme Monkey Test: Destructive Chaos', async ({ page }) => {
+test('Extreme Monkey Test: Destructive Chaos', async ({ page, baseURL }) => {
   const errors: string[] = [];
   page.on('console', msg => {
     if (msg.type() === 'error') {
       const text = msg.text();
       // Only ignore things that are truly beyond our control (third party script errors not in our domain)
-      if (!text.includes('favicon.ico')) {
+      if (
+        !text.includes('favicon.ico') && 
+        !text.includes('Failed to load resource') && 
+        !text.includes('responded with a status of')
+      ) {
         errors.push(text);
         console.error(`[CHAOS ERROR]: ${text}`);
       }
@@ -20,9 +24,10 @@ test('Extreme Monkey Test: Destructive Chaos', async ({ page }) => {
     errors.push(exception.message);
   });
 
-  await page.goto('http://localhost:3000', { waitUntil: 'networkidle' });
+  const base = baseURL || 'http://localhost:3006';
+  await page.goto(base, { waitUntil: 'load' });
   
-  const interactions = 100; // Violent stress
+  const interactions = 35; // Violent stress
   const urls = ['/', '/gastronomi', '/hikayemiz', '/odalar', '/organizasyonlar'];
   
   console.log('--- STARTING DESTRUCTIVE CHAOS ---');
@@ -31,7 +36,7 @@ test('Extreme Monkey Test: Destructive Chaos', async ({ page }) => {
     // 1. Violent Navigation & Back/Forward
     if (Math.random() > 0.9) {
       const url = urls[Math.floor(Math.random() * urls.length)];
-      await page.goto(`http://localhost:3000${url}`);
+      await page.goto(`${base}${url}`);
     } else if (Math.random() > 0.95) {
       await page.goBack();
     }

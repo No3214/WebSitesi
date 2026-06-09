@@ -19,6 +19,7 @@ interface MarketingWindow extends Window {
 
 export function LeadForm() {
   const [status, setStatus] = useState<LeadStatus>('idle');
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [meta, setMeta] = useState<MarketingMeta>({
     utmSource: '',
     utmMedium: '',
@@ -39,6 +40,7 @@ export function LeadForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus('loading');
+    setErrors({});
 
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
@@ -61,6 +63,7 @@ export function LeadForm() {
 
       if (res.ok) {
         setStatus('success');
+        setErrors({});
         
         // Trigger Marketing Events with typed window
         const mWindow = window as unknown as MarketingWindow;
@@ -85,6 +88,12 @@ export function LeadForm() {
         e.currentTarget.reset();
       } else {
         setStatus('error');
+        if (res.status === 400) {
+          const body = await res.json();
+          if (body.errors?.fieldErrors) {
+            setErrors(body.errors.fieldErrors);
+          }
+        }
       }
     } catch (err) {
       console.error('Lead submission failed:', err);
@@ -102,44 +111,74 @@ export function LeadForm() {
     );
   }
 
+  const renderError = (field: string) => {
+    if (!errors[field]?.[0]) return null;
+    return (
+      <div style={{ color: "#b3925c", fontSize: "0.82rem", marginTop: "-18px", marginBottom: "16px", fontWeight: 500 }}>
+        {errors[field][0]}
+      </div>
+    );
+  };
+
+  const getInputStyle = (field: string) => {
+    if (errors[field]) {
+      return { borderColor: "#c2410c", borderBottomWidth: "2px", marginBottom: "20px" };
+    }
+    return {};
+  };
+
   return (
     <form className="lead-form" onSubmit={handleSubmit}>
       <div style={{ display: 'none' }}>
         <input name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <input name="name" placeholder="Tam Adınız" required />
-      <input name="phone" placeholder="Telefon Numaranız" required />
-      <input name="email" placeholder="E-posta Adresiniz" type="email" />
-      <input name="eventDate" placeholder="Etkinlik Tarihi" />
-      <input name="guestCount" type="number" min={1} placeholder="Tahmini Kişi Sayısı" />
+      <input name="name" placeholder="Tam Adınız" required style={getInputStyle("name")} />
+      {renderError("name")}
+
+      <input name="phone" placeholder="Telefon Numaranız" required style={getInputStyle("phone")} />
+      {renderError("phone")}
+
+      <input name="email" placeholder="E-posta Adresiniz" type="email" style={getInputStyle("email")} />
+      {renderError("email")}
+
+      <input name="eventDate" placeholder="Etkinlik Tarihi" style={getInputStyle("eventDate")} />
+      {renderError("eventDate")}
+
+      <input name="guestCount" type="number" min={1} placeholder="Tahmini Kişi Sayısı" style={getInputStyle("guestCount")} />
+      {renderError("guestCount")}
       
-      <select name="estimatedBudget" defaultValue="">
+      <select name="estimatedBudget" defaultValue="" style={getInputStyle("estimatedBudget")}>
         <option value="" disabled>Tahmini Bütçe</option>
         <option value="under-100k">100.000 TL altı</option>
         <option value="100k-250k">100.000 - 250.000 TL</option>
         <option value="250k-500k">250.000 - 500.000 TL</option>
         <option value="over-500k">500.000 TL üzeri</option>
       </select>
+      {renderError("estimatedBudget")}
 
-      <select name="type" required defaultValue="">
+      <select name="type" required defaultValue="" style={getInputStyle("type")}>
         <option value="" disabled>Organizasyon Tercihi</option>
         <option value="dugun">Butik Düğün</option>
         <option value="nisan">Nişan / Söz</option>
         <option value="kurumsal">Kurumsal Etkinlik</option>
         <option value="ozel-kutlama">Özel Kutlama</option>
       </select>
+      {renderError("type")}
 
       <textarea
         name="message"
         placeholder="Özel talepleriniz ve diğer notlar..."
         required
+        style={getInputStyle("message")}
       />
+      {renderError("message")}
 
       <label className="consent-row">
         <input type="checkbox" name="consent" required />
         <span>Kişisel verilerimin teklif ve bilgilendirme amacıyla işlenmesini kabul ediyorum.</span>
       </label>
+      {renderError("consent")}
 
       {/* Cloudflare Turnstile Widget — only render when sitekey is configured */}
       {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
@@ -160,7 +199,9 @@ export function LeadForm() {
       </button>
       
       {status === 'error' && (
-        <p style={{ color: 'red', marginTop: '10px' }}>Bir hata oluştu. Lütfen tekrar deneyin.</p>
+        <p style={{ color: '#c2410c', marginTop: '10px', fontSize: '0.9rem', fontWeight: 500 }}>
+          Talep gönderilemedi. Lütfen eksik/hatalı bilgileri kontrol edip tekrar deneyin.
+        </p>
       )}
     </form>
   );

@@ -7,12 +7,12 @@ export default defineConfig({
   testMatch: "**/*.spec.ts",
   fullyParallel: true,
   use: {
-    baseURL: liveUrl || "http://127.0.0.1:3000"
+    baseURL: liveUrl || "http://127.0.0.1:3006"
   },
   webServer: liveUrl ? undefined : {
-    command: "npm run dev",
-    url: "http://127.0.0.1:3000",
-    reuseExistingServer: true
+    command: "npx next start --port 3006",
+    url: "http://127.0.0.1:3006",
+    reuseExistingServer: false
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } }

@@ -13,16 +13,16 @@ export function SiteHeader() {
     getDictionary(locale).then(setDict);
   }, []);
 
-  if (!dict) return <header className="header premium-header" />;
-  const navigationDict = dict.Navigation as Record<string, string>;
+  const navigationDict = dict ? (dict.Navigation as Record<string, string>) : null;
 
-  const links = [
+  const links = navigationDict ? [
     { href: "/hikayemiz", label: navigationDict.history || "Hikayemiz" },
     { href: "/odalar", label: navigationDict.rooms },
     { href: "/gastronomi", label: navigationDict.dining || "Gastronomi" },
     { href: "/organizasyonlar", label: navigationDict.events },
+    { href: "/deneyim-tasarimcisi", label: "✨ Deneyim Tasarımcısı" },
     { href: "/#faq", label: "SSS" }
-  ];
+  ] : [];
 
   return (
     <header className="header premium-header">
@@ -35,20 +35,24 @@ export function SiteHeader() {
           <span className="serif tracking-[0.2em] text-lg text-olive">KOZBEYLİ KONAĞI</span>
         </Link>
 
-        <nav className="nav">
-          {links.map((link) => (
-            <Link key={link.href} href={link.href} className="nav-link">
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        {navigationDict && (
+          <nav className="nav">
+            {links.map((link) => (
+              <Link key={link.href} href={link.href} className="nav-link">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
-        <div className="header-actions">
-            <LanguageSwitcher />
-            <Link className="button primary" href="/rezervasyon">
-                {navigationDict.booking}
-            </Link>
-        </div>
+        {navigationDict && (
+          <div className="header-actions">
+              <LanguageSwitcher />
+              <Link className="button primary" href="/rezervasyon">
+                  {navigationDict.booking}
+              </Link>
+          </div>
+        )}
       </div>
 
       <style jsx>{`
