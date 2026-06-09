@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
+import { getPhoneHref, MAPS_URL, PHONE_DISPLAY } from "@/lib/contact";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
 
 export function SiteFooter() {
@@ -57,11 +58,15 @@ export function SiteFooter() {
             <h4 className="footer-title">{t?.contact || "İletişim"}</h4>
             <div className="contact-item">
               <MapPin size={18} />
-              <span>Kozbeyli Köyü, Foça, İzmir</span>
+              <a href={MAPS_URL} target="_blank" rel="noreferrer">
+                <span>Kozbeyli Köyü, Foça, İzmir</span>
+              </a>
             </div>
             <div className="contact-item">
               <Phone size={18} />
-              <span>+90 (232) 826 12 34</span>
+              <a href={getPhoneHref()}>
+                <span>{PHONE_DISPLAY}</span>
+              </a>
             </div>
             <div className="contact-item">
               <Mail size={18} />

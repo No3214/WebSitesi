@@ -17,9 +17,9 @@ export function hotelSchema() {
     url: absoluteUrl("/"),
     logo: absoluteUrl("/logo.svg"),
     image: [
-      absoluteUrl("/img/hero-main.jpg"),
-      absoluteUrl("/img/stone-room.jpg"),
-      absoluteUrl("/img/breakfast-spread.jpg")
+      absoluteUrl("/images/hero.jpg"),
+      absoluteUrl("/images/odalar/standart-deniz-manzarali-oda/1.jpg"),
+      absoluteUrl("/videos/kahvalti-poster.jpg")
     ],
     telephone: "+905322342686",
     email: "info@kozbeylikonagi.com",

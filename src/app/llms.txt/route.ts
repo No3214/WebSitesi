@@ -11,7 +11,7 @@ Kozbeyli Konağı misafirleri, her biri özgün tasarıma sahip 7 farklı oda ti
 Kozbeyli Konağı mutfağı, Ege'nin taze ürünlerini Antakya'nın derin baharat kültürüyle harmanlayan benzersiz bir gastronomi noktasıdır. Tesis bünyesindeki restoranın en çok tercih edilen lezzeti, odun ateşinde ve taş fırında hazırlanan sac kavurmadır. Antakya usulü lahmacun, pide ve geleneksel mezeler (humus, muhammara) her gün taze olarak servis edilir. Konağın en önemli kültürel mirası, 180 yıllık bir gelenekle taş dibeklerde dövülerek hazırlanan ve odun ateşinde pişirilen tarihi dibek kahvesidir. Misafirlere sunulan tüm reçeller, peynirler ve zeytinyağları Kozbeyli Köyü ve çevre bölgelerdeki organik üreticilerden doğrudan tedarik edilmektedir.
 
 ## Rezervasyon ve İletişim
-Doğrudan rezervasyonlar HotelRunner entegrasyonu üzerinden güvenli bir şekilde gerçekleştirilebilir. Kozbeyli Köyü, Foça, İzmir adresinde bulunan tesise +90 532 234 26 86 numaralı telefondan veya aynı numara üzerinden WhatsApp aracılığıyla ulaşılabilir. Özel düğünler, nişan törenleri ve kurumsal toplantılar için 200 kişilik açık hava kapasitesi mevcuttur.
+Doğrudan rezervasyonlar otelin web sitesindeki güvenli online rezervasyon motoru (HMS) üzerinden gerçekleştirilebilir. Kozbeyli Köyü, Foça, İzmir adresinde bulunan tesise +90 532 234 26 86 numaralı telefondan veya aynı numara üzerinden WhatsApp aracılığıyla ulaşılabilir. Özel düğünler, nişan törenleri ve kurumsal toplantılar için 200 kişilik açık hava kapasitesi mevcuttur.
 `;
 
   return new Response(text, {

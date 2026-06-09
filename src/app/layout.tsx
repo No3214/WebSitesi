@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { Suspense } from "react";
 import { ConversionMotivators } from "@/components/conversion-motivators";
@@ -27,6 +28,15 @@ const inter = Inter({ subsets: ["latin", "latin-ext"], display: "swap", variable
 const playfair = Playfair_Display({ subsets: ["latin", "latin-ext"], display: "swap", variable: "--font-playfair" });
 
 export const metadata = defaultMetadata;
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf9f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#14161a" },
+  ],
+};
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (

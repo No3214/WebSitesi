@@ -16,3 +16,16 @@ export const WHATSAPP_BASE =
 export function getWhatsAppHref(message: string): string {
   return `${WHATSAPP_BASE}?text=${encodeURIComponent(message)}`;
 }
+
+/** Tek doğru telefon kaynağı (schema.org ile aynı numara). */
+export const PHONE_E164 = "+905322342686";
+export const PHONE_DISPLAY = "+90 532 234 26 86";
+
+export function getPhoneHref(): string {
+  return `tel:${PHONE_E164}`;
+}
+
+/** Tek doğru harita kaynağı. */
+export const MAPS_URL =
+  process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL ||
+  "https://www.google.com/maps/search/?api=1&query=Kozbeyli+Kona%C4%9F%C4%B1+Fo%C3%A7a+%C4%B0zmir";

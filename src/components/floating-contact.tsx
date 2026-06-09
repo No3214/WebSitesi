@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Phone, Instagram, X, MessageSquare } from "lucide-react";
 
-import { WHATSAPP_BASE } from "@/lib/contact";
+import { getPhoneHref, WHATSAPP_BASE } from "@/lib/contact";
 
 export const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +19,7 @@ export const FloatingContact = () => {
     {
       icon: <Phone className="w-5 h-5" />,
       label: "Bize Ulaşın",
-      href: "tel:+902326761010",
+      href: getPhoneHref(),
       color: "bg-blue-600",
     },
     {
