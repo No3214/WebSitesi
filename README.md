@@ -149,3 +149,26 @@ public/              # Statik varlıklar (görseller, fontlar)
 | `/admin` | Payload CMS yönetim paneli |
 
 API uç noktaları: `/api/local-pulse`, `/api/chat`, `/api/lead`, `/api/llm-context`, `/api/webhook/hotelrunner`, `/llms.txt`.
+
+## Demo / Mock Yüzeyler (ÖNEMLİ)
+
+Aşağıdaki yüzeyler **gerçek değildir**; yeni geliştiriciler canlı sanmasın diye burada listelenir
+(detaylı analiz: `AUDIT.md`):
+
+| Yüzey | Durum |
+| --- | --- |
+| `/api/checkout` + rezervasyon sihirbazı | **Tahsilat YAPMAZ.** Kart doğrulaması mock'tur; akış bir ön-rezervasyon talebi kaydeder. UI'da DEMO bandı vardır, yanıt metni tahsilat iddia etmez. Gerçek PSP (iyzico) entegrasyonu yapılana dek bu davranış korunmalı. |
+| `/api/swarm` | Hardcoded mock ajan cevapları döner; üretim entegrasyonu yoktur. |
+| `/api/v1/availability` | `B2B_PARTNER_PUBLIC_KEY` env tanımlı değilse **404** döner (varsayılan kapalı). Gerçek partner onboard olunca SPKI PEM eklenir. |
+| `/admin/growth` | Payload admin oturumu zorunludur; metrikler simülasyondur. |
+
+## CI
+
+`.github/workflows/ci.yml`: her push/PR'da **lint → vitest(unit) → build → Playwright e2e smoke**.
+Kırmızı pipeline'da merge etmeyin. `lib/env.ts` `CI=true` iken zorunlu secret kontrolünü atlar;
+bu sayede CI build'i secret'sız çalışır.
+
+## Deploy
+
+Birincil hedef **Vercel**'dir (env değişkenleri Vercel panelinden yönetilir).
+`railway.json` alternatif/legacy hedef olarak durur; aktif kullanılmıyorsa silinebilir.

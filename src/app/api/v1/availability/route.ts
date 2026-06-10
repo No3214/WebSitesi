@@ -1,13 +1,17 @@
 import { NextResponse } from 'next/server';
 import { verifyEccSignature, extractPayloadFromRequest } from '@/lib/ecc-auth';
 
-// In a real scenario, this public key would be fetched from a database based on the partnerId
-const MOCK_PARTNER_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
-MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEK/v1O7x8P21k28Q/2n7y9Z71M8kP
-G3/Z82yvJ+4s1v/c2m1tZt4qR/N8qV8c4U5B0gN+Pq8Mh3mF/l5h2J4W1w==
------END PUBLIC KEY-----`;
+// Audit F6/T5: partner public key artık env'den gelir; tanımlı değilse
+// endpoint kapalıdır (404). Hardcoded MOCK key kaldırıldı — sahte imza
+// kabul riski sıfırlandı. Gerçek partner onboard olduğunda SPKI PEM'i
+// B2B_PARTNER_PUBLIC_KEY olarak ekleyin.
+const PARTNER_PUBLIC_KEY = process.env.B2B_PARTNER_PUBLIC_KEY || "";
 
 export async function POST(req: Request) {
+  if (!PARTNER_PUBLIC_KEY.trim()) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
   try {
     const signature = req.headers.get('x-b2b-signature');
     const partnerId = req.headers.get('x-partner-id');
@@ -21,7 +25,7 @@ export async function POST(req: Request) {
     const isValid = verifyEccSignature({
       payload: payloadString,
       signature,
-      publicKeyPem: MOCK_PARTNER_PUBLIC_KEY,
+      publicKeyPem: PARTNER_PUBLIC_KEY,
     });
 
     if (!isValid) {

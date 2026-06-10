@@ -445,6 +445,31 @@ Rezervasyonumun onaylanmasını rica ederim.`;
             {/* Form Side */}
             <form onSubmit={handlePaymentSubmit} style={{ display: "grid", gap: 18 }}>
               <h3 className="serif" style={{ fontSize: "1.7rem", color: "var(--olive)", marginBottom: 0 }}>Misafir & Fatura Bilgileri</h3>
+
+              {/* DEMO uyarısı — gerçek tahsilat yapılmaz (F1) */}
+              <div
+                role="status"
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  alignItems: "flex-start",
+                  padding: "12px 14px",
+                  background: "#fff6e5",
+                  border: "1px solid #f3d08b",
+                  borderRadius: 8,
+                  fontSize: "0.85rem",
+                  lineHeight: 1.55,
+                  color: "#92400e",
+                }}
+              >
+                <span aria-hidden style={{ fontWeight: 700 }}>DEMO</span>
+                <span>
+                  Bu adım bir <strong>ön-rezervasyon talebidir</strong>; kartınızdan şu an{" "}
+                  <strong>hiçbir tahsilat yapılmaz</strong>. Ödeme, ekibimiz sizinle iletişime
+                  geçtikten sonra güvenli bağlantı üzerinden alınır. Denemek için 4111 1111 1111 1111
+                  test kartını kullanabilirsiniz.
+                </span>
+              </div>
               
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <input 
@@ -547,7 +572,9 @@ Rezervasyonumun onaylanmasını rica ederim.`;
                   disabled={isSubmitting}
                   style={{ display: "flex", alignItems: "center", gap: 8 }}
                 >
-                  {isSubmitting ? "Ödeniyor..." : `Ödeme Yap (${finalPrice.toLocaleString("tr-TR")} ₺)`}
+                  {isSubmitting
+                    ? "Gönderiliyor..."
+                    : `Rezervasyon Talebini Gönder (${finalPrice.toLocaleString("tr-TR")} ₺)`}
                 </button>
               </div>
             </form>
@@ -591,7 +618,7 @@ Rezervasyonumun onaylanmasını rica ederim.`;
 
               <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(61, 74, 59, 0.05)", padding: 12, borderRadius: 8, fontSize: "0.78rem", color: "var(--olive)", marginTop: 12 }}>
                 <ShieldCheck size={16} />
-                <span>256-bit SSL Güvenli Altyapı (iyzico Ödeme Geçidi)</span>
+                <span>256-bit SSL — bilgileriniz şifreli iletilir; bu adımda tahsilat yapılmaz</span>
               </div>
             </div>
           </motion.div>
@@ -610,7 +637,9 @@ Rezervasyonumun onaylanmasını rica ederim.`;
             
             <h3 className="serif" style={{ fontSize: "2rem", color: "var(--olive)", margin: 0 }}>Rezervasyon Talebiniz Alındı!</h3>
             <p className="muted" style={{ maxWidth: 600, margin: "0 auto", fontSize: "1.05rem", lineHeight: 1.6 }}>
-              Teşekkür ederiz, <strong>{guestName}</strong>. Ödemeniz başarıyla doğrulanmıştır. Rezervasyon detaylarınız ve atmosfer kişiselleştirme seçimleriniz sisteme kaydedildi.
+              Teşekkür ederiz, <strong>{guestName}</strong>. Rezervasyon talebiniz ve atmosfer
+              kişiselleştirme seçimleriniz sisteme kaydedildi. Kartınızdan henüz tahsilat
+              yapılmadı — ekibimiz 24 saat içinde teyit ve güvenli ödeme için sizinle iletişime geçecek.
             </p>
 
             <div style={{ background: "var(--soft)", padding: 24, borderRadius: 10, maxWidth: 500, margin: "0 auto", textAlign: "left", display: "grid", gap: 10, fontSize: "0.95rem" }}>

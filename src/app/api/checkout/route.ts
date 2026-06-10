@@ -131,7 +131,8 @@ export async function POST(req: Request) {
     // Complete transaction successfully
     return NextResponse.json({ 
       ok: true, 
-      message: "Ödeme onaylandı. Rezervasyonunuz kaydedilmiştir.",
+      message:
+        "Rezervasyon talebiniz alındı. Tahsilat yapılmadı — ekibimiz teyit ve güvenli ödeme için sizinle iletişime geçecek.",
       bookingId: data.bookingId 
     });
 
