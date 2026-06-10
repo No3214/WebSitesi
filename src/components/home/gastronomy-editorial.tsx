@@ -1,0 +1,98 @@
+"use client";
+
+import Link from "next/link";
+
+import { FadeIn } from "@/components/animations";
+import { SectionTitle } from "@/components/section-title";
+
+export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
+  return (
+    <section className="section section-alt" id="gastronomi">
+      <div className="container">
+        <FadeIn>
+          <SectionTitle
+            eyebrow={locale === "tr" ? "MUTFAĞIN RİTMİ" : "RHYTHM OF THE KITCHEN"}
+            title={locale === "tr" ? "Sofrada Yaşayan Miras" : "A Living Heritage at the Table"}
+            text={
+              locale === "tr"
+                ? "Antakya'dan Ege'ye uzanan bir lezzet köprüsü; taş fırından serpme kahvaltıya her an bir tören."
+                : "A bridge of flavor from Antakya to the Aegean; every moment a ceremony, from stone oven to breakfast spread."
+            }
+          />
+        </FadeIn>
+
+        <div style={{ display: "grid", gap: "clamp(48px, 7vw, 96px)" }}>
+          <FadeIn>
+            <div className="editorial">
+              <div className="editorial-media">
+                <video
+                  src="/videos/kahvalti.mp4"
+                  poster="/videos/kahvalti-poster.jpg"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-label={locale === "tr" ? "Serpme köy kahvaltısı videosu" : "Village breakfast video"}
+                />
+                <span className="media-frame" aria-hidden />
+              </div>
+              <div className="editorial-copy">
+                <span className="eyebrow">{locale === "tr" ? "SABAH GÜNEŞİ" : "MORNING SUN"}</span>
+                <h3>{locale === "tr" ? "Köy Kahvaltısı Töreni" : "The Village Breakfast Ceremony"}</h3>
+                <p>
+                  {locale === "tr"
+                    ? "Avlunun taş gölgesinde kurulan sofra; köy tereyağı, kahvaltılıklar ve taş fırından yeni çıkmış sıcak ekmekle başlar."
+                    : "A table set in the stone shade of the courtyard; it begins with village butter, local delicacies, and warm bread fresh from the stone oven."}
+                </p>
+                <ul className="editorial-list">
+                  <li>{locale === "tr" ? "Yöreden toplanan mevsim ürünleri" : "Seasonal produce from the village"}</li>
+                  <li>{locale === "tr" ? "Taş dibekte dövülen kahve ritüeli" : "Coffee ritual in the stone dibek"}</li>
+                  <li>{locale === "tr" ? "Konak misafirlerine özel sofra düzeni" : "A table reserved for mansion guests"}</li>
+                </ul>
+                <Link href="/gastronomi" className="button secondary">
+                  {locale === "tr" ? "Gastronomi Hikayesi" : "Gastronomy Story"}
+                </Link>
+              </div>
+            </div>
+          </FadeIn>
+
+          <FadeIn>
+            <div className="editorial reverse">
+              <div className="editorial-media">
+                <video
+                  src="/videos/mihlama.mp4"
+                  poster="/videos/mihlama-poster.jpg"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-label={locale === "tr" ? "Ocakta hazırlanan yöresel lezzet videosu" : "Regional dish on the stove video"}
+                />
+                <span className="media-frame" aria-hidden />
+              </div>
+              <div className="editorial-copy">
+                <span className="eyebrow">{locale === "tr" ? "OCAK BAŞI" : "BY THE HEARTH"}</span>
+                <h3>{locale === "tr" ? "İnci Hanım'ın Mutfağı" : "İnci Hanım's Kitchen"}</h3>
+                <p>
+                  {locale === "tr"
+                    ? "Antakya kökenli aile reçeteleri, Ege otlarıyla buluşur. Ocakta ağır ağır pişen her tencere, konağın hafızasından bir sayfadır."
+                    : "Family recipes rooted in Antakya meet Aegean herbs. Every pot simmering on the stove is a page from the mansion's memory."}
+                </p>
+                <ul className="editorial-list">
+                  <li>{locale === "tr" ? "Antakya & Ege füzyon menüsü" : "Antakya & Aegean fusion menu"}</li>
+                  <li>{locale === "tr" ? "Taş fırında pişen yöresel tarifler" : "Regional recipes from the stone oven"}</li>
+                  <li>{locale === "tr" ? "Akşam yemeğinde şef sofrası deneyimi" : "Chef's table experience at dinner"}</li>
+                </ul>
+                <Link href="/menu" className="button secondary">
+                  {locale === "tr" ? "Menüyü Keşfet" : "Explore the Menu"}
+                </Link>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </div>
+    </section>
+  );
+}
