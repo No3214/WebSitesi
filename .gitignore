@@ -25,3 +25,5 @@ storybook-static
 _legacy-emergent/
 memory/
 scratch/
+
+tsconfig.tsbuildinfo
