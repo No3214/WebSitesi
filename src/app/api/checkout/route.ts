@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { rooms } from "@/data/rooms";
 import { getPayloadClient } from "@/lib/payload";
 import { extractClientIp, enforceRateLimit, validateSameOrigin, safeText } from "@/lib/security";
 
@@ -56,11 +57,16 @@ export async function POST(req: Request) {
 
     const data = parsed.data;
 
+    const actualRoom = rooms.find((r) => r.slug === data.roomSlug);
+    if (!actualRoom) {
+      return NextResponse.json({ ok: false, message: "Geçersiz oda seçimi." }, { status: 400 });
+    }
+
     // 3. Double check room pricing (prevent client-side price tampering)
     let rate = 4500;
-    if (data.roomSlug.includes("superior")) rate = 8500;
-    else if (data.roomSlug.includes("aile")) rate = 7500;
-    else if (data.roomSlug.includes("uc-kisilik")) rate = 6000;
+    if (actualRoom.slug.includes("superior")) rate = 8500;
+    else if (actualRoom.slug.includes("aile")) rate = 7500;
+    else if (actualRoom.slug.includes("uc-kisilik")) rate = 6000;
 
     let expectedTotal = rate * data.nights;
 
@@ -110,7 +116,7 @@ export async function POST(req: Request) {
         userAgent: safeText(userAgent, 500),
         message: [
           `Rezervasyon ID: ${data.bookingId}`,
-          `Oda: ${safeText(data.roomTitle, 120)} (${data.roomSlug})`,
+          `Oda: ${safeText(actualRoom.title, 120)} (${actualRoom.slug})`,
           `Giriş / Çıkış: ${data.checkIn} / ${data.checkOut} (${data.nights} Gece)`,
           `Konuk: ${data.guests} Yetişkin`,
           `Atmosfer Tercihleri:`,
