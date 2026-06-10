@@ -1,3 +1,4 @@
+import { errField, logEvent } from "@/lib/logger";
 import { getPayloadClient } from "@/lib/payload";
 import { safeText } from "@/lib/security";
 
@@ -97,7 +98,7 @@ export async function verifyTurnstileToken(token: string) {
     const result = await res.json();
     return result.success;
   } catch (error) {
-    console.error("Turnstile verification error:", error);
+    logEvent("error", "lead.turnstile_verify_failed", { err: errField(error) });
     return false;
   }
 }

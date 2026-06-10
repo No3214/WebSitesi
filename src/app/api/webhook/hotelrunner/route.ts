@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
 import { getPayloadClient } from "@/lib/payload";
+import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
 import { safeText, verifyEs256Signature } from "@/lib/security";
 
@@ -70,13 +71,16 @@ export async function POST(req: Request) {
 
   // Fail-close: Block if security headers are missing
   if (!messageUid || !signature) {
-    console.warn(`[WEBHOOK] Blocked attempt - MessageUID: ${messageUid ? 'present' : 'missing'}, Signature: ${signature ? 'present' : 'missing'}`);
+    logEvent("warn", "webhook.hr.blocked_missing_headers", {
+      hasMessageUid: Boolean(messageUid),
+      hasSignature: Boolean(signature),
+    });
     return NextResponse.json({ ok: false, error: "Unauthorized access attempt" }, { status: 401 });
   }
 
   // Security Hardening: Ensure we are using a real secret in production
   if (process.env.NODE_ENV === "production" && env.HOTELRUNNER_WEBHOOK_SECRET === "hotelrunner-dev-secret") {
-    console.error("[WEBHOOK] CRITICAL: Webhook attempting to run with dev secret in production!");
+    logEvent("error", "webhook.hr.dev_secret_in_prod");
     return NextResponse.json({ ok: false, error: "Configuration Error" }, { status: 500 });
   }
 

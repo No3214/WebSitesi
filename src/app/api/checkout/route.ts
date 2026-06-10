@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getPayloadClient } from "@/lib/payload";
+import { errField, logEvent, maskIp } from "@/lib/logger";
 import { extractClientIp, enforceRateLimit, validateSameOrigin, safeText } from "@/lib/security";
 
 const checkoutSchema = z.object({
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
   try {
     // 1. CSRF Protection: Validate Origin matches Host
     if (!validateSameOrigin(req)) {
-      console.warn("[CHECKOUT] Blocked cross-origin/CSRF checkout attempt");
+      logEvent("warn", "checkout.csrf_blocked");
       return NextResponse.json(
         { ok: false, message: "Güvenlik İhlali: Yetkisiz çapraz istek engellendi." },
         { status: 403 }
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
     const clientIp = extractClientIp(req.headers);
     const limitResult = await enforceRateLimit(`checkout:${clientIp}`, 5, 60 * 1000);
     if (!limitResult.allowed) {
-      console.warn(`[CHECKOUT] Rate limit exceeded for IP: ${clientIp}`);
+      logEvent("warn", "checkout.rate_limited", { ip: maskIp(clientIp) });
       return NextResponse.json(
         { ok: false, message: `Çok fazla rezervasyon denemesi yaptınız. Lütfen ${limitResult.retryAfterSec} saniye sonra tekrar deneyin.` },
         { status: 429, headers: { "Retry-After": String(limitResult.retryAfterSec) } }
@@ -71,7 +72,11 @@ export async function POST(req: Request) {
 
     // Verify client total matches within 2 TRY variance due to potential floating point rounding
     if (Math.abs(expectedTotal - data.totalPrice) > 2) {
-      console.warn(`[CHECKOUT] Price discrepancy detected. Expected: ${expectedTotal}, Received: ${data.totalPrice}`);
+      logEvent("warn", "checkout.price_mismatch", {
+        expected: expectedTotal,
+        received: data.totalPrice,
+        roomSlug: data.roomSlug,
+      });
       return NextResponse.json({ ok: false, message: "Rezervasyon tutarı doğrulanamadı." }, { status: 400 });
     }
 
@@ -124,7 +129,14 @@ export async function POST(req: Request) {
       overrideAccess: true,
     });
 
-    console.log(`[BOOKING SUCCESS]: ID: ${data.bookingId}, Room: ${data.roomTitle}, Guest: ${data.guestName}, Total: ${data.totalPrice} TRY`);
+    // PII: misafir adı log'a HAM yazılmaz (F12) — kayıt zaten CMS'te.
+    logEvent("info", "checkout.booking_created", {
+      bookingId: data.bookingId,
+      roomSlug: data.roomSlug,
+      nights: data.nights,
+      total: data.totalPrice,
+      currency: "TRY",
+    });
 
     // Complete transaction successfully
     return NextResponse.json({ 
@@ -135,7 +147,7 @@ export async function POST(req: Request) {
     });
 
   } catch (error) {
-    console.error("Checkout process error:", error);
+    logEvent("error", "checkout.unhandled", { err: errField(error) });
     return NextResponse.json({ ok: false, message: "Rezervasyon işlenirken bir sunucu hatası oluştu." }, { status: 500 });
   }
 }

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
 import { getPayloadClient } from "@/lib/payload";
+import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
 import { safeText, verifyEs256Signature } from "@/lib/security";
 
@@ -60,7 +61,10 @@ export async function POST(req: Request) {
 
   // 1. Fail-close: Block if security headers are missing
   if (!messageUid || !signature) {
-    console.warn(`[IYZICO WEBHOOK] Blocked attempt - MessageUID: ${messageUid ? 'present' : 'missing'}, Signature: ${signature ? 'present' : 'missing'}`);
+    logEvent("warn", "webhook.iyzico.blocked_missing_headers", {
+      hasMessageUid: Boolean(messageUid),
+      hasSignature: Boolean(signature),
+    });
     return NextResponse.json({ ok: false, error: "Unauthorized access attempt" }, { status: 401 });
   }
 

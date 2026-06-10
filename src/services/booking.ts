@@ -1,3 +1,4 @@
+import { errField, logEvent } from "@/lib/logger";
 import { getPayloadClient } from "@/lib/payload";
 
 export interface HotelRunnerReservation {
@@ -46,7 +47,7 @@ export async function processHotelRunnerWebhook(messageUid: string, body: any) {
       }
     });
   } catch (error) {
-    console.error("Audit creation failed:", error);
+    logEvent("error", "booking.audit_write_failed", { err: errField(error) });
     // Continue anyway? Or fail? P0 audit says audit trail is important.
   }
 

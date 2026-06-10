@@ -14,6 +14,8 @@
  * loglanır) — misafir dönüşümünü altyapı arızasına kurban etmemek için.
  */
 
+import { logEvent } from "@/lib/logger";
+
 type RateLimitResult = {
   allowed: boolean;
   remaining: number;
@@ -111,7 +113,7 @@ export async function rateLimit(
   ]);
 
   if (!replies) {
-    console.warn("[rate-limit] Upstash erişilemedi — fail-open (in-memory fallback)");
+    logEvent("warn", "ratelimit.upstash_unreachable", { op: "rateLimit" });
     return memRateLimit(key, limit, windowMs);
   }
 
@@ -142,7 +144,7 @@ export async function hasSeen(key: string): Promise<boolean> {
 
   const replies = await upstashPipeline([["EXISTS", `seen:${key}`]]);
   if (!replies) {
-    console.warn("[rate-limit] Upstash erişilemedi — hasSeen fail-open (false)");
+    logEvent("warn", "ratelimit.upstash_unreachable", { op: "hasSeen" });
     const exp = memSeen.get(`seen:${key}`);
     return Boolean(exp && exp > Date.now());
   }

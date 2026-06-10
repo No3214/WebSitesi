@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { errField, logEvent } from '@/lib/logger';
+
 /**
  * Swarm AI Orchestrator
  * Routes incoming AI task requests to the appropriate specialized sub-agent.
@@ -45,7 +47,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Unknown agent or taskType' }, { status: 404 });
     }
   } catch (err) {
-    console.error('[Swarm API] Error processing request:', err);
+    logEvent('error', 'swarm.unhandled', { err: errField(err) });
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
