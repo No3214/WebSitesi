@@ -51,7 +51,8 @@ function scoreLead(input: z.infer<typeof leadSchema>) {
   if (input.guestCount && input.guestCount > 100) score += 15;
   if (["dugun", "kurumsal", "organizasyon"].includes(input.type.toLowerCase())) score += 10;
 
-  const leadPriority = score >= 80 ? "high" : score <= 40 ? "low" : "normal";
+  const leadPriority: "low" | "normal" | "high" =
+    score >= 80 ? "high" : score <= 40 ? "low" : "normal";
   return { score, leadPriority };
 }
 
@@ -150,11 +151,20 @@ export async function POST(req: Request) {
 
     const { score, leadPriority } = scoreLead(parsed.data);
 
-    /* eslint-disable @typescript-eslint/no-explicit-any */
+    // T10: honeypot (website) ve turnstileToken collection şemasında yok —
+    // spread'ten dışlanır; böylece `as any` cast'ine gerek kalmaz.
+    const {
+      website: _honeypot,
+      turnstileToken: _turnstile,
+      ...leadFields
+    } = parsed.data;
+    void _honeypot;
+    void _turnstile;
+
     await payload.create({
       collection: "organization-leads",
       data: {
-        ...parsed.data,
+        ...leadFields,
         name: sanitizedName,
         type: sanitizedType,
         message: sanitizedMessage,
@@ -166,10 +176,9 @@ export async function POST(req: Request) {
         dedupeHash,
         leadScore: score,
         leadPriority,
-      } as any,
+      },
       overrideAccess: true,
     });
-    /* eslint-enable @typescript-eslint/no-explicit-any */
 
     return NextResponse.json({
       ok: true,

@@ -91,8 +91,7 @@ export async function POST(req: Request) {
     const dedupeHash = crypto.createHash("sha256").update(`booking:${data.bookingId}`).digest("hex");
 
     await payload.create({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      collection: "organization-leads" as any,
+      collection: "organization-leads",
       data: {
         name: safeText(data.guestName, 120),
         phone: safeText(data.guestPhone, 25),
@@ -100,8 +99,7 @@ export async function POST(req: Request) {
         email: safeText(data.guestEmail.toLowerCase(), 200),
         normalizedEmail: safeText(data.guestEmail.toLowerCase(), 200),
         type: "booking",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        leadPriority: "high" as any,
+        leadPriority: "high",
         leadScore: 100,
         source: "booking_wizard",
         dedupeHash,
