@@ -22,8 +22,8 @@ export async function POST(req: Request) {
     const ip = req.headers.get('x-real-ip') || req.headers.get('x-forwarded-for') || 'anonymous';
     const body = await req.json().catch(() => null);
     
-    // 1. Rate Limiting check
-    if (!checkRateLimit(ip)) {
+    // 1. Rate Limiting check (T4: paylaşımlı backend, async)
+    if (!(await checkRateLimit(ip))) {
       return rateLimitResponse();
     }
 

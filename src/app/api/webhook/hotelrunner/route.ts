@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
 import { getPayloadClient } from "@/lib/payload";
+import { hasSeen, markSeen } from "@/lib/rate-limit";
 import { safeText, verifyEs256Signature } from "@/lib/security";
 
 type ReservationBody = {
@@ -22,25 +23,15 @@ type ReservationBody = {
   };
 };
 
-const replayStore = new Map<string, number>();
+// Audit T4: yerel Map yerine paylaşımlı replay store (lib/rate-limit).
 const REPLAY_TTL_MS = 6 * 60 * 60 * 1000;
 
-function pruneReplayStore() {
-  const now = Date.now();
-  for (const [key, expiresAt] of replayStore.entries()) {
-    if (expiresAt <= now) replayStore.delete(key);
-  }
-}
-
 function markReplay(messageUid: string) {
-  pruneReplayStore();
-  replayStore.set(messageUid, Date.now() + REPLAY_TTL_MS);
+  return markSeen(`hr:${messageUid}`, REPLAY_TTL_MS);
 }
 
 function hasReplay(messageUid: string) {
-  pruneReplayStore();
-  const expiresAt = replayStore.get(messageUid);
-  return Boolean(expiresAt && expiresAt > Date.now());
+  return hasSeen(`hr:${messageUid}`);
 }
 
 function createDigest(bodyText: string) {
@@ -89,7 +80,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Configuration Error" }, { status: 500 });
   }
 
-  if (hasReplay(messageUid)) {
+  if (await hasReplay(messageUid)) {
     await writeAuditLog({
       provider: "hotelrunner",
       messageUid,
@@ -223,7 +214,7 @@ export async function POST(req: Request) {
     receivedAt,
   });
 
-  markReplay(messageUid);
+  await markReplay(messageUid);
 
   const response = NextResponse.json({ ok: true });
   response.headers.set("x-message-delivery", "confirmed");

@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
     // 2. Rate Limiting: Prevent carding/brute-force attacks (5 attempts/min)
     const clientIp = extractClientIp(req.headers);
-    const limitResult = enforceRateLimit(`checkout:${clientIp}`, 5, 60 * 1000);
+    const limitResult = await enforceRateLimit(`checkout:${clientIp}`, 5, 60 * 1000);
     if (!limitResult.allowed) {
       console.warn(`[CHECKOUT] Rate limit exceeded for IP: ${clientIp}`);
       return NextResponse.json(

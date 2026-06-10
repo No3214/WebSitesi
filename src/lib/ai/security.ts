@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 
-type RateLimitRecord = {
-  count: number;
-  resetAt: number;
-};
-
-const rateLimitMap = new Map<string, RateLimitRecord>();
+import { rateLimit } from '@/lib/rate-limit';
 
 const LIMIT = 5;
 const WINDOW = 60 * 1000;
@@ -15,33 +10,14 @@ function normalizeIp(ip: string) {
   return raw.startsWith('::ffff:') ? raw.replace('::ffff:', '') : raw;
 }
 
-function cleanupExpired(now: number) {
-  for (const [key, value] of rateLimitMap.entries()) {
-    if (value.resetAt <= now) {
-      rateLimitMap.delete(key);
-    }
-  }
-}
-
-export function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  cleanupExpired(now);
-
-  const key = normalizeIp(ip);
-  const entry = rateLimitMap.get(key);
-
-  if (!entry || entry.resetAt <= now) {
-    rateLimitMap.set(key, { count: 1, resetAt: now + WINDOW });
-    return true;
-  }
-
-  if (entry.count >= LIMIT) {
-    return false;
-  }
-
-  entry.count += 1;
-  rateLimitMap.set(key, entry);
-  return true;
+/**
+ * Audit T4: yerel Map kaldırıldı — paylaşımlı lib/rate-limit backend'i
+ * kullanılır (Upstash varsa lambda'lar arası ortak; yoksa in-memory).
+ */
+export async function checkRateLimit(ip: string): Promise<boolean> {
+  const key = `chat:${normalizeIp(ip)}`;
+  const result = await rateLimit(key, LIMIT, WINDOW);
+  return result.allowed;
 }
 
 export function rateLimitResponse() {

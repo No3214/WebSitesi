@@ -1,9 +1,4 @@
-type RateLimitEntry = {
-  count: number;
-  resetAt: number;
-};
-
-const rateLimitStore = new Map<string, RateLimitEntry>();
+import { rateLimit } from "@/lib/rate-limit";
 
 function normalizeIp(ip: string | null) {
   if (!ip || !ip.trim()) return null;
@@ -47,35 +42,16 @@ export function validateSameOrigin(request: Request) {
   }
 }
 
-export function enforceRateLimit(
+/**
+ * Audit T4: in-memory Map kaldırıldı; paylaşımlı backend'e (lib/rate-limit)
+ * delege edilir. İmza async oldu — çağıranlar `await` kullanmalı.
+ */
+export async function enforceRateLimit(
   key: string,
   limit: number,
   windowMs: number,
 ) {
-  const now = Date.now();
-  const current = rateLimitStore.get(key);
-
-  if (!current || current.resetAt <= now) {
-    rateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
-    return { allowed: true, remaining: limit - 1, retryAfterSec: 0 };
-  }
-
-  if (current.count >= limit) {
-    return {
-      allowed: false,
-      remaining: 0,
-      retryAfterSec: Math.ceil((current.resetAt - now) / 1000),
-    };
-  }
-
-  current.count += 1;
-  rateLimitStore.set(key, current);
-
-  return {
-    allowed: true,
-    remaining: Math.max(0, limit - current.count),
-    retryAfterSec: 0,
-  };
+  return rateLimit(key, limit, windowMs);
 }
 
 function base64ToUint8Array(value: string) {

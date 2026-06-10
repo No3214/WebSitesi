@@ -106,7 +106,7 @@ export async function POST(req: Request) {
     }
 
     const ipAddress = extractClientIp(req.headers);
-    const rateLimit = enforceRateLimit(`lead:${ipAddress}`, RATE_LIMIT.maxRequests, RATE_LIMIT.windowMs);
+    const rateLimit = await enforceRateLimit(`lead:${ipAddress}`, RATE_LIMIT.maxRequests, RATE_LIMIT.windowMs);
     if (!rateLimit.allowed) {
       return NextResponse.json(
         { ok: false, message: "Çok fazla talep gönderildi. Lütfen daha sonra tekrar deneyiniz." },
