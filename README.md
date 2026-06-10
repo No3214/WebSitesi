@@ -157,7 +157,7 @@ Aşağıdaki yüzeyler **gerçek değildir**; yeni geliştiriciler canlı sanmas
 
 | Yüzey | Durum |
 | --- | --- |
-| `/api/checkout` + rezervasyon sihirbazı | **Tahsilat YAPMAZ.** Kart doğrulaması mock'tur; akış bir ön-rezervasyon talebi kaydeder. UI'da DEMO bandı vardır, yanıt metni tahsilat iddia etmez. Gerçek PSP (iyzico) entegrasyonu yapılana dek bu davranış korunmalı. |
+| `/api/checkout` + rezervasyon sihirbazı | **Tahsilat YAPMAZ ve kart bilgisi İSTEMEZ.** Akış bir ön-rezervasyon talebi kaydeder; ödeme **Garanti BBVA Sanal POS** 3D Secure sayfasında ayrı adımda alınacak (karar + entegrasyon planı: `docs/odeme-karari.md`). PAN bu uygulamaya asla girmez. |
 | `/api/swarm` | Hardcoded mock ajan cevapları döner; üretim entegrasyonu yoktur. |
 | `/api/v1/availability` | `B2B_PARTNER_PUBLIC_KEY` env tanımlı değilse **404** döner (varsayılan kapalı). Gerçek partner onboard olunca SPKI PEM eklenir. |
 | `/admin/growth` | Payload admin oturumu zorunludur; metrikler simülasyondur. |

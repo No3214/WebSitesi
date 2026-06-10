@@ -1,16 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CreditCard, ShieldCheck, ArrowLeft } from "lucide-react";
+import { ShieldCheck, ArrowLeft } from "lucide-react";
 import type { usePaymentWizard } from "../use-payment-wizard";
 
-// Adim 4: Misafir bilgileri, mock kart formu ve ozet
+// Adim 4: Misafir bilgileri + ozet. Kart alanlari KASITLI olarak yok:
+// tahsilat Garanti BBVA Sanal POS'un guvenli 3D Secure sayfasinda yapilacak
+// (PAN bu siteye hic ugramaz — PCI kapsami disi, Audit F13).
 export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWizard> }) {
   const {
     handlePaymentSubmit,
     guestName, setGuestName, guestPhone, setGuestPhone, guestEmail, setGuestEmail,
-    cardNumber, setCardNumber, cardHolder, setCardHolder,
-    cardExpiry, setCardExpiry, cardCvv, setCardCvv,
     promoCode, setPromoCode, applyPromo, paymentError,
     setStep, isSubmitting, finalPrice,
     selectedRoom, checkIn, checkOut, nights, guests,
@@ -29,7 +29,7 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
       <form onSubmit={handlePaymentSubmit} style={{ display: "grid", gap: 18 }}>
         <h3 className="serif" style={{ fontSize: "1.7rem", color: "var(--olive)", marginBottom: 0 }}>Misafir & Fatura Bilgileri</h3>
 
-        {/* DEMO uyarısı — gerçek tahsilat yapılmaz (F1) */}
+        {/* Ödeme bilgilendirmesi — kart bilgisi bu sitede İSTENMEZ (F1/F13) */}
         <div
           role="status"
           style={{
@@ -37,20 +37,19 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
             gap: 10,
             alignItems: "flex-start",
             padding: "12px 14px",
-            background: "#fff6e5",
-            border: "1px solid #f3d08b",
+            background: "rgba(61, 74, 59, 0.06)",
+            border: "1px solid var(--border)",
             borderRadius: 8,
             fontSize: "0.85rem",
             lineHeight: 1.55,
-            color: "#92400e",
+            color: "var(--olive)",
           }}
         >
-          <span aria-hidden style={{ fontWeight: 700 }}>DEMO</span>
+          <ShieldCheck size={18} aria-hidden style={{ flex: "none", marginTop: 2 }} />
           <span>
-            Bu adım bir <strong>ön-rezervasyon talebidir</strong>; kartınızdan şu an{" "}
-            <strong>hiçbir tahsilat yapılmaz</strong>. Ödeme, ekibimiz sizinle iletişime
-            geçtikten sonra güvenli bağlantı üzerinden alınır. Denemek için 4111 1111 1111 1111
-            test kartını kullanabilirsiniz.
+            Bu adım bir <strong>ön-rezervasyon talebidir</strong> — kart bilgisi istemiyoruz.
+            Ödemeniz, <strong>Garanti BBVA Sanal POS</strong> güvenli 3D Secure ödeme sayfası
+            üzerinden alınacaktır; ekibimiz onay ve ödeme adımı için sizinle iletişime geçecek.
           </span>
         </div>
 
@@ -78,53 +77,6 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
           required
           style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
         />
-
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12 }}>
-          <CreditCard size={18} style={{ color: "var(--olive)" }} />
-          <h4 className="serif" style={{ margin: 0, fontSize: "1.15rem" }}>Kart Bilgileri</h4>
-        </div>
-
-        <input
-          placeholder="Kart Numarası (16 Hane)"
-          maxLength={19}
-          value={cardNumber}
-          onChange={(e) => {
-            const val = e.target.value.replace(/\D/g, "").replace(/(.{4})/g, "$1 ").trim();
-            setCardNumber(val);
-          }}
-          required
-          style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
-        />
-
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 12 }}>
-          <input
-            placeholder="Kart Üzerindeki İsim"
-            value={cardHolder}
-            onChange={(e) => setCardHolder(e.target.value)}
-            required
-            style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
-          />
-          <input
-            placeholder="AA/YY"
-            maxLength={5}
-            value={cardExpiry}
-            onChange={(e) => {
-              let val = e.target.value.replace(/\D/g, "");
-              if (val.length > 2) val = val.slice(0, 2) + "/" + val.slice(2, 4);
-              setCardExpiry(val);
-            }}
-            required
-            style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6, textAlign: "center" }}
-          />
-          <input
-            placeholder="CVV"
-            maxLength={3}
-            value={cardCvv}
-            onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, ""))}
-            required
-            style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6, textAlign: "center" }}
-          />
-        </div>
 
         <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
           <input
@@ -201,7 +153,7 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
 
         <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(61, 74, 59, 0.05)", padding: 12, borderRadius: 8, fontSize: "0.78rem", color: "var(--olive)", marginTop: 12 }}>
           <ShieldCheck size={16} />
-          <span>256-bit SSL — bilgileriniz şifreli iletilir; bu adımda tahsilat yapılmaz</span>
+          <span>Kart bilgileriniz yalnızca Garanti BBVA&apos;nın güvenli ödeme sayfasında işlenir; bu sitede saklanmaz</span>
         </div>
       </div>
     </motion.div>

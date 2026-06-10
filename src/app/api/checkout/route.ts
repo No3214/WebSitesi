@@ -23,7 +23,8 @@ const checkoutSchema = z.object({
   light: z.string(),
   promoCode: z.string().optional(),
   totalPrice: z.number().positive(),
-  cardNumber: z.string().min(15).max(19),
+  // Kart alanı YOK (Audit F13): tahsilat Garanti BBVA Sanal POS'un 3D Secure
+  // sayfasında yapılacak — PAN bu API'ye asla gönderilmez.
 });
 
 export async function POST(req: Request) {
@@ -80,11 +81,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, message: "Rezervasyon tutarı doğrulanamadı." }, { status: 400 });
     }
 
-    // 4. Perform Mock Credit Card validation (Simulating payment gateway)
-    const isMockCCTesting = data.cardNumber.startsWith("4111") || data.cardNumber.startsWith("4242") || data.cardNumber.startsWith("4");
-    if (!isMockCCTesting) {
-      return NextResponse.json({ ok: false, message: "Ödeme reddedildi: Geçersiz kart numarası veya bakiye yetersiz." }, { status: 400 });
-    }
+    // 4. Tahsilat bu route'ta YAPILMAZ: ödeme, Garanti BBVA Sanal POS 3D Secure
+    // sayfasında ayrı bir adımda alınır (entegrasyon: memory/odeme-karari.md).
+    // Bu route yalnızca doğrulanmış ön-rezervasyon talebini CMS'e kaydeder.
 
     // 5. Database Integration: Save reservation directly into PostgreSQL/Payload CMS
     const payload = await getPayloadClient();
@@ -123,7 +122,7 @@ export async function POST(req: Request) {
           `  • Işık: ${safeText(data.light, 100)}`,
           `İndirim Kodu: ${data.promoCode ? safeText(data.promoCode, 50) : "Yok"}`,
           `Toplam Tutar: ${data.totalPrice} TRY`,
-          `Kart Numarası (Maskelenmiş): **** **** **** ${data.cardNumber.replace(/\s+/g, "").slice(-4)}`
+          `Tahsilat: Garanti Sanal POS ile alınacak (ödeme bu sitede yapılmadı)`
         ].join("\n"),
       },
       overrideAccess: true,

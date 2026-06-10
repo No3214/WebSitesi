@@ -29,12 +29,8 @@ export function usePaymentWizard() {
   const [isPromoApplied, setIsPromoApplied] = useState(false);
   const [bookingId, setBookingId] = useState("");
 
-  // Mock CC State
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardHolder, setCardHolder] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
-
+  // Kart state'i YOK: tahsilat Garanti BBVA Sanal POS 3D Secure sayfasında
+  // yapılacak — PAN bu uygulamaya hiç girmez (Audit F13).
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentError, setPaymentError] = useState("");
 
@@ -91,8 +87,8 @@ export function usePaymentWizard() {
 
   const handlePaymentSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!guestName || !guestEmail || !guestPhone || !cardNumber || !cardHolder || !cardExpiry || !cardCvv) {
-      setPaymentError("Lütfen tüm alanları doldurun.");
+    if (!guestName || !guestEmail || !guestPhone) {
+      setPaymentError("Lütfen ad, telefon ve e-posta alanlarını doldurun.");
       return;
     }
 
@@ -121,7 +117,6 @@ export function usePaymentWizard() {
           light: light.label,
           promoCode: isPromoApplied ? "SLOWROTA15" : "",
           totalPrice: finalPrice,
-          cardNumber: cardNumber.replace(/\s+/g, ""), // sanitized
         })
       });
 
@@ -168,10 +163,6 @@ Rezervasyonumun onaylanmasını rica ederim.`;
     setGuestName("");
     setGuestEmail("");
     setGuestPhone("");
-    setCardNumber("");
-    setCardHolder("");
-    setCardExpiry("");
-    setCardCvv("");
   };
 
   return {
@@ -186,9 +177,6 @@ Rezervasyonumun onaylanmasını rica ederim.`;
     // Misafir & fatura
     guestName, setGuestName, guestEmail, setGuestEmail, guestPhone, setGuestPhone,
     promoCode, setPromoCode, isPromoApplied, setIsPromoApplied, bookingId, setBookingId,
-    // Kart (mock)
-    cardNumber, setCardNumber, cardHolder, setCardHolder,
-    cardExpiry, setCardExpiry, cardCvv, setCardCvv,
     // Gonderim durumu
     isSubmitting, setIsSubmitting, paymentError, setPaymentError,
     // Turetilmis degerler
