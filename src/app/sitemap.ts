@@ -12,6 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/gastronomi',
     '/hikayemiz',
     '/organizasyonlar',
+    '/deneyim-tasarimcisi',
     '/misafir-rehberi',
     '/iletisim',
     '/kvkk',

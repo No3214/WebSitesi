@@ -7,7 +7,7 @@ export default function PaymentPage() {
   return (
     <>
       <SiteHeader />
-      <main className="section">
+      <main className="section" style={{ paddingTop: 150 }}>
         <div className="container" style={{ maxWidth: 760 }}>
           <div className="detail-box" style={{ display: "grid", gap: 24 }}>
             <div

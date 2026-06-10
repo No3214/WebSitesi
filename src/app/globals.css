@@ -941,6 +941,71 @@
     flex: none;
   }
 
+  /* ---------- Galeri şeridi (yatay snap) ---------- */
+  .gallery-strip {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 8px 4px 22px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--gold) 60%, transparent) transparent;
+    mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+  }
+
+  .gallery-strip::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .gallery-strip::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--gold) 55%, transparent);
+    border-radius: 6px;
+  }
+
+  .gallery-item {
+    position: relative;
+    flex: none;
+    width: clamp(240px, 32vw, 400px);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    scroll-snap-align: center;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .gallery-item:nth-child(even) {
+    aspect-ratio: 3 / 3.6;
+    align-self: flex-start;
+  }
+
+  .gallery-item img {
+    object-fit: cover;
+    transition: transform 1s var(--ease-lux);
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.06);
+  }
+
+  .gallery-item figcaption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 28px 16px 14px;
+    background: linear-gradient(180deg, transparent, rgba(20, 22, 26, 0.65));
+    color: var(--ivory);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .gallery-item:hover figcaption {
+    opacity: 1;
+  }
+
   /* ---------- Testimonials ---------- */
   .testimonial-grid {
     display: grid;

@@ -102,17 +102,17 @@ export const ExitIntent = () => {
           transition: all 0.3s ease;
         }
         .btn-premium-solid:hover {
-          background: #c5a059;
+          background: var(--gold, #b3925c);
           transform: translateY(-2px);
         }
         .text-gold {
-          color: #c5a059;
+          color: var(--gold, #b3925c);
         }
         .bg-gold\/20 {
-          background-color: rgba(197, 160, 89, 0.2);
+          background-color: rgba(179, 146, 92, 0.2);
         }
         .border-gold\/20 {
-          border-color: rgba(197, 160, 89, 0.2);
+          border-color: rgba(179, 146, 92, 0.2);
         }
       `}</style>
     </AnimatePresence>
