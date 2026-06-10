@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BadgeCheck, CalendarClock, MessageCircle } from "lucide-react";
 
-import { SectionTitle } from "@/components/section-title";
 import { HMSBookingEmbed } from "@/components/hms-booking-embed";
 import { WeatherRibbon } from "@/components/weather-ribbon";
 import { getDictionary } from "@/lib/dictionary";
@@ -68,14 +67,22 @@ export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug,
 
   return (
     <div className="container" style={{ maxWidth: 980 }}>
-      <SectionTitle eyebrow={t.eyebrow} title={t.title} text={t.text} />
-
       {roomTitle ? (
         <div
-          className="embed-box"
-          style={{ display: "inline-block", padding: "10px 18px", marginBottom: 18 }}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "10px 20px",
+            marginBottom: 20,
+            background: "var(--white)",
+            border: "1px solid var(--gold)",
+            borderRadius: 40,
+            boxShadow: "var(--shadow-soft)",
+          }}
         >
-          <span className="muted" style={{ fontSize: "0.9rem" }}>
+          <BadgeCheck size={16} aria-hidden style={{ color: "var(--gold)" }} />
+          <span style={{ fontSize: "0.9rem", color: "var(--text)" }}>
             Seçiminiz: <strong>{roomTitle}</strong>
           </span>
         </div>
@@ -95,7 +102,7 @@ export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug,
       >
         {trustItems.map((item) => (
           <div key={item.title} className="detail-box" style={{ padding: 22 }}>
-            <item.icon size={22} aria-hidden style={{ marginBottom: 10 }} />
+            <item.icon size={22} aria-hidden style={{ marginBottom: 10, color: "var(--gold)" }} />
             <h3 className="serif" style={{ fontSize: "1.05rem", marginBottom: 8 }}>
               {item.title}
             </h3>

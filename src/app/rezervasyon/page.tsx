@@ -1,9 +1,11 @@
 import { Metadata } from "next";
 
 import { SiteHeader } from "@/components/site-header";
+import { PageHero } from "@/components/page-hero";
 import { ReservationClient } from "@/components/reservation-client";
 import { getDictionary } from "@/lib/dictionary";
 import { rooms } from "@/data/rooms";
+import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Rezervasyon | En İyi Fiyat Garantisi",
@@ -35,7 +37,7 @@ export default async function ReservationPage({
       "@type": "ReserveAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: "https://www.kozbeylikonagi.com/rezervasyon",
+        urlTemplate: absoluteUrl("/rezervasyon"),
         actionPlatform: ["https://schema.org/DesktopWebPlatform", "https://schema.org/MobileWebPlatform"],
       },
       object: {
@@ -55,8 +57,13 @@ export default async function ReservationPage({
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <SiteHeader />
-      <main className="section">
+      <SiteHeader variant="overlay" />
+      <PageHero
+        eyebrow="REZERVASYON"
+        title="Yerinizi Ayırtın"
+        text="En iyi fiyat garantisi, esnek iptal ve concierge desteğiyle direkt rezervasyonun tüm ayrıcalıkları."
+      />
+      <main className="section" style={{ paddingTop: 56 }}>
         <ReservationClient
           initialDict={initialDict}
           initialLocale="tr"
