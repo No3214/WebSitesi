@@ -6,7 +6,7 @@ import { FadeIn } from "@/components/animations";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Gurme Yemek Menüsü | Taş Fırın & Kahvaltı | Kozbeyli Konağı",
+  title: "Gurme Yemek Menüsü | Taş Fırın & Kahvaltı",
   description: "Kozbeyli Konağı restoran menüsü: tescilli serpme köy kahvaltısı, Antakya mezeleri, odun ateşinde taş fırın pide ve pizzalar, közde sıcak künefe ve meşhur dibek kahvesi.",
   keywords: [
     "kozbeyli konağı menü",

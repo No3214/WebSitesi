@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Gastronomi & Taş Fırın | Kozbeyli Konağı",
+  title: "Gastronomi & Taş Fırın",
   description: "Kozbeyli Köyü'nün geleneksel taş fırın lezzetleri, inci hanım mutfağı ve egeye özgü serpme kahvaltı deneyimi. Tarihi dokuda gurme lezzetler.",
   keywords: [
     "kozbeyli köy kahvaltısı",
@@ -39,8 +39,36 @@ export const metadata: Metadata = {
 };
 
 export default function GastronomyPage() {
+  // Zengin sonuçlar: restoran ayrı gelir kanalı olarak işaretlenir.
+  // NAP bilgileri iletisim sayfasındaki LodgingBusiness ile birebir aynıdır.
+  const restaurantJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    name: "Kozbeyli Konağı Restaurant",
+    url: absoluteUrl("/gastronomi"),
+    image: absoluteUrl("/videos/kahvalti-poster.jpg"),
+    servesCuisine: ["Ege Mutfağı", "Antakya Mutfağı", "Türk Kahvaltısı"],
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Kozbeyli Köyü",
+      addressLocality: "Foça",
+      addressRegion: "İzmir",
+      addressCountry: "TR",
+    },
+    parentOrganization: {
+      "@type": "LodgingBusiness",
+      name: "Kozbeyli Konağı",
+      url: absoluteUrl("/"),
+    },
+    hasMenu: absoluteUrl("/menu"),
+  };
+
   return (
     <main className="min-h-screen" style={{ background: "var(--ink)" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantJsonLd) }}
+      />
       <SiteHeader variant="overlay" />
 
       <StoryHero

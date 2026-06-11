@@ -1,20 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
-
-const galleryShots = [
-  { src: "/images/hero.jpg", caption: { tr: "Taş Avlu", en: "Stone Courtyard" } },
-  { src: "/videos/kahvalti-poster.jpg", caption: { tr: "Serpme Kahvaltı", en: "Village Breakfast" } },
-  { src: "/images/odalar/superrior-oda-deniz-manzarali/2.jpg", caption: { tr: "Superior Oda", en: "Superior Room" } },
-  { src: "/videos/mihlama-poster.jpg", caption: { tr: "Ocak Başı", en: "By the Hearth" } },
-  { src: "/images/odalar/standart-deniz-manzarali-oda/3.jpg", caption: { tr: "Ege Manzarası", en: "Aegean View" } },
-  { src: "/images/odalar/aile-odasi-4-kisilik/2.jpg", caption: { tr: "Aile Odası", en: "Family Room" } },
-  { src: "/images/odalar/balkonlu-aile-odasi-4-kisilik/3.jpg", caption: { tr: "Balkon Detayı", en: "Balcony Detail" } },
-  { src: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/4.jpg", caption: { tr: "Taş Doku", en: "Stone Texture" } },
-];
+import { galleryShots } from "@/data/gallery";
 
 export function GalleryStrip({ locale }: { locale: "tr" | "en" }) {
   return (
@@ -46,6 +37,11 @@ export function GalleryStrip({ locale }: { locale: "tr" | "en" }) {
                 <figcaption>{shot.caption[locale]}</figcaption>
               </figure>
             ))}
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", marginTop: 28 }}>
+            <Link className="button secondary sm" href="/galeri" data-event="gallery_view_all">
+              {locale === "tr" ? "Tüm Galeriyi Gör" : "View Full Gallery"}
+            </Link>
           </div>
         </div>
       </FadeIn>

@@ -1,10 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
+
 const WHATSAPP_MESSAGE = "Merhaba, web sitesinden geldim. Müsaitlik öğrenmek istiyorum.";
 
 import { PaymentWizard } from "./payment-wizard";
 
 import { getWhatsAppHref } from "@/lib/contact";
+import { trackBeginCheckout } from "@/lib/gtm";
 
 function withBookingUtm(url: string) {
   if (url.includes("?")) return url;
@@ -24,6 +27,12 @@ type HMSBookingEmbedProps = {
 
 export function HMSBookingEmbed({ roomSlug, roomLabel }: HMSBookingEmbedProps) {
   const bookingUrl = process.env.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL || "";
+
+  // GA4 begin_checkout: rezervasyon arayüzü (engine veya talep sihirbazı)
+  // misafirin önüne geldiği anda huni başlangıcı sayılır.
+  useEffect(() => {
+    trackBeginCheckout(roomSlug);
+  }, [roomSlug]);
   const whatsappMessage = roomLabel
     ? `Merhaba, ${roomLabel} için müsaitlik öğrenmek istiyorum.`
     : WHATSAPP_MESSAGE;

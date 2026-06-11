@@ -8,7 +8,7 @@ import { getWhatsAppHref } from "@/lib/contact";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Misafir Rehberi & Konaklama Bilgileri | Kozbeyli Konağı",
+  title: "Misafir Rehberi & Konaklama Bilgileri",
   description: "Kozbeyli Konağı giriş-çıkış saatleri, serpme köy kahvaltısı saatleri, fiber internet, konaklama ve iptal politikaları gibi ihtiyacınız olan tüm pratik bilgiler.",
   keywords: [
     "kozbeyli konağı misafir rehberi",

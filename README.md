@@ -178,3 +178,19 @@ bu sayede CI build'i secret'sız çalışır.
 
 Birincil hedef **Vercel**'dir (env değişkenleri Vercel panelinden yönetilir).
 `railway.json` alternatif/legacy hedef olarak durur; aktif kullanılmıyorsa silinebilir.
+
+## Rollback (acil geri dönüş)
+
+Yayında kritik hata görülürse sıralama:
+
+1. **Vercel instant rollback** (saniyeler içinde): Vercel panel → Deployments →
+   son sağlıklı deployment → "… → Promote to Production". Kod değişikliği gerektirmez.
+2. **Git revert** (kalıcı düzeltme): `git revert <kötü-commit-sha> && git push origin main`
+   — CI yeşilse Vercel otomatik yeniden yayınlar. `git reset --hard` + force push KULLANMAYIN
+   (paylaşılan main geçmişini bozar).
+3. **Webhook/ödeme tarafı şüphesi**: önce `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` env'ini
+   boşaltmak embed'i devre dışı bırakır (site WhatsApp + talep formu fallback'ine döner) —
+   tam rollback'ten daha az yıkıcı bir ilk müdahaledir.
+
+Rollback sonrası: `docs/launch-readiness.md` go-live protokolündeki smoke adımlarını
+(ana sayfa, /rezervasyon, /api/health varsa) tekrar koşun.

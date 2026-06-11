@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { rooms as fallbackRooms } from "@/data/rooms";
 import { RoomDetailClient } from "@/components/room-detail-client";
+import { RoomViewTracker } from "@/components/room-view-tracker";
 import { absoluteUrl } from "@/lib/utils";
 
 type Props = {
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!room) return {};
 
   return {
-    title: `${room.title} | Lüks Konaklama | Kozbeyli Konağı`,
+    title: `${room.title} | Lüks Konaklama`,
     description: `${room.title}: ${room.short}. Kozbeyli Köyü'nde aslına uygun restore edilmiş taş mimari içinde sükunet dolu bir oda deneyimi.`,
     openGraph: {
       images: [absoluteUrl(room.images[0])],
@@ -85,6 +86,7 @@ export default async function RoomDetailPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      <RoomViewTracker slug={room.slug} title={room.title} />
       <RoomDetailClient slug={slug} />
     </>
   );

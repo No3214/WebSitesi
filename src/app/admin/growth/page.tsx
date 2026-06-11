@@ -9,7 +9,7 @@ import { GrowthDashboardClient } from "./growth-client";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Growth Dashboard | Kozbeyli Konağı",
+  title: "Growth Dashboard",
   robots: { index: false, follow: false },
 };
 

@@ -9,7 +9,7 @@ import { PHONE_E164 } from "@/lib/contact";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "İletişim & Ulaşım Yol Tarifi | Kozbeyli Konağı",
+  title: "İletişim & Ulaşım Yol Tarifi",
   description:
     "Kozbeyli Konağı'na ulaşın: Kozbeyli Köyü, Foça / İzmir. Telefon, WhatsApp concierge, e-posta ve yol tarifi. İzmir Adnan Menderes Havalimanı'na 55 dakika.",
   keywords: ["kozbeyli konağı iletişim", "kozbeyli köyü ulaşım", "foça otel telefon", "kozbeyli yol tarifi"],

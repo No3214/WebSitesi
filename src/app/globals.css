@@ -998,6 +998,58 @@
     opacity: 1;
   }
 
+  /* ---------- /galeri tam sayfa grid'i ---------- */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .gallery-grid-item {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .gallery-grid-item img {
+    object-fit: cover;
+    transition: transform 1s var(--ease-lux);
+  }
+
+  .gallery-grid-item:hover img {
+    transform: scale(1.06);
+  }
+
+  .gallery-grid-item figcaption {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 28px 16px 14px;
+    background: linear-gradient(180deg, transparent, rgba(20, 22, 26, 0.65));
+    color: var(--ivory);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .gallery-grid-item:hover figcaption {
+    opacity: 1;
+  }
+
+  @media (max-width: 1024px) {
+    .gallery-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .gallery-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   /* ---------- Testimonials ---------- */
   .testimonial-grid {
     display: grid;
@@ -1089,6 +1141,48 @@
   .faq-q > span:first-child {
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+
+  /* /sss sayfası: JS'siz erişilebilir <details> varyantı */
+  .faq-static-item {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .faq-static-q {
+    cursor: pointer;
+    padding: 26px 4px;
+    font-family: var(--serif);
+    font-size: 1.18rem;
+    color: var(--olive);
+    list-style: none;
+    transition: color 0.3s ease;
+  }
+
+  .faq-static-q::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-static-q::after {
+    content: "+";
+    float: right;
+    color: var(--gold);
+    font-family: var(--sans);
+  }
+
+  .faq-static-item[open] .faq-static-q::after {
+    content: "–";
+  }
+
+  .faq-static-q:hover {
+    color: var(--gold);
+  }
+
+  .faq-static-a {
+    margin: 0;
+    padding: 0 4px 26px;
+    max-width: 64ch;
+    color: var(--muted);
+    line-height: 1.8;
   }
 
   .faq-icon {

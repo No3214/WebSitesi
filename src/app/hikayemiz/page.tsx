@@ -4,7 +4,7 @@ import { HistoryClient } from "@/components/history-client";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Tarihimiz & Living Museum | Kozbeyli Konağı",
+  title: "Tarihimiz & Living Museum",
   description: "500 yıllık tescilli taş mimari, Horasan harcı sırları ve bir aile mirasının restorasyon hikayesi. Kozbeyli Konağı'nın 'Living Museum' felsefesini keşfedin.",
   keywords: [
     "kozbeyli tarihi",

@@ -59,7 +59,9 @@ export function SiteFooter() {
               <li><Link href="/odalar">Odalarımız</Link></li>
               <li><Link href="/gastronomi">Gastronomi</Link></li>
               <li><Link href="/organizasyonlar">Davet & Organizasyon</Link></li>
+              <li><Link href="/galeri">Galeri</Link></li>
               <li><Link href="/misafir-rehberi">Misafir Rehberi</Link></li>
+              <li><Link href="/sss">Sık Sorulanlar</Link></li>
               <li><Link href="/rezervasyon">Rezervasyon</Link></li>
             </ul>
           </div>
@@ -69,6 +71,7 @@ export function SiteFooter() {
             <ul>
               <li><Link href="/kvkk">KVKK Aydınlatma Metni</Link></li>
               <li><Link href="/gizlilik-politikasi">Gizlilik Politikası</Link></li>
+              <li><Link href="/cerez-politikasi">Çerez Politikası</Link></li>
               <li><Link href="/mesafeli-satis-sozlesmesi">Mesafeli Satış Sözleşmesi</Link></li>
             </ul>
           </div>

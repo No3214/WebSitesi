@@ -4,7 +4,7 @@ import { OrganizationsClient } from "@/components/organizations-client";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Düğün & Özel Davetler | Kozbeyli Konağı",
+  title: "Düğün & Özel Davetler",
   description: "Foça'da tescilli taş konak avlusunda masalsı butik düğünler, nişan davetleri ve kurumsal 'off-site' toplantılar. Uzman organizasyon ekibi ve şık detaylar.",
   keywords: [
     "foça düğün mekanları",

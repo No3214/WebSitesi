@@ -14,9 +14,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/organizasyonlar',
     '/deneyim-tasarimcisi',
     '/misafir-rehberi',
+    '/galeri',
+    '/sss',
     '/iletisim',
     '/kvkk',
     '/gizlilik-politikasi',
+    '/cerez-politikasi',
     '/mesafeli-satis-sozlesmesi',
   ].map((route) => ({
     url: `${baseUrl}${route}`,

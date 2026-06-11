@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { pushEvent, trackGenerateLead } from '@/lib/gtm';
+
 type LeadStatus = 'idle' | 'loading' | 'success' | 'error';
 
 type MarketingMeta = {
@@ -10,12 +12,6 @@ type MarketingMeta = {
   utmCampaign: string;
   referrer: string;
 };
-
-// Define explicit types for marketing globals
-interface MarketingWindow extends Window {
-  fbq?: (...args: unknown[]) => void;
-  dataLayer?: Record<string, unknown>[];
-}
 
 export function LeadForm() {
   const [status, setStatus] = useState<LeadStatus>('idle');
@@ -64,26 +60,14 @@ export function LeadForm() {
       if (res.ok) {
         setStatus('success');
         setErrors({});
-        
-        // Trigger Marketing Events with typed window
-        const mWindow = window as unknown as MarketingWindow;
-        
-        if (mWindow.fbq) {
-          mWindow.fbq('track', 'Lead', {
-            content_name: String(data.type),
-            value: 0,
-            currency: 'TRY'
-          });
-        }
 
-        if (mWindow.dataLayer) {
-          mWindow.dataLayer.push({
-            event: 'lead_submission',
-            lead_type: data.type,
-            guest_count: data.guestCount,
-            budget_bucket: data.estimatedBudget
-          });
-        }
+        // GA4 generate_lead + Meta Lead (ortak helper; rıza yoksa no-op)
+        trackGenerateLead(String(data.type));
+        pushEvent('lead_submission', {
+          lead_type: data.type,
+          guest_count: data.guestCount,
+          budget_bucket: data.estimatedBudget
+        });
 
         e.currentTarget.reset();
       } else {
