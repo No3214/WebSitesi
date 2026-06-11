@@ -21,7 +21,7 @@ export const rooms: Room[] = [
     size: "24 m²",
     view: "İç Bahçe",
     amenities: ["Bahçe Manzarası", "Klima", "LCD TV", "Wi-Fi", "Özel Banyo"],
-    images: ["/images/odalar/standart-bahce-manzarali-oda/1.jpg", "/images/odalar/standart-bahce-manzarali-oda/2.jpg", "/images/odalar/standart-bahce-manzarali-oda/3.jpg", "/images/odalar/standart-bahce-manzarali-oda/4.jpg"]
+    images: ["/images/odalar/standart-bahce-manzarali-oda/1.jpg", "/images/odalar/standart-bahce-manzarali-oda/2.jpg", "/images/odalar/standart-bahce-manzarali-oda/3.jpg", "/images/odalar/standart-bahce-manzarali-oda/4.jpg", "/images/odalar/detay/oda-detay-3.jpg"]
   },
   {
     slug: "standart-deniz-manzarali-oda",
@@ -32,7 +32,7 @@ export const rooms: Room[] = [
     size: "24 m²",
     view: "Ege Denizi",
     amenities: ["Deniz Manzarası", "Klima", "LCD TV", "Wi-Fi", "Özel Banyo"],
-    images: ["/images/odalar/standart-deniz-manzarali-oda/1.jpg", "/images/odalar/standart-deniz-manzarali-oda/2.jpg", "/images/odalar/standart-deniz-manzarali-oda/3.jpg", "/images/odalar/standart-deniz-manzarali-oda/4.jpg"]
+    images: ["/images/odalar/standart-deniz-manzarali-oda/1.jpg", "/images/odalar/standart-deniz-manzarali-oda/2.jpg", "/images/odalar/standart-deniz-manzarali-oda/3.jpg", "/images/odalar/standart-deniz-manzarali-oda/4.jpg", "/images/odalar/detay/oda-detay-1.jpg"]
   },
   {
     slug: "uc-kisilik-oda",
@@ -43,7 +43,7 @@ export const rooms: Room[] = [
     size: "28 m²",
     view: "Köy ve Doğa",
     amenities: ["Çift + Tek Kişilik Yatak", "Klima", "LCD TV", "Wi-Fi", "Minibar"],
-    images: ["/images/odalar/3-kisilik-oda/1.jpg", "/images/odalar/3-kisilik-oda/2.jpg", "/images/odalar/3-kisilik-oda/3.jpg", "/images/odalar/3-kisilik-oda/4.jpg"]
+    images: ["/images/odalar/3-kisilik-oda/1.jpg", "/images/odalar/3-kisilik-oda/2.jpg", "/images/odalar/3-kisilik-oda/3.jpg", "/images/odalar/3-kisilik-oda/4.jpg", "/images/odalar/detay/oda-detay-2.jpg"]
   },
   {
     slug: "4-kisilik-aile-odasi",

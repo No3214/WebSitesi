@@ -26,6 +26,32 @@ export function HistoryClient() {
       </section>
 
       <section className="py-12 px-6 max-w-7xl mx-auto">
+        <div className="mb-10 text-center">
+          <h3 className="text-ivory font-serif text-3xl md:text-4xl mb-3">
+            Kozbeyli&apos;de Gün Batımı
+          </h3>
+          <p className="text-zinc-500 text-sm max-w-2xl mx-auto">
+            Konağın terasından Ege&apos;ye doğru, günün en yumuşak ışığında kısa bir an.
+          </p>
+        </div>
+        <figure>
+          <video
+            controls
+            preload="none"
+            playsInline
+            poster="/videos/sunset-poster.jpg"
+            data-event="video_play_sunset"
+            style={{ width: "100%", maxWidth: 720, borderRadius: 16, display: "block", background: "#111", margin: "0 auto" }}
+          >
+            <source src="/videos/sunset.mp4" type="video/mp4" />
+          </video>
+          <figcaption className="text-zinc-500 text-xs text-center mt-4">
+            Terastan Ege&apos;ye, akşamüstü
+          </figcaption>
+        </figure>
+      </section>
+
+      <section className="py-12 px-6 max-w-7xl mx-auto">
         <HeritageArchive />
       </section>
 

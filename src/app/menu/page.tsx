@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/site-header";
 import { PageHero } from "@/components/page-hero";
 import { FadeIn } from "@/components/animations";
 
+import { menuSections } from "@/data/menu";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -37,42 +38,6 @@ export const metadata: Metadata = {
 };
 
 export default function MenuPage() {
-  const sections = [
-    {
-      title: "Meşhur Organik Köy Kahvaltısı",
-      description: "Kozbeyli Köyü&apos;nun bereketli topraklarından gelen, ev yapımı reçeller ve taze ürünlerle hazırlanan zengin soframız.",
-      items: [
-        { name: "Serpme Köy Kahvaltısı", description: "Ev yapımı reçeller, köy peynirleri, sıcak pişi, sahanda yumurta, taze sebzeler ve sınırsız çay eşliğinde.", priceLabel: "Dahil" },
-        { name: "Konak Sıcak Tabağı", description: "Sucuklu yumurta, hellim peyniri ve ızgara zeytin.", priceLabel: "Özel" },
-      ]
-    },
-    {
-      title: "Antakya Mutfağından Esintiler",
-      description: "Antakyalı İnci Hanım'ın elinden çıkan, geleneksel tariflerle hazırlanan efsanevi lezzetler.",
-      items: [
-        { name: "Konak Sac Kavurma", description: "Odun ateşinde, özel baharatlarla harmanlanmış yumuşacık dana eti.", priceLabel: "Gurme Seçim" },
-        { name: "Özel Antakya Mezeleri", description: "Humus, muhammara, babagannuş ve taze Antakya kekiği ile.", priceLabel: "Taze" },
-        { name: "Taş Fırın Lahmacun & Pide", description: "Geleneksel Antakya usulü ince hamur ve zengin iç harç.", priceLabel: "Taş Fırın" }
-      ]
-    },
-    {
-      title: "Taş Fırın Pizalarımız",
-      description: "Özel mayalanmış hamur ile odun ateşinde pişen çıtır İtalyan ve Ege yorumları.",
-      items: [
-        { name: "Foka Margherita", description: "Foça domatesi, taze fesleğen ve mozzarella.", priceLabel: "Klasik" },
-        { name: "Kozbeyli Gurme", description: "Yerel sucuk, mantar, közlenmiş biber ve Ege otları.", priceLabel: "Favori" }
-      ]
-    },
-    {
-       title: "Tatlılar & Meşhur Dibek Kahvesi",
-       description: "Yemeğin sonunda unutulmaz bir kapanış için geleneksel ve modern tatlar.",
-       items: [
-         { name: "Sıcak Antakya Künefesi", description: "Közde hazırlanan, gerçek Antakya peyniri ve Antep fıstığı ile.", priceLabel: "Efsane" },
-         { name: "Tarihi Dibek Kahvesi", description: "500 yıllık gelenekle taş dibeklerde dövülmüş, odun ateşinde pişmiş.", priceLabel: "Tescilli" }
-       ]
-    }
-  ];
-
   return (
     <>
       <SiteHeader variant="overlay" />
@@ -84,23 +49,23 @@ export default function MenuPage() {
       <main className="section">
         <div className="container">
           <div className="menu-layout" style={{ marginTop: 0 }}>
-            {sections.map((section, idx) => (
-              <FadeIn key={section.title} delay={idx * 0.2}>
+            {menuSections.map((section, idx) => (
+              <FadeIn key={section.title} delay={Math.min(idx * 0.2, 0.4)}>
                 <div className="menu-section-box">
                   <div className="menu-header">
                     <h2 className="serif">{section.title}</h2>
-                    <p className="section-desc">{section.description}</p>
+                    {section.note && <p className="section-desc">{section.note}</p>}
                   </div>
-                  
+
                   <div className="menu-items">
                     {section.items.map((item, i) => (
                       <div key={i} className="menu-item-row">
                         <div className="item-main">
                           <div className="name-price">
                             <span className="item-name">{item.name}</span>
-                            <span className="item-price">{item.priceLabel}</span>
+                            {item.price && <span className="item-price">{item.price}</span>}
                           </div>
-                          <p className="item-desc">{item.description}</p>
+                          {item.description && <p className="item-desc">{item.description}</p>}
                         </div>
                       </div>
                     ))}
