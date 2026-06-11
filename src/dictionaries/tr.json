@@ -10,13 +10,45 @@
     "rooms": "Odalar",
     "dining": "Gastronomi",
     "events": "Organizasyon",
-    "booking": "Rezervasyon"
+    "booking": "Rezervasyon",
+    "experiences": "Deneyimler",
+    "offers": "Teklifler",
+    "faq": "Sık Sorulanlar",
+    "gallery": "Galeri"
   },
   "Rooms": {
     "title": "Rafine Oda ve Süitler",
     "eyebrow": "Konaklama",
     "text": "Kozbeyli Konağı'nın taş mimarisi ile huzur verici Ege manzarasını birleştiren konaklama birimlerimizi keşfedin.",
     "detail": "Detayları Gör"
+  },
+  "RoomsPage": {
+    "title": "Odalarımız",
+    "bookCta": "Rezervasyon"
+  },
+  "FAQPage": {
+    "title": "Merak Ettikleriniz",
+    "heroText": "Konaklamanızı planlarken en çok sorulan soruları bir araya getirdik. Yanıtını bulamadığınız her detay için concierge ekibimiz bir mesaj uzağınızda."
+  },
+  "GalleryPage": {
+    "title": "Taşın ve Işığın Günlüğü",
+    "heroText": "Andezit taş duvarlar, sabah güneşiyle uyanan avlu ve Ege'nin sofra kültürü. Konağın gündelik ritmini fotoğraflarla gezin."
+  },
+  "OffersPage": {
+    "title": "Konaktan Teklifler",
+    "heroText": "Sezona ve özel günlere göre özenle kurgulanan konaklama ve davet paketlerimiz için concierge ekibimizle iletişime geçin; size en uygun deneyimi birlikte planlayalım.",
+    "whatsappCta": "WhatsApp Concierge"
+  },
+  "ExperiencesHub": {
+    "eyebrow": "KEŞFEDİN",
+    "title": "Kozbeyli'yi Deneyimleyin",
+    "heroText": "Konağın taş duvarlarından Ege kıyılarına uzanan köy, sahil ve sofra rotalarını sizin için hazırladığımız rehberlerle keşfedin.",
+    "readGuide": "Rehberi Oku",
+    "allExperiences": "Tüm Deneyimler"
+  },
+  "Common": {
+    "backToHome": "Ana Sayfa",
+    "discover": "Keşfedin"
   },
   "Footer": {
     "description": "Foça'nın kalbinde, 200 yıllık bir hikayenin lüks ve konforla yeniden yorumlandığı rafine bir durak.",

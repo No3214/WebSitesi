@@ -1,8 +1,36 @@
 import { MetadataRoute } from 'next';
 import { rooms } from '@/data/rooms';
 
+// hreflang (T16): Google alternatifleri HTML, HTTP header VEYA sitemap ile kabul
+// eder. Sayfa bazlı metadata.alternates çocukta ezildiğinden (Next merge
+// davranışı) hreflang burada, sitemap üzerinden bildirilir. EN karşılığı olan
+// rotalar EN_ROUTES'ta; /en sayfaları da ayrı kayıt olarak listelenir.
+const EN_ROUTES = new Set([
+  '',
+  '/odalar',
+  '/gastronomi',
+  '/rezervasyon',
+  '/iletisim',
+  '/sss',
+  '/galeri',
+  '/hikayemiz',
+  '/deneyimler',
+]);
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.kozbeylikonagi.com';
+
+  const withAlternates = (route: string) =>
+    EN_ROUTES.has(route)
+      ? {
+          alternates: {
+            languages: {
+              tr: `${baseUrl}${route === '' ? '/' : route}`,
+              en: `${baseUrl}/en${route}`,
+            },
+          },
+        }
+      : {};
 
   const staticPages = [
     '',
@@ -31,14 +59,48 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: route === '' ? 1 : route === '/rezervasyon' ? 0.9 : 0.8,
+    ...withAlternates(route),
   }));
 
-  const roomPages = rooms.map((room) => ({
-    url: `${baseUrl}/odalar/${room.slug}`,
+  const enPages = Array.from(EN_ROUTES).map((route) => ({
+    url: `${baseUrl}/en${route}`,
     lastModified: new Date(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+    alternates: {
+      languages: {
+        tr: `${baseUrl}${route === '' ? '/' : route}`,
+        en: `${baseUrl}/en${route}`,
+      },
+    },
   }));
 
-  return [...staticPages, ...roomPages];
+  const roomPages = rooms.flatMap((room) => [
+    {
+      url: `${baseUrl}/odalar/${room.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+      alternates: {
+        languages: {
+          tr: `${baseUrl}/odalar/${room.slug}`,
+          en: `${baseUrl}/en/odalar/${room.slug}`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/en/odalar/${room.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.5,
+      alternates: {
+        languages: {
+          tr: `${baseUrl}/odalar/${room.slug}`,
+          en: `${baseUrl}/en/odalar/${room.slug}`,
+        },
+      },
+    },
+  ]);
+
+  return [...staticPages, ...enPages, ...roomPages];
 }

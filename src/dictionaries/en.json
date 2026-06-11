@@ -10,13 +10,45 @@
     "rooms": "Rooms",
     "dining": "Gastronomy",
     "events": "Events",
-    "booking": "Booking"
+    "booking": "Booking",
+    "experiences": "Experiences",
+    "offers": "Offers",
+    "faq": "FAQ",
+    "gallery": "Gallery"
   },
   "Rooms": {
     "title": "Refined Rooms & Suites",
     "eyebrow": "Accommodation",
     "text": "Discover our accommodations that combine the stone architecture of Kozbeyli Mansion with the peaceful Aegean view.",
     "detail": "View Details"
+  },
+  "RoomsPage": {
+    "title": "Our Rooms",
+    "bookCta": "Book Now"
+  },
+  "FAQPage": {
+    "title": "Your Questions, Answered",
+    "heroText": "We have gathered the questions most often asked when planning a stay. For any detail left unanswered, our concierge team is only a message away."
+  },
+  "GalleryPage": {
+    "title": "A Journal of Stone and Light",
+    "heroText": "Andesite stone walls, a courtyard waking to the morning sun, and the Aegean's table culture. Wander through the mansion's daily rhythm in photographs."
+  },
+  "OffersPage": {
+    "title": "Offers from the Mansion",
+    "heroText": "Speak with our concierge team about stay and event packages thoughtfully curated for each season and special occasion; together we will plan the experience that suits you best.",
+    "whatsappCta": "WhatsApp Concierge"
+  },
+  "ExperiencesHub": {
+    "eyebrow": "DISCOVER",
+    "title": "Experience Kozbeyli",
+    "heroText": "Discover the village, coastal and culinary routes reaching from the mansion's stone walls to the Aegean shores, through guides curated just for you.",
+    "readGuide": "Read the Guide",
+    "allExperiences": "All Experiences"
+  },
+  "Common": {
+    "backToHome": "Home",
+    "discover": "Discover"
   },
   "Footer": {
     "description": "A refined stop at the heart of Foça, where a 200-year-old story is reinterpreted with luxury and comfort.",
