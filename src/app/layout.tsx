@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import type { Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { Suspense } from "react";
-import { ConversionMotivators } from "@/components/conversion-motivators";
 import { CookieConsent } from "@/components/cookie-consent";
 import { DigitalConcierge } from "@/components/digital-concierge";
 import { SiteFooter } from "@/components/site-footer";
@@ -19,10 +18,6 @@ import { LoadingBar } from "@/components/loading-bar";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
 
-import { ReputationRibbon } from "@/components/reputation-ribbon";
-
-import { ConversionVelocity } from "@/components/conversion-velocity";
-import { AtmosphericImmersion } from "@/components/atmospheric-immersion";
 
 const inter = Inter({ subsets: ["latin", "latin-ext"], display: "swap", variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin", "latin-ext"], display: "swap", variable: "--font-playfair" });
@@ -54,9 +49,10 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             <Suspense fallback={null}>
               <LoadingBar />
             </Suspense>
-            <ReputationRibbon />
-            <ConversionVelocity />
-            <AtmosphericImmersion />
+            {/* Görsel QA (2026-06-10): ReputationRibbon fixed header'la üst üste
+                biniyordu; AtmosphericImmersion tam-ekran perdesi hero'yu örtüyordu;
+                ConversionVelocity/Motivators uydurma aciliyet üretiyordu (sahte
+                "%92 dolu" / "5 rezervasyon" — güven riski). Dördü de kaldırıldı. */}
             <TrackingScripts />
             <div id="icerik">{children}</div>
             <SiteFooter />
@@ -65,7 +61,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             <SunsetMode />
             <MobileActionBar />
             <DigitalConcierge />
-            <ConversionMotivators />
             <CookieConsent />
           </CSPostHogProvider>
         </ErrorBoundary>

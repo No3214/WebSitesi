@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { getDictionary } from "@/lib/dictionary";
 import { LanguageSwitcher } from "./language-switcher";
+import { LogoMark } from "./logo-mark";
 
 type NavLink = { href: string; label: string };
 
@@ -80,7 +81,9 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
       <header className={headerClass}>
         <div className="container header-inner">
           <Link href="/" className="brand-logo" aria-label="Kozbeyli Konağı — Ana sayfa">
-            <span className="logo-badge">KK</span>
+            <span className="logo-badge">
+              <LogoMark size={34} />
+            </span>
             <span className="brand-text">KOZBEYLİ KONAĞI</span>
           </Link>
 

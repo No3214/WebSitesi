@@ -243,26 +243,18 @@
     gap: 14px;
   }
 
+  /* Marka amblemi (taş kapı SVG) — currentColor ile renk alır */
   .logo-badge {
-    width: 42px;
-    height: 42px;
-    border: 1px solid rgba(61, 74, 59, 0.35);
-    border-radius: 999px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--serif);
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
     color: var(--olive);
-    transition: all var(--dur) var(--ease-lux);
+    transition: color var(--dur) var(--ease-lux), transform var(--dur) var(--ease-lux);
   }
 
   .brand-logo:hover .logo-badge {
-    background: var(--gold);
-    border-color: var(--gold);
-    color: var(--white);
-    transform: rotate(-8deg);
+    color: var(--gold);
+    transform: translateY(-2px);
   }
 
   .brand-text {
@@ -1082,10 +1074,21 @@
     font-size: 1.18rem;
     color: var(--olive);
     transition: color 0.3s ease;
+    /* Açık item'da .faq-icon rotate(45deg) bounding box'ı 34→48px büyütüp
+       375px viewport'ta 3px yatay taşma yaratıyordu. İkon dairesel olduğu
+       için kırpmanın görsel etkisi yok. */
+    overflow: hidden;
   }
 
   .faq-q:hover {
     color: var(--gold);
+  }
+
+  /* Flex item min-width:auto, dar viewport'ta soru metninin 375px'i taşmasına
+     yol açıyordu (mobil yatay taşma testi). Küçülmeye izin ver. */
+  .faq-q > span:first-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .faq-icon {

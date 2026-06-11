@@ -48,7 +48,10 @@ export const LivingMuseumMap = () => {
   ];
 
   return (
-    <div className="relative w-full aspect-video bg-zinc-950 rounded-3xl border border-zinc-900 overflow-hidden group">
+    <div
+      data-testid="living-museum-map"
+      className="relative w-full aspect-video bg-zinc-950 rounded-3xl border border-zinc-900 overflow-hidden group"
+    >
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <svg viewBox="0 0 600 600" className="w-full h-full stroke-zinc-700 fill-none" strokeWidth="0.5">
           <path d="M50 50 L550 50 L550 550 L50 550 Z" />

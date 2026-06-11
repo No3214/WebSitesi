@@ -1,6 +1,21 @@
-<svg width="240" height="60" viewBox="0 0 240 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="240" height="60" rx="12" fill="#F8F5F0"/>
-  <text x="18" y="38" fill="#505D4B" font-family="Georgia, serif" font-size="24">
-    Kozbeyli Konağı
-  </text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160">
+  <rect width="160" height="160" rx="32" fill="#faf9f6" />
+  <g transform="translate(28, 8) scale(0.87)" fill="none" stroke="#3d4a3b" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 56 A42 42 0 0 1 102 56" />
+    <path d="M48 56 A12 12 0 0 1 72 56" />
+    <path d="M60 44 L60 19" />
+    <path d="M51.5 47.5 L34 31" />
+    <path d="M48.6 51.4 L26 41.5" />
+    <path d="M68.5 47.5 L86 31" />
+    <path d="M71.4 51.4 L94 41.5" />
+    <path d="M18 56 H102" />
+    <path d="M18 60 V138 H102 V60" />
+    <path d="M60 60 V138" />
+    <rect x="28" y="69" width="24" height="54" rx="2" />
+    <rect x="68" y="69" width="24" height="54" rx="2" />
+    <path d="M40 69 V123" />
+    <path d="M28 96 H52" />
+    <path d="M80 69 V123" />
+    <path d="M68 96 H92" />
+  </g>
 </svg>

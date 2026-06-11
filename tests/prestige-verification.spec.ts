@@ -13,15 +13,15 @@ test.describe('Prestige & Heritage Verification', () => {
     expect(description).toContain('500 yıllık');
   });
 
-  test('Atmospheric Immersion should be present and toggleable', async ({ page }) => {
+  // Not (2026-06-10): AtmosphericImmersion perdesi hero'yu örttüğü için
+  // layout'tan kaldırıldı; toggle testi yerine hero'nun gerçekten görünür
+  // olduğunu doğruluyoruz (görsel QA bulgusunun regresyon ağı).
+  test('Hero başlık ve CTA ilk ekranda görünür olmalı', async ({ page }) => {
     await page.goto('/');
-    // Check for the audio/visual ritual control
-    const immersionToggle = page.getByText('SESİ', { exact: false }).first();
-    await expect(immersionToggle).toBeVisible({ timeout: 15000 });
-
-    // Test toggle state
-    await immersionToggle.click({ force: true });
-    await expect(immersionToggle).toContainText('SESİ');
+    await expect(page.locator('.hero h1')).toBeVisible({ timeout: 15000 });
+    await expect(
+      page.locator('.hero').getByRole('link', { name: /rezervasyon/i }).first()
+    ).toBeVisible();
   });
 
   test('Booking conversion triggers should be visible on scroll', async ({ page }) => {
@@ -33,10 +33,13 @@ test.describe('Prestige & Heritage Verification', () => {
 
   test('Living Museum Map should be interactive', async ({ page }) => {
     await page.goto('/hikayemiz');
-    const mapNodes = page.locator('circle');
-    const count = await mapNodes.count();
-    expect(count).toBeGreaterThan(0);
-    
+    // Not (2026-06-10): header logosu da <circle> içerdiğinden sayfa geneli
+    // yerine haritanın kendi düğümlerine scope'lanır.
+    const map = page.getByTestId('living-museum-map');
+    await expect(map).toBeVisible();
+    const mapNodes = map.locator('circle');
+    expect(await mapNodes.count()).toBeGreaterThan(0);
+
     // Hover over a node and check for story popover
     await mapNodes.first().hover({ force: true });
     await expect(page.locator('h4:has-text("Taşın Hafızası")').or(page.locator('h4:has-text("Zamanın Tortusu")'))).toBeVisible();

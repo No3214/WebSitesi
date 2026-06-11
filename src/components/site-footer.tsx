@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
 import { getPhoneHref, MAPS_URL, PHONE_DISPLAY } from "@/lib/contact";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
+import { LogoMark } from "./logo-mark";
 
 export function SiteFooter() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,6 +24,9 @@ export function SiteFooter() {
       <div className="container">
         <div className="footer-grid">
           <div>
+            <div style={{ color: "var(--gold)", marginBottom: 18 }}>
+              <LogoMark size={52} />
+            </div>
             <h3 className="brand-serif">Kozbeyli Konağı</h3>
             <p className="brand-tagline">
               {t?.description ||
