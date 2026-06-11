@@ -99,7 +99,7 @@ export default function GastronomyPage() {
           Mutfaktan Canlı Kareler
         </h2>
         <p style={{ color: "rgba(245,241,232,0.7)", textAlign: "center", marginBottom: 40 }}>
-          Serpme köy kahvaltısı ve taş ateşinde mıhlama — Kozbeyli sabahlarının gerçek hali.
+          Serpme köy kahvaltısı, taş ateşinde mıhlama ve şefin akşam tabağı — Kozbeyli mutfağının gerçek hali.
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 28 }}>
           <figure style={{ margin: 0 }}>
@@ -130,6 +130,21 @@ export default function GastronomyPage() {
             </video>
             <figcaption style={{ color: "rgba(245,241,232,0.6)", fontSize: "0.9rem", marginTop: 10, textAlign: "center" }}>
               Taş Ateşinde Mıhlama
+            </figcaption>
+          </figure>
+          <figure style={{ margin: 0 }}>
+            <video
+              controls
+              preload="none"
+              playsInline
+              poster="/videos/chef-poster.jpg"
+              style={{ width: "100%", borderRadius: 16, display: "block", background: "#111" }}
+              data-event="video_play_chef"
+            >
+              <source src="/videos/chef.mp4" type="video/mp4" />
+            </video>
+            <figcaption style={{ color: "rgba(245,241,232,0.6)", fontSize: "0.9rem", marginTop: 10, textAlign: "center" }}>
+              Şefin İmzası
             </figcaption>
           </figure>
         </div>
