@@ -26,6 +26,12 @@ npm run dev                   # http://localhost:3000
 
 Payload admin paneli: `http://localhost:3000/admin` (ilk kullanıcı panelden oluşturulur).
 
+> **Windows notu:** Makinede kalıcı `NODE_ENV=production` tanımlıysa `npm install`
+> devDependencies'i atlar (build araçları eksik kalır). Kurulumda
+> `npm install --include=dev` kullanın. `next build`'i ise NODE_ENV'e dokunmadan
+> çalıştırın — `NODE_ENV=development` ile production build almak Next'te
+> "non-standard NODE_ENV" tutarsızlığı yaratır ve /404 prerender'ını kırar.
+
 ## Ortam Değişkenleri (.env)
 
 `.env.example` dosyasındaki tüm değişkenler ve açıklamaları:
