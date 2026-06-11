@@ -2,11 +2,62 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 
 import { FadeIn, RevealLines } from "@/components/animations";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
+
+/**
+ * Hero arka plan videosu — LCP'ye dokunmadan:
+ * - LCP elemanı her zaman hero.jpg (priority + preload); video sayfa "load"
+ *   olduktan sonra yüklenir ve oynamaya başlayınca üstüne fade-in olur.
+ * - Dar ekran (<768px) ve Data Saver'da hiç yüklenmez (master şartname:
+ *   mobilde poster/fallback). Not: prefers-reduced-motion sitewide ele
+ *   alınmadığından (framer-motion animasyonları da bakmıyor) burada tek
+ *   başına uygulanmıyor; WCAG turu yapılırken birlikte ele alınacak.
+ */
+function HeroVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    const smallScreen = window.matchMedia("(max-width: 767px)").matches;
+    const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
+    if (smallScreen || conn?.saveData) return;
+
+    const start = () => {
+      const video = videoRef.current;
+      if (!video) return;
+      video.src = "/videos/hero.mp4";
+      video.play().catch(() => {
+        /* autoplay engellendiyse poster görseliyle devam */
+      });
+    };
+
+    if (document.readyState === "complete") {
+      start();
+      return;
+    }
+    window.addEventListener("load", start, { once: true });
+    return () => window.removeEventListener("load", start);
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      className={`hero-video ${playing ? "playing" : ""}`}
+      muted
+      loop
+      playsInline
+      preload="none"
+      aria-hidden
+      tabIndex={-1}
+      onPlaying={() => setPlaying(true)}
+    />
+  );
+}
 
 export function HomeHero({ locale, eyebrow }: Props) {
   return (
@@ -29,6 +80,7 @@ export function HomeHero({ locale, eyebrow }: Props) {
           placeholder="blur"
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
         />
+        <HeroVideo />
       </motion.div>
 
       <div className="container" style={{ position: "relative", zIndex: 2, padding: "140px 0 120px" }}>

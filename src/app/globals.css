@@ -505,6 +505,22 @@
       linear-gradient(180deg, rgba(20, 22, 26, 0.55) 0%, rgba(20, 22, 26, 0.25) 45%, rgba(20, 22, 26, 0.65) 100%);
   }
 
+  /* Hero arka plan videosu: LCP görselinin üzerine, oynamaya başlayınca
+     yumuşak fade-in. Karartma gradyanı (::after) videonun da üstünde kalır. */
+  .hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.6s ease;
+  }
+
+  .hero-video.playing {
+    opacity: 1;
+  }
+
   .hero h1 {
     font-size: var(--fs-hero);
     line-height: 1.08;
