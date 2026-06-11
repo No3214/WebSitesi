@@ -6,8 +6,12 @@ export type GalleryShot = {
 };
 
 // Ana sayfa "Konaktan Kareler" şeridi ile /galeri sayfasının ortak veri kaynağı.
+// Not (2026-06-11): tas-cephe / aksam-sofrasi / konagin-yuzu / tas-firin-pide
+// kareleri Google Drive arşivindeki profesyonel çekimlerden alındı.
 export const galleryShots: GalleryShot[] = [
+  { src: "/images/galeri/tas-cephe.jpg", caption: { tr: "Taş Cephe", en: "Stone Facade" } },
   { src: "/images/hero.jpg", caption: { tr: "Taş Avlu", en: "Stone Courtyard" } },
+  { src: "/images/galeri/aksam-sofrasi.jpg", caption: { tr: "Akşam Sofrası", en: "Evening Table" } },
   { src: "/videos/kahvalti-poster.jpg", caption: { tr: "Serpme Kahvaltı", en: "Village Breakfast" } },
   { src: "/images/odalar/superrior-oda-deniz-manzarali/2.jpg", caption: { tr: "Superior Oda", en: "Superior Room" } },
   { src: "/videos/mihlama-poster.jpg", caption: { tr: "Ocak Başı", en: "By the Hearth" } },
@@ -20,6 +24,8 @@ export const galleryShots: GalleryShot[] = [
 // /galeri tam sayfası: şerit kareleri + oda arşivinden ek seçkiler.
 export const galleryExtended: GalleryShot[] = [
   ...galleryShots,
+  { src: "/images/galeri/konagin-yuzu.jpg", caption: { tr: "Konağın Yüzü", en: "Face of the Mansion" } },
+  { src: "/images/galeri/tas-firin-pide.jpg", caption: { tr: "Taş Fırından", en: "From the Stone Oven" } },
   { src: "/images/odalar/standart-oda/1.jpg", caption: { tr: "Standart Oda", en: "Standard Room" } },
   { src: "/images/odalar/standart-oda/2.jpg", caption: { tr: "Horasan Duvar", en: "Horasan Wall" } },
   { src: "/images/odalar/standart-bahce-manzarali-oda/3.jpg", caption: { tr: "Bahçe Işığı", en: "Garden Light" } },
