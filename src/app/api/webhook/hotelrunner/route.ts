@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
+import { sendGa4Purchase } from "@/lib/ga4-server";
 import { getPayloadClient } from "@/lib/payload";
 import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
@@ -217,6 +218,22 @@ export async function POST(req: Request) {
     payloadJson: body,
     receivedAt,
   });
+
+  // GA4 server-side purchase: rezervasyonun tek güvenilir tamamlanma anı bu
+  // webhook'tur (misafir engine'de ödedikten sonra tarayıcı bizde olmayabilir).
+  // İptal/no-show durumlarında purchase basılmaz. Hata webhook'u asla kırmaz.
+  const status = (reservation.status || "").toLowerCase();
+  const isCancelled = ["cancelled", "canceled", "no_show", "no-show", "rejected"].some((s) =>
+    status.includes(s)
+  );
+  if (!isCancelled) {
+    await sendGa4Purchase({
+      transactionId: reservationId,
+      value: Number(reservation.total_price) || 0,
+      currency: safeText(reservation.currency_code || "TRY", 10),
+      itemName: safeText(reservation.room_type_name || "Konaklama Rezervasyonu", 120),
+    });
+  }
 
   await markReplay(messageUid);
 

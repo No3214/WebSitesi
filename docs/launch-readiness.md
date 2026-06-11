@@ -18,7 +18,7 @@ ek kuralı gereği karar NO-GO'dur. Kod tarafında kalan işler orta önceliklid
 | Alan | Max | Puan | Gerekçe |
 |---|---|---|---|
 | Strateji, persona, KPI | 8 | 6 | Marka konumlandırma net (CLAUDE.md); persona/KPI dokümante değil |
-| Bilgi mimarisi | 8 | 6 | Çekirdek sayfalar premium; /teklifler, /galeri, /sss, deneyim silosu eksik |
+| Bilgi mimarisi | 8 | 7 | /galeri, /sss, /cerez-politikasi eklendi (2026-06-11); /teklifler + deneyim silosu kaldı |
 | UX/UI mobil rezervasyon | 10 | 9 | Suite yeşil; 375px taşma düzeltildi; gerçek cihaz testi yapılmadı |
 | Booking/HMS/POS | 14 | 4 | Mimari + webhook güvenliği hazır; engine URL ve POS bilgisi yok → test edilemedi |
 | Güvenlik | 12 | 10 | CSP/HSTS/XFO, rate-limit, ES256+HMAC webhook; MFA yok, WAF kanıtsız |
@@ -27,10 +27,10 @@ ek kuralı gereği karar NO-GO'dur. Kod tarafında kalan işler orta önceliklid
 | Lokal SEO/GBP/Hotel Center | 6 | 1 | Sitede NAP+GeoCoordinates var; GBP/Hotel Center kanıt yok |
 | Performans/CWV | 8 | 6 | Hero preload+fetchPriority, görsel optimizasyon; saha (CrUX/RUM) verisi yok |
 | Erişilebilirlik | 5 | 4 | Skip-link, aria, focus state'ler; WCAG 2.2 tam denetimi yapılmadı |
-| Analytics | 5 | 2 | Consent-aware GTM altyapısı hazır; funnel + purchase eventleri yok |
-| CMS/rol | 4 | 3 | Payload CMS aktif; editor/translator rol ayrımı tanımlanmadı |
-| QA/UAT/launch | 10 | 7 | CI 5 aşama + 30 test yeşil; canlı rezervasyon UAT + rollback planı yok |
-| **Toplam** | **100** | **74** | 70–79: sınırlı beta olabilir; **ek kural: POS+booking fail → yayına çıkma** |
+| Analytics | 5 | 4 | GA4+Meta ikili funnel (view_item/begin_checkout/generate_lead) + server-side purchase altyapısı (`lib/ga4-server.ts`) hazır; uçtan uca doğrulama engine+ID bekliyor |
+| CMS/rol | 4 | 4 | Düzeltme: admin/editor rol ayrımı zaten mevcut (`payload/collections/Users.ts`, users CRUD admin-only) |
+| QA/UAT/launch | 10 | 8 | CI 5 aşama + 35 test yeşil; rollback prosedürü README'de; canlı rezervasyon UAT'si kaldı |
+| **Toplam** | **100** | **79** | 70–79: sınırlı beta olabilir; **ek kural: POS+booking fail → yayına çıkma** (rev. 2026-06-11: 74→79) |
 
 ## 3. Alan Bazlı Pass / Partial / Fail
 
@@ -47,8 +47,18 @@ ek kuralı gereği karar NO-GO'dur. Kod tarafında kalan işler orta önceliklid
 - KVKK sayfaları: `/kvkk`, `/gizlilik-politikasi`, `/mesafeli-satis-sozlesmesi`
 - Mobil: 375px yatay taşma giderildi (FAQ ikon rotate bounding fix)
 
+### PASS'e taşınanlar (rev. 2026-06-11)
+- GA4+Meta funnel: view_item/ViewContent, begin_checkout/InitiateCheckout, generate_lead/Lead — `src/lib/gtm.ts`
+- Server-side purchase altyapısı: `src/lib/ga4-server.ts` (GA4 Measurement Protocol; HMS webhook'unda iptal/no-show hariç tetiklenir; env boşsa no-op; PII göndermez; unit testli)
+- /galeri (ImageGallery schema), /sss (FAQPage schema), /cerez-politikasi sayfaları + footer/sitemap
+- Restaurant schema (`src/app/gastronomi/page.tsx`)
+- Hero arka plan videosu LCP-güvenli geri geldi (`public/videos/hero.mp4` 1.8MB; mobilde poster fallback)
+- Payload rol ayrımı düzeltmesi: admin/editor zaten mevcuttu (`payload/collections/Users.ts`)
+- Sitewide title çiftlenmesi giderildi (metadata template + sayfa title uyumu)
+- Rollback prosedürü README'de
+
 ### PARTIAL
-- GA4 event map: `data-event` tıklama izleri var (phone_click, WhatsApp, HMS engine open) ama view_item / begin_checkout / purchase yok
+- GA4/Meta ID'leri prod env'de yok → eventler sahada doğrulanamadı (kod hazır)
 - EN + hreflang: dictionary + LanguageSwitcher altyapısı hazır; EN rotaları yayında değil, hreflang bilinçli kapalı (`src/lib/metadata.ts:50` notu)
 - MFA: Payload admin'de şifre auth var, MFA yok
 - Sayfa ağacı: /teklifler, /galeri (ayrı sayfa), /sss (ayrı sayfa), /lokasyon yok; deneyim rehberleri tek sayfada (`/misafir-rehberi`)

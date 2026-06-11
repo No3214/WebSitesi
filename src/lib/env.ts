@@ -14,6 +14,8 @@ const rawEnvSchema = z.object({
   GOOGLE_MAPS_URL: z.string().optional(),
   TURNSTILE_SECRET_KEY: z.string().optional(),
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().optional(),
+  GA4_MEASUREMENT_ID: z.string().optional(),
+  GA4_API_SECRET: z.string().optional(),
 });
 
 const raw = rawEnvSchema.parse(process.env);
@@ -46,6 +48,10 @@ export const env = {
   GOOGLE_MAPS_URL: raw.GOOGLE_MAPS_URL || "",
   TURNSTILE_SECRET_KEY: raw.TURNSTILE_SECRET_KEY || "",
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: raw.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "",
+  // GA4 Measurement Protocol (server-side purchase ölçümü). İkisi de doluysa
+  // HMS rezervasyon webhook'u purchase eventini sunucudan gönderir.
+  GA4_MEASUREMENT_ID: raw.GA4_MEASUREMENT_ID || "",
+  GA4_API_SECRET: raw.GA4_API_SECRET || "",
 };
 
 export function getAllowedOrigins() {
