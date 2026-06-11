@@ -15,7 +15,7 @@ const DEFAULT_LINKS: NavLink[] = [
   { href: "/odalar", label: "Odalar" },
   { href: "/gastronomi", label: "Gastronomi" },
   { href: "/organizasyonlar", label: "Davetler" },
-  { href: "/deneyim-tasarimcisi", label: "Deneyim Tasarımcısı" },
+  { href: "/deneyimler", label: "Deneyimler" },
   { href: "/iletisim", label: "İletişim" },
 ];
 
@@ -41,7 +41,7 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
         { href: "/odalar", label: nav.rooms || "Rooms" },
         { href: "/gastronomi", label: nav.dining || "Dining" },
         { href: "/organizasyonlar", label: nav.events || "Events" },
-        { href: "/deneyim-tasarimcisi", label: "Experience Designer" },
+        { href: "/deneyimler", label: nav.experiences || "Experiences" },
         { href: "/iletisim", label: "Contact" },
       ]);
       setBookingLabel(nav.booking || "Book Now");

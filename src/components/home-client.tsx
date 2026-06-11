@@ -12,6 +12,7 @@ import { RoomsShowcase } from "@/components/home/rooms-showcase";
 import { GastronomyEditorial } from "@/components/home/gastronomy-editorial";
 import { ExperiencesSection } from "@/components/home/experiences-section";
 import { GalleryStrip } from "@/components/home/gallery-strip";
+import { ExperiencesTeaser } from "@/components/home/experiences-teaser";
 import { TestimonialsSection } from "@/components/home/testimonials-section";
 import { BookingSection } from "@/components/home/booking-section";
 import { FaqSection } from "@/components/home/faq-section";
@@ -57,6 +58,7 @@ export function HomeClient({ initialDict, initialLocale = "tr" }: HomeClientProp
         <GastronomyEditorial locale={locale} />
         <ExperiencesSection locale={locale} />
         <GalleryStrip locale={locale} />
+        <ExperiencesTeaser locale={locale} />
         <TestimonialsSection locale={locale} />
         <BookingSection locale={locale} eyebrow={nav.booking} />
         <FaqSection locale={locale} />
