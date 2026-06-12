@@ -54,45 +54,61 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <label htmlFor="guestName" style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--olive)" }}>Ad Soyad <span style={{ color: "#c2410c" }}>*</span></label>
+            <input
+              id="guestName"
+              placeholder="Ad Soyad"
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
+              required
+              style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <label htmlFor="guestPhone" style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--olive)" }}>Telefon <span style={{ color: "#c2410c" }}>*</span></label>
+            <input
+              id="guestPhone"
+              placeholder="Telefon"
+              value={guestPhone}
+              onChange={(e) => setGuestPhone(e.target.value)}
+              required
+              style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
+            />
+          </div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <label htmlFor="guestEmail" style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--olive)" }}>E-posta Adresi <span style={{ color: "#c2410c" }}>*</span></label>
           <input
-            placeholder="Ad Soyad"
-            value={guestName}
-            onChange={(e) => setGuestName(e.target.value)}
-            required
-            style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
-          />
-          <input
-            placeholder="Telefon"
-            value={guestPhone}
-            onChange={(e) => setGuestPhone(e.target.value)}
+            id="guestEmail"
+            placeholder="E-posta Adresi"
+            type="email"
+            value={guestEmail}
+            onChange={(e) => setGuestEmail(e.target.value)}
             required
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
           />
         </div>
-        <input
-          placeholder="E-posta Adresi"
-          type="email"
-          value={guestEmail}
-          onChange={(e) => setGuestEmail(e.target.value)}
-          required
-          style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
-        />
 
-        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-          <input
-            placeholder="İndirim Kodu"
-            value={promoCode}
-            onChange={(e) => setPromoCode(e.target.value)}
-            style={{ flex: 1, padding: 10, border: "1px solid var(--border)", borderRadius: 6 }}
-          />
-          <button
-            type="button"
-            onClick={applyPromo}
-            className="button secondary sm"
-            style={{ padding: "10px 18px" }}
-          >
-            Uygula
-          </button>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, marginTop: 12 }}>
+          <label htmlFor="promoCode" style={{ fontSize: "0.85rem", fontWeight: 500, color: "var(--olive)" }}>İndirim Kodu</label>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input
+              id="promoCode"
+              placeholder="İndirim Kodu"
+              value={promoCode}
+              onChange={(e) => setPromoCode(e.target.value)}
+              style={{ flex: 1, padding: 10, border: "1px solid var(--border)", borderRadius: 6 }}
+            />
+            <button
+              type="button"
+              onClick={applyPromo}
+              className="button secondary sm"
+              style={{ padding: "10px 18px" }}
+            >
+              Uygula
+            </button>
+          </div>
         </div>
 
         {paymentError && <p style={{ color: "#c2410c", fontSize: "0.85rem", margin: 0 }}>{paymentError}</p>}

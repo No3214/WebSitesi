@@ -27,8 +27,9 @@ export function SensoryStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
         {/* Scent */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>Oda Kokusu</span>
+          <label htmlFor="scent" style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>Oda Kokusu</label>
           <select
+            id="scent"
             value={scent.id}
             onChange={(e) => setScent(SCENTS.find(s => s.id === e.target.value) || SCENTS[0])}
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6, background: "transparent" }}
@@ -40,8 +41,9 @@ export function SensoryStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
 
         {/* Pillow */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>Yastık Menüsü</span>
+          <label htmlFor="pillow" style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>Yastık Menüsü</label>
           <select
+            id="pillow"
             value={pillow.id}
             onChange={(e) => setPillow(PILLOWS.find(p => p.id === e.target.value) || PILLOWS[0])}
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6, background: "transparent" }}
@@ -53,8 +55,9 @@ export function SensoryStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
 
         {/* Sound */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>Ses Teması</span>
+          <label htmlFor="sound" style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>Ses Teması</label>
           <select
+            id="sound"
             value={sound.id}
             onChange={(e) => setSound(SOUNDS.find(s => s.id === e.target.value) || SOUNDS[0])}
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6, background: "transparent" }}
@@ -66,8 +69,9 @@ export function SensoryStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
 
         {/* Light */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>Aydınlatma Modu</span>
+          <label htmlFor="light" style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>Aydınlatma Modu</label>
           <select
+            id="light"
             value={light.id}
             onChange={(e) => setLight(LIGHTS.find(l => l.id === e.target.value) || LIGHTS[0])}
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6, background: "transparent" }}
