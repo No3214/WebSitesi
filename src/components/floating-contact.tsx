@@ -35,6 +35,7 @@ export const FloatingContact = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            id="contact-menu"
             initial={{ opacity: 0, y: 20, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.8 }}
@@ -61,6 +62,9 @@ export const FloatingContact = () => {
 
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? "İletişim seçeneklerini kapat" : "İletişim seçeneklerini aç"}
+        aria-expanded={isOpen}
+        aria-controls="contact-menu"
         className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl transition-all duration-300 ${
           isOpen ? "bg-zinc-900 rotate-90" : "bg-gold"
         }`}

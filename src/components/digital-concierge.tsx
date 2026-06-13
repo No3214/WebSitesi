@@ -101,7 +101,7 @@ export function DigitalConcierge() {
                 <p>Growth Architect & Concierge</p>
               </div>
             </div>
-            <button className="close-button" onClick={() => setIsOpen(false)}>✕</button>
+            <button className="close-button" onClick={() => setIsOpen(false)} aria-label="Dijital Kâhyayı kapat">✕</button>
           </div>
 
           <div className="concierge-messages">
@@ -122,6 +122,7 @@ export function DigitalConcierge() {
             <input 
               type="text" 
               placeholder="Sorunuzu buraya yazın..." 
+              aria-label="Mesajınızı yazın"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
