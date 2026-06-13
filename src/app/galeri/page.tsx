@@ -3,7 +3,6 @@ import Image from "next/image";
 
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { FadeIn } from "@/components/animations";
 import { galleryExtended } from "@/data/gallery";
 import { absoluteUrl } from "@/lib/utils";
@@ -66,7 +65,6 @@ export default function GalleryPage() {
           </div>
         </section>
       </main>
-      <SiteFooter />
     </>
   );
 }

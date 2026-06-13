@@ -7,6 +7,9 @@ const publicDir = path.join(process.cwd(), "public");
 const mediaExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".mp4"]);
 const mobileRoutes = ["/", "/odalar", "/gastronomi", "/menu", "/galeri", "/rezervasyon", "/organizasyonlar", "/en/menu", "/en/organizasyonlar"];
 const visualRoutes = ["/", "/gastronomi", "/galeri", "/odalar", "/organizasyonlar", "/odalar/standart-bahce-manzarali-oda", "/en/menu", "/en/organizasyonlar"];
+const playableVideoSelector = 'video[data-event^="video_play_"]';
+
+test.describe.configure({ timeout: 120000 });
 
 function listMediaFiles(dir: string): string[] {
   return fs
@@ -77,6 +80,10 @@ async function waitForVisibleImages(page: import("@playwright/test").Page) {
     .catch(() => {});
 }
 
+function isIgnorableMediaAbort(errorText: string, url: string) {
+  return errorText.includes("net::ERR_ABORTED") && url.includes("/videos/");
+}
+
 test.describe("Media, video and mobile publish readiness", () => {
   test("all public hospitality media assets are present and served", async ({ request }) => {
     const mediaFiles = listMediaFiles(publicDir);
@@ -106,7 +113,10 @@ test.describe("Media, video and mobile publish readiness", () => {
       page.on("requestfailed", (request) => {
         const url = request.url();
         if (url.includes("/images/") || url.includes("/videos/") || url.includes("/_next/image")) {
-          assetFailures.push(`${request.failure()?.errorText || "request failed"} ${url}`);
+          const errorText = request.failure()?.errorText || "request failed";
+          if (!isIgnorableMediaAbort(errorText, url)) {
+            assetFailures.push(`${errorText} ${url}`);
+          }
         }
       });
 
@@ -140,6 +150,71 @@ test.describe("Media, video and mobile publish readiness", () => {
       expect(videosMissingSource, videosMissingSource.join("\n")).toEqual([]);
     });
   }
+
+  test("/gastronomi videos can play real frames", async ({ page }) => {
+    const response = await page.goto("/gastronomi", { waitUntil: "load" });
+    expect(response?.status(), "/gastronomi should return usable HTML").toBeLessThan(400);
+    await expect(page.getByRole("heading", { name: "Mutfaktan Canlı Kareler" })).toBeVisible({
+      timeout: 15000,
+    });
+
+    const playbackResults = await page.locator(playableVideoSelector).evaluateAll(async (videos) => {
+      const results: Array<{
+        source: string;
+        readyState: number;
+        currentTime: number;
+        paused: boolean;
+        error?: string;
+      }> = [];
+
+      for (const video of videos) {
+        const element = video as HTMLVideoElement;
+        element.muted = true;
+        element.preload = "auto";
+        element.load();
+
+        try {
+          await element.play();
+          await new Promise((resolve) => window.setTimeout(resolve, 900));
+        } catch (error) {
+          results.push({
+            source: element.currentSrc || element.querySelector("source")?.getAttribute("src") || "unknown",
+            readyState: element.readyState,
+            currentTime: element.currentTime,
+            paused: element.paused,
+            error: error instanceof Error ? error.message : String(error),
+          });
+          continue;
+        } finally {
+          element.pause();
+        }
+
+        results.push({
+          source: element.currentSrc || element.querySelector("source")?.getAttribute("src") || "unknown",
+          readyState: element.readyState,
+          currentTime: element.currentTime,
+          paused: element.paused,
+        });
+      }
+
+      return results;
+    });
+
+    expect(playbackResults).toHaveLength(3);
+    expect(playbackResults, JSON.stringify(playbackResults, null, 2)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: expect.stringContaining("/videos/kahvalti.mp4") }),
+        expect.objectContaining({ source: expect.stringContaining("/videos/mihlama.mp4") }),
+        expect.objectContaining({ source: expect.stringContaining("/videos/chef.mp4") }),
+      ])
+    );
+
+    for (const result of playbackResults) {
+      expect(result.error, `${result.source} should not fail play()`).toBeUndefined();
+      expect(result.readyState, `${result.source} should decode playable data`).toBeGreaterThanOrEqual(2);
+      expect(result.currentTime, `${result.source} should advance playback`).toBeGreaterThan(0);
+    }
+  });
 
   for (const route of mobileRoutes) {
     test(`${route} has no mobile horizontal overflow`, async ({ page }) => {

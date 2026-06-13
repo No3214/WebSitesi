@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { FadeIn } from "@/components/animations";
 
 export const metadata: Metadata = {
@@ -119,7 +118,6 @@ export default function CookiePolicyPage() {
           </FadeIn>
         </div>
       </main>
-      <SiteFooter />
     </>
   );
 }

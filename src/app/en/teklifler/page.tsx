@@ -3,7 +3,6 @@ import Link from "next/link";
 
 import { FadeIn } from "@/components/animations";
 import { PageHero } from "@/components/page-hero";
-import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getWhatsAppHref } from "@/lib/contact";
 import { absoluteUrl } from "@/lib/utils";
@@ -111,7 +110,6 @@ export default function EnglishOffersPage() {
           </div>
         </section>
       </main>
-      <SiteFooter />
     </>
   );
 }

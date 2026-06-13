@@ -22,3 +22,13 @@ test.describe("Iletisim sayfasi", () => {
     await expect(page.locator("footer.footer")).toBeVisible();
   });
 });
+
+test.describe("Global footer", () => {
+  for (const route of ["/galeri", "/sss", "/deneyimler", "/teklifler", "/en/teklifler"]) {
+    test(`${route} footer tek kez render olur`, async ({ page }) => {
+      await page.goto(route);
+
+      await expect(page.locator("footer.footer")).toHaveCount(1);
+    });
+  }
+});

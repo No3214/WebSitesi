@@ -28,4 +28,5 @@ export function getPhoneHref(): string {
 /** Tek doğru harita kaynağı. */
 export const MAPS_URL =
   process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL ||
+  process.env.GOOGLE_MAPS_URL ||
   "https://www.google.com/maps/dir/?api=1&destination=38.713943%2C26.896018";

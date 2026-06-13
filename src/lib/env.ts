@@ -12,6 +12,7 @@ const rawEnvSchema = z.object({
   NEXT_PUBLIC_META_PIXEL_ID: z.string().optional(),
   GOOGLE_SITE_VERIFICATION: z.string().optional(),
   FACEBOOK_DOMAIN_VERIFICATION: z.string().optional(),
+  NEXT_PUBLIC_GOOGLE_MAPS_URL: z.string().optional(),
   GOOGLE_MAPS_URL: z.string().optional(),
   TURNSTILE_SECRET_KEY: z.string().optional(),
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().optional(),
@@ -47,7 +48,7 @@ export const env = {
   NEXT_PUBLIC_META_PIXEL_ID: raw.NEXT_PUBLIC_META_PIXEL_ID || "",
   GOOGLE_SITE_VERIFICATION: raw.GOOGLE_SITE_VERIFICATION || "",
   FACEBOOK_DOMAIN_VERIFICATION: raw.FACEBOOK_DOMAIN_VERIFICATION || "",
-  GOOGLE_MAPS_URL: raw.GOOGLE_MAPS_URL || "",
+  GOOGLE_MAPS_URL: raw.NEXT_PUBLIC_GOOGLE_MAPS_URL || raw.GOOGLE_MAPS_URL || "",
   TURNSTILE_SECRET_KEY: raw.TURNSTILE_SECRET_KEY || "",
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: raw.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "",
   // GA4 Measurement Protocol (server-side purchase ölçümü). İkisi de doluysa

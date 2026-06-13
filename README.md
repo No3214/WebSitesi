@@ -52,7 +52,7 @@ Payload admin paneli: `http://localhost:3000/admin` (ilk kullanıcı panelden ol
 | `NEXT_PUBLIC_META_PIXEL_ID` | Meta (Facebook) Pixel kimliği | Meta Events Manager |
 | `GOOGLE_SITE_VERIFICATION` | Search Console site doğrulama meta etiketi | Google Search Console > Ownership verification |
 | `FACEBOOK_DOMAIN_VERIFICATION` | Meta alan adı doğrulama etiketi | Meta Business Manager > Brand Safety > Domains |
-| `GOOGLE_MAPS_URL` | İşletmenin Google Haritalar linki | Google Maps > Paylaş > Bağlantıyı kopyala |
+| `NEXT_PUBLIC_GOOGLE_MAPS_URL` | İşletmenin Google Haritalar linki | Google Maps > Paylaş > Bağlantıyı kopyala |
 | `GA4_MEASUREMENT_ID` | Server-side GA4 Measurement Protocol stream ID | GA4 Admin > Data Streams |
 | `GA4_API_SECRET` | Server-side purchase event secret | GA4 Admin > Measurement Protocol API secrets |
 | `UPSTASH_REDIS_REST_URL` | Production rate-limit/replay shared backend | Upstash Redis REST |

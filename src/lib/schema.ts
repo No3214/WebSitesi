@@ -1,12 +1,12 @@
 import { env } from "@/lib/env";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { absoluteUrl } from "./utils";
-import { ReputationData } from "./ai/reputation-intelligence";
 
 /**
- * Hotel Schema (SEO & Reputation Integrated)
- * Similar to Exely/Professional OTA widgets.
- * Provides AggregateRating and Curated Good Reviews to Google.
+ * Hotel Schema.
+ *
+ * Rating/review structured data is intentionally omitted until there is a
+ * dated, verifiable source that can be audited independently.
  */
 export function hotelSchema() {
   const base = {
@@ -45,23 +45,6 @@ export function hotelSchema() {
       "@type": "Rating",
       "ratingValue": "5"
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      "ratingValue": ReputationData.overall.score,
-      "reviewCount": ReputationData.overall.reviewCount,
-      "bestRating": "10"
-    },
-    review: ReputationData.featuredReviews.map(rev => ({
-      "@type": "Review",
-      "author": { "@type": "Person", "name": rev.author },
-      "datePublished": rev.date,
-      "reviewBody": rev.content,
-      "reviewRating": {
-        "@type": "Rating",
-        "ratingValue": rev.rating,
-        "bestRating": rev.platform === "Booking.com" ? "10" : "5"
-      }
-    })),
     amenityFeature: [
       { "@type": "LocationFeatureSpecification", name: "Tarihi Taş Mimari (Horasan Harcı)", value: true },
       { "@type": "LocationFeatureSpecification", name: "İnci Hanım Güvencesinde Antakya & Ege Mutfağı", value: true },
@@ -87,7 +70,7 @@ export function hotelSchema() {
         ],
       },
     },
-    hasMenu: absoluteUrl("/restoran"),
+    hasMenu: absoluteUrl("/menu"),
     ...(env.GOOGLE_MAPS_URL ? { hasMap: env.GOOGLE_MAPS_URL } : {}),
   };
 

@@ -3,7 +3,6 @@ import Link from "next/link";
 
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { FadeIn } from "@/components/animations";
 import { absoluteUrl } from "@/lib/utils";
 
@@ -159,7 +158,6 @@ export default function FocaTravelGuidePage() {
           </div>
         </section>
       </main>
-      <SiteFooter />
     </>
   );
 }
