@@ -49,6 +49,34 @@ async function collectVisibleBrokenImages(page: import("@playwright/test").Page)
   );
 }
 
+async function waitForVisibleImages(page: import("@playwright/test").Page) {
+  await page
+    .waitForFunction(
+      () =>
+        Array.from(document.images)
+          .filter((image) => {
+            const rect = image.getBoundingClientRect();
+            const style = window.getComputedStyle(image);
+
+            return (
+              rect.width > 0 &&
+              rect.height > 0 &&
+              rect.bottom >= 0 &&
+              rect.right >= 0 &&
+              rect.top <= window.innerHeight &&
+              rect.left <= window.innerWidth &&
+              style.display !== "none" &&
+              style.visibility !== "hidden" &&
+              Number(style.opacity) !== 0
+            );
+          })
+          .every((image) => image.complete),
+      undefined,
+      { timeout: 10000 }
+    )
+    .catch(() => {});
+}
+
 test.describe("Media, video and mobile publish readiness", () => {
   test("all public hospitality media assets are present and served", async ({ request }) => {
     const mediaFiles = listMediaFiles(publicDir);
@@ -93,7 +121,7 @@ test.describe("Media, video and mobile publish readiness", () => {
 
       for (let y = 0; y <= scrollHeight; y += Math.max(320, Math.floor(viewportHeight * 0.75))) {
         await page.evaluate((targetY) => window.scrollTo(0, targetY), y);
-        await page.waitForTimeout(250);
+        await waitForVisibleImages(page);
         for (const image of await collectVisibleBrokenImages(page)) {
           brokenImages.add(image);
         }
