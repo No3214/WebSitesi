@@ -135,7 +135,7 @@ const fatal = [...missingFiles, ...missingEnvExampleKeys, ...missingScripts, ...
 const report = [
   "Kozbeyli Konagi publish readiness",
   "Target: repo 95/100, marketing publish 90/100, booking/payment 100/100",
-  "Current: repo 93/100, launch 86/100",
+  "Current: repo 95/100, marketing publish 90/100, commercial launch 86/100",
   failLine("required files", missingFiles),
   failLine("env example keys", missingEnvExampleKeys),
   failLine("package scripts", missingScripts),

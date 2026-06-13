@@ -16,7 +16,8 @@ karıştırmamaktır.
 
 ## Mevcut Durum
 
-- Repo/Kod Kalitesi: **93/100**
+- Repo/Kod Kalitesi: **95/100**
+- Marketing Publish Readiness: **90/100**
 - Ticari Launch Readiness: **86/100**
 - Karar: **Marketing publish için koşullu hazır; gerçek booking/payment için NO-GO**
 
