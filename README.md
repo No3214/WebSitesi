@@ -70,6 +70,9 @@ npm run start                    # Üretim sunucusu (port 3000)
 npm run lint                     # ESLint
 npm run typecheck                # TypeScript kontrolü
 npm run test:unit                # Vitest unit suite
+npm run test:monkey              # Lokal deterministik desktop/mobile monkey testi
+npm run test:chaos               # Lokal sert etkileşim stres testi
+npm run test:stress              # monkey + chaos
 npm run quality                  # lint + typecheck + unit + build
 npm run publish:target           # Yayın hedef/env/rota envanteri
 npm run publish:verify           # Tam publish kapısı
@@ -83,6 +86,7 @@ npm run storybook                # Storybook (port 6006)
 ```bash
 npx vitest run --project unit    # Unit testler (free-apis, sitemap, güvenlik vb.)
 npx playwright test              # E2E testler (lokal sunucuya karşı)
+npm run test:stress              # Canlı prod'u yormadan lokal monkey/chaos paketi
 
 # Canlı/staging ortamına karşı e2e koşmak için:
 PW_BASE_URL=https://kozbeylikonagi.example npx playwright test tests/e2e/ --project=chromium

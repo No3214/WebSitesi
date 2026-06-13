@@ -3,59 +3,59 @@
 import { useEffect, useState } from "react";
 import Script from "next/script";
 
+import {
+  CONSENT_STORAGE_KEY,
+  getDefaultConsent,
+  parseConsent,
+  type ConsentState,
+} from "@/lib/consent";
+import { env } from "@/lib/env";
+
 export function ConsentGatedScripts() {
-  const [consent, setConsent] = useState<{ analytics: boolean; marketing: boolean } | null>(null);
+  const [consent, setConsent] = useState<ConsentState>(getDefaultConsent());
 
   useEffect(() => {
-    const checkConsent = () => {
-      const saved = localStorage.getItem("cookie_consent_v2");
-      if (saved) {
-        try {
-          setConsent(JSON.parse(saved));
-        } catch {
-          setConsent(null);
-        }
-      }
+    const sync = () => {
+      setConsent(parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY)) || getDefaultConsent());
     };
 
-    checkConsent();
-    const handleConsentUpdate = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      setConsent(detail);
-    };
-
-    window.addEventListener("cookie-consent-updated", handleConsentUpdate);
+    sync();
+    window.addEventListener("storage", sync);
+    window.addEventListener("consent:updated", sync as EventListener);
 
     return () => {
-      window.removeEventListener("cookie-consent-updated", handleConsentUpdate);
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("consent:updated", sync as EventListener);
     };
   }, []);
 
-  if (!consent) return <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />;
-
   return (
     <>
-      <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
-      
-      {consent.analytics && (
+      {env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? (
+        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+      ) : null}
+
+      {consent.analytics && env.NEXT_PUBLIC_GTM_ID ? (
         <>
           <Script id="gtm" strategy="afterInteractive">
             {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${process.env.NEXT_PUBLIC_GTM_ID || ''}');`}
+            })(window,document,'script','dataLayer','${env.NEXT_PUBLIC_GTM_ID}');`}
           </Script>
           <noscript>
-            <iframe 
-              src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM_ID || ''}`}
-              height="0" width="0" style={{ display: 'none', visibility: 'hidden' }}
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${env.NEXT_PUBLIC_GTM_ID}`}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
             />
           </noscript>
         </>
-      )}
+      ) : null}
 
-      {consent.marketing && (
+      {consent.marketing && env.NEXT_PUBLIC_META_PIXEL_ID ? (
         <>
           <Script id="fb-pixel" strategy="afterInteractive">
             {`!function(f,b,e,v,n,t,s)
@@ -66,19 +66,21 @@ export function ConsentGatedScripts() {
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${process.env.NEXT_PUBLIC_FB_PIXEL_ID || ''}');
+            fbq('init', '${env.NEXT_PUBLIC_META_PIXEL_ID}');
             fbq('track', 'PageView');`}
           </Script>
           <noscript>
             {/* eslint-disable-next-line @next/next/no-img-element -- Meta noscript tracking pixel must remain a raw 1x1 img. */}
-            <img 
-              height="1" width="1" style={{ display: 'none' }}
-              src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_FB_PIXEL_ID || ''}&ev=PageView&noscript=1`}
+            <img
+              height="1"
+              width="1"
+              style={{ display: "none" }}
+              src={`https://www.facebook.com/tr?id=${env.NEXT_PUBLIC_META_PIXEL_ID}&ev=PageView&noscript=1`}
               alt=""
             />
           </noscript>
         </>
-      )}
+      ) : null}
     </>
   );
 }

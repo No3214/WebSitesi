@@ -63,6 +63,7 @@ const requiredEnvExampleKeys = [
   "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL",
   "NEXT_PUBLIC_WHATSAPP_URL",
   "HOTELRUNNER_WEBHOOK_SECRET",
+  "IYZICO_WEBHOOK_SECRET",
   "HMS_WEBHOOK_ES256_PUBLIC_KEY",
   "B2B_PARTNER_PUBLIC_KEY",
   "NEXT_PUBLIC_GTM_ID",
@@ -127,7 +128,17 @@ const missingSitemapRoutes = publicRoutes
   .filter((route) => !sitemapSourceCoversRoute(route));
 
 const packageJson = JSON.parse(read("package.json"));
-const requiredScripts = ["lint", "typecheck", "test:unit", "build", "publish:routes", "publish:verify"];
+const requiredScripts = [
+  "lint",
+  "typecheck",
+  "test:unit",
+  "test:monkey",
+  "test:chaos",
+  "test:stress",
+  "build",
+  "publish:routes",
+  "publish:verify",
+];
 const missingScripts = requiredScripts.filter((script) => !packageJson.scripts?.[script]);
 
 const fatal = [...missingFiles, ...missingEnvExampleKeys, ...missingScripts, ...missingSitemapRoutes];
