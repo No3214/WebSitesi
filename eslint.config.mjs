@@ -8,7 +8,7 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  { ignores: [".next/**", "dist/**", "build/**", "storybook-static/**", "test-results/**", "playwright-report/**", "src/payload-types.ts", "next-env.d.ts", "public/**", "*.log", "_legacy-emergent/**", "agent/**", "scripts/**"] },
+  { ignores: [".next/**", "dist/**", "build/**", "storybook-static/**", "test-results/**", "playwright-report/**", "src/payload-types.ts", "next-env.d.ts", "public/**", "*.log", "_legacy-emergent/**", "agent/**", "scripts/**", "scratch/**", "memory/**"] },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   ...storybook.configs["flat/recommended"]
 ];

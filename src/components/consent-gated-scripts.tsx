@@ -70,6 +70,7 @@ export function ConsentGatedScripts() {
             fbq('track', 'PageView');`}
           </Script>
           <noscript>
+            {/* eslint-disable-next-line @next/next/no-img-element -- Meta noscript tracking pixel must remain a raw 1x1 img. */}
             <img 
               height="1" width="1" style={{ display: 'none' }}
               src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_FB_PIXEL_ID || ''}&ev=PageView&noscript=1`}

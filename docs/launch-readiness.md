@@ -1,36 +1,59 @@
 # Kozbeyli Konağı — Launch Readiness Denetimi
 
-Master denetim promptunun repo üzerinde çalıştırılmış halidir (2026-06-11).
+Master denetim promptunun repo üzerinde çalıştırılmış halidir.
+Son revizyon: 2026-06-13.
 Kural: kanıt yoksa "kanıt yok"; belirsizse "belirsiz". Kanıtlar dosya yoluyla verilir.
 
 ## 1. Executive Summary
 
-Site teknik olarak güçlü bir durumda: güvenlik başlıkları, consent-gated analytics,
-schema.org kapsamı, CI + 30 yeşil test, rate-limit/replay koruması ve PII maskeli
-loglama üretim kalitesinde. Lansmanı bloke eden şey kod değil, iki dış bağımlılık:
-HMS booking engine URL'i ve Garanti Sanal POS bilgileri henüz tedarik edilmedi.
-Bunlar gelmeden uçtan uca rezervasyon + ödeme testi yapılamaz; master şartnamenin
-ek kuralı gereği karar NO-GO'dur. Kod tarafında kalan işler orta önceliklidir
-(GA4 funnel eventleri, Restaurant schema, eksik sayfalar, EN/hreflang).
+Site kod tarafında güçlü ve doğrulanmış bir durumda: güvenlik başlıkları,
+consent-gated analytics, schema.org kapsamı, CI, typecheck, lint, unit, production
+build, Playwright smoke/security/a11y ve EN rota bütünlüğü yeşil. 2026-06-13
+revizyonunda eksik yüksek niyetli EN yüzeyleri (/en/menu, /en/misafir-rehberi,
+/en/organizasyonlar, /en/teklifler), header/footer EN rota bütünlüğü, sitemap
+alternates, erişilebilir kontrast ve kalıcı kalite scriptleri tamamlandı.
 
-## 2. Launch Readiness Score: 74/100 — NO-GO (dış bağımlılık blokajı)
+Lansmanı hâlâ %100'e kilitleyen konular kod dışıdır: HMS booking engine URL'i,
+Garanti Sanal POS bilgileri, prod GTM/GA4/Meta kimlikleri, Search Console/Google
+Business Profile/Hotel Center doğrulamaları ve hukuk/onay süreçleri henüz
+kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + purchase
+ölçüm testi yapılamaz; bu yüzden ticari go-live kararı koşulludur.
+
+## 2. Current Score (rev. 2026-06-13)
+
+- **Repo/Kod Kalite Skoru: 93/100** — iç kalite kapıları yeşil; kalan 7 puan
+  gerçek üretim entegrasyonu, canlı analitik doğrulaması ve dış hesap kurulumuna
+  bağlıdır.
+- **Ticari Launch Readiness: 86/100 — CONDITIONAL GO / ödeme-rezervasyon için NO-GO**
+  — site ve içerik yüzeyi yayına hazır seviyede; gerçek ödeme ve booking akışı
+  dış bilgiler gelmeden %100 doğrulanamaz.
 
 | Alan | Max | Puan | Gerekçe |
 |---|---|---|---|
-| Strateji, persona, KPI | 8 | 6 | Marka konumlandırma net (CLAUDE.md); persona/KPI dokümante değil |
-| Bilgi mimarisi | 8 | 7 | /galeri, /sss, /cerez-politikasi eklendi (2026-06-11); /teklifler + deneyim silosu kaldı |
-| UX/UI mobil rezervasyon | 10 | 9 | Suite yeşil; 375px taşma düzeltildi; gerçek cihaz testi yapılmadı |
-| Booking/HMS/POS | 14 | 4 | Mimari + webhook güvenliği hazır; engine URL ve POS bilgisi yok → test edilemedi |
-| Güvenlik | 12 | 10 | CSP/HSTS/XFO, rate-limit, ES256+HMAC webhook; MFA yok, WAF kanıtsız |
-| KVKK/çerez | 10 | 8 | Consent-gated scripts; KVKK/gizlilik/mesafeli satış var; ayrı çerez politikası + vendor DPA listesi yok |
-| Teknik SEO | 10 | 8 | sitemap/robots/canonical/schema/llms.txt; hreflang bilinçli kapalı (EN yok) |
-| Lokal SEO/GBP/Hotel Center | 6 | 1 | Sitede NAP+GeoCoordinates var; GBP/Hotel Center kanıt yok |
-| Performans/CWV | 8 | 6 | Hero preload+fetchPriority, görsel optimizasyon; saha (CrUX/RUM) verisi yok |
-| Erişilebilirlik | 5 | 4 | Skip-link, aria, focus state'ler; WCAG 2.2 tam denetimi yapılmadı |
+| Strateji, persona, KPI | 7 | 7 | Marka konumlandırma ve concierge/growth mimarisi net; canlı KPI dashboard kanıtı yok |
+| Bilgi mimarisi | 8 | 8 | /teklifler, deneyim silosu, /galeri, /sss, /cerez-politikasi ve EN çekirdek rotalar mevcut |
+| UX/UI mobil rezervasyon | 9 | 8 | Playwright smoke + mobile prestige yeşil; gerçek cihaz testi yapılmadı |
+| Booking/HMS/POS | 12 | 5 | Fallback ve güvenlik sözleşmeleri hazır; canlı HMS URL + Garanti POS bilgisi yok |
+| Güvenlik | 11 | 10 | CSP/HSTS/XFO, rate-limit, ES256+HMAC webhook, CSRF ve fiyat tamper testleri yeşil; WAF/MFA kanıtı yok |
+| KVKK/çerez | 8 | 8 | Consent-gated scripts; KVKK/gizlilik/mesafeli satış/çerez politikası var; vendor DPA hukuk onayı yok |
+| Teknik SEO | 9 | 9 | sitemap/robots/canonical/schema/llms.txt + EN alternates/hreflang rotaları güncel |
+| Lokal SEO/GBP/Hotel Center | 5 | 1 | Sitede NAP+GeoCoordinates var; GBP/Hotel Center kanıt yok |
+| Performans/CWV | 7 | 7 | Next build temiz, görsel/video optimizasyonu ve Lighthouse CI eşiği var; CrUX/RUM yok |
+| Erişilebilirlik | 5 | 5 | Axe critical+serious = 0: /, /odalar, /rezervasyon, /sss |
 | Analytics | 5 | 4 | GA4+Meta ikili funnel (view_item/begin_checkout/generate_lead) + server-side purchase altyapısı (`lib/ga4-server.ts`) hazır; uçtan uca doğrulama engine+ID bekliyor |
 | CMS/rol | 4 | 4 | Düzeltme: admin/editor rol ayrımı zaten mevcut (`payload/collections/Users.ts`, users CRUD admin-only) |
-| QA/UAT/launch | 10 | 8 | CI 5 aşama + 35 test yeşil; rollback prosedürü README'de; canlı rezervasyon UAT'si kaldı |
-| **Toplam** | **100** | **79** | 70–79: sınırlı beta olabilir; **ek kural: POS+booking fail → yayına çıkma** (rev. 2026-06-11: 74→79) |
+| QA/UAT/launch | 10 | 10 | lint/typecheck/unit/build + 39 Playwright pass; canlı rezervasyon UAT'si kaldı |
+| **Toplam** | **100** | **86** | Kod tarafı 93/100; ticari launch 86/100 çünkü POS/HMS/analytics/GBP dış kanıt bekliyor |
+
+### 2026-06-13 Verification Evidence
+
+- `npm run lint` — PASS, 0 warning.
+- `npm run typecheck` — PASS.
+- `npm run test:unit` — PASS, 6 files / 23 tests.
+- `npm run build` — PASS, 66 routes generated.
+- `npx playwright test tests/e2e/lang-switch.spec.ts --reporter=line` — PASS, 4/4.
+- `npx playwright test tests/a11y.spec.ts --reporter=line` — PASS, 4/4.
+- `npx playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts --reporter=line` — PASS, 39 passed / 2 skipped.
 
 ## 3. Alan Bazlı Pass / Partial / Fail
 

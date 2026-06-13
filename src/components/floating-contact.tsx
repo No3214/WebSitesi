@@ -61,6 +61,8 @@ export const FloatingContact = () => {
 
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? "İletişim seçeneklerini kapat" : "İletişim seçeneklerini aç"}
+        aria-expanded={isOpen}
         className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl transition-all duration-300 ${
           isOpen ? "bg-zinc-900 rotate-90" : "bg-gold"
         }`}

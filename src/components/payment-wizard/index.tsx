@@ -12,16 +12,19 @@ import { SuccessStep } from "./steps/success-step";
 export function PaymentWizard() {
   const wizard = usePaymentWizard();
   const { step, selectedRoom } = wizard;
+  const activeStepColor = "var(--gold-text)";
+  const completedStepColor = "var(--olive)";
+  const upcomingStepColor = "var(--muted)";
 
   return (
     <div className="payment-wizard-container" style={{ background: "var(--white)", border: "1px solid var(--border)", borderRadius: 12, padding: "32px", minHeight: "500px", boxShadow: "0 10px 40px rgba(0,0,0,0.02)" }}>
       {/* Step Indicators */}
       {step !== "success" && (
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "32px", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, borderBottom: "1px solid var(--border)", paddingBottom: "18px" }}>
-          <span style={{ color: step === "dates" ? "var(--gold)" : "var(--olive)" }}>1. Tarihler</span>
-          <span style={{ color: step === "rooms" ? "var(--gold)" : selectedRoom ? "var(--olive)" : "#ccc" }}>2. Odalar</span>
-          <span style={{ color: step === "sensory" ? "var(--gold)" : step === "payment" ? "var(--olive)" : "#ccc" }}>3. Atmosfer</span>
-          <span style={{ color: step === "payment" ? "var(--gold)" : "#ccc" }}>4. Ödeme</span>
+          <span style={{ color: step === "dates" ? activeStepColor : completedStepColor }}>1. Tarihler</span>
+          <span style={{ color: step === "rooms" ? activeStepColor : selectedRoom ? completedStepColor : upcomingStepColor }}>2. Odalar</span>
+          <span style={{ color: step === "sensory" ? activeStepColor : step === "payment" ? completedStepColor : upcomingStepColor }}>3. Atmosfer</span>
+          <span style={{ color: step === "payment" ? activeStepColor : upcomingStepColor }}>4. Ödeme</span>
         </div>
       )}
 

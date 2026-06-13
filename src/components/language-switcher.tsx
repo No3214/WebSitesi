@@ -9,13 +9,17 @@ import type { CSSProperties } from "react";
 const EN_ROUTES = [
   "",
   "/odalar",
+  "/menu",
   "/gastronomi",
+  "/organizasyonlar",
   "/rezervasyon",
   "/iletisim",
   "/sss",
   "/galeri",
   "/hikayemiz",
+  "/misafir-rehberi",
   "/deneyimler",
+  "/teklifler",
 ];
 
 function isEnPath(pathname: string): boolean {

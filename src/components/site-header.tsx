@@ -19,6 +19,15 @@ const DEFAULT_LINKS: NavLink[] = [
   { href: "/iletisim", label: "İletişim" },
 ];
 
+function isEnPath(pathname: string): boolean {
+  return pathname === "/en" || pathname.startsWith("/en/");
+}
+
+function localizedHref(href: string, english: boolean): string {
+  if (!english) return href;
+  return href === "/" ? "/en" : `/en${href}`;
+}
+
 type SiteHeaderProps = {
   /** "overlay": koyu hero üzerinde şeffaf başlar, scroll ile dolar. "solid": her zaman dolu. */
   variant?: "overlay" | "solid";
@@ -26,6 +35,7 @@ type SiteHeaderProps = {
 
 export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
   const pathname = usePathname();
+  const englishPath = isEnPath(pathname || "/");
   const [links, setLinks] = useState<NavLink[]>(DEFAULT_LINKS);
   const [bookingLabel, setBookingLabel] = useState("Rezervasyon");
   const [scrolled, setScrolled] = useState(false);
@@ -80,29 +90,36 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
     <>
       <header className={headerClass}>
         <div className="container header-inner">
-          <Link href="/" className="brand-logo" aria-label="Kozbeyli Konağı — Ana sayfa">
+          <Link
+            href={localizedHref("/", englishPath)}
+            className="brand-logo"
+            aria-label={englishPath ? "Kozbeyli Konağı — Home" : "Kozbeyli Konağı — Ana sayfa"}
+          >
             <span className="logo-badge">
               <LogoMark size={34} />
             </span>
             <span className="brand-text">KOZBEYLİ KONAĞI</span>
           </Link>
 
-          <nav className="nav" aria-label="Ana menü">
-            {links.map((link) => (
+          <nav className="nav" aria-label={englishPath ? "Main menu" : "Ana menü"}>
+            {links.map((link) => {
+              const href = localizedHref(link.href, englishPath);
+              return (
               <Link
                 key={link.href}
-                href={link.href}
+                href={href}
                 className="nav-link"
-                aria-current={pathname === link.href ? "page" : undefined}
+                aria-current={pathname === href ? "page" : undefined}
               >
                 {link.label}
               </Link>
-            ))}
+              );
+            })}
           </nav>
 
           <div className="header-actions">
             <LanguageSwitcher />
-            <Link className="button gold sm" href="/rezervasyon">
+            <Link className="button gold sm" href={localizedHref("/rezervasyon", englishPath)}>
               {bookingLabel}
             </Link>
             <button
@@ -110,7 +127,15 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
               className={`menu-toggle ${menuOpen ? "open" : ""}`}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
+              aria-label={
+                englishPath
+                  ? menuOpen
+                    ? "Close menu"
+                    : "Open menu"
+                  : menuOpen
+                    ? "Menüyü kapat"
+                    : "Menüyü aç"
+              }
               onClick={() => setMenuOpen((v) => !v)}
             >
               <span />
@@ -131,7 +156,7 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
             exit={{ opacity: 0, clipPath: "inset(0 0 100% 0)" }}
             transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
           >
-            <nav aria-label="Mobil menü">
+            <nav aria-label={englishPath ? "Mobile menu" : "Mobil menü"}>
               {links.map((link, i) => (
                 <motion.div
                   key={link.href}
@@ -139,7 +164,7 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.12 + i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <Link href={link.href} onClick={() => setMenuOpen(false)}>
+                  <Link href={localizedHref(link.href, englishPath)} onClick={() => setMenuOpen(false)}>
                     {link.label}
                     <span className="idx">0{i + 1}</span>
                   </Link>
@@ -152,7 +177,7 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
                 transition={{ delay: 0.12 + links.length * 0.06, duration: 0.5 }}
               >
                 <Link
-                  href="/rezervasyon"
+                  href={localizedHref("/rezervasyon", englishPath)}
                   className="button gold"
                   style={{ width: "100%", borderBottom: "none", fontSize: "0.85rem" }}
                   onClick={() => setMenuOpen(false)}

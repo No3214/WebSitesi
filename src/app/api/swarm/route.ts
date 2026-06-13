@@ -1,53 +1,156 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { z } from "zod";
 
-import { errField, logEvent } from '@/lib/logger';
+import { errField, logEvent } from "@/lib/logger";
+import { safeText } from "@/lib/security";
 
-/**
- * Swarm AI Orchestrator
- * Routes incoming AI task requests to the appropriate specialized sub-agent.
- */
+const taskTypes = [
+  "sales-concierge",
+  "pricing-agent",
+  "content-architect",
+  "design-agent",
+  "ecc-check",
+  "growth-engine",
+] as const;
+
+type TaskType = (typeof taskTypes)[number];
+type SwarmTaskResult = {
+  agent: string;
+  summary: string;
+  nextActions?: string[];
+  supportingAgents?: SwarmTaskResult[];
+};
+
+const requestSchema = z.object({
+  taskType: z.enum(taskTypes),
+  payload: z.record(z.unknown()).optional().default({}),
+});
+
+function sanitizePayload(payload: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(payload).map(([key, value]) => [
+      safeText(key, 48),
+      typeof value === "string" ? safeText(value, 280) : value,
+    ]),
+  );
+}
+
+function runTask(taskType: TaskType, payload: Record<string, unknown>): SwarmTaskResult {
+  const context = typeof payload.context === "string" ? payload.context : "";
+  const dates = typeof payload.dates === "string" ? payload.dates : "seçilen tarihler";
+
+  switch (taskType) {
+    case "sales-concierge":
+      return {
+        agent: "sales-concierge",
+        summary:
+          `Misafir talebi ${dates} için concierge akışına alındı. Yanıt, direkt rezervasyon avantajı yerine uygunluk ve kişiselleştirilmiş planlama üzerinden kurulmalı.`,
+        nextActions: [
+          "HMS linki yoksa WhatsApp fallback ile uygunluk al",
+          "Oda tercihi, kişi sayısı ve özel beklentiyi tek mesajda netleştir",
+          "Fiyat veya garanti edilmeyen kampanya uydurma",
+        ],
+      };
+    case "pricing-agent":
+      return {
+        agent: "pricing-agent",
+        summary:
+          "Canlı PMS/HMS fiyat kaynağı bağlı olmadığı için otomatik fiyat artırımı yapılmaz; sadece dönemsel talep sinyali ve manuel teklif önerisi üretildi.",
+        nextActions: [
+          "Canlı stok ve fiyat kaynağı gelene kadar fiyatı sabitleme",
+          "Hafta sonu ve etkinlik taleplerini concierge onayına yönlendir",
+          "Teklif sayfasında fiyat göstermeme kuralını koru",
+        ],
+      };
+    case "content-architect":
+      return {
+        agent: "content-architect",
+        summary:
+          "İçerik önerisi marka sözlüğüne göre değerlendirildi: authentic, curation, historic texture ve Aegean hospitality ekseni korunmalı.",
+        nextActions: [
+          "Kozbeyli, Foça, taş mimari, dibek kahvesi ve Antakya-Ege mutfağı bağlamını güçlendir",
+          "Yerel işletme veya tarih iddiası için kanıt yoksa ekleme",
+          "TR birincil, EN uluslararası misafir için kısa ve rafine olmalı",
+        ],
+      };
+    case "design-agent":
+      return {
+        agent: "design-agent",
+        summary:
+          "Tasarım kontrolü: taş, zeytin, sabah güneşi, warm white ve deep azure kimliği korunmalı; kart yoğunluğu ve düşük kontrast izlenmeli.",
+        nextActions: [
+          "Küçük altın metinlerde erişilebilir koyu altın tonu kullan",
+          "Hero ve oda görsellerinde gerçek ürün sinyalini koru",
+          "Mobilde CTA ve dil geçişi TR/EN rota bütünlüğünü bozmasın",
+        ],
+      };
+    case "ecc-check":
+      return {
+        agent: "ecc-check",
+        summary:
+          "ECC güvenlik kapısı fail-closed çalışır: imza, origin veya zorunlu alan yoksa işlem onaylanmaz.",
+        nextActions: [
+          "Webhook imzalarını production secret ile doğrula",
+          "Tekrar saldırısı için Upstash Redis production env gir",
+          "Ödeme/POS bilgisi olmadan tahsilat yapıldığı izlenimi verme",
+        ],
+      };
+    case "growth-engine":
+      return {
+        agent: "master-growth-engine",
+        summary:
+          `Growth swarm ${context || "genel yayın hazırlığı"} bağlamında beş alt ajanı koordine etti.`,
+        supportingAgents: [
+          runTask("sales-concierge", payload),
+          runTask("pricing-agent", payload),
+          runTask("content-architect", payload),
+          runTask("design-agent", payload),
+          runTask("ecc-check", payload),
+        ],
+      };
+  }
+}
+
+export function GET() {
+  return NextResponse.json({
+    mode: "deterministic-advisory",
+    allowedTaskTypes: taskTypes,
+    productionNote:
+      "This endpoint produces governed recommendations. It does not execute paid media, pricing, payment or external booking actions.",
+  });
+}
+
 export async function POST(req: Request) {
   try {
-    const { taskType, payload } = await req.json();
+    const parsed = requestSchema.safeParse(await req.json());
 
-    if (!taskType || !payload) {
-      return NextResponse.json({ error: 'Missing taskType or payload' }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: "Invalid swarm task",
+          allowedTaskTypes: taskTypes,
+          issues: parsed.error.issues.map((issue) => issue.path.join(".")),
+        },
+        { status: 400 },
+      );
     }
 
-    switch (taskType) {
-      case 'sales-concierge':
-        // Mock routing logic to the sales-concierge agent
-        return NextResponse.json({
-          status: 'success',
-          agent: 'sales-concierge',
-          response: `Harika bir tercih! ${payload.dates || 'İstediğiniz tarihlerde'} Kozbeyli Konağı'nın tarihi atmosferinde sizi ağırlamaktan mutluluk duyarız. Doğrudan rezervasyon için size özel avantajlarımız mevcut.`
-        });
+    const payload = sanitizePayload(parsed.data.payload);
 
-      case 'pricing-agent':
-        // Mock dynamic pricing strategy logic
-        return NextResponse.json({
-          status: 'success',
-          agent: 'pricing-agent',
-          response: {
-            recommendedAction: 'increase',
-            percentage: 5,
-            reason: 'High demand detected in Foça region for upcoming weekend.'
-          }
-        });
-
-      case 'growth-engine':
-        // Master growth engine orchestration
-        return NextResponse.json({
-          status: 'success',
-          agent: 'master-growth-engine',
-          response: 'Audit completed. Directing content-architect to generate Foça Gastronomy keywords.'
-        });
-
-      default:
-        return NextResponse.json({ error: 'Unknown agent or taskType' }, { status: 404 });
-    }
+    return NextResponse.json({
+      status: "success",
+      mode: "deterministic-advisory",
+      taskType: parsed.data.taskType,
+      payload,
+      result: runTask(parsed.data.taskType, payload),
+      governance: {
+        executesExternalActions: false,
+        requiresHumanApproval: ["pricing", "payments", "booking-engine", "paid-media"],
+        evidenceRequired: true,
+      },
+    });
   } catch (err) {
-    logEvent('error', 'swarm.unhandled', { err: errField(err) });
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    logEvent("error", "swarm.unhandled", { err: errField(err) });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

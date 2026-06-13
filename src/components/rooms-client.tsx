@@ -35,7 +35,7 @@ export function RoomsClient() {
             <div className="card-grid">
               {fallbackRooms.map((room, index) => (
                 <FadeIn key={room.slug}>
-                  <Link href={`/odalar/${room.slug}`} className="card">
+                  <Link href={`${locale === "en" ? "/en" : ""}/odalar/${room.slug}`} className="card">
                     <div className="card-media">
                       <Image
                         src={room.images[0]}
@@ -70,7 +70,7 @@ export function RoomsClient() {
                   ? "Hangi odanın size uygun olduğundan emin değil misiniz? Concierge ekibimiz yardımcı olsun."
                   : "Not sure which room suits you best? Let our concierge team help."}
               </p>
-              <Link href="/rezervasyon" className="button gold">
+              <Link href={locale === "en" ? "/en/rezervasyon" : "/rezervasyon"} className="button gold">
                 {locale === "tr" ? "Müsaitlik Sorgula" : "Check Availability"}
               </Link>
             </div>

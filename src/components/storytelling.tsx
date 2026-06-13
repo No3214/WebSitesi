@@ -1,10 +1,25 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 const EASE_LUX = [0.16, 1, 0.3, 1] as const;
+
+function useDesktopHorizontalMotion() {
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 768px)");
+    const update = () => setEnabled(query.matches);
+
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  return enabled;
+}
 
 interface StorySegmentProps {
   title: string;
@@ -19,16 +34,19 @@ interface StorySegmentProps {
  */
 export const StorySegment = ({ title, content, image, side = "left" }: StorySegmentProps) => {
   const ref = useRef(null);
+  const desktopHorizontalMotion = useDesktopHorizontalMotion();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
 
+  const startX = desktopHorizontalMotion ? (side === "left" ? -40 : 40) : 0;
+  const endX = desktopHorizontalMotion ? (side === "left" ? -24 : 24) : 0;
   const opacity = useTransform(scrollYProgress, [0, 0.22, 0.78, 1], [0, 1, 1, 0.35]);
   const x = useTransform(
     scrollYProgress,
     [0, 0.22, 0.78, 1],
-    [side === "left" ? -40 : 40, 0, 0, side === "left" ? -24 : 24]
+    [startX, 0, 0, endX]
   );
 
   return (

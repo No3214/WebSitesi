@@ -2,14 +2,26 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { getDictionary } from "@/lib/dictionary";
 import { getPhoneHref, MAPS_URL, PHONE_DISPLAY } from "@/lib/contact";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
 import { LogoMark } from "./logo-mark";
 
+function isEnPath(pathname: string): boolean {
+  return pathname === "/en" || pathname.startsWith("/en/");
+}
+
+function localizedHref(href: string, english: boolean): string {
+  if (!english) return href;
+  return href === "/" ? "/en" : `/en${href}`;
+}
+
 export function SiteFooter() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
+  const pathname = usePathname();
+  const englishPath = isEnPath(pathname || "/");
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
@@ -55,16 +67,16 @@ export function SiteFooter() {
           <div>
             <h4>{t?.explore || "Keşfedin"}</h4>
             <ul>
-              <li><Link href="/hikayemiz">Hikayemiz</Link></li>
-              <li><Link href="/odalar">Odalarımız</Link></li>
-              <li><Link href="/gastronomi">Gastronomi</Link></li>
-              <li><Link href="/organizasyonlar">Davet & Organizasyon</Link></li>
-              <li><Link href="/galeri">Galeri</Link></li>
-              <li><Link href="/misafir-rehberi">Misafir Rehberi</Link></li>
-              <li><Link href="/deneyimler">Deneyimler</Link></li>
-              <li><Link href="/teklifler">Teklifler</Link></li>
-              <li><Link href="/sss">Sık Sorulanlar</Link></li>
-              <li><Link href="/rezervasyon">Rezervasyon</Link></li>
+              <li><Link href={localizedHref("/hikayemiz", englishPath)}>{englishPath ? "Our Story" : "Hikayemiz"}</Link></li>
+              <li><Link href={localizedHref("/odalar", englishPath)}>{englishPath ? "Rooms" : "Odalarımız"}</Link></li>
+              <li><Link href={localizedHref("/gastronomi", englishPath)}>{englishPath ? "Dining" : "Gastronomi"}</Link></li>
+              <li><Link href={localizedHref("/organizasyonlar", englishPath)}>{englishPath ? "Events" : "Davet & Organizasyon"}</Link></li>
+              <li><Link href={localizedHref("/galeri", englishPath)}>{englishPath ? "Gallery" : "Galeri"}</Link></li>
+              <li><Link href={localizedHref("/misafir-rehberi", englishPath)}>{englishPath ? "Guest Guide" : "Misafir Rehberi"}</Link></li>
+              <li><Link href={localizedHref("/deneyimler", englishPath)}>{englishPath ? "Experiences" : "Deneyimler"}</Link></li>
+              <li><Link href={localizedHref("/teklifler", englishPath)}>{englishPath ? "Offers" : "Teklifler"}</Link></li>
+              <li><Link href={localizedHref("/sss", englishPath)}>{englishPath ? "FAQ" : "Sık Sorulanlar"}</Link></li>
+              <li><Link href={localizedHref("/rezervasyon", englishPath)}>{englishPath ? "Booking" : "Rezervasyon"}</Link></li>
             </ul>
           </div>
 

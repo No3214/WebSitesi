@@ -62,6 +62,7 @@ export function TrackingScripts() {
             fbq('track', 'PageView');`}
           </Script>
           <noscript>
+            {/* eslint-disable-next-line @next/next/no-img-element -- Meta noscript tracking pixel must remain a raw 1x1 img. */}
             <img
               height="1"
               width="1"

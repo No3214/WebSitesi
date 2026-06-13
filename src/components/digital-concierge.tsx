@@ -141,7 +141,9 @@ export function DigitalConcierge() {
         }
 
         .concierge-trigger {
-          background: var(--gold, #B59458);
+          /* a11y (T18): gold zeminde beyaz metin 4.5:1 altindaydi; SABIT koyu olive
+             (gece paleti --olive-deep'i acik renge cevirdiginden degisken kullanilmaz) */
+          background: #2c3729;
           color: white;
           border: none;
           padding: 12px 24px;

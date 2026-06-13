@@ -44,13 +44,18 @@ Payload admin paneli: `http://localhost:3000/admin` (ilk kullanıcı panelden ol
 | `PAYLOAD_SECRET` | Payload oturum/şifreleme anahtarı | Uzun rastgele dize üret (`openssl rand -hex 32`) |
 | `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` | Online rezervasyon motoru linki | HMS panelindeki booking engine linki. Boş bırakılırsa site WhatsApp fallback ile çalışır; yayını engellemez |
 | `NEXT_PUBLIC_WHATSAPP_URL` | WhatsApp iletişim/rezervasyon fallback linki | `https://wa.me/<telefon>` formatında otel numarası |
-| `NEXT_PUBLIC_HOTELRUNNER_SLUG` | HotelRunner widget/entegrasyon kimliği | HotelRunner paneli > hesap slug'ı |
-| `HOTELRUNNER_WEBHOOK_SECRET` | HotelRunner webhook imza doğrulama sırrı | HotelRunner webhook ayarlarında tanımlanan secret |
+| `HOTELRUNNER_WEBHOOK_SECRET` | HMS/legacy webhook HMAC imza doğrulama sırrı | HMS webhook ayarlarında tanımlanan secret |
+| `HMS_WEBHOOK_ES256_PUBLIC_KEY` | HMS ECC imzalı webhook public key'i | HMS SPKI PEM public key |
+| `B2B_PARTNER_PUBLIC_KEY` | B2B availability endpoint partner public key'i | Partner onboarding sonrası SPKI PEM |
 | `NEXT_PUBLIC_GTM_ID` | Google Tag Manager container ID | GTM paneli (`GTM-XXXXXXX`) |
 | `NEXT_PUBLIC_META_PIXEL_ID` | Meta (Facebook) Pixel kimliği | Meta Events Manager |
 | `GOOGLE_SITE_VERIFICATION` | Search Console site doğrulama meta etiketi | Google Search Console > Ownership verification |
 | `FACEBOOK_DOMAIN_VERIFICATION` | Meta alan adı doğrulama etiketi | Meta Business Manager > Brand Safety > Domains |
 | `GOOGLE_MAPS_URL` | İşletmenin Google Haritalar linki | Google Maps > Paylaş > Bağlantıyı kopyala |
+| `GA4_MEASUREMENT_ID` | Server-side GA4 Measurement Protocol stream ID | GA4 Admin > Data Streams |
+| `GA4_API_SECRET` | Server-side purchase event secret | GA4 Admin > Measurement Protocol API secrets |
+| `UPSTASH_REDIS_REST_URL` | Production rate-limit/replay shared backend | Upstash Redis REST |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash REST token | Upstash Redis REST |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile bot koruması (istemci) | Cloudflare Dashboard > Turnstile > Site key |
 | `TURNSTILE_SECRET_KEY` | Turnstile sunucu tarafı doğrulama anahtarı | Cloudflare Dashboard > Turnstile > Secret key |
 | `AI_PROVIDER` | AI Concierge sağlayıcısı (`none` = kapalı) | Manuel; `none` bırakılırsa kurallı fallback çalışır |
@@ -70,6 +75,11 @@ npm run dev                      # Geliştirme sunucusu (port 3000)
 npm run build                    # Üretim derlemesi
 npm run start                    # Üretim sunucusu (port 3000)
 npm run lint                     # ESLint
+npm run typecheck                # TypeScript kontrolü
+npm run test:unit                # Vitest unit suite
+npm run quality                  # lint + typecheck + unit + build
+npm run publish:target           # Yayın hedef/env/rota envanteri
+npm run publish:verify           # Tam publish kapısı
 npm run payload:types            # Payload tip üretimi (payload-types.ts)
 npm run seed                     # Örnek içerik tohumlama (scripts/seed.mjs)
 npm run storybook                # Storybook (port 6006)
@@ -118,6 +128,28 @@ Tüm çağrılar server-side yapılır, 30 dakikalık Next.js fetch cache ile ko
 
 `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` boşken de site sorunsuz yayınlanır; rezervasyon CTA'ları WhatsApp'a yönlenir.
 
+### Publish hedefi
+
+Yayın hedefi ve GO/NO-GO kapıları: `docs/publish-target.md`.
+
+Özet:
+
+- Repo/kod hedefi: **95/100**
+- Marketing publish hedefi: **90/100**
+- Booking/payment hedefi: **100/100** ve HMS + Garanti Sanal POS dış bilgileri gelmeden NO-GO
+
+Yayın öncesi tek komut:
+
+```bash
+npm run publish:verify
+```
+
+Bu komut lint, typecheck, unit, production build, tüm TR/EN public rota smoke,
+security, prestige/mobile, a11y ve publish target envanterini çalıştırır.
+
+> Vercel CLI bu makinede kurulu değil. Env pull/deploy/logs için:
+> `npm i -g vercel`
+
 ### Railway (legacy)
 
 Kökteki `railway.json` eski Railway dağıtımından kalmadır; aktif hedef Vercel'dir.
@@ -164,13 +196,13 @@ Aşağıdaki yüzeyler **gerçek değildir**; yeni geliştiriciler canlı sanmas
 | Yüzey | Durum |
 | --- | --- |
 | `/api/checkout` + rezervasyon sihirbazı | **Tahsilat YAPMAZ ve kart bilgisi İSTEMEZ.** Akış bir ön-rezervasyon talebi kaydeder; ödeme **Garanti BBVA Sanal POS** 3D Secure sayfasında ayrı adımda alınacak (karar + entegrasyon planı: `docs/odeme-karari.md`). PAN bu uygulamaya asla girmez. |
-| `/api/swarm` | Hardcoded mock ajan cevapları döner; üretim entegrasyonu yoktur. |
+| `/api/swarm` | Deterministik advisory endpoint'tir. İzinli task tiplerini doğrular, payload sanitize eder, alt ajan önerileri döndürür; fiyat, ödeme, paid media veya booking action **çalıştırmaz**. |
 | `/api/v1/availability` | `B2B_PARTNER_PUBLIC_KEY` env tanımlı değilse **404** döner (varsayılan kapalı). Gerçek partner onboard olunca SPKI PEM eklenir. |
 | `/admin/growth` | Payload admin oturumu zorunludur; metrikler simülasyondur. |
 
 ## CI
 
-`.github/workflows/ci.yml`: her push/PR'da **lint → vitest(unit) → build → Playwright e2e smoke**.
+`.github/workflows/ci.yml`: her push/PR'da **lint → typecheck → vitest(unit) → build → Playwright e2e smoke → Lighthouse CI**.
 Kırmızı pipeline'da merge etmeyin. `lib/env.ts` `CI=true` iken zorunlu secret kontrolünü atlar;
 bu sayede CI build'i secret'sız çalışır.
 

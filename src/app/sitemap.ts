@@ -8,13 +8,17 @@ import { rooms } from '@/data/rooms';
 const EN_ROUTES = new Set([
   '',
   '/odalar',
+  '/menu',
   '/gastronomi',
+  '/organizasyonlar',
   '/rezervasyon',
   '/iletisim',
   '/sss',
   '/galeri',
   '/hikayemiz',
+  '/misafir-rehberi',
   '/deneyimler',
+  '/teklifler',
 ]);
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -50,6 +54,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/galeri',
     '/sss',
     '/iletisim',
+    '/odeme',
     '/kvkk',
     '/gizlilik-politikasi',
     '/cerez-politikasi',

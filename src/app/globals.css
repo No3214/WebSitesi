@@ -28,6 +28,7 @@
   --olive: #3d4a3b;
   --olive-deep: #2c3729;
   --gold: #b3925c;
+  --gold-text: #765522;
   --gold-soft: #cfb389;
   --ivory: #faf9f6;
   --soft: #f0ede6;
@@ -36,7 +37,8 @@
   --ink: #14161a;
   --ink-soft: #1d2025;
   --text: #1a1a1a;
-  --muted: #5d5a52;
+  /* a11y (T18): #5d5a52 soft zeminde 4.5:1 altında kalıyordu; AA için koyulaştırıldı */
+  --muted: #524e46;
   --white: #ffffff;
   --border: rgba(61, 74, 59, 0.1);
   --border-dark: rgba(250, 249, 246, 0.14);
@@ -792,7 +794,7 @@
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: var(--gold);
+    color: var(--gold-text);
     font-weight: 700;
     display: block;
     margin-bottom: 10px;
@@ -1435,11 +1437,12 @@
   .cookie-content p {
     font-size: 0.85rem;
     margin: 0;
-    color: #666;
+    /* a11y (T18): #666 beyaz zeminde sınırda; AA için koyulaştırıldı */
+    color: #4a4a4a;
   }
 
   .cookie-content p a {
-    color: var(--gold);
+    color: var(--gold-text);
     text-decoration: underline;
   }
 
@@ -1667,4 +1670,50 @@
     scroll-behavior: auto !important;
   }
   .hero-video { display: none !important; }
+}
+
+/* Header uses a custom `.container` contract; Tailwind's utility layer can
+   otherwise widen it to 100% and create mobile horizontal overflow. */
+.site-header .container.header-inner {
+  width: min(1280px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.site-header .brand-logo {
+  min-width: 0;
+}
+
+.site-header .brand-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.site-header .header-actions {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .site-header .container.header-inner {
+    width: calc(100% - 32px);
+    gap: 12px;
+  }
+
+  .site-header .brand-logo {
+    gap: 10px;
+  }
+
+  .site-header .brand-text {
+    font-size: 0.92rem;
+    letter-spacing: 0.12em;
+  }
+
+  .site-header .header-actions {
+    gap: 10px;
+  }
+
+  .site-header .lang-switcher {
+    padding: 6px 8px !important;
+    gap: 5px !important;
+  }
 }

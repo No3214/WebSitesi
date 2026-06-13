@@ -1,5 +1,7 @@
 // Trigger.dev v3 configuration
-export default {
+const triggerConfig = {
   project: "kozbeyli-konagi",
   runtime: "node"
 };
+
+export default triggerConfig;

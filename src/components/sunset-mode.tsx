@@ -78,7 +78,14 @@ export const SunsetMode = () => {
             --ivory: #c5a059;
             --text: #e5e5e5;
             --border: rgba(255,255,255,0.1);
+            /* a11y (T18): gece paletinde metin degiskenleri de acilmali —
+               koyu kartta koyu olive/muted 4.5:1 altinda kaliyordu */
+            --olive: #cfd8cc;
+            --olive-deep: #e3e8e0;
+            --muted: #b3afa6;
+            --stone-warm: #242424;
           }
+          .cookie-content p { color: #cfcdc8 !important; }
           body {
             background-color: #121212;
             color: #e5e5e5;

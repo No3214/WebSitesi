@@ -22,6 +22,8 @@ export function GalleryStrip({ locale }: { locale: "tr" | "en" }) {
         <div className="container" style={{ width: "min(1400px, 100%)" }}>
           <div
             className="gallery-strip"
+            role="region"
+            tabIndex={0}
             aria-label={locale === "tr" ? "Konak fotoğraf galerisi" : "Mansion photo gallery"}
           >
             {galleryShots.map((shot, i) => (

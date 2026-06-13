@@ -22,40 +22,43 @@ export function DatesStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--olive)" }}>
+          <label htmlFor="pw-checkin" style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--olive)" }}>
             <Calendar size={14} style={{ inlineSize: 14, verticalAlign: "middle", marginRight: 6 }} />
             Giriş Tarihi
           </label>
           <input
+            id="pw-checkin"
             type="date"
             value={checkIn}
             onChange={(e) => setCheckIn(e.target.value)}
-            style={{ width: "100%", padding: 14, border: "1px solid var(--border)", borderRadius: 6, fontSize: "1rem", outline: "none" }}
+            style={{ width: "100%", padding: 14, border: "1px solid var(--border)", borderRadius: 6, fontSize: "1rem", outline: "none", color: "var(--text)", background: "var(--white)" }}
           />
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--olive)" }}>
+          <label htmlFor="pw-checkout" style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--olive)" }}>
             <Calendar size={14} style={{ inlineSize: 14, verticalAlign: "middle", marginRight: 6 }} />
             Çıkış Tarihi
           </label>
           <input
+            id="pw-checkout"
             type="date"
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
-            style={{ width: "100%", padding: 14, border: "1px solid var(--border)", borderRadius: 6, fontSize: "1rem", outline: "none" }}
+            style={{ width: "100%", padding: 14, border: "1px solid var(--border)", borderRadius: 6, fontSize: "1rem", outline: "none", color: "var(--text)", background: "var(--white)" }}
           />
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--olive)" }}>
+          <label htmlFor="pw-guests" style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--olive)" }}>
             <Users size={14} style={{ inlineSize: 14, verticalAlign: "middle", marginRight: 6 }} />
             Konuk Sayısı
           </label>
           <select
+            id="pw-guests"
             value={guests}
             onChange={(e) => setGuests(Number(e.target.value))}
-            style={{ width: "100%", padding: 14, border: "1px solid var(--border)", borderRadius: 6, fontSize: "1rem", outline: "none", background: "transparent" }}
+            style={{ width: "100%", padding: 14, border: "1px solid var(--border)", borderRadius: 6, fontSize: "1rem", outline: "none", background: "var(--white)", color: "var(--text)" }}
           >
             <option value={1}>1 Yetişkin</option>
             <option value={2}>2 Yetişkin</option>

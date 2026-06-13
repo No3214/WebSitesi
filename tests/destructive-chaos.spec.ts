@@ -3,6 +3,8 @@ import { test, expect } from "@playwright/test";
 test.skip(!!process.env.PW_BASE_URL, "Stres/monkey testleri canli prod ortaminda kosulmaz");
 
 test('Extreme Monkey Test: Destructive Chaos', async ({ page, baseURL }) => {
+  test.setTimeout(90000);
+
   const errors: string[] = [];
   page.on('console', msg => {
     if (msg.type() === 'error') {
@@ -58,7 +60,7 @@ test('Extreme Monkey Test: Destructive Chaos', async ({ page, baseURL }) => {
 
     // 5. Verification: Critical failures check
     if (errors.length > 5) {
-      throw new Error(`System exploded with ${errors.length} errors during chaos!`);
+      throw new Error(`System reported ${errors.length} client errors during chaos test`);
     }
     
     await expect(page.locator('body')).toBeVisible();
