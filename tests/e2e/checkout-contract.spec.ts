@@ -23,6 +23,7 @@ const validBody = {
   light: "Loş",
   promoCode: "",
   totalPrice: 9000, // 2 gece x 4500 — sunucu hesabıyla eşleşir
+  consent: true,
 };
 
 test.describe("Checkout API kontratları", () => {
@@ -52,5 +53,26 @@ test.describe("Checkout API kontratları", () => {
     expect(res.status()).toBe(400);
     const json = await res.json();
     expect(String(json.message)).toContain("doğrulanamadı");
+  });
+
+  test("KVKK onayı yoksa 400 ile reddedilir", async ({ request, baseURL }) => {
+    const res = await request.post(`${baseURL}/api/checkout`, {
+      headers: { origin: baseURL! },
+      data: { ...validBody, consent: false },
+    });
+    expect(res.status()).toBe(400);
+    const json = await res.json();
+    expect(String(json.message)).toContain("KVKK");
+  });
+
+  test("KVKK onayı eksikse 400 ile reddedilir", async ({ request, baseURL }) => {
+    const { consent: _consent, ...bodyWithoutConsent } = validBody;
+    void _consent;
+
+    const res = await request.post(`${baseURL}/api/checkout`, {
+      headers: { origin: baseURL! },
+      data: bodyWithoutConsent,
+    });
+    expect(res.status()).toBe(400);
   });
 });

@@ -11,6 +11,7 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
   const {
     handlePaymentSubmit,
     guestName, setGuestName, guestPhone, setGuestPhone, guestEmail, setGuestEmail,
+    consent, setConsent,
     paymentError,
     setStep, isSubmitting, finalPrice,
     selectedRoom, checkIn, checkOut, nights, guests,
@@ -78,6 +79,39 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
           style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
         />
 
+        <label
+          style={{
+            display: "flex",
+            gap: 10,
+            alignItems: "flex-start",
+            padding: "12px 14px",
+            border: "1px solid var(--border)",
+            borderRadius: 8,
+            fontSize: "0.82rem",
+            lineHeight: 1.5,
+            color: "var(--muted)",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(event) => setConsent(event.target.checked)}
+            required
+            style={{ marginTop: 3, flex: "none" }}
+          />
+          <span>
+            Ön-rezervasyon talebimin değerlendirilmesi için kişisel verilerimin{" "}
+            <a href="/kvkk" style={{ color: "var(--olive)", fontWeight: 700 }}>
+              KVKK aydınlatma metni
+            </a>{" "}
+            ve{" "}
+            <a href="/gizlilik-politikasi" style={{ color: "var(--olive)", fontWeight: 700 }}>
+              gizlilik politikası
+            </a>{" "}
+            kapsamında işlenmesini onaylıyorum.
+          </span>
+        </label>
+
         {paymentError && <p style={{ color: "#c2410c", fontSize: "0.85rem", margin: 0 }}>{paymentError}</p>}
 
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
@@ -87,7 +121,7 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
           <button
             type="submit"
             className="button primary"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !consent}
             style={{ display: "flex", alignItems: "center", gap: 8 }}
           >
             {isSubmitting

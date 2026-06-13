@@ -31,10 +31,10 @@ Core Instructions:
         "Authorization": `Bearer ${this.apiKey}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "https://kozbeylikonagi.com.tr",
-        "X-Title": "Kozbeyli Konagi AI Engine"
+        "X-Title": "Kozbeyli Konagi Operations Engine"
       },
       body: JSON.stringify({
-        model: "openai/gpt-4o-mini", // Cost-effective yet high-reasoning for concierge
+        model: "openai/gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
           ...messages

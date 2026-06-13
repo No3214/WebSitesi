@@ -3,7 +3,6 @@ import type { Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { Suspense } from "react";
 import { CookieConsent } from "@/components/cookie-consent";
-import { DigitalConcierge } from "@/components/digital-concierge";
 import { SiteFooter } from "@/components/site-footer";
 import { TrackingScripts } from "@/components/tracking-scripts";
 import { defaultMetadata } from "@/lib/metadata";
@@ -60,7 +59,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             <ExitIntent />
             <SunsetMode />
             <MobileActionBar />
-            <DigitalConcierge />
             <CookieConsent />
           </CSPostHogProvider>
         </ErrorBoundary>

@@ -83,7 +83,7 @@ export function GrowthDashboardClient() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             { label: "Direct Booking ROI", value: "+24.8%", icon: <Zap className="text-amber-400" />, trend: "up" },
-            { label: "AI Satisfaction", value: "98.2%", icon: <Cpu className="text-blue-400" />, trend: "steady" },
+            { label: "Guest Inquiry Quality", value: "98.2%", icon: <Cpu className="text-blue-400" />, trend: "steady" },
             { label: "Lead Capture Rate", value: "12.4%", icon: <Target className="text-rose-400" />, trend: "up" },
             { label: "Data Integrity", value: "99.9%", icon: <ShieldCheck className="text-emerald-400" />, trend: "steady" },
           ].map((metric, i) => (
@@ -153,7 +153,7 @@ export function GrowthDashboardClient() {
                   <ShieldCheck className="text-emerald-400" size={20} />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-white uppercase tracking-tighter">AI Security Hardening</p>
+                  <p className="text-xs font-bold text-white uppercase tracking-tighter">Security Hardening</p>
                   <p className="text-[10px] text-zinc-500 font-mono tracking-tight">Status: ACTIVE · Rate Limit: 5req/min · Guardrail: ON</p>
                 </div>
               </div>
@@ -226,7 +226,7 @@ export function GrowthDashboardClient() {
                   <h3 className="text-4xl font-black text-white">{health.status}</h3>
                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse mb-2" />
                 </div>
-                <p className="text-[10px] text-zinc-600 font-mono mt-4">AI ENGAGEMENT: {(health.metrics.ai_engagement * 100).toFixed(0)}%</p>
+                <p className="text-[10px] text-zinc-600 font-mono mt-4">LEAD ENGAGEMENT: {(health.metrics.lead_engagement * 100).toFixed(0)}%</p>
               </div>
 
               <div className="p-8 bg-black border border-zinc-800 rounded-3xl group hover:border-zinc-700 transition-all duration-500 shadow-2xl relative overflow-hidden">

@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 
 test.describe("Security Audit Test", () => {
   const webhookSecret = process.env.HOTELRUNNER_WEBHOOK_SECRET || "hotelrunner-dev-secret";
+  const iyzicoWebhookSecret = process.env.IYZICO_WEBHOOK_SECRET || "iyzico-dev-secret";
 
   test("should have strict security headers", async ({ request, baseURL }) => {
     const url = baseURL || "http://localhost:3006";
@@ -158,6 +159,17 @@ test.describe("Security Audit Test", () => {
     expect(response.status()).toBe(403);
   });
 
+  test("chat API should not be exposed after Digital Kahya removal", async ({ request, baseURL }) => {
+    const url = baseURL || "http://localhost:3006";
+    const response = await request.post(`${url}/api/chat`, {
+      data: {
+        messages: [{ role: "user", content: "Merhaba" }],
+      },
+    });
+
+    expect([404, 405]).toContain(response.status());
+  });
+
   test("iyzico webhook should reject missing signature", async ({ request, baseURL }) => {
     const url = baseURL || "http://localhost:3006";
     const response = await request.post(`${url}/api/webhook/iyzico`, {
@@ -181,7 +193,7 @@ test.describe("Security Audit Test", () => {
       price: "17000.00",
     });
 
-    const signature = crypto.createHmac("sha256", webhookSecret).update(body).digest("hex");
+    const signature = crypto.createHmac("sha256", iyzicoWebhookSecret).update(body).digest("hex");
 
     const response = await request.post(`${url}/api/webhook/iyzico`, {
       headers: {

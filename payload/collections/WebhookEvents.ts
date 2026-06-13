@@ -1,5 +1,8 @@
 import type { CollectionConfig } from "payload";
 
+const isAdmin = ({ req }: { req: { user?: { role?: string | null } | null } }) =>
+  req.user?.role === "admin";
+
 export const WebhookEvents: CollectionConfig = {
   slug: "webhook-events",
   admin: {
@@ -8,10 +11,10 @@ export const WebhookEvents: CollectionConfig = {
     group: "Integrations",
   },
   access: {
-    read: ({ req }) => Boolean(req.user),
-    create: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    read: isAdmin,
+    create: isAdmin,
+    update: () => false,
+    delete: () => false,
   },
   fields: [
     { name: "provider", type: "text", required: true },

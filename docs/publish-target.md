@@ -21,7 +21,7 @@ karıştırmamaktır.
 - Ticari Launch Readiness: **86/100**
 - Karar: **Marketing publish için koşullu hazır; gerçek booking/payment için NO-GO**
 - Son doğrulama: `npm run publish:verify` PASS, tam normal Playwright kümesi PASS
-  (115 expected / 3 skipped), monkey/chaos PASS (3/3), `npm audit --omit=dev
+  (113 passed / 2 skipped), monkey/chaos PASS (3/3), `npm audit --omit=dev
   --audit-level=high` PASS.
 - Local production preview: `http://127.0.0.1:3010`.
 
@@ -47,7 +47,7 @@ Bu komut aşağıdaki işleri kapsar:
 Ek genişletilmiş yerel kapılar:
 
 ```bash
-PW_BASE_URL=http://127.0.0.1:3010 npx playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts tests/smoke.spec.ts tests/chat-api.spec.ts
+PW_BASE_URL=http://127.0.0.1:3010 npx playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts tests/smoke.spec.ts
 npx playwright test tests/monkey.spec.ts tests/destructive-chaos.spec.ts
 npm audit --omit=dev --audit-level=high
 ```
@@ -60,7 +60,8 @@ Aşağıdakilerin tamamı sağlanırsa site marketing yayınına çıkarılabili
 
 - `npm run publish:verify` PASS.
 - Vercel production env içinde en az `NEXT_PUBLIC_SITE_URL`, `DATABASE_URI`,
-  `PAYLOAD_SECRET`, `HOTELRUNNER_WEBHOOK_SECRET`, `NEXT_PUBLIC_WHATSAPP_URL`
+  `PAYLOAD_SECRET`, `HOTELRUNNER_WEBHOOK_SECRET`, `IYZICO_WEBHOOK_SECRET`,
+  `NEXT_PUBLIC_WHATSAPP_URL`
   tanımlı.
 - `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` boşsa rezervasyon sayfası WhatsApp
   fallback gösterir.

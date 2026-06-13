@@ -6,6 +6,7 @@ const rawEnvSchema = z.object({
   DATABASE_URI: z.string().optional(),
   NEXT_PUBLIC_SITE_URL: z.string().optional(),
   HOTELRUNNER_WEBHOOK_SECRET: z.string().optional(),
+  IYZICO_WEBHOOK_SECRET: z.string().optional(),
   HMS_WEBHOOK_ES256_PUBLIC_KEY: z.string().optional(),
   NEXT_PUBLIC_GTM_ID: z.string().optional(),
   NEXT_PUBLIC_META_PIXEL_ID: z.string().optional(),
@@ -40,6 +41,7 @@ export const env = {
   HOTELRUNNER_WEBHOOK_SECRET: isProd && !isBuild
     ? requireEnv("HOTELRUNNER_WEBHOOK_SECRET", raw.HOTELRUNNER_WEBHOOK_SECRET)
     : raw.HOTELRUNNER_WEBHOOK_SECRET || "hotelrunner-dev-secret",
+  IYZICO_WEBHOOK_SECRET: raw.IYZICO_WEBHOOK_SECRET || (isProd && !isBuild ? "" : "iyzico-dev-secret"),
   HMS_WEBHOOK_ES256_PUBLIC_KEY: raw.HMS_WEBHOOK_ES256_PUBLIC_KEY || "",
   NEXT_PUBLIC_GTM_ID: raw.NEXT_PUBLIC_GTM_ID || "",
   NEXT_PUBLIC_META_PIXEL_ID: raw.NEXT_PUBLIC_META_PIXEL_ID || "",

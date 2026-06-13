@@ -45,6 +45,7 @@ Payload admin paneli: `http://localhost:3000/admin` (ilk kullanıcı panelden ol
 | `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` | Online rezervasyon motoru linki | HMS panelindeki booking engine linki. Boş bırakılırsa site WhatsApp fallback ile çalışır; yayını engellemez |
 | `NEXT_PUBLIC_WHATSAPP_URL` | WhatsApp iletişim/rezervasyon fallback linki | `https://wa.me/<telefon>` formatında otel numarası |
 | `HOTELRUNNER_WEBHOOK_SECRET` | HMS/legacy webhook HMAC imza doğrulama sırrı | HMS webhook ayarlarında tanımlanan secret |
+| `IYZICO_WEBHOOK_SECRET` | Iyzico/PSP webhook HMAC imza doğrulama sırrı | Iyzico webhook ayarlarında tanımlanan ayrı secret |
 | `HMS_WEBHOOK_ES256_PUBLIC_KEY` | HMS ECC imzalı webhook public key'i | HMS SPKI PEM public key |
 | `B2B_PARTNER_PUBLIC_KEY` | B2B availability endpoint partner public key'i | Partner onboarding sonrası SPKI PEM |
 | `NEXT_PUBLIC_GTM_ID` | Google Tag Manager container ID | GTM paneli (`GTM-XXXXXXX`) |
@@ -58,14 +59,6 @@ Payload admin paneli: `http://localhost:3000/admin` (ilk kullanıcı panelden ol
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash REST token | Upstash Redis REST |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile bot koruması (istemci) | Cloudflare Dashboard > Turnstile > Site key |
 | `TURNSTILE_SECRET_KEY` | Turnstile sunucu tarafı doğrulama anahtarı | Cloudflare Dashboard > Turnstile > Secret key |
-| `AI_PROVIDER` | AI Concierge sağlayıcısı (`none` = kapalı) | Manuel; `none` bırakılırsa kurallı fallback çalışır |
-| `AI_API_KEY` | AI sağlayıcı API anahtarı | OpenAI uyumlu sağlayıcının panelinden |
-| `AI_BASE_URL` | AI API uç noktası | Varsayılan `https://api.openai.com/v1`; uyumlu proxy de olabilir |
-| `AI_MODEL` | Kullanılacak model adı | Sağlayıcı dokümantasyonu (varsayılan `gpt-4o-mini`) |
-| `AI_TIMEOUT_MS` | AI isteği zaman aşımı (ms) | Manuel (varsayılan `12000`) |
-| `AI_MAX_OUTPUT_TOKENS` | AI yanıtı için maksimum token | Manuel (varsayılan `500`) |
-| `AI_TEMPERATURE` | AI yanıt yaratıcılık katsayısı | Manuel (varsayılan `0.4`) |
-
 Not: `NEXT_PUBLIC_` öneki olan değişkenler tarayıcıya açılır; sır içeren değerleri bu önekle tanımlamayın.
 
 ## Komutlar
@@ -113,7 +106,7 @@ Tüm çağrılar server-side yapılır, 30 dakikalık Next.js fetch cache ile ko
 ## Güvenlik
 
 - **CSP / HSTS**: `next.config.ts` içinde Content-Security-Policy ve Strict-Transport-Security başlıkları tanımlıdır.
-- **Timing-safe webhook**: HotelRunner webhook'u (`src/app/api/webhook/hotelrunner/route.ts`) imzayı sabit zamanlı karşılaştırma ile doğrular; zamanlama saldırılarına kapalıdır.
+- **Timing-safe webhook**: HotelRunner ve iyzico webhook'ları (`src/app/api/webhook/*/route.ts`) imzayı sabit zamanlı karşılaştırma ile doğrular; zamanlama saldırılarına kapalıdır ve ayrı HMAC secret kullanır.
 - **ECC imza doğrulama**: `src/lib/security.ts` içindeki `verifyEs256Signature`, ES256 (ECDSA, NIST P-256 + SHA-256) imzalarını SPKI PEM public key ile doğrular; gelecekteki imzalı entegrasyonlar için hazırdır.
 - **Bot koruması**: Form uç noktaları Cloudflare Turnstile ile korunabilir (env anahtarları girildiğinde aktifleşir).
 
@@ -186,7 +179,7 @@ public/              # Statik varlıklar (görseller, fontlar)
 | `/kvkk`, `/gizlilik-politikasi`, `/mesafeli-satis-sozlesmesi` | Yasal sayfalar |
 | `/admin` | Payload CMS yönetim paneli |
 
-API uç noktaları: `/api/local-pulse`, `/api/chat`, `/api/lead`, `/api/llm-context`, `/api/webhook/hotelrunner`, `/llms.txt`.
+API uç noktaları: `/api/local-pulse`, `/api/lead`, `/api/llm-context`, `/api/webhook/hotelrunner`, `/llms.txt`.
 
 ## Demo / Mock Yüzeyler (ÖNEMLİ)
 

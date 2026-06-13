@@ -25,6 +25,7 @@ export function usePaymentWizard() {
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
+  const [consent, setConsent] = useState(false);
   const [bookingId, setBookingId] = useState("");
 
   // Kart state'i YOK: tahsilat Garanti BBVA Sanal POS 3D Secure sayfasında
@@ -76,6 +77,10 @@ export function usePaymentWizard() {
       setPaymentError("Lütfen ad, telefon ve e-posta alanlarını doldurun.");
       return;
     }
+    if (!consent) {
+      setPaymentError("Rezervasyon talebi için KVKK ve gizlilik onayı zorunludur.");
+      return;
+    }
 
     setIsSubmitting(true);
     setPaymentError("");
@@ -102,6 +107,7 @@ export function usePaymentWizard() {
           light: light.label,
           promoCode: "",
           totalPrice: finalPrice,
+          consent,
         })
       });
 
@@ -146,6 +152,7 @@ Rezervasyonumun onaylanmasını rica ederim.`;
     setGuestName("");
     setGuestEmail("");
     setGuestPhone("");
+    setConsent(false);
   };
 
   return {
@@ -159,6 +166,7 @@ Rezervasyonumun onaylanmasını rica ederim.`;
     scent, setScent, pillow, setPillow, sound, setSound, light, setLight,
     // Misafir & fatura
     guestName, setGuestName, guestEmail, setGuestEmail, guestPhone, setGuestPhone,
+    consent, setConsent,
     bookingId, setBookingId,
     // Gonderim durumu
     isSubmitting, setIsSubmitting, paymentError, setPaymentError,

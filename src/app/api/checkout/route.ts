@@ -23,6 +23,11 @@ const checkoutSchema = z.object({
   light: z.string(),
   promoCode: z.string().optional(),
   totalPrice: z.number().positive(),
+  consent: z.preprocess((value) => {
+    if (value === true || value === "true" || value === "on" || value === "1") return true;
+    if (value === false || value === "false" || value === "0" || value === "" || value == null) return false;
+    return value;
+  }, z.boolean()),
   // Kart alanı YOK (Audit F13): tahsilat Garanti BBVA Sanal POS'un 3D Secure
   // sayfasında yapılacak — PAN bu API'ye asla gönderilmez.
 });
@@ -57,6 +62,12 @@ export async function POST(req: Request) {
     }
 
     const data = parsed.data;
+    if (!data.consent) {
+      return NextResponse.json(
+        { ok: false, message: "KVKK ve gizlilik onayı zorunludur." },
+        { status: 400 },
+      );
+    }
 
     // 3. Double check room pricing (prevent client-side price tampering)
     let rate = 4500;

@@ -50,11 +50,11 @@ kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + p
 
 - `npm run lint` — PASS, 0 warning.
 - `npm run typecheck` — PASS.
-- `npm run test:unit` — PASS, 6 files / 25 tests.
+- `npm run test:unit` — PASS, 9 files / 29 tests.
 - `npm run build` — PASS, 66 routes generated.
 - `npm audit --omit=dev --audit-level=high` — PASS, 0 vulnerabilities.
-- `npm run publish:verify` — PASS: quality + 111 publish Playwright tests (109 passed / 2 skipped) + publish target inventory.
-- `npx playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts tests/smoke.spec.ts tests/chat-api.spec.ts` — PASS, 118 total (115 expected / 3 skipped / 0 unexpected).
+- `npm run publish:verify` — PASS: quality + 115 publish Playwright tests (113 passed / 2 skipped) + publish target inventory.
+- `npx playwright test tests/smoke.spec.ts tests/security.spec.ts tests/e2e/checkout-contract.spec.ts --reporter=line` — PASS, 17 passed / 2 skipped.
 - `npx playwright test tests/monkey.spec.ts tests/destructive-chaos.spec.ts` — PASS, 3/3.
 - Local production preview: `http://127.0.0.1:3010`.
 - Screenshot evidence: `test-results/local-preview/final-home-desktop.png`, `final-home-mobile.png`, `final-org-desktop.png`, `final-org-mobile.png`.

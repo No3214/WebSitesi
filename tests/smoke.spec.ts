@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 test("anasayfa açılıyor", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("KOZBEYLİ KONAĞI", { exact: false })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText(/Dijital K[aâ]hya/i)).toHaveCount(0);
 });
 
 test("odalar sayfası açılıyor", async ({ page }) => {

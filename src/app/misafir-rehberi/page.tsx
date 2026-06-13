@@ -78,7 +78,7 @@ export default function GuestGuidePage() {
         <PageHero
           eyebrow="SERVİS STANDARTLARIMIZ"
           title="Misafir Rehberi"
-          text="Konaklamanız süresince ihtiyacınız olabilecek tüm teknik detaylar ve servis saatleri. Daha fazlası için AI Concierge her an yanınızda."
+          text="Konaklamanız süresince ihtiyacınız olabilecek tüm teknik detaylar ve servis saatleri. Daha fazlası için ekibimiz aynı gün içinde yanınızda."
         />
 
         <section className="section py-24 bg-white">
@@ -109,7 +109,7 @@ export default function GuestGuidePage() {
             <FadeIn>
                <h2 className="serif text-3xl md:text-5xl mb-8">Henüz Cevap Almadınız mı?</h2>
                <p className="mb-10 max-w-xl mx-auto" style={{ color: "rgba(250,249,246,0.7)" }}>
-                 Kozbeyli Konağı Dijital Asistanı (AI Concierge) WhatsApp üzerinden de hizmetinizdedir.
+                 Kozbeyli Konağı ekibi WhatsApp üzerinden sorularınızı yanıtlar.
                </p>
                <a
                  href={getWhatsAppHref("Merhaba, misafir rehberinden ulaşıyorum.")}

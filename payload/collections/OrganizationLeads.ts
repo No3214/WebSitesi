@@ -1,5 +1,8 @@
 import type { CollectionConfig } from "payload";
 
+const isAdmin = ({ req }: { req: { user?: { role?: string | null } | null } }) =>
+  req.user?.role === "admin";
+
 export const OrganizationLeads: CollectionConfig = {
   slug: "organization-leads",
   admin: {
@@ -7,10 +10,10 @@ export const OrganizationLeads: CollectionConfig = {
     defaultColumns: ["name", "phone", "type", "leadPriority", "createdAt"],
   },
   access: {
-    read: ({ req }) => Boolean(req.user),
-    create: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    read: isAdmin,
+    create: isAdmin,
+    update: isAdmin,
+    delete: isAdmin,
   },
   fields: [
     { name: "name", type: "text", required: true },

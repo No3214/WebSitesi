@@ -29,7 +29,7 @@ function hasReplay(messageUid: string) {
 }
 
 function createDigest(bodyText: string) {
-  return crypto.createHmac("sha256", env.HOTELRUNNER_WEBHOOK_SECRET).update(bodyText).digest("hex");
+  return crypto.createHmac("sha256", env.IYZICO_WEBHOOK_SECRET).update(bodyText).digest("hex");
 }
 
 function safeCompare(a: string, b: string) {
@@ -66,6 +66,14 @@ export async function POST(req: Request) {
       hasSignature: Boolean(signature),
     });
     return NextResponse.json({ ok: false, error: "Unauthorized access attempt" }, { status: 401 });
+  }
+
+  if (
+    process.env.NODE_ENV === "production" &&
+    (!env.IYZICO_WEBHOOK_SECRET.trim() || env.IYZICO_WEBHOOK_SECRET === "iyzico-dev-secret")
+  ) {
+    logEvent("error", "webhook.iyzico.dev_secret_in_prod");
+    return NextResponse.json({ ok: false, error: "Configuration Error" }, { status: 500 });
   }
 
   // 2. Replay Protection
