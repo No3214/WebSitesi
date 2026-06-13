@@ -82,6 +82,8 @@ export const SunsetMode = () => {
                koyu kartta koyu olive/muted 4.5:1 altinda kaliyordu */
             --olive: #cfd8cc;
             --olive-deep: #e3e8e0;
+            --gold: #c7a15f;
+            --gold-text: #d8b66f;
             --muted: #b3afa6;
             --stone-warm: #242424;
           }

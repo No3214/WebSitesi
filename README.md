@@ -190,7 +190,7 @@ Aşağıdaki yüzeyler **gerçek değildir**; yeni geliştiriciler canlı sanmas
 | --- | --- |
 | `/api/checkout` + rezervasyon sihirbazı | **Tahsilat YAPMAZ ve kart bilgisi İSTEMEZ.** Akış bir ön-rezervasyon talebi kaydeder; ödeme **Garanti BBVA Sanal POS** 3D Secure sayfasında ayrı adımda alınacak (karar + entegrasyon planı: `docs/odeme-karari.md`). PAN bu uygulamaya asla girmez. |
 | `/api/swarm` | Deterministik advisory endpoint'tir. İzinli task tiplerini doğrular, payload sanitize eder, alt ajan önerileri döndürür; fiyat, ödeme, paid media veya booking action **çalıştırmaz**. |
-| `/api/v1/availability` | `B2B_PARTNER_PUBLIC_KEY` env tanımlı değilse **404** döner (varsayılan kapalı). Gerçek partner onboard olunca SPKI PEM eklenir. |
+| `/api/v1/availability` | `B2B_PARTNER_PUBLIC_KEY` env tanımlı değilse **404** döner (varsayılan kapalı). Gerçek partner onboard olunca SPKI PEM eklenir. İstekler `x-partner-id`, `x-request-timestamp` ve `x-b2b-signature` ister; imza `timestamp.body` kanonik metni üzerinden ECDSA/SHA-256 ile doğrulanır ve replay engellenir. |
 | `/admin/growth` | Payload admin oturumu zorunludur; metrikler simülasyondur. |
 
 ## CI

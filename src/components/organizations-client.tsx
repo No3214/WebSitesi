@@ -294,7 +294,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
         .org-content p {
           font-size: 1.1rem;
           line-height: 1.8;
-          color: #555;
+          color: var(--muted);
           margin-bottom: 32px;
         }
 
