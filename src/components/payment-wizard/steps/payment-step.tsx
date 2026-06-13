@@ -11,11 +11,11 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
   const {
     handlePaymentSubmit,
     guestName, setGuestName, guestPhone, setGuestPhone, guestEmail, setGuestEmail,
-    promoCode, setPromoCode, applyPromo, paymentError,
+    paymentError,
     setStep, isSubmitting, finalPrice,
     selectedRoom, checkIn, checkOut, nights, guests,
     scent, pillow, sound, light,
-    totalRawPrice, isPromoApplied, discountAmount,
+    totalRawPrice,
   } = wizard;
 
   return (
@@ -78,23 +78,6 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
           style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
         />
 
-        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-          <input
-            placeholder="İndirim Kodu"
-            value={promoCode}
-            onChange={(e) => setPromoCode(e.target.value)}
-            style={{ flex: 1, padding: 10, border: "1px solid var(--border)", borderRadius: 6 }}
-          />
-          <button
-            type="button"
-            onClick={applyPromo}
-            className="button secondary sm"
-            style={{ padding: "10px 18px" }}
-          >
-            Uygula
-          </button>
-        </div>
-
         {paymentError && <p style={{ color: "#c2410c", fontSize: "0.85rem", margin: 0 }}>{paymentError}</p>}
 
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
@@ -139,12 +122,6 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
             <span>Toplam Oda Tutarı:</span>
             <span>{totalRawPrice.toLocaleString("tr-TR")} ₺</span>
           </div>
-          {isPromoApplied && (
-            <div style={{ display: "flex", justifyContent: "space-between", color: "#c5a059", fontSize: "0.9rem" }}>
-              <span>%15 Slow Living İndirimi:</span>
-              <span>-{discountAmount.toLocaleString("tr-TR")} ₺</span>
-            </div>
-          )}
           <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: "1.2rem", color: "var(--olive)", borderTop: "1px solid var(--border)", paddingTop: 12 }}>
             <span>Ödenecek Tutar:</span>
             <span>{finalPrice.toLocaleString("tr-TR")} ₺</span>

@@ -1,4 +1,4 @@
-# CI gate (Audit F5/T3): lint + unit + build + e2e smoke.
+# CI gate (Audit F5/T3): lint + unit + build + publish verification.
 # Not: lib/env.ts CI=true iken requireEnv'i atlar (isBuild guard) —
 # bu yüzden DATABASE_URI gibi secret'lar olmadan build alınabilir.
 name: CI
@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Lint · Unit · Build · E2E Smoke
+    name: Lint · Unit · Build · Publish Verify
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -49,8 +49,11 @@ jobs:
       - name: Install Playwright (chromium)
         run: npx playwright install --with-deps chromium
 
-      - name: E2E (smoke + kontratlar)
-        run: npx playwright test tests/e2e/ --reporter=line
+      - name: Publish verification tests
+        run: npx playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts --reporter=line
+
+      - name: Publish target score
+        run: npm run publish:target
 
       - name: Upload Playwright report (on failure)
         if: failure()

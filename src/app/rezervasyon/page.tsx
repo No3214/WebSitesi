@@ -8,9 +8,9 @@ import { rooms } from "@/data/rooms";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Rezervasyon | En İyi Fiyat Garantisi",
+  title: "Rezervasyon | Doğrudan Concierge",
   description:
-    "Kozbeyli Konağı'nda taş oda rezervasyonunuzu direkt yapın: en iyi fiyat garantisi, esnek iptal ve WhatsApp concierge desteği. Canlı müsaitlik için rezervasyon motorumuzu kullanın.",
+    "Kozbeyli Konağı'nda taş oda konaklamanız için doğrudan concierge talebi oluşturun; müsaitlik, oda tercihi ve güvenli ödeme adımı ekibimiz tarafından teyit edilir.",
   keywords: [
     "kozbeyli konağı rezervasyon",
     "foça butik otel rezervasyon",
@@ -61,7 +61,7 @@ export default async function ReservationPage({
       <PageHero
         eyebrow="REZERVASYON"
         title="Yerinizi Ayırtın"
-        text="En iyi fiyat garantisi, esnek iptal ve concierge desteğiyle direkt rezervasyonun tüm ayrıcalıkları."
+        text="Müsaitlik, oda tercihi ve güvenli ödeme adımı için talebinizi doğrudan konak ekibimize iletin."
       />
       <main className="section" style={{ paddingTop: 56 }}>
         <ReservationClient

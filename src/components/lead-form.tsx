@@ -132,7 +132,12 @@ export function LeadForm() {
       <input name="guestCount" type="number" min={1} placeholder="Tahmini Kişi Sayısı" style={getInputStyle("guestCount")} />
       {renderError("guestCount")}
       
-      <select name="estimatedBudget" defaultValue="" style={getInputStyle("estimatedBudget")}>
+      <select
+        name="estimatedBudget"
+        aria-label="Tahmini bütçe"
+        defaultValue=""
+        style={getInputStyle("estimatedBudget")}
+      >
         <option value="" disabled>Tahmini Bütçe</option>
         <option value="under-100k">100.000 TL altı</option>
         <option value="100k-250k">100.000 - 250.000 TL</option>
@@ -141,7 +146,13 @@ export function LeadForm() {
       </select>
       {renderError("estimatedBudget")}
 
-      <select name="type" required defaultValue="" style={getInputStyle("type")}>
+      <select
+        name="type"
+        aria-label="Organizasyon tercihi"
+        required
+        defaultValue=""
+        style={getInputStyle("type")}
+      >
         <option value="" disabled>Organizasyon Tercihi</option>
         <option value="dugun">Butik Düğün</option>
         <option value="nisan">Nişan / Söz</option>

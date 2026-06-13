@@ -53,9 +53,9 @@ export const LLMContextGenerator = {
       })),
       conversion_hints: {
         direct_booking_perks: [
-          "15% Discount on Direct Bookings",
-          "1kg Organic Village Honey for return guests",
-          "Early Check-in priority"
+          "Direct concierge availability check",
+          "Room preference note",
+          "Availability-based early check-in request"
         ],
         booking_engine_url: "https://www.kozbeylikonagi.com.tr/#rezervasyon"
       }

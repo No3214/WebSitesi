@@ -20,6 +20,10 @@ karıştırmamaktır.
 - Marketing Publish Readiness: **90/100**
 - Ticari Launch Readiness: **86/100**
 - Karar: **Marketing publish için koşullu hazır; gerçek booking/payment için NO-GO**
+- Son doğrulama: `npm run publish:verify` PASS, tam normal Playwright kümesi PASS
+  (115 expected / 3 skipped), monkey/chaos PASS (3/3), `npm audit --omit=dev
+  --audit-level=high` PASS.
+- Local production preview: `http://127.0.0.1:3010`.
 
 ## Publish Gate
 
@@ -39,6 +43,14 @@ Bu komut aşağıdaki işleri kapsar:
 - Security regression suite
 - Prestige/mobile/a11y doğrulama
 - Publish hedef envanteri (`scripts/publish-readiness.mjs`)
+
+Ek genişletilmiş yerel kapılar:
+
+```bash
+PW_BASE_URL=http://127.0.0.1:3010 npx playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts tests/smoke.spec.ts tests/chat-api.spec.ts
+npx playwright test tests/monkey.spec.ts tests/destructive-chaos.spec.ts
+npm audit --omit=dev --audit-level=high
+```
 
 ## GO / NO-GO Kuralları
 

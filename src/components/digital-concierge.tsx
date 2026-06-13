@@ -65,7 +65,7 @@ export function DigitalConcierge() {
       // Negotiation Logic (Agentic Persuasion)
       if (messages.length > 3 && !isNegotiating) {
         const offer = NegotiatorAgent.getPersuasionOffer("GENEL");
-        assistantResponse += `\n\n**${offer.title}:** ${offer.perk} Kod: \`${offer.code}\``;
+        assistantResponse += `\n\n**${offer.title}:** ${offer.perk}`;
         setIsNegotiating(true);
       }
 

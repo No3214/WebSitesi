@@ -24,7 +24,7 @@ export function PaymentWizard() {
           <span style={{ color: step === "dates" ? activeStepColor : completedStepColor }}>1. Tarihler</span>
           <span style={{ color: step === "rooms" ? activeStepColor : selectedRoom ? completedStepColor : upcomingStepColor }}>2. Odalar</span>
           <span style={{ color: step === "sensory" ? activeStepColor : step === "payment" ? completedStepColor : upcomingStepColor }}>3. Atmosfer</span>
-          <span style={{ color: step === "payment" ? activeStepColor : upcomingStepColor }}>4. Ödeme</span>
+          <span style={{ color: step === "payment" ? activeStepColor : upcomingStepColor }}>4. Talep</span>
         </div>
       )}
 

@@ -1670,6 +1670,10 @@
     scroll-behavior: auto !important;
   }
   .hero-video { display: none !important; }
+  .hero-media,
+  .hero h1 span span {
+    transform: none !important;
+  }
 }
 
 /* Header uses a custom `.container` contract; Tailwind's utility layer can

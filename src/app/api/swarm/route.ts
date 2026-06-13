@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { errField, logEvent } from "@/lib/logger";
-import { safeText } from "@/lib/security";
+import { enforceRateLimit, extractClientIp, safeText, validateSameOrigin } from "@/lib/security";
 
 const taskTypes = [
   "sales-concierge",
@@ -25,6 +25,11 @@ const requestSchema = z.object({
   taskType: z.enum(taskTypes),
   payload: z.record(z.unknown()).optional().default({}),
 });
+
+const SWARM_RATE_LIMIT = {
+  windowMs: 10 * 60 * 1000,
+  maxRequests: 20,
+};
 
 function sanitizePayload(payload: Record<string, unknown>): Record<string, unknown> {
   return Object.fromEntries(
@@ -122,6 +127,23 @@ export function GET() {
 
 export async function POST(req: Request) {
   try {
+    if (!validateSameOrigin(req)) {
+      return NextResponse.json({ error: "Geçersiz istek kaynağı." }, { status: 403 });
+    }
+
+    const ipAddress = extractClientIp(req.headers);
+    const rateLimit = await enforceRateLimit(
+      `swarm:${ipAddress}`,
+      SWARM_RATE_LIMIT.maxRequests,
+      SWARM_RATE_LIMIT.windowMs,
+    );
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many swarm requests" },
+        { status: 429, headers: { "Retry-After": rateLimit.retryAfterSec.toString() } },
+      );
+    }
+
     const parsed = requestSchema.safeParse(await req.json());
 
     if (!parsed.success) {

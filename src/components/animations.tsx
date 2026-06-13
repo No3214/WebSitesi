@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useInView,
+  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
@@ -20,12 +21,17 @@ export function FadeIn({
   delay?: number;
   direction?: "up" | "down" | "left" | "right";
 }) {
+  const reduceMotion = useReducedMotion();
   const directions = {
     up: { y: 24 },
     down: { y: -24 },
     left: { x: 24 },
     right: { x: -24 },
   };
+
+  if (reduceMotion) {
+    return <div>{children}</div>;
+  }
 
   return (
     <motion.div
@@ -46,6 +52,12 @@ export function StaggerContainer({
   children: React.ReactNode;
   delay?: number;
 }) {
+  const reduceMotion = useReducedMotion();
+
+  if (reduceMotion) {
+    return <div>{children}</div>;
+  }
+
   return (
     <motion.div
       initial="hidden"
@@ -142,28 +154,38 @@ export function RevealLines({
   as: Tag = "h2",
   className,
   delay = 0,
+  trigger = "inView",
 }: {
   lines: string[];
   as?: "h1" | "h2" | "h3" | "p";
   className?: string;
   delay?: number;
+  trigger?: "inView" | "mount";
 }) {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <Tag className={className}>
+    <Tag className={className} aria-label={lines.join(" ")}>
       {lines.map((line, i) => (
         <span
           key={i}
+          aria-hidden="true"
           style={{ display: "block", overflow: "hidden", padding: "0.08em 0" }}
         >
-          <motion.span
-            style={{ display: "block" }}
-            initial={{ y: "110%" }}
-            whileInView={{ y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, delay: delay + i * 0.12, ease: EASE_LUX }}
-          >
-            {line}
-          </motion.span>
+          {reduceMotion ? (
+            <span style={{ display: "block" }}>{line}</span>
+          ) : (
+            <motion.span
+              style={{ display: "block" }}
+              initial={{ y: "110%" }}
+              animate={trigger === "mount" ? { y: 0 } : undefined}
+              whileInView={trigger === "inView" ? { y: 0 } : undefined}
+              viewport={trigger === "inView" ? { once: true } : undefined}
+              transition={{ duration: 1, delay: delay + i * 0.12, ease: EASE_LUX }}
+            >
+              {line}
+            </motion.span>
+          )}
         </span>
       ))}
     </Tag>

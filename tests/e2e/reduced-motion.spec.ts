@@ -22,5 +22,15 @@ test.describe("Reduced Motion", () => {
     if ((await v.count()) > 0) {
       await expect(v).toBeHidden();
     }
+
+    const mediaTransform = await page.locator(".hero-media").evaluate((element) => {
+      return getComputedStyle(element).transform;
+    });
+    expect(["none", "matrix(1, 0, 0, 1, 0, 0)"]).toContain(mediaTransform);
+
+    const lineTransforms = await page.locator(".hero h1 span span").evaluateAll((elements) =>
+      elements.map((element) => getComputedStyle(element).transform)
+    );
+    expect(lineTransforms.every((value) => value === "none" || value === "matrix(1, 0, 0, 1, 0, 0)")).toBe(true);
   });
 });

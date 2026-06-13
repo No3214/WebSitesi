@@ -59,6 +59,27 @@ test.describe("Security Audit Test", () => {
     expect(response.status()).toBe(400);
   });
 
+  test("lead API should reject string false consent", async ({ request, baseURL }) => {
+    const url = baseURL || "http://localhost:3006";
+    const response = await request.post(`${url}/api/lead`, {
+      headers: {
+        origin: url,
+        host: new URL(url).host,
+        "content-type": "application/json",
+      },
+      data: {
+        name: "Test Kullanıcı",
+        phone: "05551234567",
+        email: "test@example.com",
+        type: "dugun",
+        message: "String false onay kabul edilmemelidir.",
+        consent: "false",
+      },
+    });
+
+    expect(response.status()).toBe(400);
+  });
+
   test("hotelrunner webhook should reject missing signature", async ({ request, baseURL }) => {
     const url = baseURL || "http://localhost:3006";
     test.skip(!!process.env.PW_BASE_URL, "HotelRunner legacy - HMS gecisi sonrasi canlida atlanir");

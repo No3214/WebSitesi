@@ -5,7 +5,6 @@
 export interface NegotiationOffer {
   title: string;
   perk: string;
-  code: string;
 }
 
 export const NegotiatorAgent = {
@@ -16,14 +15,12 @@ export const NegotiatorAgent = {
   getPersuasionOffer: (tier: string = "GENEL"): NegotiationOffer => {
     const offers: Record<string, NegotiationOffer> = {
       "GENEL": {
-        title: "Tüccar Tokalaşması (Heritage Perk)",
-        perk: "Direkt rezervasyonda İnci Hanım'dan antropolojik reçete ile yapılmış el yapımı reçel ve 500 yıllık dibekte dövülmüş kahve hediyesi.",
-        code: "MERCHANT10"
+        title: "Concierge Notu",
+        perk: "Müsaitlik, oda tercihi ve özel beklentilerinizi rezervasyon ekibine tek mesajda iletebilirim."
       },
       "ALTIN_MİSAFİR": {
-        title: "Dost Ağırlaması (Cognitive Tier)",
-        perk: "Açık büfe akşam yemeği indirimi, geç check-out ve Kozbeyli Tüfü altında özel mimari tur.",
-        code: "DOST20"
+        title: "Dost Ağırlaması",
+        perk: "Tekrar geliş notunuzu ekibe aktarabilir, müsaitliğe bağlı erken giriş/geç çıkış talebinizi önceliklendirebilirim."
       }
     };
 

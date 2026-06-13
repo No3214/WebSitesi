@@ -5,8 +5,8 @@ import { expect, test } from "@playwright/test";
 
 const publicDir = path.join(process.cwd(), "public");
 const mediaExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".mp4"]);
-const mobileRoutes = ["/", "/odalar", "/gastronomi", "/menu", "/galeri", "/rezervasyon", "/en/menu"];
-const visualRoutes = ["/", "/gastronomi", "/galeri", "/odalar", "/odalar/standart-bahce-manzarali-oda", "/en/menu"];
+const mobileRoutes = ["/", "/odalar", "/gastronomi", "/menu", "/galeri", "/rezervasyon", "/organizasyonlar", "/en/menu", "/en/organizasyonlar"];
+const visualRoutes = ["/", "/gastronomi", "/galeri", "/odalar", "/organizasyonlar", "/odalar/standart-bahce-manzarali-oda", "/en/menu", "/en/organizasyonlar"];
 
 function listMediaFiles(dir: string): string[] {
   return fs

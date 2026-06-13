@@ -17,21 +17,21 @@ export const durations: DurationOption[] = [
     label: "1 Günlük Yoğun Kaçış",
     desc: "Kozbeyli'de kısa ama derinlemesine bir yavaş yaşam soluklanması.",
     days: 1,
-    image: "https://images.unsplash.com/photo-1544013587-4142a27dad16?auto=format&fit=crop&w=600&q=80"
+    image: "/images/galeri/tas-cephe.jpg"
   },
   {
     id: 2,
     label: "2 Günlük Sükunet Rotası",
     desc: "Zamanı yavaşlatıp konağın ruhunu ve avluyu tam olarak hissedeceğiniz ideal süre.",
     days: 2,
-    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80"
+    image: "/images/hero-video-poster.jpg"
   },
   {
     id: 3,
     label: "3 Günlük Derin Dinlenme",
     desc: "Köy yollarından deniz turlarına, gastronomi ritüellerinden şömine başına tam arınma.",
     days: 3,
-    image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=600&q=80"
+    image: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/5.jpg"
   }
 ];
 
@@ -50,21 +50,21 @@ export const interests: InterestOption[] = [
     title: "Gastronomi & Gurme Lezzetler",
     desc: "İnci Hanım'ın Antakya-Ege reçeteleri, el yapımı zeytinyağları ve taş fırın tatları.",
     icon: Coffee,
-    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=600&q=80"
+    image: "/images/galeri/aksam-sofrasi.jpg"
   },
   {
     id: "romantizm",
     title: "Romantizm & Sükunet",
     desc: "Ege Denizi üzerinden batan güneş eşliğinde baş başa, özel ve sakin anlar.",
     icon: Compass,
-    image: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=600&q=80"
+    image: "/images/odalar/superrior-oda-deniz-manzarali/1.jpg"
   },
   {
     id: "kultur",
     title: "Miras & Tarih Keşfi",
     desc: "500 yıllık tescilli taş mimari, restorasyon sırları ve Foça'nın antik liman izleri.",
     icon: Calendar,
-    image: "https://images.unsplash.com/photo-1503177119275-0aa32b31d468?auto=format&fit=crop&w=600&q=80"
+    image: "/images/galeri/konagin-yuzu.jpg"
   }
 ];
 
@@ -81,13 +81,13 @@ export const paces: PaceOption[] = [
     id: "yavas",
     label: "Çok Yavaş (Aşırı Dinlendirici)",
     desc: "Bolca avlu vakti, kitap okuma köşeleri, şömine başı dinlenme ve minimum hareket.",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80"
+    image: "/images/odalar/detay/oda-detay-1.jpg"
   },
   {
     id: "dengeli",
     label: "Dengeli (Keşif ve Dinlenme)",
     desc: "Köy sokaklarında yavaş turlar, taş dibek ritüeli ve Foça tekne gezileri ile harmanlanmış tempo.",
-    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80"
+    image: "/images/organizasyonlar/teras-davet.jpg"
   }
 ];
 

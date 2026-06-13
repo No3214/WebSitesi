@@ -17,8 +17,8 @@ export function BookingSection({ locale, eyebrow }: Props) {
             title={locale === "tr" ? "Yerinizi Ayırtın" : "Reserve Your Stay"}
             text={
               locale === "tr"
-                ? "En iyi fiyat garantisi, esnek iptal ve concierge desteği ile direkt rezervasyon avantajı."
-                : "Direct booking advantage with best price guarantee, flexible cancellation, and concierge support."
+                ? "Müsaitlik, oda tercihi ve güvenli ödeme adımı için talebinizi doğrudan concierge ekibimize iletin."
+                : "Send your availability, room preference and secure payment request directly to our concierge team."
             }
           />
           <WeatherRibbon />

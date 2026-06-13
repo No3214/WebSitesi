@@ -8,7 +8,7 @@ import AxeBuilder from "@axe-core/playwright";
  * Kapsam: ana dönüşüm yolculuğundaki dört sayfa.
  * Eşik: critical + serious ihlal = 0 (moderate/minor raporlanır ama düşürmez).
  */
-const PAGES = ["/", "/odalar", "/rezervasyon", "/sss"];
+const PAGES = ["/", "/odalar", "/rezervasyon", "/organizasyonlar", "/en/organizasyonlar", "/sss"];
 
 test.describe("Axe a11y taraması", () => {
   // Yorgun makinede goto+analyze 30sn varsayılanını aşabiliyor

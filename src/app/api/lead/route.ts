@@ -20,7 +20,11 @@ const leadSchema = z.object({
   estimatedBudget: z.enum(["under-100k", "100k-250k", "250k-500k", "over-500k"]).optional(),
   type: z.string().trim().min(2).max(80),
   message: z.string().trim().min(10).max(3000),
-  consent: z.coerce.boolean(),
+  consent: z.preprocess((value) => {
+    if (value === true || value === "true" || value === "on" || value === "1") return true;
+    if (value === false || value === "false" || value === "0" || value === "" || value == null) return false;
+    return value;
+  }, z.boolean()),
   utmSource: z.string().trim().max(100).optional(),
   utmMedium: z.string().trim().max(100).optional(),
   utmCampaign: z.string().trim().max(120).optional(),
@@ -79,6 +83,10 @@ async function verifyTurnstile(token: string | undefined, ipAddress: string) {
 
 export async function POST(req: Request) {
   try {
+    if (!validateSameOrigin(req)) {
+      return NextResponse.json({ ok: false, message: "Geçersiz istek kaynağı." }, { status: 403 });
+    }
+
     const contentType = req.headers.get("content-type") || "";
     let payloadData: Record<string, unknown>;
 
@@ -87,10 +95,6 @@ export async function POST(req: Request) {
     } else {
       const formData = await req.formData();
       payloadData = Object.fromEntries(formData.entries());
-    }
-
-    if (!validateSameOrigin(req)) {
-      return NextResponse.json({ ok: false, message: "Geçersiz istek kaynağı." }, { status: 403 });
     }
 
     if (payloadData.website) {

@@ -8,10 +8,11 @@ Kural: kanıt yoksa "kanıt yok"; belirsizse "belirsiz". Kanıtlar dosya yoluyla
 
 Site kod tarafında güçlü ve doğrulanmış bir durumda: güvenlik başlıkları,
 consent-gated analytics, schema.org kapsamı, CI, typecheck, lint, unit, production
-build, Playwright smoke/security/a11y ve EN rota bütünlüğü yeşil. 2026-06-13
-revizyonunda eksik yüksek niyetli EN yüzeyleri (/en/menu, /en/misafir-rehberi,
-/en/organizasyonlar, /en/teklifler), header/footer EN rota bütünlüğü, sitemap
-alternates, erişilebilir kontrast ve kalıcı kalite scriptleri tamamlandı.
+build, Playwright smoke/security/a11y, monkey/chaos ve EN rota bütünlüğü yeşil.
+2026-06-13 revizyonunda eksik yüksek niyetli EN yüzeyleri (/en/menu,
+/en/misafir-rehberi, /en/organizasyonlar, /en/teklifler), header/footer EN rota
+bütünlüğü, sitemap alternates, gerçek otel/organizasyon medya yerleşimi,
+erişilebilir kontrast ve kalıcı kalite scriptleri tamamlandı.
 
 Lansmanı hâlâ %100'e kilitleyen konular kod dışıdır: HMS booking engine URL'i,
 Garanti Sanal POS bilgileri, prod GTM/GA4/Meta kimlikleri, Search Console/Google
@@ -21,7 +22,7 @@ kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + p
 
 ## 2. Current Score (rev. 2026-06-13)
 
-- **Repo/Kod Kalite Skoru: 93/100** — iç kalite kapıları yeşil; kalan 7 puan
+- **Repo/Kod Kalite Skoru: 95/100** — iç kalite kapıları yeşil; kalan 5 puan
   gerçek üretim entegrasyonu, canlı analitik doğrulaması ve dış hesap kurulumuna
   bağlıdır.
 - **Ticari Launch Readiness: 86/100 — CONDITIONAL GO / ödeme-rezervasyon için NO-GO**
@@ -39,21 +40,24 @@ kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + p
 | Teknik SEO | 9 | 9 | sitemap/robots/canonical/schema/llms.txt + EN alternates/hreflang rotaları güncel |
 | Lokal SEO/GBP/Hotel Center | 5 | 1 | Sitede NAP+GeoCoordinates var; GBP/Hotel Center kanıt yok |
 | Performans/CWV | 7 | 7 | Next build temiz, görsel/video optimizasyonu ve Lighthouse CI eşiği var; CrUX/RUM yok |
-| Erişilebilirlik | 5 | 5 | Axe critical+serious = 0: /, /odalar, /rezervasyon, /sss |
+| Erişilebilirlik | 5 | 5 | Axe critical+serious = 0: /, /odalar, /rezervasyon, /sss, /organizasyonlar, /en/organizasyonlar |
 | Analytics | 5 | 4 | GA4+Meta ikili funnel (view_item/begin_checkout/generate_lead) + server-side purchase altyapısı (`lib/ga4-server.ts`) hazır; uçtan uca doğrulama engine+ID bekliyor |
 | CMS/rol | 4 | 4 | Düzeltme: admin/editor rol ayrımı zaten mevcut (`payload/collections/Users.ts`, users CRUD admin-only) |
-| QA/UAT/launch | 10 | 10 | lint/typecheck/unit/build + 39 Playwright pass; canlı rezervasyon UAT'si kaldı |
-| **Toplam** | **100** | **86** | Kod tarafı 93/100; ticari launch 86/100 çünkü POS/HMS/analytics/GBP dış kanıt bekliyor |
+| QA/UAT/launch | 10 | 10 | `publish:verify`, tam normal Playwright kümesi ve monkey/chaos yeşil; canlı rezervasyon UAT'si kaldı |
+| **Toplam** | **100** | **86** | Kod tarafı 95/100; ticari launch 86/100 çünkü POS/HMS/analytics/GBP dış kanıt bekliyor |
 
 ### 2026-06-13 Verification Evidence
 
 - `npm run lint` — PASS, 0 warning.
 - `npm run typecheck` — PASS.
-- `npm run test:unit` — PASS, 6 files / 23 tests.
+- `npm run test:unit` — PASS, 6 files / 25 tests.
 - `npm run build` — PASS, 66 routes generated.
-- `npx playwright test tests/e2e/lang-switch.spec.ts --reporter=line` — PASS, 4/4.
-- `npx playwright test tests/a11y.spec.ts --reporter=line` — PASS, 4/4.
-- `npx playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts --reporter=line` — PASS, 39 passed / 2 skipped.
+- `npm audit --omit=dev --audit-level=high` — PASS, 0 vulnerabilities.
+- `npm run publish:verify` — PASS: quality + 111 publish Playwright tests (109 passed / 2 skipped) + publish target inventory.
+- `npx playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts tests/smoke.spec.ts tests/chat-api.spec.ts` — PASS, 118 total (115 expected / 3 skipped / 0 unexpected).
+- `npx playwright test tests/monkey.spec.ts tests/destructive-chaos.spec.ts` — PASS, 3/3.
+- Local production preview: `http://127.0.0.1:3010`.
+- Screenshot evidence: `test-results/local-preview/final-home-desktop.png`, `final-home-mobile.png`, `final-org-desktop.png`, `final-org-mobile.png`.
 
 ## 3. Alan Bazlı Pass / Partial / Fail
 
@@ -66,7 +70,7 @@ kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + p
 - Schema.org: Hotel, LodgingBusiness, HotelRoom, FAQPage, BreadcrumbList, ReserveAction, GeoCoordinates — `src/app/page.tsx`, `odalar/[slug]/page.tsx`, `iletisim/page.tsx`
 - Teknik SEO: `src/app/sitemap.ts`, `robots.ts`, `manifest.ts`, her sayfada canonical (`src/lib/metadata.ts`), GEO için `llms.txt` route'u
 - Performans temeli: hero `priority + fetchPriority="high"` (`home/home-hero.tsx`), next/image, font optimizasyonu
-- QA: GitHub Actions CI (lint+typecheck+unit+e2e+build), 30 Playwright testi yeşil (checkout kontrat testleri: origin 403, bozuk gövde 400, fiyat tamper 400 dahil)
+- QA: GitHub Actions CI (lint+typecheck+unit+e2e+build), publish Playwright kümesi ve monkey/chaos yeşil (checkout kontrat testleri: origin 403, bozuk gövde 400, fiyat tamper 400 dahil)
 - KVKK sayfaları: `/kvkk`, `/gizlilik-politikasi`, `/mesafeli-satis-sozlesmesi`
 - Mobil: 375px yatay taşma giderildi (FAQ ikon rotate bounding fix)
 
@@ -75,18 +79,17 @@ kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + p
 - Server-side purchase altyapısı: `src/lib/ga4-server.ts` (GA4 Measurement Protocol; HMS webhook'unda iptal/no-show hariç tetiklenir; env boşsa no-op; PII göndermez; unit testli)
 - /galeri (ImageGallery schema), /sss (FAQPage schema), /cerez-politikasi sayfaları + footer/sitemap
 - Restaurant schema (`src/app/gastronomi/page.tsx`)
-- Hero arka plan videosu LCP-güvenli geri geldi (`public/videos/hero.mp4` 1.8MB; mobilde poster fallback)
+- Hero arka plan videosu gerçek otel dış cephesine odaklandı (`public/videos/hero-property.mp4`; poster `public/images/hero-video-poster.jpg`)
 - Payload rol ayrımı düzeltmesi: admin/editor zaten mevcuttu (`payload/collections/Users.ts`)
 - Sitewide title çiftlenmesi giderildi (metadata template + sayfa title uyumu)
 - Rollback prosedürü README'de
 
 ### PARTIAL
 - GA4/Meta ID'leri prod env'de yok → eventler sahada doğrulanamadı (kod hazır)
-- EN + hreflang: dictionary + LanguageSwitcher altyapısı hazır; EN rotaları yayında değil, hreflang bilinçli kapalı (`src/lib/metadata.ts:50` notu)
+- EN + hreflang: çekirdek EN rotaları ve language switcher yayında; tam editoryal çeviri/operasyon onayı canlı yayın öncesi ayrıca gözden geçirilmeli
 - MFA: Payload admin'de şifre auth var, MFA yok
 - Sayfa ağacı: /teklifler, /galeri (ayrı sayfa), /sss (ayrı sayfa), /lokasyon yok; deneyim rehberleri tek sayfada (`/misafir-rehberi`)
-- Restaurant schema: gastronomi sayfasında yok (0 eşleşme)
-- Çerez politikası: ayrı sayfa yok (gizlilik politikası kapsıyor mu — belirsiz, hukukçu onayı gerekli)
+- Çerez politikası: ayrı sayfa mevcut; vendor DPA ve hukukçu onayı hâlâ dış süreç
 - İptal/iade koşulları: mesafeli satış sözleşmesi var; otelcilik iptal politikası ayrı ve net mi — belirsiz
 
 ### FAIL / KANIT YOK (çoğu dış bağımlılık)
@@ -108,15 +111,15 @@ kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + p
 
 ## 5. İlk 10 Öncelik
 1. HMS vendor'a 15 soruluk listeyi gönder (master doküman §3.2) — DIŞ
-2. Garanti POS evraklarını tamamla — DIŞ
-3. GA4 funnel eventlerini ekle: view_item (oda detay), begin_checkout (rezervasyon CTA), generate_lead (formlar) — KOD
-4. HMS webhook'tan server-side purchase/booking_complete ölçümü (engine gelince) — KOD
-5. Restaurant schema (gastronomi) + LocalBusiness tutarlılığı — KOD
-6. /sss sayfası (ana sayfa FAQ'su genişletilip ayrı sayfa + FAQPage schema) — KOD
-7. /galeri sayfası (mevcut Konaktan Kareler şeridinin tam sayfası) — KOD
-8. Çerez politikası ayrı sayfa + vendor (PMS/engine/POS/GTM) listesi — KOD+HUKUK
-9. Payload rol ayrımı (admin/editor) + güçlü parola politikası; MFA araştır — KOD
-10. EN rotaları + hreflang (klasör bazlı /en) — KOD (büyük iş, lansman sonrası olabilir)
+2. Garanti POS evraklarını ve test bilgilerini tamamla — DIŞ
+3. GA4/GTM/Meta production ID'lerini Vercel env'e gir ve consent mode ile doğrula — DIŞ/KOD
+4. HMS engine geldikten sonra canlı booking redirect/embed kararını test et — DIŞ/KOD
+5. HMS webhook'tan server-side purchase/booking_complete ölçümünü gerçek event ile doğrula — KOD+DIŞ
+6. Search Console, GBP, Hotel Center ve Apple Business Connect doğrulamalarını tamamla — DIŞ
+7. Vendor DPA, yurtdışı veri aktarımı ve KVKK metinlerini hukukçuya onaylat — HUKUK
+8. CDN/WAF kararını netleştir; Vercel korumaları veya Cloudflare kural seti kanıtını ekle — DIŞ/KOD
+9. Canlı küçük tutarlı rezervasyon, iptal/iade ve stok düşümü UAT'sini kayıt altına al — DIŞ/KOD
+10. Lansman sonrası RUM/CrUX ve Looker Studio dashboard'unu aç — DIŞ/KOD
 
 ## 6. Hızlı Kazanımlar (≤1 gün)
 - Restaurant schema, /sss, /galeri, çerez politikası iskeleti
@@ -134,10 +137,10 @@ kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + p
 | Event | Tetik | Durum |
 |---|---|---|
 | page_view | GTM otomatik | Altyapı hazır (ID bekliyor) |
-| view_item | Oda detay görüntüleme | YOK → eklenecek |
-| begin_checkout | Rezervasyon CTA / engine açılışı | Kısmen (`data-event` var, GA4 map yok) |
+| view_item | Oda detay görüntüleme | Altyapı hazır, prod ID ile doğrulama bekliyor |
+| begin_checkout | Rezervasyon CTA / engine açılışı | Altyapı hazır, engine/prod ID ile doğrulama bekliyor |
 | purchase / booking_complete | HMS webhook (server-side) | Engine bekliyor |
-| generate_lead | İletişim/organizasyon formları | Kısmen |
+| generate_lead | İletişim/organizasyon formları | Altyapı hazır; consent ve prod ID ile doğrulama bekliyor |
 | click_whatsapp / click_phone | Mevcut `data-event` | VAR, GTM map gerekli |
 | newsletter_signup | Lead formu | VAR (lead route) |
 

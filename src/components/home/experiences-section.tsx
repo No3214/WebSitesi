@@ -14,10 +14,10 @@ const experiences = [
   },
   {
     no: "02",
-    title: { tr: "VIP Transfer & Hızlı Check-in", en: "VIP Transfer & Fast Check-in" },
+    title: { tr: "Transfer & Varış Planlama", en: "Transfer & Arrival Planning" },
     text: {
-      tr: "İzmir Havalimanı transferi ve odaya doğrudan giriş ayrıcalığı.",
-      en: "Airport transfer and direct room entry privilege.",
+      tr: "İzmir Havalimanı transferi, varış saati ve oda tercihlerinizi concierge ekibimizle planlayın.",
+      en: "Coordinate airport transfer, arrival time and room preferences with our concierge team.",
     },
   },
   {

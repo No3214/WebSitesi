@@ -64,12 +64,7 @@ export async function POST(req: Request) {
     else if (data.roomSlug.includes("aile")) rate = 7500;
     else if (data.roomSlug.includes("uc-kisilik")) rate = 6000;
 
-    let expectedTotal = rate * data.nights;
-
-    // Apply promo code if present and valid
-    if (data.promoCode && data.promoCode.toUpperCase() === "SLOWROTA15") {
-      expectedTotal = expectedTotal * 0.85;
-    }
+    const expectedTotal = rate * data.nights;
 
     // Verify client total matches within 2 TRY variance due to potential floating point rounding
     if (Math.abs(expectedTotal - data.totalPrice) > 2) {
@@ -120,7 +115,7 @@ export async function POST(req: Request) {
           `  • Yastık: ${safeText(data.pillow, 100)}`,
           `  • Ses: ${safeText(data.sound, 100)}`,
           `  • Işık: ${safeText(data.light, 100)}`,
-          `İndirim Kodu: ${data.promoCode ? safeText(data.promoCode, 50) : "Yok"}`,
+          `Teklif notu: Fiyat ve kampanya ekibin manuel onayına tabidir.`,
           `Toplam Tutar: ${data.totalPrice} TRY`,
           `Tahsilat: Garanti Sanal POS ile alınacak (ödeme bu sitede yapılmadı)`
         ].join("\n"),

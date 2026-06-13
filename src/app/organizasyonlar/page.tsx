@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     url: absoluteUrl("/organizasyonlar"),
     images: [
       {
-        url: absoluteUrl("/images/odalar/aile-odasi-4-kisilik/1.jpg"),
-        alt: "Kozbeyli Konağı'nın taş duvarlı, panoramik pencereli geniş aile odası",
+        url: absoluteUrl("/images/organizasyonlar/butik-dugun.jpg"),
+        alt: "Kozbeyli Konağı taş avlusunda butik düğün atmosferi",
       },
     ],
   },
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Kozbeyli Konağı Düğün & Davet Organizasyonları",
     description: "Tescilli taş konak avlusunda masalsı butik düğünler ve kurumsal toplantılar.",
-    images: [absoluteUrl("/images/odalar/aile-odasi-4-kisilik/1.jpg")],
+    images: [absoluteUrl("/images/organizasyonlar/butik-dugun.jpg")],
   }
 };
 

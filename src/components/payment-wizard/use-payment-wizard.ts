@@ -25,8 +25,6 @@ export function usePaymentWizard() {
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
-  const [promoCode, setPromoCode] = useState("");
-  const [isPromoApplied, setIsPromoApplied] = useState(false);
   const [bookingId, setBookingId] = useState("");
 
   // Kart state'i YOK: tahsilat Garanti BBVA Sanal POS 3D Secure sayfasında
@@ -68,22 +66,9 @@ export function usePaymentWizard() {
     return rate * nights;
   }, [selectedRoom, nights]);
 
-  const discountAmount = useMemo(() => {
-    return isPromoApplied ? totalRawPrice * 0.15 : 0;
-  }, [totalRawPrice, isPromoApplied]);
-
   const finalPrice = useMemo(() => {
-    return totalRawPrice - discountAmount;
-  }, [totalRawPrice, discountAmount]);
-
-  const applyPromo = () => {
-    if (promoCode.trim().toUpperCase() === "SLOWROTA15") {
-      setIsPromoApplied(true);
-      setPaymentError("");
-    } else {
-      setPaymentError("Geçersiz indirim kodu.");
-    }
-  };
+    return totalRawPrice;
+  }, [totalRawPrice]);
 
   const handlePaymentSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -115,7 +100,7 @@ export function usePaymentWizard() {
           pillow: pillow.label,
           sound: sound.label,
           light: light.label,
-          promoCode: isPromoApplied ? "SLOWROTA15" : "",
+          promoCode: "",
           totalPrice: finalPrice,
         })
       });
@@ -158,8 +143,6 @@ Rezervasyonumun onaylanmasını rica ederim.`;
   const resetWizard = () => {
     setStep("dates");
     setSelectedRoom(null);
-    setIsPromoApplied(false);
-    setPromoCode("");
     setGuestName("");
     setGuestEmail("");
     setGuestPhone("");
@@ -176,12 +159,12 @@ Rezervasyonumun onaylanmasını rica ederim.`;
     scent, setScent, pillow, setPillow, sound, setSound, light, setLight,
     // Misafir & fatura
     guestName, setGuestName, guestEmail, setGuestEmail, guestPhone, setGuestPhone,
-    promoCode, setPromoCode, isPromoApplied, setIsPromoApplied, bookingId, setBookingId,
+    bookingId, setBookingId,
     // Gonderim durumu
     isSubmitting, setIsSubmitting, paymentError, setPaymentError,
     // Turetilmis degerler
-    nights, totalRawPrice, discountAmount, finalPrice,
+    nights, totalRawPrice, finalPrice,
     // Handler'lar
-    applyPromo, handlePaymentSubmit, getWhatsAppMessage, resetWizard,
+    handlePaymentSubmit, getWhatsAppMessage, resetWizard,
   };
 }

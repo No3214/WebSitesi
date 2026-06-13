@@ -1,5 +1,14 @@
 import { expect, test } from "@playwright/test";
 
+function sameOriginHeaders(baseURL?: string) {
+  const url = new URL(baseURL || "http://127.0.0.1:3006");
+  return {
+    origin: url.origin,
+    host: url.host,
+    "content-type": "application/json",
+  };
+}
+
 test.describe("Swarm API publish contract", () => {
   test("GET allowed task list and governance mode", async ({ request }) => {
     const response = await request.get("/api/swarm");
@@ -11,8 +20,23 @@ test.describe("Swarm API publish contract", () => {
     expect(json.productionNote).toContain("does not execute");
   });
 
-  test("rejects unknown task with allowed task list", async ({ request }) => {
+  test("rejects cross-origin swarm posts", async ({ request, baseURL }) => {
+    const url = new URL(baseURL || "http://127.0.0.1:3006");
     const response = await request.post("/api/swarm", {
+      headers: {
+        origin: "https://evil.example",
+        host: url.host,
+        "content-type": "application/json",
+      },
+      data: { taskType: "growth-engine", payload: {} },
+    });
+
+    expect(response.status()).toBe(403);
+  });
+
+  test("rejects unknown task with allowed task list", async ({ request, baseURL }) => {
+    const response = await request.post("/api/swarm", {
+      headers: sameOriginHeaders(baseURL),
       data: { taskType: "unknown-agent", payload: {} },
     });
 
@@ -21,8 +45,9 @@ test.describe("Swarm API publish contract", () => {
     expect(json.allowedTaskTypes).toContain("sales-concierge");
   });
 
-  test("growth-engine returns governed supporting agents", async ({ request }) => {
+  test("growth-engine returns governed supporting agents", async ({ request, baseURL }) => {
     const response = await request.post("/api/swarm", {
+      headers: sameOriginHeaders(baseURL),
       data: {
         taskType: "growth-engine",
         payload: {

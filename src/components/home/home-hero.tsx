@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { FadeIn, RevealLines } from "@/components/animations";
 
@@ -11,26 +11,30 @@ type Props = { locale: "tr" | "en"; eyebrow: string };
 
 /**
  * Hero arka plan videosu — LCP'ye dokunmadan:
- * - LCP elemanı her zaman hero.jpg (priority + preload); video sayfa "load"
- *   olduktan sonra yüklenir ve oynamaya başlayınca üstüne fade-in olur.
- * - Dar ekran (<768px) ve Data Saver'da hiç yüklenmez (master şartname:
- *   mobilde poster/fallback). Not: prefers-reduced-motion sitewide ele
- *   alınmadığından (framer-motion animasyonları da bakmıyor) burada tek
- *   başına uygulanmıyor; WCAG turu yapılırken birlikte ele alınacak.
+ * - LCP elemanı her zaman poster görselidir (priority + preload); video sayfa
+ *   "load" olduktan sonra yüklenir ve oynamaya başlayınca üstüne fade-in olur.
+ * - Data Saver ve reduced-motion'da hiç yüklenmez; mobilde ise Emergent
+ *   önizlemesindeki gibi sessiz/playsInline arka plan reel'i devreye girer.
  */
 function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [shouldRender, setShouldRender] = useState(false);
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
-    const smallScreen = window.matchMedia("(max-width: 767px)").matches;
     const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
-    if (smallScreen || conn?.saveData) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduceMotion && !conn?.saveData) {
+      setShouldRender(true);
+    }
+  }, []);
 
+  useEffect(() => {
+    if (!shouldRender) return;
     const start = () => {
       const video = videoRef.current;
       if (!video) return;
-      video.src = "/videos/hero.mp4";
+      video.src = "/videos/hero-property.mp4";
       video.play().catch(() => {
         /* autoplay engellendiyse poster görseliyle devam */
       });
@@ -42,7 +46,9 @@ function HeroVideo() {
     }
     window.addEventListener("load", start, { once: true });
     return () => window.removeEventListener("load", start);
-  }, []);
+  }, [shouldRender]);
+
+  if (!shouldRender) return null;
 
   return (
     <video
@@ -52,6 +58,7 @@ function HeroVideo() {
       loop
       playsInline
       preload="none"
+      poster="/images/hero-video-poster.jpg"
       aria-hidden
       tabIndex={-1}
       onPlaying={() => setPlaying(true)}
@@ -60,17 +67,19 @@ function HeroVideo() {
 }
 
 export function HomeHero({ locale, eyebrow }: Props) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section className="hero grain">
       <motion.div
-        initial={{ scale: 1.12 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 9, ease: "easeOut" }}
+        initial={reduceMotion ? false : { scale: 1.12 }}
+        animate={reduceMotion ? undefined : { scale: 1 }}
+        transition={reduceMotion ? undefined : { duration: 9, ease: "easeOut" }}
         className="hero-media"
       >
         <Image
-          src="/images/hero.jpg"
-          alt={locale === "tr" ? "Kozbeyli Konağı taş avlusu" : "Kozbeyli Konağı stone courtyard"}
+          src="/images/hero-video-poster.jpg"
+          alt={locale === "tr" ? "Kozbeyli Konağı taş cephesi ve Ege manzarası" : "Kozbeyli Konağı stone facade and Aegean view"}
           fill
           sizes="100vw"
           className="object-cover"
@@ -92,10 +101,11 @@ export function HomeHero({ locale, eyebrow }: Props) {
 
         <RevealLines
           as="h1"
+          trigger="mount"
           lines={
             locale === "tr"
-              ? ["Taşın Hafızasında", "Zarif Bir Ege Kaçamağı"]
-              : ["An Elegant Aegean Escape", "In the Memory of Stone"]
+              ? ["Tarihin Kalbinde", "Zarif Bir Ege Kaçamağı"]
+              : ["In the Heart of History", "An Elegant Aegean Escape"]
           }
         />
 

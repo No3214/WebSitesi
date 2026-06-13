@@ -20,5 +20,5 @@ test("menü sayfası açılıyor", async ({ page }) => {
 
 test("organizasyonlar sayfası açılıyor", async ({ page }) => {
   await page.goto("/organizasyonlar");
-  await expect(page.getByText("Sizin Hikayeniz, Bizim Mekanımız", { exact: false })).toBeVisible();
+  await expect(page.getByText(/Sizin Hikayeniz, Bizim Mek[aâ]nımız/i)).toBeVisible();
 });

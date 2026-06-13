@@ -56,7 +56,7 @@ export function useExperienceDesigner() {
     message += `📅 *Süre:* ${selectedDuration.label}\n`;
     message += `🌿 *Konsept:* ${selectedInterest.title}\n`;
     message += `⚡ *Tempo:* ${selectedPace.label}\n\n`;
-    message += `Bu rotaya uygun oda rezervasyonu yapmak ve *SLOWROTA15* kodlu %15 indirimden faydalanmak istiyorum. Bana yardımcı olabilir misiniz?`;
+    message += `Bu rotaya uygun oda müsaitliği ve kişiselleştirilmiş teklif için yardımcı olabilir misiniz?`;
 
     const href = getWhatsAppHref(message);
     window.open(href, "_blank");

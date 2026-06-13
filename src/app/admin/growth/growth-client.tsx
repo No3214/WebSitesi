@@ -211,7 +211,7 @@ export function GrowthDashboardClient() {
               </div>
               <div className="mt-8 pt-6 border-t border-zinc-800/50">
                 <p className="text-xs text-zinc-500 leading-relaxed italic">
-                  &quot;System predicts +4.2% lift in direct booking velocity after Phase 29 assets stabilization.&quot;
+                  &quot;Advisory mode: live lift estimates require verified analytics and booking data.&quot;
                 </p>
               </div>
             </div>

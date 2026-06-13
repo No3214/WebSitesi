@@ -24,11 +24,6 @@ export function ItineraryResult({ designer }: { designer: ExperienceDesigner }) 
           {selectedDuration.label} · {selectedInterest.title} · {selectedPace.label}
         </p>
 
-        {/* Promosyon rozeti */}
-        <div className="promo-badge">
-          <span>Slow Living İndirimi Aktif:</span>
-          <strong>%15 İNDİRİM KODU: <code className="code-text">SLOWROTA15</code></strong>
-        </div>
       </div>
 
       {/* Gün gün zaman çizelgesi */}
@@ -93,33 +88,6 @@ export function ItineraryResult({ designer }: { designer: ExperienceDesigner }) 
           max-width: 600px;
           margin: 0 auto;
           font-size: 1.1rem;
-        }
-
-        .promo-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
-          background: #fdfaf5;
-          border: 1px solid #f1ece1;
-          padding: 12px 24px;
-          border-radius: 50px;
-          margin-top: 24px;
-          font-size: 0.9rem;
-        }
-
-        .promo-badge span {
-          color: #666;
-        }
-
-        .promo-badge strong {
-          color: var(--gold);
-        }
-
-        .code-text {
-          font-family: monospace;
-          background: rgba(179, 146, 92, 0.1);
-          padding: 2px 6px;
-          border-radius: 4px;
         }
 
         .day-section {

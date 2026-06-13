@@ -31,10 +31,10 @@ export const SPECIALIST_KNOWLEDGE = {
     expert: "Growth Architect (No3214 Prestige)",
     heritage: "Direct Booking Luxury",
     signature_tokens: [
-      "Best Price & Suite Upgrade priority",
+      "Direct concierge availability check",
       "Merchant Welcome Ritual",
-      "Early bird %15 (Heritage Benefit)",
-      "VIP Kozbeyli Transfer",
+      "Availability-based room preference note",
+      "Foça transfer guidance",
       "Curated Slow Living Rota"
     ],
     logic: "Subtly nudge users towards booking by framing it as 'Patronaj' or preserving the village legacy."

@@ -48,7 +48,7 @@ export const GrowthEngine = {
       case 'heritage':
         return "500 yıllık taş mimarimizin hikayesini ve restorasyon sürecimizi dinlemek ister misiniz?";
       case 'conversion':
-        return "Şu an direkt rezervasyon yaparak sunduğumuz %15 indirimden faydalanmak ister misiniz?";
+        return "Müsaitlik ve size özel teklif için rezervasyon ekibimizle görüşmek ister misiniz?";
       case 'loyalty':
         const perks = GrowthEngine.getDirectBookingPerks();
         return `Kozbeyli Dostu olarak sizi tekrar görmek harika! Bu ziyaretinizde direkt rezervasyon yaparsanız şu ayrıcalıklara sahip olacaksınız: ${perks.join(', ')}.`;
@@ -58,7 +58,7 @@ export const GrowthEngine = {
   },
 
   /**
-   * Loyalty Engine: Recognizes returning guests (simulated via local storage or session).
+   * Loyalty Engine: Recognizes returning browsers via local storage.
    */
   recognizeGuest: () => {
     // Logic to detect habitual visitation patterns
@@ -79,9 +79,8 @@ export const GrowthEngine = {
   getDirectBookingPerks: () => {
     return [
       'Erken Check-in (Müsaitliğe göre)',
-      '1kg Organik Köy Balı Hediyesi',
-      'VIP Oda Buklet Seti',
-      'Direkt Rezervasyona Özel %15 İndirim'
+      'Oda tercihinizin concierge notuna eklenmesi',
+      'Kişiselleştirilmiş yavaş yaşam rota önerisi'
     ];
   }
 };

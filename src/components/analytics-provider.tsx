@@ -1,32 +1,70 @@
 "use client";
 
-import posthog from 'posthog-js';
-import { PostHogProvider } from 'posthog-js/react';
-import { useEffect, ReactNode } from 'react';
+import posthog from "posthog-js";
+import { PostHogProvider } from "posthog-js/react";
+import { usePathname } from "next/navigation";
+import { useEffect, ReactNode, useState } from "react";
 
-if (typeof window !== 'undefined') {
-  const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY || 'phc_dummy_key';
-  const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com';
-  
-  posthog.init(posthogKey, {
-    api_host: posthogHost,
-    person_profiles: 'identified_only',
-    capture_pageview: false // Manual capture for SPA
-  });
+import { CONSENT_STORAGE_KEY, getDefaultConsent, parseConsent } from "@/lib/consent";
+
+let posthogReady = false;
+
+function hasAnalyticsConsent() {
+  if (typeof window === "undefined") return false;
+  return (parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY)) || getDefaultConsent()).analytics;
+}
+
+function ensurePostHogReady() {
+  if (typeof window === "undefined") return false;
+  const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim();
+  if (!posthogKey || !hasAnalyticsConsent()) {
+    if (posthogReady) posthog.opt_out_capturing();
+    return false;
+  }
+
+  if (!posthogReady) {
+    posthog.init(posthogKey, {
+      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com",
+      person_profiles: "identified_only",
+      capture_pageview: false,
+    });
+    posthogReady = true;
+  }
+
+  posthog.opt_in_capturing();
+  return true;
 }
 
 export function CSPostHogProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const [ready, setReady] = useState(false);
+
   useEffect(() => {
-    // Track initial page load
-    posthog.capture('$pageview');
+    const sync = () => setReady(ensurePostHogReady());
+    sync();
+
+    window.addEventListener("storage", sync);
+    window.addEventListener("consent:updated", sync as EventListener);
+
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("consent:updated", sync as EventListener);
+    };
   }, []);
 
+  useEffect(() => {
+    if (ready) {
+      posthog.capture("$pageview", { path: pathname });
+    }
+  }, [pathname, ready]);
+
+  if (!ready) return <>{children}</>;
   return <PostHogProvider client={posthog}>{children}</PostHogProvider>;
 }
 
 // Global utility for event tracking
 export const trackEvent = (name: string, properties?: Record<string, string | number | boolean | null>) => {
-  if (typeof window !== 'undefined') {
+  if (ensurePostHogReady()) {
     posthog.capture(name, properties || undefined);
   }
 };

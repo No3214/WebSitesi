@@ -3,7 +3,6 @@
 import { StoryHero, StorySegment } from "@/components/storytelling";
 import { SiteHeader } from "@/components/site-header";
 import { LivingMuseumMap } from "@/components/living-museum-map";
-import { AudioGuide } from "@/components/audio-guide";
 import { HeritageArchive } from "@/components/heritage-archive";
 
 export function HistoryClient() {
@@ -16,9 +15,6 @@ export function HistoryClient() {
           title="Hikayemiz" 
           subtitle="500 YILLIK TAŞLARIN FISILTISI" 
         />
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20">
-          <AudioGuide />
-        </div>
       </div>
 
       <section className="py-24 px-6 max-w-7xl mx-auto">
