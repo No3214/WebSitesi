@@ -28,4 +28,4 @@ export function getPhoneHref(): string {
 /** Tek doğru harita kaynağı. */
 export const MAPS_URL =
   process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL ||
-  "https://www.google.com/maps/search/?api=1&query=Kozbeyli+Kona%C4%9F%C4%B1+Fo%C3%A7a+%C4%B0zmir";
+  "https://www.google.com/maps/dir/?api=1&destination=38.713943%2C26.896018";

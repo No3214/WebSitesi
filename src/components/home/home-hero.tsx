@@ -9,10 +9,12 @@ import { FadeIn, RevealLines } from "@/components/animations";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
+const HERO_VIDEO_SRC = "/videos/hero-property.mp4";
+
 /**
  * Hero arka plan videosu — LCP'ye dokunmadan:
  * - LCP elemanı her zaman poster görselidir (priority + preload); video sayfa
- *   "load" olduktan sonra yüklenir ve oynamaya başlayınca üstüne fade-in olur.
+ *   yüklendikten sonra video üstüne fade-in olur.
  * - Data Saver ve reduced-motion'da hiç yüklenmez; mobilde ise Emergent
  *   önizlemesindeki gibi sessiz/playsInline arka plan reel'i devreye girer.
  */
@@ -31,21 +33,41 @@ function HeroVideo() {
 
   useEffect(() => {
     if (!shouldRender) return;
-    const start = () => {
+
+    let cancelled = false;
+    const timers: number[] = [];
+
+    const start = async () => {
+      if (cancelled) return;
       const video = videoRef.current;
       if (!video) return;
-      video.src = "/videos/hero-property.mp4";
-      video.play().catch(() => {
+
+      try {
+        video.muted = true;
+        video.playsInline = true;
+        await video.play();
+      } catch {
         /* autoplay engellendiyse poster görseliyle devam */
-      });
+      }
     };
 
-    if (document.readyState === "complete") {
-      start();
-      return;
-    }
-    window.addEventListener("load", start, { once: true });
-    return () => window.removeEventListener("load", start);
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") void start();
+    };
+
+    void start();
+    timers.push(window.setTimeout(start, 600), window.setTimeout(start, 1800));
+    window.addEventListener("focus", start);
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("pointerdown", start, { once: true });
+
+    return () => {
+      cancelled = true;
+      timers.forEach((timer) => window.clearTimeout(timer));
+      window.removeEventListener("focus", start);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("pointerdown", start);
+    };
   }, [shouldRender]);
 
   if (!shouldRender) return null;
@@ -54,14 +76,20 @@ function HeroVideo() {
     <video
       ref={videoRef}
       className={`hero-video ${playing ? "playing" : ""}`}
+      src={HERO_VIDEO_SRC}
+      autoPlay
       muted
       loop
       playsInline
-      preload="none"
+      preload="auto"
       poster="/images/hero-video-poster.jpg"
       aria-hidden
       tabIndex={-1}
+      onCanPlay={() => void videoRef.current?.play().catch(() => {})}
       onPlaying={() => setPlaying(true)}
+      onTimeUpdate={(event) => {
+        if (event.currentTarget.currentTime > 0) setPlaying(true);
+      }}
     />
   );
 }

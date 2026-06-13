@@ -13,6 +13,25 @@ async function waitForHeroVideoSource(page: import("@playwright/test").Page) {
     .toContain("/videos/hero-property.mp4");
 }
 
+async function expectHeroVideoPlaying(page: import("@playwright/test").Page) {
+  await waitForHeroVideoSource(page);
+  await expect
+    .poll(
+      async () =>
+        page.locator(".hero-video").evaluate((video) => {
+          const element = video as HTMLVideoElement;
+          return (
+            !element.paused &&
+            element.currentTime > 0 &&
+            element.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+            getComputedStyle(element).opacity === "1"
+          );
+        }),
+      { timeout: 15000 }
+    )
+    .toBe(true);
+}
+
 test.describe("Homepage hero video", () => {
   test("desktop shows the hero title and loads the cinematic intro video", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
@@ -20,7 +39,7 @@ test.describe("Homepage hero video", () => {
 
     await expect(page.locator(".hero h1")).toBeVisible({ timeout: 15000 });
     await expect(page.locator(".hero h1")).toContainText("Tarihin Kalbinde");
-    await waitForHeroVideoSource(page);
+    await expectHeroVideoPlaying(page);
   });
 
   test("mobile also loads the cinematic intro video unless motion/data preferences block it", async ({ page }) => {
@@ -28,7 +47,7 @@ test.describe("Homepage hero video", () => {
     await page.goto("/", { waitUntil: "load" });
 
     await expect(page.locator(".hero h1")).toBeVisible({ timeout: 15000 });
-    await waitForHeroVideoSource(page);
+    await expectHeroVideoPlaying(page);
 
     const overflow = await page.evaluate(() => {
       const root = document.documentElement;

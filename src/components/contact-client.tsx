@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { LeadForm } from "@/components/lead-form";
-import { getWhatsAppHref, PHONE_DISPLAY, PHONE_E164 } from "@/lib/contact";
+import { getWhatsAppHref, MAPS_URL, PHONE_DISPLAY, PHONE_E164 } from "@/lib/contact";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { getDictionary } from "@/lib/dictionary";
 
@@ -15,7 +15,7 @@ const FALLBACK = {
   tr: {
     whatsapp: "WhatsApp Concierge",
     whatsappMessage: "Merhaba, web sitesinden ulaşıyorum.",
-    addressLine: "Kozbeyli Köyü, Foça / İzmir",
+    addressLine: "Kozbeyli Köyü Küme Evler No:188, Foça / İzmir",
     addressNote: "İzmir Adnan Menderes Havalimanı'na ~55 dk, Foça merkeze 15 dk.",
     mapTitle: "Kozbeyli Konağı Konum — OpenStreetMap",
     formText:
@@ -24,7 +24,7 @@ const FALLBACK = {
   en: {
     whatsapp: "WhatsApp Concierge",
     whatsappMessage: "Hello, I am reaching out from the website.",
-    addressLine: "Kozbeyli Village, Foça / İzmir",
+    addressLine: "Kozbeyli Village Küme Evler No:188, Foça / İzmir",
     addressNote: "~55 min to İzmir Adnan Menderes Airport, 15 min to Foça center.",
     mapTitle: "Kozbeyli Konağı Location — OpenStreetMap",
     formText:
@@ -62,7 +62,6 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
   const osmEmbed = `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(
     bbox,
   )}&layer=mapnik&marker=${lat},${lng}`;
-  const directions = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
   return (
     <div className="container" style={{ maxWidth: 1040 }}>
@@ -112,7 +111,7 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
                 </span>
               </span>
             </div>
-            <a className="button secondary" href={directions} target="_blank" rel="noreferrer" data-event="directions_click">
+            <a className="button secondary" href={MAPS_URL} target="_blank" rel="noreferrer" data-event="directions_click">
               {t.directions}
             </a>
           </div>

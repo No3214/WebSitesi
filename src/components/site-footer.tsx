@@ -95,7 +95,7 @@ export function SiteFooter() {
             <div className="contact-item">
               <MapPin size={17} aria-hidden />
               <a href={MAPS_URL} target="_blank" rel="noreferrer">
-                Kozbeyli Köyü, Foça / İzmir
+                Kozbeyli Köyü Küme Evler No:188, Foça / İzmir
               </a>
             </div>
             <div className="contact-item">

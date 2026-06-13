@@ -1,4 +1,5 @@
 import { env } from "@/lib/env";
+import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { absoluteUrl } from "./utils";
 import { ReputationData } from "./ai/reputation-intelligence";
 
@@ -25,7 +26,7 @@ export function hotelSchema() {
     email: "info@kozbeylikonagi.com",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Kozbeyli Köyü",
+      streetAddress: "Kozbeyli Köyü Küme Evler No:188",
       addressLocality: "Foça",
       addressRegion: "İzmir",
       postalCode: "35680",
@@ -33,8 +34,8 @@ export function hotelSchema() {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 38.737,
-      longitude: 26.885,
+      latitude: KOZBEYLI_COORDS.lat,
+      longitude: KOZBEYLI_COORDS.lng,
     },
     checkinTime: "14:00",
     checkoutTime: "12:00",

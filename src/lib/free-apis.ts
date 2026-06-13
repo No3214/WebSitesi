@@ -8,8 +8,8 @@
  * - Nager.Date      → TR resmi tatilleri (https://date.nager.at, ücretsiz, key yok)
  */
 
-// Kozbeyli Köyü, Foça / İzmir
-export const KOZBEYLI_COORDS = { lat: 38.737, lng: 26.885 } as const;
+// Kozbeyli Konağı, Kozbeyli Köyü Küme Evler No:188, Foça / İzmir
+export const KOZBEYLI_COORDS = { lat: 38.713943, lng: 26.896018 } as const;
 
 const REVALIDATE_30M = 1800;
 const REVALIDATE_12H = 43200;

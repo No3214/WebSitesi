@@ -10,7 +10,7 @@ export const LLMContextGenerator = {
       property: {
         name: "Kozbeyli Konağı",
         type: "Heritage Boutique Hotel & Gastronomy Center",
-        location: "Kozbeyli Village, Foça, İzmir, Turkey",
+        location: "Kozbeyli Village Küme Evler No:188, Foça, İzmir, Turkey",
         vibe: "Slow Living, Ancient Heritage, Refined Luxury",
         architecture: {
           style: "19th Century Ottoman Stone Architecture (Late Period)",

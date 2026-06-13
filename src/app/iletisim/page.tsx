@@ -11,7 +11,7 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "İletişim & Ulaşım Yol Tarifi",
   description:
-    "Kozbeyli Konağı'na ulaşın: Kozbeyli Köyü, Foça / İzmir. Telefon, WhatsApp concierge, e-posta ve yol tarifi. İzmir Adnan Menderes Havalimanı'na 55 dakika.",
+    "Kozbeyli Konağı'na ulaşın: Kozbeyli Köyü Küme Evler No:188, Foça / İzmir. Telefon, WhatsApp concierge, e-posta ve yol tarifi. İzmir Adnan Menderes Havalimanı'na 55 dakika.",
   keywords: ["kozbeyli konağı iletişim", "kozbeyli köyü ulaşım", "foça otel telefon", "kozbeyli yol tarifi"],
   alternates: { canonical: "/iletisim" },
 };
@@ -30,7 +30,7 @@ export default async function ContactPage() {
     email: EMAIL,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Kozbeyli Köyü",
+      streetAddress: "Kozbeyli Köyü Küme Evler No:188",
       addressLocality: "Foça",
       addressRegion: "İzmir",
       addressCountry: "TR",
