@@ -28,8 +28,8 @@ function routeForFile(filePath: string) {
 }
 
 async function collectVisibleBrokenImages(page: import("@playwright/test").Page) {
-  return page.locator("img").evaluateAll((images) =>
-    images
+  return page.locator("img").evaluateAll(async (images) => {
+    const visibleImages = images
       .map((image) => image as HTMLImageElement)
       .filter((image) => {
         const rect = image.getBoundingClientRect();
@@ -46,10 +46,31 @@ async function collectVisibleBrokenImages(page: import("@playwright/test").Page)
           style.visibility !== "hidden" &&
           Number(style.opacity) !== 0
         );
-      })
-      .filter((image) => image.naturalWidth === 0 || image.naturalHeight === 0)
-      .map((image) => image.currentSrc || image.getAttribute("src") || image.getAttribute("alt") || "unknown image")
-  );
+      });
+
+    const probes = visibleImages.map(async (image) => {
+      if (image.naturalWidth > 0 && image.naturalHeight > 0) return null;
+
+      const source = image.currentSrc || image.getAttribute("src") || "";
+      if (!source) return image.getAttribute("alt") || "unknown image";
+
+      return new Promise<string | null>((resolve) => {
+        const probe = new Image();
+        const timeout = window.setTimeout(() => resolve(source), 5000);
+        probe.onload = () => {
+          window.clearTimeout(timeout);
+          resolve(null);
+        };
+        probe.onerror = () => {
+          window.clearTimeout(timeout);
+          resolve(source);
+        };
+        probe.src = source;
+      });
+    });
+
+    return (await Promise.all(probes)).filter((source): source is string => Boolean(source));
+  });
 }
 
 async function waitForVisibleImages(page: import("@playwright/test").Page) {

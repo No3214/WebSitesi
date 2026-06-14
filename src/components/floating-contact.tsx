@@ -1,12 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { MessageCircle, Phone, Instagram, X, MessageSquare } from "lucide-react";
 
 import { getPhoneHref, WHATSAPP_BASE } from "@/lib/contact";
 
+function isEnglishPath(pathname: string | null): boolean {
+  return pathname === "/en" || Boolean(pathname?.startsWith("/en/"));
+}
+
 export const FloatingContact = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const englishPath = isEnglishPath(pathname);
+  const callLabel = englishPath ? "Call Us" : "Bize Ulaşın";
+  const toggleLabel = isOpen
+    ? englishPath
+      ? "Close contact options"
+      : "İletişim seçeneklerini kapat"
+    : englishPath
+      ? "Open contact options"
+      : "İletişim seçeneklerini aç";
 
   const contactOptions = [
     {
@@ -17,7 +32,7 @@ export const FloatingContact = () => {
     },
     {
       icon: <Phone className="w-5 h-5" />,
-      label: "Bize Ulaşın",
+      label: callLabel,
       href: getPhoneHref(),
       color: "bg-blue-600",
     },
@@ -51,7 +66,7 @@ export const FloatingContact = () => {
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? "İletişim seçeneklerini kapat" : "İletişim seçeneklerini aç"}
+        aria-label={toggleLabel}
         aria-expanded={isOpen}
         className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl transition-all duration-300 ${
           isOpen ? "bg-zinc-900 rotate-90" : "bg-gold"

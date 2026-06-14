@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Cookie } from "lucide-react";
 
 import {
@@ -12,6 +13,66 @@ import {
   type ConsentState,
 } from "@/lib/consent";
 
+type ConsentLocale = "tr" | "en";
+
+const consentCopy = {
+  tr: {
+    ariaLabel: "Çerez tercihleri",
+    description: "Zorunlu olmayan çerezleri yalnızca onayınızla kullanıyoruz. Detaylar için",
+    policy: "Çerez Politikamızı",
+    suffix: "inceleyebilirsiniz.",
+    summaries: {
+      all: "Analitik ve pazarlama çerezleri açık.",
+      analytics: "Sadece analitik çerezler açık.",
+      marketing: "Sadece pazarlama çerezleri açık.",
+      necessary: "Yalnızca zorunlu çerezler aktif.",
+    },
+    necessary: "Zorunlu çerezler",
+    analytics: "Analitik çerezler",
+    marketing: "Pazarlama çerezleri",
+    reject: "Reddet",
+    preferences: "Tercihler",
+    save: "Tercihleri Kaydet",
+    acceptAll: "Tümünü Kabul Et",
+  },
+  en: {
+    ariaLabel: "Cookie preferences",
+    description: "We use optional cookies only with your consent. For details, review our",
+    policy: "Cookie Policy",
+    suffix: ".",
+    summaries: {
+      all: "Analytics and marketing cookies are enabled.",
+      analytics: "Only analytics cookies are enabled.",
+      marketing: "Only marketing cookies are enabled.",
+      necessary: "Only necessary cookies are active.",
+    },
+    necessary: "Necessary cookies",
+    analytics: "Analytics cookies",
+    marketing: "Marketing cookies",
+    reject: "Reject",
+    preferences: "Preferences",
+    save: "Save Preferences",
+    acceptAll: "Accept All",
+  },
+} satisfies Record<ConsentLocale, {
+  ariaLabel: string;
+  description: string;
+  policy: string;
+  suffix: string;
+  summaries: Record<"all" | "analytics" | "marketing" | "necessary", string>;
+  necessary: string;
+  analytics: string;
+  marketing: string;
+  reject: string;
+  preferences: string;
+  save: string;
+  acceptAll: string;
+}>;
+
+function isEnglishPath(pathname: string | null): boolean {
+  return pathname === "/en" || Boolean(pathname?.startsWith("/en/"));
+}
+
 export function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -19,6 +80,14 @@ export function CookieConsent() {
     analytics: false,
     marketing: false,
   });
+  const pathname = usePathname();
+  const [locale, setLocale] = useState<ConsentLocale>(isEnglishPath(pathname) ? "en" : "tr");
+
+  useEffect(() => {
+    setLocale(isEnglishPath(pathname) || document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr");
+  }, [pathname]);
+
+  const copy = consentCopy[locale];
 
   useEffect(() => {
     const current = parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY));
@@ -32,11 +101,11 @@ export function CookieConsent() {
   }, []);
 
   const summaryText = useMemo(() => {
-    if (draft.analytics && draft.marketing) return "Analitik ve pazarlama çerezleri açık.";
-    if (draft.analytics) return "Sadece analitik çerezler açık.";
-    if (draft.marketing) return "Sadece pazarlama çerezleri açık.";
-    return "Yalnızca zorunlu çerezler aktif.";
-  }, [draft.analytics, draft.marketing]);
+    if (draft.analytics && draft.marketing) return copy.summaries.all;
+    if (draft.analytics) return copy.summaries.analytics;
+    if (draft.marketing) return copy.summaries.marketing;
+    return copy.summaries.necessary;
+  }, [copy, draft.analytics, draft.marketing]);
 
   const apply = (value: { analytics: boolean; marketing: boolean }) => {
     saveConsent(value);
@@ -48,14 +117,15 @@ export function CookieConsent() {
   if (!isVisible) return null;
 
   return (
-    <div className="cookie-banner" role="dialog" aria-live="polite" aria-label="Çerez tercihleri">
+    <div className="cookie-banner" role="dialog" aria-live="polite" aria-label={copy.ariaLabel}>
       <div className="container">
         <div className="cookie-content" style={{ display: "grid", gap: 16 }}>
           <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
             <Cookie size={20} className="cookie-icon" />
             <div>
               <p>
-                Zorunlu olmayan çerezleri yalnızca onayınızla kullanıyoruz. Detaylar için <Link href="/kvkk">Çerez Politikamızı</Link> inceleyebilirsiniz.
+                {copy.description} <Link href="/cerez-politikasi">{copy.policy}</Link>
+                {copy.suffix}
               </p>
               <p style={{ marginTop: 8, opacity: 0.8 }}>{summaryText}</p>
             </div>
@@ -64,11 +134,11 @@ export function CookieConsent() {
           {isExpanded && (
             <div style={{ display: "grid", gap: 12 }}>
               <label style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
-                <span>Zorunlu çerezler</span>
+                <span>{copy.necessary}</span>
                 <input type="checkbox" checked readOnly disabled />
               </label>
               <label style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
-                <span>Analitik çerezler</span>
+                <span>{copy.analytics}</span>
                 <input
                   type="checkbox"
                   checked={draft.analytics}
@@ -76,7 +146,7 @@ export function CookieConsent() {
                 />
               </label>
               <label style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
-                <span>Pazarlama çerezleri</span>
+                <span>{copy.marketing}</span>
                 <input
                   type="checkbox"
                   checked={draft.marketing}
@@ -88,18 +158,18 @@ export function CookieConsent() {
 
           <div className="cookie-actions" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <button onClick={() => apply({ analytics: false, marketing: false })} className="button secondary sm">
-              Reddet
+              {copy.reject}
             </button>
             <button onClick={() => setIsExpanded((prev) => !prev)} className="button secondary sm">
-              Tercihler
+              {copy.preferences}
             </button>
             {isExpanded ? (
               <button onClick={() => apply(draft)} className="button primary sm">
-                Tercihleri Kaydet
+                {copy.save}
               </button>
             ) : (
               <button onClick={() => apply({ analytics: true, marketing: true })} className="button primary sm">
-                Tümünü Kabul Et
+                {copy.acceptAll}
               </button>
             )}
           </div>

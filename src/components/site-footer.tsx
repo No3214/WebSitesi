@@ -17,6 +17,21 @@ function localizedHref(href: string, english: boolean): string {
   return href === "/" ? "/en" : `/en${href}`;
 }
 
+const legalLinks = {
+  tr: [
+    { href: "/kvkk", label: "KVKK Aydınlatma Metni" },
+    { href: "/gizlilik-politikasi", label: "Gizlilik Politikası" },
+    { href: "/cerez-politikasi", label: "Çerez Politikası" },
+    { href: "/mesafeli-satis-sozlesmesi", label: "Mesafeli Satış Sözleşmesi" },
+  ],
+  en: [
+    { href: "/kvkk", label: "KVKK Notice" },
+    { href: "/gizlilik-politikasi", label: "Privacy Policy" },
+    { href: "/cerez-politikasi", label: "Cookie Policy" },
+    { href: "/mesafeli-satis-sozlesmesi", label: "Distance Sales Agreement" },
+  ],
+};
+
 export function SiteFooter() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
@@ -85,10 +100,11 @@ export function SiteFooter() {
           <div>
             <h4>{t?.legal || (englishPath ? "Legal" : "Hukuki")}</h4>
             <ul>
-              <li><Link href="/kvkk">KVKK Aydınlatma Metni</Link></li>
-              <li><Link href="/gizlilik-politikasi">Gizlilik Politikası</Link></li>
-              <li><Link href="/cerez-politikasi">Çerez Politikası</Link></li>
-              <li><Link href="/mesafeli-satis-sozlesmesi">Mesafeli Satış Sözleşmesi</Link></li>
+              {legalLinks[englishPath ? "en" : "tr"].map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -115,9 +131,10 @@ export function SiteFooter() {
 
         <div className="footer-bottom-bar">
           <p style={{ margin: 0 }}>
-            © {currentYear} Kozbeyli Konağı Taş Otel & Restaurant. Tüm hakları saklıdır.
+            © {currentYear} Kozbeyli Konağı Taş Otel & Restaurant.{" "}
+            {englishPath ? "All rights reserved." : "Tüm hakları saklıdır."}
           </p>
-          <div className="developer-tag">Taş · Zeytin · Sabah Güneşi</div>
+          <div className="developer-tag">{englishPath ? "Stone · Olive · Morning Sun" : "Taş · Zeytin · Sabah Güneşi"}</div>
         </div>
       </div>
     </footer>

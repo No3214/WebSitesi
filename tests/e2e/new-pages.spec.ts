@@ -44,13 +44,26 @@ test.describe("EN public localization", () => {
   test("EN iletisim sayfasi Ingilizce destek metinleriyle acilir", async ({ page }) => {
     await page.goto("/en/iletisim");
 
+    const footer = page.locator("footer.footer");
+
     await expect(page.getByRole("heading", { name: "Contact the Mansion" })).toBeVisible();
     await expect(page.getByText("Konağa Ulaşın")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "WhatsApp Support" })).toBeVisible();
     await expect(page.getByPlaceholder("Full Name")).toBeVisible();
     await expect(page.getByLabel("Estimated budget")).toBeVisible();
+    await expect(footer.getByText("All rights reserved.")).toBeVisible();
+    await expect(footer.getByText("Stone · Olive · Morning Sun")).toBeVisible();
+    await expect(footer.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cerez-politikasi");
+    await expect(page.getByRole("button", { name: "Open contact options" })).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Cookie preferences" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Reject" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Accept All" })).toBeVisible();
     await expect(page.getByText("Tahmini Bütçe")).toHaveCount(0);
     await expect(page.getByText("Butik Düğün")).toHaveCount(0);
+    await expect(page.getByText("Tüm hakları saklıdır")).toHaveCount(0);
+    await expect(page.getByText("Taş · Zeytin · Sabah Güneşi")).toHaveCount(0);
+    await expect(page.getByText("Çerez tercihleri")).toHaveCount(0);
+    await expect(page.getByText("İletişim seçeneklerini aç")).toHaveCount(0);
   });
 
   test("EN organizasyon teklif formu Ingilizce kalir", async ({ page }) => {
