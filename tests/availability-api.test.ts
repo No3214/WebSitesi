@@ -127,6 +127,20 @@ describe("/api/v1/availability", () => {
     expect(response.status).toBe(400);
   });
 
+  it("rejects impossible calendar dates", async () => {
+    const { privateKey, publicKeyPem } = createPartnerFixture();
+    const { POST } = await loadRoute(publicKeyPem);
+
+    const response = await POST(
+      buildSignedRequest({
+        privateKey,
+        body: { checkIn: "2026-02-31", checkOut: "2026-03-02", guests: 2 },
+      }),
+    );
+
+    expect(response.status).toBe(400);
+  });
+
   it("accepts valid signed requests and blocks replay", async () => {
     const { privateKey, publicKeyPem } = createPartnerFixture();
     const { POST } = await loadRoute(publicKeyPem);
@@ -139,6 +153,10 @@ describe("/api/v1/availability", () => {
     await expect(first.json()).resolves.toMatchObject({
       status: "success",
       data: {
+        rooms: [
+          { slug: "standart-deniz-manzarali-oda", price: 4500 },
+          { slug: "4-kisilik-aile-odasi", price: 7500 },
+        ],
         requestedDates: { checkIn: "2026-07-10", checkOut: "2026-07-12" },
         guests: 2,
       },

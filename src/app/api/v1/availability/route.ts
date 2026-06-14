@@ -7,6 +7,7 @@ import { verifyEccSignature, extractPayloadFromRequest } from "@/lib/ecc-auth";
 import { hasSeen, markSeen, rateLimit } from "@/lib/rate-limit";
 import { extractClientIp, safeText } from "@/lib/security";
 import { logEvent } from "@/lib/logger";
+import { getRoomNightlyRate } from "@/lib/booking-pricing";
 
 // Audit F6/T5: partner public key artık env'den gelir; tanımlı değilse
 // endpoint kapalıdır (404). Hardcoded MOCK key kaldırıldı — sahte imza
@@ -22,7 +23,18 @@ const RATE_LIMIT = {
   maxRequests: 30,
 };
 
-const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD");
+const isoDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD")
+  .refine((value) => {
+    const [year, month, day] = value.split("-").map(Number);
+    const date = new Date(Date.UTC(year, month - 1, day));
+    return (
+      date.getUTCFullYear() === year &&
+      date.getUTCMonth() === month - 1 &&
+      date.getUTCDate() === day
+    );
+  }, "Expected a valid calendar date");
 
 const availabilitySchema = z
   .object({
@@ -141,14 +153,14 @@ export async function POST(req: Request) {
             slug: "standart-deniz-manzarali-oda",
             name: "Standart Deniz Manzaralı Oda",
             available: true,
-            price: 4500,
+            price: getRoomNightlyRate("standart-deniz-manzarali-oda"),
             currency: "TRY",
           },
           {
-            slug: "aile-odasi-4-kisilik",
+            slug: "4-kisilik-aile-odasi",
             name: "Aile Odası",
             available: true,
-            price: 7500,
+            price: getRoomNightlyRate("4-kisilik-aile-odasi"),
             currency: "TRY",
           }
         ],
