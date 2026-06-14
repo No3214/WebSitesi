@@ -8,9 +8,9 @@ import { rooms } from "@/data/rooms";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Rezervasyon | Doğrudan Concierge",
+  title: "Rezervasyon | Doğrudan Rezervasyon",
   description:
-    "Kozbeyli Konağı'nda taş oda konaklamanız için doğrudan concierge talebi oluşturun; müsaitlik, oda tercihi ve güvenli ödeme adımı ekibimiz tarafından teyit edilir.",
+    "Kozbeyli Konağı'nda taş oda konaklamanız için doğrudan rezervasyon talebi oluşturun; müsaitlik, oda tercihi ve güvenli ödeme adımı ekibimiz tarafından teyit edilir.",
   keywords: [
     "kozbeyli konağı rezervasyon",
     "foça butik otel rezervasyon",

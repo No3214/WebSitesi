@@ -10,7 +10,7 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Teklifler",
   description:
-    "Romantik kaçamaklar, aile hafta sonları ve taş avluda özel davetler. Kozbeyli Konağı'nın dönemsel teklifleri için concierge ekibimizle iletişime geçin.",
+    "Romantik kaçamaklar, aile hafta sonları ve taş avluda özel davetler. Kozbeyli Konağı'nın dönemsel teklifleri için rezervasyon ekibimizle iletişime geçin.",
   alternates: { canonical: "/teklifler" },
   openGraph: {
     title: "Teklifler | Kozbeyli Konağı",
@@ -57,7 +57,7 @@ export default function OffersPage() {
         <PageHero
           eyebrow="DÖNEMSEL"
           title="Konaktan Teklifler"
-          text="Sezona ve özel günlere göre özenle kurgulanan konaklama ve davet paketlerimiz için concierge ekibimizle iletişime geçin; size en uygun deneyimi birlikte planlayalım."
+          text="Sezona ve özel günlere göre özenle kurgulanan konaklama ve davet paketlerimiz için rezervasyon ekibimizle iletişime geçin; size en uygun deneyimi birlikte planlayalım."
         />
 
         <section className="section">
@@ -76,7 +76,7 @@ export default function OffersPage() {
                 <p style={{ margin: 0, maxWidth: 640 }}>
                   Tekliflerimiz dönemsel olarak güncellenir ve sınırlı sayıda oda
                   için hazırlanır. Güncel içerikler, uygunluk ve kişiselleştirilmiş
-                  planlama için WhatsApp Concierge hattımıza yazmanız yeterli.
+                  planlama için WhatsApp destek hattımıza yazmanız yeterli.
                 </p>
                 <a
                   href={whatsappOffersHref}
@@ -85,7 +85,7 @@ export default function OffersPage() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  WhatsApp Concierge
+                  WhatsApp Destek
                 </a>
               </div>
             </FadeIn>

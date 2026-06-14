@@ -2,13 +2,16 @@
 
 import { useEffect } from "react";
 
-const WHATSAPP_MESSAGE = "Merhaba, web sitesinden geldim. Müsaitlik öğrenmek istiyorum.";
-
 import { PaymentWizard } from "./payment-wizard";
 
 import { getWhatsAppHref } from "@/lib/contact";
 import { trackBeginCheckout } from "@/lib/gtm";
 import { publicEnv } from "@/lib/public-env";
+
+const WHATSAPP_MESSAGE = {
+  tr: "Merhaba, web sitesinden geldim. Müsaitlik öğrenmek istiyorum.",
+  en: "Hello, I came from the website and would like to check availability.",
+} as const;
 
 function withBookingUtm(url: string) {
   if (url.includes("?")) return url;
@@ -22,11 +25,12 @@ function withRoomParam(url: string, roomSlug?: string) {
 }
 
 type HMSBookingEmbedProps = {
+  locale?: "tr" | "en";
   roomSlug?: string;
   roomLabel?: string;
 };
 
-export function HMSBookingEmbed({ roomSlug, roomLabel }: HMSBookingEmbedProps) {
+export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBookingEmbedProps) {
   const bookingUrl = publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL;
 
   // GA4 begin_checkout: rezervasyon arayüzü (engine veya talep sihirbazı)
@@ -35,8 +39,10 @@ export function HMSBookingEmbed({ roomSlug, roomLabel }: HMSBookingEmbedProps) {
     trackBeginCheckout(roomSlug);
   }, [roomSlug]);
   const whatsappMessage = roomLabel
-    ? `Merhaba, ${roomLabel} için müsaitlik öğrenmek istiyorum.`
-    : WHATSAPP_MESSAGE;
+    ? locale === "tr"
+      ? `Merhaba, ${roomLabel} için müsaitlik öğrenmek istiyorum.`
+      : `Hello, I would like to check availability for ${roomLabel}.`
+    : WHATSAPP_MESSAGE[locale];
   const whatsappHref = getWhatsAppHref(whatsappMessage);
 
   if (!bookingUrl) {
@@ -51,7 +57,9 @@ export function HMSBookingEmbed({ roomSlug, roomLabel }: HMSBookingEmbedProps) {
             rel="noreferrer"
             data-event="whatsapp_click"
           >
-            Hızlı Destek & Teyit için WhatsApp Concierge
+            {locale === "tr"
+              ? "Hızlı Destek & Teyit için WhatsApp Destek"
+              : "WhatsApp Concierge for Fast Support"}
           </a>
         </div>
       </div>
@@ -62,7 +70,7 @@ export function HMSBookingEmbed({ roomSlug, roomLabel }: HMSBookingEmbedProps) {
     <div className="embed-box">
       <iframe
         src={withRoomParam(withBookingUtm(bookingUrl), roomSlug)}
-        title="Kozbeyli Konağı Rezervasyon"
+        title={locale === "tr" ? "Kozbeyli Konağı Rezervasyon" : "Kozbeyli Konağı Booking"}
         style={{ width: "100%", minHeight: 720, border: 0 }}
         data-event="booking_engine_open"
       />
@@ -74,7 +82,7 @@ export function HMSBookingEmbed({ roomSlug, roomLabel }: HMSBookingEmbedProps) {
           rel="noreferrer"
           data-event="whatsapp_click"
         >
-          WhatsApp Concierge
+          {locale === "tr" ? "WhatsApp Destek" : "WhatsApp Concierge"}
         </a>
       </div>
     </div>

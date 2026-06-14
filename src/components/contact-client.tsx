@@ -13,7 +13,7 @@ const EMAIL = "info@kozbeylikonagi.com";
 // Keys not present in the dictionary Contact section — component-level fallback.
 const FALLBACK = {
   tr: {
-    whatsapp: "WhatsApp Concierge",
+    whatsapp: "WhatsApp Destek",
     whatsappMessage: "Merhaba, web sitesinden ulaşıyorum.",
     addressLine: "Kozbeyli Köyü Küme Evler No:188, Foça / İzmir",
     addressNote: "İzmir Adnan Menderes Havalimanı'na ~55 dk, Foça merkeze 15 dk.",

@@ -16,7 +16,7 @@ const experiences = [
     no: "02",
     title: { tr: "Transfer & Varış Planlama", en: "Transfer & Arrival Planning" },
     text: {
-      tr: "İzmir Havalimanı transferi, varış saati ve oda tercihlerinizi concierge ekibimizle planlayın.",
+      tr: "İzmir Havalimanı transferi, varış saati ve oda tercihlerinizi misafir ilişkileri ekibimizle planlayın.",
       en: "Coordinate airport transfer, arrival time and room preferences with our concierge team.",
     },
   },
@@ -36,7 +36,7 @@ export function ExperiencesSection({ locale }: { locale: "tr" | "en" }) {
       <div className="container">
         <FadeIn>
           <SectionTitle
-            eyebrow="CONCIERGE"
+            eyebrow={locale === "tr" ? "MİSAFİR DENEYİMİ" : "CONCIERGE"}
             title={locale === "tr" ? "Premium Deneyim Paketleri" : "Premium Experience Packages"}
             text={
               locale === "tr"

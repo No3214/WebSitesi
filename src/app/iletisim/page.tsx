@@ -11,7 +11,7 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "İletişim & Ulaşım Yol Tarifi",
   description:
-    "Kozbeyli Konağı'na ulaşın: Kozbeyli Köyü Küme Evler No:188, Foça / İzmir. Telefon, WhatsApp concierge, e-posta ve yol tarifi. İzmir Adnan Menderes Havalimanı'na 55 dakika.",
+    "Kozbeyli Konağı'na ulaşın: Kozbeyli Köyü Küme Evler No:188, Foça / İzmir. Telefon, WhatsApp destek, e-posta ve yol tarifi. İzmir Adnan Menderes Havalimanı'na 55 dakika.",
   keywords: ["kozbeyli konağı iletişim", "kozbeyli köyü ulaşım", "foça otel telefon", "kozbeyli yol tarifi"],
   alternates: { canonical: "/iletisim" },
 };
@@ -46,7 +46,7 @@ export default async function ContactPage() {
       <PageHero
         eyebrow="İLETİŞİM"
         title="Konağa Ulaşın"
-        text="Telefon, WhatsApp concierge ve yol tarifi — sorularınız için aynı gün dönüş yapıyoruz."
+        text="Telefon, WhatsApp destek ve yol tarifi — sorularınız için aynı gün dönüş yapıyoruz."
       />
       <main className="section" style={{ paddingTop: 56 }}>
         <ContactClient initialDict={initialDict} initialLocale="tr" />

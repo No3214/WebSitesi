@@ -90,7 +90,7 @@ export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug,
 
       <WeatherRibbon />
 
-      <HMSBookingEmbed roomSlug={roomSlug} roomLabel={roomTitle} />
+      <HMSBookingEmbed locale={locale} roomSlug={roomSlug} roomLabel={roomTitle} />
 
       <div
         style={{

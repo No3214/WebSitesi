@@ -49,7 +49,7 @@ function runTask(taskType: TaskType, payload: Record<string, unknown>): SwarmTas
       return {
         agent: "sales-concierge",
         summary:
-          `Misafir talebi ${dates} için concierge akışına alındı. Yanıt, direkt rezervasyon avantajı yerine uygunluk ve kişiselleştirilmiş planlama üzerinden kurulmalı.`,
+          `Misafir talebi ${dates} için rezervasyon akışına alındı. Yanıt, direkt rezervasyon avantajı yerine uygunluk ve kişiselleştirilmiş planlama üzerinden kurulmalı.`,
         nextActions: [
           "HMS linki yoksa WhatsApp fallback ile uygunluk al",
           "Oda tercihi, kişi sayısı ve özel beklentiyi tek mesajda netleştir",
@@ -63,7 +63,7 @@ function runTask(taskType: TaskType, payload: Record<string, unknown>): SwarmTas
           "Canlı PMS/HMS fiyat kaynağı bağlı olmadığı için otomatik fiyat artırımı yapılmaz; sadece dönemsel talep sinyali ve manuel teklif önerisi üretildi.",
         nextActions: [
           "Canlı stok ve fiyat kaynağı gelene kadar fiyatı sabitleme",
-          "Hafta sonu ve etkinlik taleplerini concierge onayına yönlendir",
+          "Hafta sonu ve etkinlik taleplerini misafir ilişkileri onayına yönlendir",
           "Teklif sayfasında fiyat göstermeme kuralını koru",
         ],
       };

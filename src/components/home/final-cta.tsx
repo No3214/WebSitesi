@@ -36,7 +36,7 @@ export function FinalCta({ locale }: { locale: "tr" | "en" }) {
               className="button ghost-light"
               data-event="whatsapp_click"
             >
-              {locale === "tr" ? "WhatsApp Concierge" : "WhatsApp Concierge"}
+              {locale === "tr" ? "WhatsApp Destek" : "WhatsApp Concierge"}
             </a>
           </div>
         </FadeIn>

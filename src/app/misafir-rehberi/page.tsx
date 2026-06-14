@@ -56,7 +56,7 @@ const guideItems = [
   {
     icon: <MapPin className="w-6 h-6 text-gold" />,
     title: "Konum & Ulaşım",
-    content: "Kozbeyli Köyü'nün merkezindeyiz. Yeni Foça'ya 12km, Eski Foça'ya 18km mesafedeyiz. Transfer planlama desteği için concierge ile iletişime geçebilirsiniz."
+    content: "Kozbeyli Köyü'nün merkezindeyiz. Yeni Foça'ya 12km, Eski Foça'ya 18km mesafedeyiz. Transfer planlama desteği için misafir ilişkileri ekibimizle iletişime geçebilirsiniz."
   },
   {
     icon: <ShieldCheck className="w-6 h-6 text-gold" />,

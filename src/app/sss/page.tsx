@@ -41,7 +41,7 @@ export default function FaqPage() {
         <PageHero
           eyebrow="SIK SORULANLAR"
           title="Merak Ettikleriniz"
-          text="Konaklamanızı planlarken en çok sorulan soruları bir araya getirdik. Yanıtını bulamadığınız her detay için concierge ekibimiz bir mesaj uzağınızda."
+          text="Konaklamanızı planlarken en çok sorulan soruları bir araya getirdik. Yanıtını bulamadığınız her detay için misafir ilişkileri ekibimiz bir mesaj uzağınızda."
         />
 
         <section className="section">

@@ -17,12 +17,12 @@ export function BookingSection({ locale, eyebrow }: Props) {
             title={locale === "tr" ? "Yerinizi Ayırtın" : "Reserve Your Stay"}
             text={
               locale === "tr"
-                ? "Müsaitlik, oda tercihi ve güvenli ödeme adımı için talebinizi doğrudan concierge ekibimize iletin."
+                ? "Müsaitlik, oda tercihi ve güvenli ödeme adımı için talebinizi doğrudan rezervasyon ekibimize iletin."
                 : "Send your availability, room preference and secure payment request directly to our concierge team."
             }
           />
           <WeatherRibbon />
-          <HMSBookingEmbed />
+          <HMSBookingEmbed locale={locale} />
         </FadeIn>
       </div>
     </section>

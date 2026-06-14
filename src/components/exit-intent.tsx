@@ -65,7 +65,7 @@ export const ExitIntent = () => {
             <h2 className="serif text-2xl text-zinc-900 mb-4">Gitmeden Önce Keşfedin!</h2>
             <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
               Kozbeyli Konağı web sitemiz üzerinden yapacağınız direkt rezervasyonlarda
-              <strong> En İyi Fiyat Garantisi</strong> ve kişisel <strong>WhatsApp Concierge</strong> hizmeti sizi bekliyor.
+              <strong> En İyi Fiyat Garantisi</strong> ve kişisel <strong>WhatsApp destek</strong> hizmeti sizi bekliyor.
             </p>
 
             <div className="bg-zinc-50 border border-gold/20 rounded-lg p-4 mb-6 text-center">
