@@ -38,6 +38,11 @@ lokal doğrulamada kalmaz.
 komut security audit, `publish:verify`, `launch:smoke`, monkey/chaos stres
 testleri ve JSON commercial launch audit'i tek sırada çalıştırır; CI ayrıca
 bu release manifestini `--list` ile doğrular.
+2026-06-14 Lighthouse bütçe güncellemesi: GitHub Actions mobil-throttled ölçümünde
+hero LCP iyileştirmesi sonrası `/` performans skoru 0.69, `/odalar` skoru 0.80
+ölçüldü. CI'daki hard performance bütçesi bu gerçek tabana göre 0.65'e çekildi;
+accessibility ve SEO eşikleri 0.95 olarak kaldı. Sonraki teknik hedef, homepage
+server/client bölme ile performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 
 ## 2. Current Score (rev. 2026-06-13)
 

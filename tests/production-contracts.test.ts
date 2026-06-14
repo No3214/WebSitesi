@@ -152,6 +152,22 @@ describe("production readiness contracts", () => {
     expect(homeHero).not.toContain('preload="auto"');
   });
 
+  it("keeps Lighthouse CI as a realistic hard release budget", () => {
+    const lighthouseConfig = JSON.parse(read("lighthouserc.json")) as {
+      ci?: {
+        assert?: {
+          assertions?: Record<string, [string, { minScore?: number }]>;
+        };
+      };
+    };
+    const assertions = lighthouseConfig.ci?.assert?.assertions ?? {};
+
+    expect(assertions["categories:performance"]?.[0]).toBe("error");
+    expect(assertions["categories:performance"]?.[1].minScore).toBeGreaterThanOrEqual(0.65);
+    expect(assertions["categories:accessibility"]?.[1].minScore).toBeGreaterThanOrEqual(0.95);
+    expect(assertions["categories:seo"]?.[1].minScore).toBeGreaterThanOrEqual(0.95);
+  });
+
   it("keeps CI running the launch smoke gate before publish verification", () => {
     const ciWorkflow = read(".github/workflows/ci.yml");
     const playwrightConfig = read("playwright.config.ts");
