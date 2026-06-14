@@ -1,22 +1,46 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
 import { SiteHeader } from "@/components/site-header";
 import { getDictionary } from "@/lib/dictionary";
 
 import { HomeHero } from "@/components/home/home-hero";
-import { MarqueeBand } from "@/components/home/marquee-band";
-import { KpiBand } from "@/components/home/kpi-band";
-import { RoomsShowcase } from "@/components/home/rooms-showcase";
-import { GastronomyEditorial } from "@/components/home/gastronomy-editorial";
-import { ExperiencesSection } from "@/components/home/experiences-section";
-import { GalleryStrip } from "@/components/home/gallery-strip";
-import { ExperiencesTeaser } from "@/components/home/experiences-teaser";
-import { TestimonialsSection } from "@/components/home/testimonials-section";
-import { BookingSection } from "@/components/home/booking-section";
-import { FaqSection } from "@/components/home/faq-section";
-import { FinalCta } from "@/components/home/final-cta";
+
+const MarqueeBand = dynamic(() =>
+  import("@/components/home/marquee-band").then((module) => module.MarqueeBand),
+);
+const KpiBand = dynamic(() =>
+  import("@/components/home/kpi-band").then((module) => module.KpiBand),
+);
+const RoomsShowcase = dynamic(() =>
+  import("@/components/home/rooms-showcase").then((module) => module.RoomsShowcase),
+);
+const GastronomyEditorial = dynamic(() =>
+  import("@/components/home/gastronomy-editorial").then((module) => module.GastronomyEditorial),
+);
+const ExperiencesSection = dynamic(() =>
+  import("@/components/home/experiences-section").then((module) => module.ExperiencesSection),
+);
+const GalleryStrip = dynamic(() =>
+  import("@/components/home/gallery-strip").then((module) => module.GalleryStrip),
+);
+const ExperiencesTeaser = dynamic(() =>
+  import("@/components/home/experiences-teaser").then((module) => module.ExperiencesTeaser),
+);
+const TestimonialsSection = dynamic(() =>
+  import("@/components/home/testimonials-section").then((module) => module.TestimonialsSection),
+);
+const BookingSection = dynamic(() =>
+  import("@/components/home/booking-section").then((module) => module.BookingSection),
+);
+const FaqSection = dynamic(() =>
+  import("@/components/home/faq-section").then((module) => module.FaqSection),
+);
+const FinalCta = dynamic(() =>
+  import("@/components/home/final-cta").then((module) => module.FinalCta),
+);
 
 /**
  * Ana sayfa orkestratörü (Audit T9/F4).

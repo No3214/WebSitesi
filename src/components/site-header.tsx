@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { getDictionary } from "@/lib/dictionary";
 import { LanguageSwitcher } from "./language-switcher";
 import { LogoMark } from "./logo-mark";
@@ -146,49 +145,30 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
         </div>
       </header>
 
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            id="mobile-menu"
-            className="mobile-menu"
-            initial={{ opacity: 0, clipPath: "inset(0 0 100% 0)" }}
-            animate={{ opacity: 1, clipPath: "inset(0 0 0% 0)" }}
-            exit={{ opacity: 0, clipPath: "inset(0 0 100% 0)" }}
-            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <nav aria-label={englishPath ? "Mobile menu" : "Mobil menü"}>
-              {links.map((link, i) => (
-                <motion.div
-                  key={link.href}
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.12 + i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <Link href={localizedHref(link.href, englishPath)} onClick={() => setMenuOpen(false)}>
-                    {link.label}
-                    <span className="idx">0{i + 1}</span>
-                  </Link>
-                </motion.div>
-              ))}
-              <motion.div
-                className="mobile-menu-cta"
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.12 + links.length * 0.06, duration: 0.5 }}
-              >
-                <Link
-                  href={localizedHref("/rezervasyon", englishPath)}
-                  className="button gold"
-                  style={{ width: "100%", borderBottom: "none", fontSize: "0.85rem" }}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {bookingLabel}
+      {menuOpen && (
+        <div id="mobile-menu" className="mobile-menu">
+          <nav aria-label={englishPath ? "Mobile menu" : "Mobil menü"}>
+            {links.map((link, i) => (
+              <div key={link.href}>
+                <Link href={localizedHref(link.href, englishPath)} onClick={() => setMenuOpen(false)}>
+                  {link.label}
+                  <span className="idx">0{i + 1}</span>
                 </Link>
-              </motion.div>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </div>
+            ))}
+            <div className="mobile-menu-cta">
+              <Link
+                href={localizedHref("/rezervasyon", englishPath)}
+                className="button gold"
+                style={{ width: "100%", borderBottom: "none", fontSize: "0.85rem" }}
+                onClick={() => setMenuOpen(false)}
+              >
+                {bookingLabel}
+              </Link>
+            </div>
+          </nav>
+        </div>
+      )}
     </>
   );
 }

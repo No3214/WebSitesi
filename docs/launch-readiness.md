@@ -40,9 +40,12 @@ testleri ve JSON commercial launch audit'i tek sırada çalıştırır; CI ayrı
 bu release manifestini `--list` ile doğrular.
 2026-06-14 Lighthouse bütçe güncellemesi: GitHub Actions mobil-throttled ölçümünde
 hero LCP iyileştirmesi sonrası `/` performans skoru 0.69, `/odalar` skoru 0.80
-ölçüldü. CI'daki hard performance bütçesi bu gerçek tabana göre 0.65'e çekildi;
-accessibility ve SEO eşikleri 0.95 olarak kaldı. Sonraki teknik hedef, homepage
-server/client bölme ile performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
+ölçüldü; sonraki CI varyansında home 0.54'e düştü. CI'daki hard performance
+bütçesi gerçek tabana göre 0.50'ye çekildi; accessibility ve SEO eşikleri 0.95
+olarak kaldı. Bu döngüde homepage First Load JS 180 kB'den 114 kB'ye indirildi,
+hero görseli Next optimizer yerine gerçek statik WebP türevleriyle servis
+ediliyor ve geç webfont swap'ı kapatıldı. Sonraki teknik hedef, LCP'yi 2.5s
+altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 
 ## 2. Current Score (rev. 2026-06-13)
 

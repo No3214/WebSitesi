@@ -18,8 +18,8 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
 
 
-const inter = Inter({ subsets: ["latin", "latin-ext"], display: "swap", variable: "--font-inter" });
-const playfair = Playfair_Display({ subsets: ["latin", "latin-ext"], display: "swap", variable: "--font-playfair" });
+const inter = Inter({ subsets: ["latin", "latin-ext"], display: "optional", variable: "--font-inter" });
+const playfair = Playfair_Display({ subsets: ["latin", "latin-ext"], display: "optional", variable: "--font-playfair" });
 
 export const metadata = defaultMetadata;
 

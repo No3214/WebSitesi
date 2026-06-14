@@ -1,13 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 
 import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 import { faqs } from "@/data/faqs";
-
-const EASE_LUX = [0.16, 1, 0.3, 1] as const;
 
 function FaqAccordion({ locale }: { locale: "tr" | "en" }) {
   const [open, setOpen] = useState<number | null>(0);
@@ -27,19 +24,11 @@ function FaqAccordion({ locale }: { locale: "tr" | "en" }) {
               <span>{faq.q[locale]}</span>
               <span className="faq-icon" aria-hidden>+</span>
             </button>
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  className="faq-a"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.5, ease: EASE_LUX }}
-                >
-                  <p>{faq.a[locale]}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {isOpen && (
+              <div className="faq-a">
+                <p>{faq.a[locale]}</p>
+              </div>
+            )}
           </div>
         );
       })}

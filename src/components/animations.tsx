@@ -1,16 +1,48 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  motion,
-  useInView,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion";
 
-const EASE_LUX = [0.16, 1, 0.3, 1] as const;
+function useReducedMotionPreference() {
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  return reduced;
+}
+
+function useElementInView<T extends Element>(rootMargin = "-60px") {
+  const ref = useRef<T>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    if (!("IntersectionObserver" in window)) {
+      setInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setInView(true);
+        observer.disconnect();
+      },
+      { rootMargin },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [rootMargin]);
+
+  return { ref, inView };
+}
 
 export function FadeIn({
   children,
@@ -21,12 +53,13 @@ export function FadeIn({
   delay?: number;
   direction?: "up" | "down" | "left" | "right";
 }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotionPreference();
+  const { ref, inView } = useElementInView<HTMLDivElement>();
   const directions = {
-    up: { y: 24 },
-    down: { y: -24 },
-    left: { x: 24 },
-    right: { x: -24 },
+    up: "translate3d(0, 24px, 0)",
+    down: "translate3d(0, -24px, 0)",
+    left: "translate3d(24px, 0, 0)",
+    right: "translate3d(-24px, 0, 0)",
   };
 
   if (reduceMotion) {
@@ -34,14 +67,16 @@ export function FadeIn({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, ...directions[direction] }}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.9, delay, ease: EASE_LUX }}
+    <div
+      ref={ref}
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? "translate3d(0, 0, 0)" : directions[direction],
+        transition: `opacity 0.9s var(--ease-lux) ${delay}s, transform 0.9s var(--ease-lux) ${delay}s`,
+      }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -52,31 +87,8 @@ export function StaggerContainer({
   children: React.ReactNode;
   delay?: number;
 }) {
-  const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) {
-    return <div>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true }}
-      variants={{
-        hidden: { opacity: 0 },
-        show: {
-          opacity: 1,
-          transition: {
-            staggerChildren: 0.18,
-            delayChildren: delay,
-          },
-        },
-      }}
-    >
-      {children}
-    </motion.div>
-  );
+  void delay;
+  return <div>{children}</div>;
 }
 
 /** Görünüme girince hedef değere doğru sayan premium sayaç. */
@@ -94,8 +106,28 @@ export function Counter({
   suffix?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-40px" });
   const [value, setValue] = useState(0);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    if (!("IntersectionObserver" in window)) {
+      setInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setInView(true);
+        observer.disconnect();
+      },
+      { rootMargin: "-40px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!inView) return;
@@ -133,19 +165,8 @@ export function Parallax({
   offset?: number;
   className?: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const raw = useTransform(scrollYProgress, [0, 1], [offset, -offset]);
-  const y = useSpring(raw, { stiffness: 90, damping: 24, mass: 0.6 });
-
-  return (
-    <motion.div ref={ref} style={{ y }} className={className}>
-      {children}
-    </motion.div>
-  );
+  void offset;
+  return <div className={className}>{children}</div>;
 }
 
 /** Satır satır maske içinden yükselen başlık reveal'ı. */
@@ -162,7 +183,8 @@ export function RevealLines({
   delay?: number;
   trigger?: "inView" | "mount";
 }) {
-  const reduceMotion = useReducedMotion();
+  void delay;
+  void trigger;
 
   return (
     <Tag className={className} aria-label={lines.join(" ")}>
@@ -172,20 +194,7 @@ export function RevealLines({
           aria-hidden="true"
           style={{ display: "block", overflow: "hidden", padding: "0.08em 0" }}
         >
-          {reduceMotion ? (
-            <span style={{ display: "block" }}>{line}</span>
-          ) : (
-            <motion.span
-              style={{ display: "block" }}
-              initial={{ y: "110%" }}
-              animate={trigger === "mount" ? { y: 0 } : undefined}
-              whileInView={trigger === "inView" ? { y: 0 } : undefined}
-              viewport={trigger === "inView" ? { once: true } : undefined}
-              transition={{ duration: 1, delay: delay + i * 0.12, ease: EASE_LUX }}
-            >
-              {line}
-            </motion.span>
-          )}
+          <span style={{ display: "block" }}>{line}</span>
         </span>
       ))}
     </Tag>
