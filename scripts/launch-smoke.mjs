@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 const liveTarget = process.env.PW_BASE_URL;
@@ -12,7 +13,6 @@ const playwrightSpecs = [
 
 const isWindows = process.platform === "win32";
 const nodeBin = process.execPath;
-const vercelBin = isWindows ? "vercel.cmd" : "vercel";
 const playwrightCli = "node_modules/@playwright/test/cli.js";
 
 function run(command, args, options = {}) {
@@ -31,11 +31,7 @@ function run(command, args, options = {}) {
 }
 
 function checkVercelCli() {
-  const result = spawnSync(vercelBin, ["--version"], {
-    encoding: "utf8",
-    shell: false,
-    stdio: ["ignore", "pipe", "pipe"],
-  });
+  const result = isWindows ? checkWindowsVercelCli() : runVersionCommand("vercel", ["--version"]);
 
   if (result.status === 0) {
     const version = result.stdout.trim() || result.stderr.trim();
@@ -46,6 +42,43 @@ function checkVercelCli() {
   console.log(
     "WARN Vercel CLI not installed. Install with `npm i -g vercel` to enable `vercel env pull`, `vercel deploy` and `vercel logs` checks.",
   );
+}
+
+function checkWindowsVercelCli() {
+  const vercelScript = resolveWindowsVercelScript();
+  if (!vercelScript) {
+    return { status: 1, stdout: "", stderr: "" };
+  }
+
+  return spawnSync(nodeBin, [vercelScript, "--version"], {
+    encoding: "utf8",
+    shell: false,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+}
+
+function resolveWindowsVercelScript() {
+  const where = spawnSync("where.exe", ["vercel.cmd"], {
+    encoding: "utf8",
+    shell: false,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+
+  if (where.status !== 0) return null;
+
+  const commandPath = where.stdout.split(/\r?\n/).find(Boolean);
+  if (!commandPath) return null;
+
+  const scriptPath = path.join(path.dirname(commandPath), "node_modules", "vercel", "dist", "vc.js");
+  return fs.existsSync(scriptPath) ? scriptPath : null;
+}
+
+function runVersionCommand(command, args) {
+  return spawnSync(command, args, {
+    encoding: "utf8",
+    shell: false,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
 }
 
 function printSpecList() {

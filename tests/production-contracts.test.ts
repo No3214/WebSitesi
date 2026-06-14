@@ -136,6 +136,8 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("tests/e2e/media-assets.spec.ts");
     expect(launchSmokeScript).toContain("PW_BASE_URL");
     expect(launchSmokeScript).toContain("npm i -g vercel");
+    expect(launchSmokeScript).toContain("where.exe");
+    expect(launchSmokeScript).toContain("dist\", \"vc.js");
     expect(launchSmokeScript).toContain(".next/BUILD_ID");
     expect(launchSmokeScript).toContain("node_modules/@playwright/test/cli.js");
   });
@@ -251,6 +253,7 @@ describe("production readiness contracts", () => {
     const publishVerifyIndex = ciWorkflow.indexOf("Publish verification tests");
 
     expect(ciWorkflow).toContain("Launch smoke gate");
+    expect(ciWorkflow).toContain('FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"');
     expect(launchSmokeIndex).toBeGreaterThan(-1);
     expect(publishVerifyIndex).toBeGreaterThan(-1);
     expect(launchSmokeIndex).toBeLessThan(publishVerifyIndex);
