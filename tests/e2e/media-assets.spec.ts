@@ -257,6 +257,27 @@ test.describe("Media, video and mobile publish readiness", () => {
     }
   });
 
+  test("mobile fixed contact controls do not overlap the bottom action bar", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const response = await page.goto("/rezervasyon?oda=standart-deniz-manzarali-oda", { waitUntil: "load" });
+
+    expect(response?.status(), "/rezervasyon should return usable HTML").toBeLessThan(400);
+    await expect(page.getByTestId("mobile-action-bar")).toBeVisible();
+    await expect(page.getByTestId("floating-contact")).toBeVisible();
+
+    const actionBar = await page.getByTestId("mobile-action-bar").boundingBox();
+    const floatingContact = await page.getByTestId("floating-contact").boundingBox();
+
+    expect(actionBar, "mobile action bar should have a box").not.toBeNull();
+    expect(floatingContact, "floating contact should have a box").not.toBeNull();
+
+    const overlap =
+      Math.max(0, Math.min(actionBar!.x + actionBar!.width, floatingContact!.x + floatingContact!.width) - Math.max(actionBar!.x, floatingContact!.x)) *
+      Math.max(0, Math.min(actionBar!.y + actionBar!.height, floatingContact!.y + floatingContact!.height) - Math.max(actionBar!.y, floatingContact!.y));
+
+    expect(overlap, "floating contact should not cover the mobile bottom action bar").toBe(0);
+  });
+
   for (const route of mobileRoutes) {
     test(`${route} has no mobile horizontal overflow`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });

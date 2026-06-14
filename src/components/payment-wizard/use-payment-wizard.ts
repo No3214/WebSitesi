@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, type FormEvent } from "react";
 import { Room } from "@/data/rooms";
+import { calculateBookingQuote } from "@/lib/booking-pricing";
 import { getWhatsAppHref } from "@/lib/contact";
 import { BookingLocale, Step, WIZARD_COPY, WIZARD_OPTIONS } from "./types";
 
@@ -61,21 +62,17 @@ export function usePaymentWizard(locale: BookingLocale = "tr") {
   // Calculate nights
   const nights = useMemo(() => {
     if (!checkIn || !checkOut) return 1;
-    const diffTime = Math.abs(new Date(checkOut).getTime() - new Date(checkIn).getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 1;
-  }, [checkIn, checkOut]);
+    const quote = selectedRoom ? calculateBookingQuote(selectedRoom.slug, checkIn, checkOut) : null;
+    if (quote?.ok) return quote.nights;
+    return 1;
+  }, [checkIn, checkOut, selectedRoom]);
 
   // Calculate prices
   const totalRawPrice = useMemo(() => {
     if (!selectedRoom) return 0;
-    // Extract numeric estimation from room base price or use static multiplier
-    let rate = 4500;
-    if (selectedRoom.slug.includes("superior")) rate = 8500;
-    else if (selectedRoom.slug.includes("aile")) rate = 7500;
-    else if (selectedRoom.slug.includes("uc-kisilik")) rate = 6000;
-    return rate * nights;
-  }, [selectedRoom, nights]);
+    const quote = calculateBookingQuote(selectedRoom.slug, checkIn, checkOut);
+    return quote.ok ? quote.totalPrice : 0;
+  }, [checkIn, checkOut, selectedRoom]);
 
   const finalPrice = useMemo(() => {
     return totalRawPrice;

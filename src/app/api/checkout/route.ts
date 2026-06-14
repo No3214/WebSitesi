@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getPayloadClient } from "@/lib/payload";
+import { calculateBookingQuote } from "@/lib/booking-pricing";
 import { errField, logEvent, maskIp } from "@/lib/logger";
 import { extractClientIp, enforceRateLimit, validateSameOrigin, safeText } from "@/lib/security";
 
@@ -69,18 +70,33 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3. Double check room pricing (prevent client-side price tampering)
-    let rate = 4500;
-    if (data.roomSlug.includes("superior")) rate = 8500;
-    else if (data.roomSlug.includes("aile")) rate = 7500;
-    else if (data.roomSlug.includes("uc-kisilik")) rate = 6000;
+    // 3. Double check room catalog, date-derived nights, and pricing.
+    const quote = calculateBookingQuote(data.roomSlug, data.checkIn, data.checkOut);
+    if (!quote.ok) {
+      logEvent("warn", "checkout.quote_invalid", {
+        reason: quote.reason,
+        roomSlug: data.roomSlug,
+      });
+      const message =
+        quote.reason === "unknown-room"
+          ? "Oda doğrulanamadı."
+          : "Konaklama tarihi doğrulanamadı.";
+      return NextResponse.json({ ok: false, message }, { status: 400 });
+    }
 
-    const expectedTotal = rate * data.nights;
+    if (data.nights !== quote.nights) {
+      logEvent("warn", "checkout.nights_mismatch", {
+        expected: quote.nights,
+        received: data.nights,
+        roomSlug: data.roomSlug,
+      });
+      return NextResponse.json({ ok: false, message: "Gece sayısı doğrulanamadı." }, { status: 400 });
+    }
 
     // Verify client total matches within 2 TRY variance due to potential floating point rounding
-    if (Math.abs(expectedTotal - data.totalPrice) > 2) {
+    if (Math.abs(quote.totalPrice - data.totalPrice) > 2) {
       logEvent("warn", "checkout.price_mismatch", {
-        expected: expectedTotal,
+        expected: quote.totalPrice,
         received: data.totalPrice,
         roomSlug: data.roomSlug,
       });
@@ -119,7 +135,7 @@ export async function POST(req: Request) {
         message: [
           `Rezervasyon ID: ${data.bookingId}`,
           `Oda: ${safeText(data.roomTitle, 120)} (${data.roomSlug})`,
-          `Giriş / Çıkış: ${data.checkIn} / ${data.checkOut} (${data.nights} Gece)`,
+          `Giriş / Çıkış: ${data.checkIn} / ${data.checkOut} (${quote.nights} Gece)`,
           `Konuk: ${data.guests} Yetişkin`,
           `Atmosfer Tercihleri:`,
           `  • Koku: ${safeText(data.scent, 100)}`,
@@ -127,7 +143,7 @@ export async function POST(req: Request) {
           `  • Ses: ${safeText(data.sound, 100)}`,
           `  • Işık: ${safeText(data.light, 100)}`,
           `Teklif notu: Fiyat ve kampanya ekibin manuel onayına tabidir.`,
-          `Toplam Tutar: ${data.totalPrice} TRY`,
+          `Toplam Tutar: ${quote.totalPrice} TRY`,
           `Tahsilat: Garanti Sanal POS ile alınacak (ödeme bu sitede yapılmadı)`
         ].join("\n"),
       },
@@ -138,8 +154,8 @@ export async function POST(req: Request) {
     logEvent("info", "checkout.booking_created", {
       bookingId: data.bookingId,
       roomSlug: data.roomSlug,
-      nights: data.nights,
-      total: data.totalPrice,
+      nights: quote.nights,
+      total: quote.totalPrice,
       currency: "TRY",
     });
 

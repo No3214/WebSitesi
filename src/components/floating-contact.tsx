@@ -45,7 +45,10 @@ export const FloatingContact = () => {
   ];
 
   return (
-    <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-3">
+    <div
+      className="fixed bottom-24 right-5 z-[100] flex flex-col items-end gap-3 md:bottom-8 md:right-8"
+      data-testid="floating-contact"
+    >
       {isOpen ? (
         <div className="contact-fab-options flex flex-col gap-3 mb-2">
           {contactOptions.map((option, index) => (
