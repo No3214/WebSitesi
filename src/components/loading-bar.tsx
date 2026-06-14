@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 
 /**
  * Global Top-Loading Progress Bar
@@ -19,17 +18,30 @@ export const LoadingBar = () => {
     return () => clearTimeout(timeout);
   }, [pathname, searchParams]);
 
+  if (!loading) return null;
+
   return (
-    <AnimatePresence>
-      {loading && (
-        <motion.div
-          initial={{ scaleX: 0, opacity: 1 }}
-          animate={{ scaleX: 1, opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="fixed top-0 left-0 right-0 h-0.5 bg-gold z-[9999] origin-left"
-        />
-      )}
-    </AnimatePresence>
+    <>
+      <div className="route-loading-bar fixed top-0 left-0 right-0 h-0.5 bg-gold z-[9999] origin-left" />
+      <style jsx global>{`
+        .route-loading-bar {
+          animation: routeLoadingBar 500ms ease-in-out both;
+        }
+        @keyframes routeLoadingBar {
+          from {
+            opacity: 1;
+            transform: scaleX(0);
+          }
+          85% {
+            opacity: 1;
+            transform: scaleX(1);
+          }
+          to {
+            opacity: 0;
+            transform: scaleX(1);
+          }
+        }
+      `}</style>
+    </>
   );
 };

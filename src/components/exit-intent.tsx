@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { X, Gift, ArrowRight } from "lucide-react";
 
 import { publicEnv } from "@/lib/public-env";
@@ -44,55 +43,54 @@ export const ExitIntent = () => {
   if (!isVisible) return null;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl"
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm exit-intent-backdrop">
+      <div className="relative w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl exit-intent-dialog">
+        <button
+          onClick={() => setIsVisible(false)}
+          className="absolute top-4 right-4 p-2 rounded-full hover:bg-zinc-100 transition-colors"
         >
-          <button 
-            onClick={() => setIsVisible(false)}
-            className="absolute top-4 right-4 p-2 rounded-full hover:bg-zinc-100 transition-colors"
-          >
-            <X size={20} className="text-zinc-400" />
-          </button>
+          <X size={20} className="text-zinc-400" />
+        </button>
 
-          <div className="flex flex-col md:flex-row">
-            <div className="md:w-2/5 bg-zinc-900 p-8 flex flex-col justify-center items-center text-center text-white">
-              <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center mb-4">
-                <Gift className="text-gold w-8 h-8" />
-              </div>
-              <h3 className="serif text-2xl mb-2">Direkt Rezervasyon</h3>
-              <p className="text-xs text-zinc-400">Web Sitemize Özel Ayrıcalıklar</p>
+        <div className="flex flex-col md:flex-row">
+          <div className="md:w-2/5 bg-zinc-900 p-8 flex flex-col justify-center items-center text-center text-white">
+            <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center mb-4">
+              <Gift className="text-gold w-8 h-8" />
             </div>
-
-            <div className="md:w-3/5 p-8">
-              <h2 className="serif text-2xl text-zinc-900 mb-4">Gitmeden Önce Keşfedin!</h2>
-              <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
-                Kozbeyli Konağı web sitemiz üzerinden yapacağınız direkt rezervasyonlarda
-                <strong> En İyi Fiyat Garantisi</strong> ve kişisel <strong>WhatsApp Concierge</strong> hizmeti sizi bekliyor.
-              </p>
-
-              <div className="bg-zinc-50 border border-gold/20 rounded-lg p-4 mb-6 text-center">
-                <span className="text-[10px] uppercase tracking-widest text-zinc-400 block mb-1">DİREKT REZERVASYON AYRICALIĞI</span>
-                <span className="text-xl font-bold text-gold tracking-widest">En İyi Fiyat Garantisi</span>
-              </div>
-
-              <a
-                href={target}
-                className="btn-premium-solid w-full flex items-center justify-center gap-2 group"
-              >
-                REZERVASYON YAP
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </a>
-            </div>
+            <h3 className="serif text-2xl mb-2">Direkt Rezervasyon</h3>
+            <p className="text-xs text-zinc-400">Web Sitemize Özel Ayrıcalıklar</p>
           </div>
-        </motion.div>
+
+          <div className="md:w-3/5 p-8">
+            <h2 className="serif text-2xl text-zinc-900 mb-4">Gitmeden Önce Keşfedin!</h2>
+            <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
+              Kozbeyli Konağı web sitemiz üzerinden yapacağınız direkt rezervasyonlarda
+              <strong> En İyi Fiyat Garantisi</strong> ve kişisel <strong>WhatsApp Concierge</strong> hizmeti sizi bekliyor.
+            </p>
+
+            <div className="bg-zinc-50 border border-gold/20 rounded-lg p-4 mb-6 text-center">
+              <span className="text-[10px] uppercase tracking-widest text-zinc-400 block mb-1">DİREKT REZERVASYON AYRICALIĞI</span>
+              <span className="text-xl font-bold text-gold tracking-widest">En İyi Fiyat Garantisi</span>
+            </div>
+
+            <a
+              href={target}
+              className="btn-premium-solid w-full flex items-center justify-center gap-2 group"
+            >
+              REZERVASYON YAP
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </a>
+          </div>
+        </div>
       </div>
 
       <style jsx>{`
+        .exit-intent-backdrop {
+          animation: exitIntentBackdropIn 180ms ease-out both;
+        }
+        .exit-intent-dialog {
+          animation: exitIntentDialogIn 220ms ease-out both;
+        }
         .btn-premium-solid {
           background: #18181b;
           color: white;
@@ -115,7 +113,25 @@ export const ExitIntent = () => {
         .border-gold\/20 {
           border-color: rgba(179, 146, 92, 0.2);
         }
+        @keyframes exitIntentBackdropIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes exitIntentDialogIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.96);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
       `}</style>
-    </AnimatePresence>
+    </div>
   );
 };

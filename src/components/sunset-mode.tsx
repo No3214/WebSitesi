@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
 export const SunsetMode = () => {
@@ -47,17 +46,9 @@ export const SunsetMode = () => {
 
   return (
     <>
-      <AnimatePresence>
-        {isSunset && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 pointer-events-none z-[0] bg-[#1a0f00]/5"
-            aria-hidden="true"
-          />
-        )}
-      </AnimatePresence>
+      {isSunset ? (
+        <div className="sunset-mode-overlay fixed inset-0 pointer-events-none z-[0] bg-[#1a0f00]/5" aria-hidden="true" />
+      ) : null}
       
       {/* Visual Indicator/Toggle in Corner (Optional Premium Touch) */}
       <div className="fixed top-24 right-8 z-[100] hidden lg:block">
@@ -72,6 +63,17 @@ export const SunsetMode = () => {
       </div>
 
       <style jsx global>{`
+        .sunset-mode-overlay {
+          animation: sunsetOverlayIn 260ms ease-out both;
+        }
+        @keyframes sunsetOverlayIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
         ${isSunset ? `
           :root {
             --soft: #1a1a1a;

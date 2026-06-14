@@ -162,6 +162,10 @@ describe("production readiness contracts", () => {
       "src/components/site-header.tsx",
       "src/components/home/faq-section.tsx",
       "src/components/animations.tsx",
+      "src/components/floating-contact.tsx",
+      "src/components/exit-intent.tsx",
+      "src/components/loading-bar.tsx",
+      "src/components/sunset-mode.tsx",
     ];
 
     for (const file of criticalFiles) {
@@ -223,6 +227,9 @@ describe("production readiness contracts", () => {
   it("keeps Lighthouse CI as a realistic hard release budget", () => {
     const lighthouseConfig = JSON.parse(read("lighthouserc.json")) as {
       ci?: {
+        collect?: {
+          numberOfRuns?: number;
+        };
         assert?: {
           assertions?: Record<string, [string, { minScore?: number }]>;
         };
@@ -230,6 +237,7 @@ describe("production readiness contracts", () => {
     };
     const assertions = lighthouseConfig.ci?.assert?.assertions ?? {};
 
+    expect(lighthouseConfig.ci?.collect?.numberOfRuns).toBeGreaterThanOrEqual(3);
     expect(assertions["categories:performance"]?.[0]).toBe("error");
     expect(assertions["categories:performance"]?.[1].minScore).toBeGreaterThanOrEqual(0.5);
     expect(assertions["categories:accessibility"]?.[1].minScore).toBeGreaterThanOrEqual(0.95);
