@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Page from "@/app/rezervasyon/page";
+import { ReservationPageContent } from "@/app/rezervasyon/page";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -15,4 +15,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default Page;
+export default async function ReservationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ oda?: string }>;
+}) {
+  return <ReservationPageContent searchParams={searchParams} locale="en" />;
+}

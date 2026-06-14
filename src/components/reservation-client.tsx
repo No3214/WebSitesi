@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { BadgeCheck, CalendarClock, MessageCircle } from "lucide-react";
 
 import { HMSBookingEmbed } from "@/components/hms-booking-embed";
@@ -34,18 +35,31 @@ export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(initialDict ?? null);
   const [locale, setLocale] = useState<'tr' | 'en'>(initialLocale);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const currentLocale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
-    if (currentLocale === initialLocale && initialDict) return; // SSR sözlüğü zaten doğru
-    setLocale(currentLocale as 'tr' | 'en');
-    getDictionary(currentLocale as 'tr' | 'en').then(setDict);
-  }, [initialDict, initialLocale]);
+    const currentLocale = pathname === "/en" || pathname?.startsWith("/en/") ? "en" : "tr";
+    if (currentLocale === initialLocale && initialDict) {
+      setLocale(currentLocale);
+      setDict(initialDict);
+      return;
+    }
+
+    setLocale(currentLocale);
+    getDictionary(currentLocale).then(setDict);
+  }, [initialDict, initialLocale, pathname]);
 
   if (!dict) return <div className="loading-screen" />;
 
   const t = dict.Reservation;
   const f = FALLBACK[locale];
+  const localePrefix = locale === "en" ? "/en" : "";
+  const selectedLabel = locale === "tr" ? "Seçiminiz:" : "Your choice:";
+  const supportLinks = [
+    { href: `${localePrefix}/odalar`, label: f.exploreRooms },
+    { href: `${localePrefix}/misafir-rehberi`, label: f.guestGuide },
+    { href: `${localePrefix}/iletisim`, label: f.contact },
+  ];
 
   const trustItems = [
     {
@@ -83,7 +97,7 @@ export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug,
         >
           <BadgeCheck size={16} aria-hidden style={{ color: "var(--gold)" }} />
           <span style={{ fontSize: "0.9rem", color: "var(--text)" }}>
-            Seçiminiz: <strong>{roomTitle}</strong>
+            {selectedLabel} <strong>{roomTitle}</strong>
           </span>
         </div>
       ) : null}
@@ -114,15 +128,11 @@ export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug,
       </div>
 
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 34 }}>
-        <Link href="/odalar" className="button secondary">
-          {f.exploreRooms}
-        </Link>
-        <Link href="/misafir-rehberi" className="button secondary">
-          {f.guestGuide}
-        </Link>
-        <Link href="/iletisim" className="button secondary">
-          {f.contact}
-        </Link>
+        {supportLinks.map((link) => (
+          <Link key={link.href} href={link.href} className="button secondary">
+            {link.label}
+          </Link>
+        ))}
       </div>
     </div>
   );

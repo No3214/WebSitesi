@@ -7,6 +7,30 @@ import { getDictionary } from "@/lib/dictionary";
 import { rooms } from "@/data/rooms";
 import { absoluteUrl } from "@/lib/utils";
 
+type ReservationLocale = "tr" | "en";
+type ReservationPageProps = {
+  searchParams: Promise<{ oda?: string }>;
+};
+
+const reservationCopy = {
+  tr: {
+    eyebrow: "REZERVASYON",
+    title: "Yerinizi Ayırtın",
+    text: "Müsaitlik, oda tercihi ve güvenli ödeme adımı için talebinizi doğrudan konak ekibimize iletin.",
+    schemaName: "Kozbeyli Konağı Rezervasyon",
+    schemaDescription: "Kozbeyli Konağı taş butik otel için canlı müsaitlik ve direkt rezervasyon sayfası.",
+    urlTemplate: "/rezervasyon",
+  },
+  en: {
+    eyebrow: "RESERVATION",
+    title: "Reserve Your Stay",
+    text: "Send your availability, room preference and secure payment request directly to our team.",
+    schemaName: "Kozbeyli Konağı Reservation",
+    schemaDescription: "Direct availability and reservation request page for Kozbeyli Konağı stone boutique hotel.",
+    urlTemplate: "/en/rezervasyon",
+  },
+} as const;
+
 export const metadata: Metadata = {
   title: "Rezervasyon | Doğrudan Rezervasyon",
   description:
@@ -20,24 +44,26 @@ export const metadata: Metadata = {
   alternates: { canonical: "/rezervasyon" },
 };
 
-export default async function ReservationPage({
+export async function ReservationPageContent({
   searchParams,
-}: {
-  searchParams: Promise<{ oda?: string }>;
+  locale = "tr",
+}: ReservationPageProps & {
+  locale?: ReservationLocale;
 }) {
   const { oda } = await searchParams;
   const selectedRoom = oda ? rooms.find((room) => room.slug === oda) : undefined;
-  const initialDict = await getDictionary("tr");
+  const initialDict = await getDictionary(locale);
+  const copy = reservationCopy[locale];
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Kozbeyli Konağı Rezervasyon",
-    description: "Kozbeyli Konağı taş butik otel için canlı müsaitlik ve direkt rezervasyon sayfası.",
+    name: copy.schemaName,
+    description: copy.schemaDescription,
     potentialAction: {
       "@type": "ReserveAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: absoluteUrl("/rezervasyon"),
+        urlTemplate: absoluteUrl(copy.urlTemplate),
         actionPlatform: ["https://schema.org/DesktopWebPlatform", "https://schema.org/MobileWebPlatform"],
       },
       object: {
@@ -59,18 +85,22 @@ export default async function ReservationPage({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SiteHeader variant="overlay" />
       <PageHero
-        eyebrow="REZERVASYON"
-        title="Yerinizi Ayırtın"
-        text="Müsaitlik, oda tercihi ve güvenli ödeme adımı için talebinizi doğrudan konak ekibimize iletin."
+        eyebrow={copy.eyebrow}
+        title={copy.title}
+        text={copy.text}
       />
       <main className="section" style={{ paddingTop: 56 }}>
         <ReservationClient
           initialDict={initialDict}
-          initialLocale="tr"
+          initialLocale={locale}
           roomSlug={oda}
           roomTitle={selectedRoom?.title}
         />
       </main>
     </>
   );
+}
+
+export default async function ReservationPage(props: ReservationPageProps) {
+  return <ReservationPageContent {...props} locale="tr" />;
 }

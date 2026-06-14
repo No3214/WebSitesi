@@ -11,6 +11,18 @@ test.describe("Rezervasyon sayfasi", () => {
     await expect(page.locator("header.site-header")).toBeVisible();
     await expect(page.locator("footer.footer")).toBeVisible();
   });
+
+  test("EN rezervasyon sayfasi Ingilizce kalir ve destek linkleri /en rotalarina gider", async ({ page }) => {
+    await page.goto("/en/rezervasyon?oda=standart-deniz-manzarali-oda");
+
+    const main = page.locator("main");
+    await expect(page.getByRole("heading", { name: "Reserve Your Stay" })).toBeVisible();
+    await expect(main.getByText("Your choice:")).toBeVisible();
+    await expect(main.getByText("Seçiminiz:")).toHaveCount(0);
+    await expect(main.getByRole("link", { name: "Explore Rooms" })).toHaveAttribute("href", "/en/odalar");
+    await expect(main.getByRole("link", { name: "Guest Guide" })).toHaveAttribute("href", "/en/misafir-rehberi");
+    await expect(main.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/en/iletisim");
+  });
 });
 
 test.describe("Iletisim sayfasi", () => {
