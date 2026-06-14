@@ -52,6 +52,7 @@ Yayın öncesi yerel kapı:
 
 ```bash
 npm run publish:verify
+npm run launch:smoke
 ```
 
 Bu komut aşağıdaki işleri kapsar:
@@ -64,6 +65,14 @@ Bu komut aşağıdaki işleri kapsar:
 - Security regression suite
 - Prestige/mobile/a11y doğrulama
 - Publish hedef envanteri (`scripts/publish-readiness.mjs`)
+
+`launch:smoke` production build üstünde public rotaları, hero video playback,
+iletişim koordinatı, düğün/organizasyon medyası ve görünür medya kırıklarını
+kontrol eder. Canlı Vercel deployment için:
+
+```bash
+npm run launch:smoke:live
+```
 
 Ek genişletilmiş yerel kapılar:
 

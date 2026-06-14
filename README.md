@@ -81,6 +81,8 @@ npm run test:stress              # monkey + chaos
 npm run launch:audit             # Ticari 100/100 hedefi için env/kanıt denetimi
 npm run launch:audit:json        # Aynı ticari denetimin makine okunur JSON çıktısı
 npm run launch:audit:strict      # Tüm ticari kanıtlar tamamlanmadan fail verir
+npm run launch:smoke             # Lokal production build'e kritik launch smoke
+npm run launch:smoke:live        # Canlı Vercel URL'ye kritik launch smoke
 npm run quality                  # lint + typecheck + unit + build
 npm run publish:target           # Yayın hedef/env/rota envanteri
 npm run publish:verify           # Tam publish kapısı
@@ -97,6 +99,8 @@ npx playwright test              # E2E testler (lokal sunucuya karşı)
 npm run test:stress              # Canlı prod'u yormadan lokal monkey/chaos paketi
 npm run launch:audit             # Booking/payment 100/100 için kalan kanıtları listeler
 npm run launch:audit:json        # CI/ajanlar için structured launch audit çıktısı
+npm run launch:smoke             # Public rota, hero video, konum ve medya smoke
+npm run launch:smoke:live        # https://kozbeyli-konagi.vercel.app üzerinde aynı smoke
 
 # Canlı/staging ortamına karşı e2e koşmak için:
 PW_BASE_URL=https://kozbeylikonagi.example npx playwright test tests/e2e/ --project=chromium
@@ -153,6 +157,14 @@ npm run publish:verify
 
 Bu komut lint, typecheck, unit, production build, tüm TR/EN public rota smoke,
 security, prestige/mobile, a11y ve publish target envanterini çalıştırır.
+Deploy sonrası canlı yüzey için hızlı doğrulama:
+
+```bash
+npm run launch:smoke:live
+```
+
+Bu komut public rotaları, ana ekran hero videosunu, düğün/organizasyon medyasını,
+iletişim konumunu ve görünür medya kırıklarını canlı URL üzerinde tekrar kontrol eder.
 
 > Vercel CLI bu makinede kurulu değil. Env pull/deploy/logs için:
 > `npm i -g vercel`

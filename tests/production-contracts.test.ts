@@ -48,6 +48,9 @@ describe("production readiness contracts", () => {
   });
 
   it("keeps publish readiness aware of payment and stress gates", () => {
+    const packageJson = JSON.parse(read("package.json")) as {
+      scripts?: Record<string, string>;
+    };
     const readinessScript = read("scripts/publish-readiness.mjs");
 
     expect(readinessScript).toContain('"IYZICO_WEBHOOK_SECRET"');
@@ -58,6 +61,12 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
+    expect(readinessScript).toContain('"launch:smoke"');
+    expect(readinessScript).toContain('"launch:smoke:live"');
+    expect(packageJson.scripts?.["launch:smoke"]).toBe("node scripts/launch-smoke.mjs");
+    expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
+      "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/launch-smoke.mjs",
+    );
     expect(readinessScript).toContain('"docs/evidence/README.md"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
   });
@@ -90,6 +99,19 @@ describe("production readiness contracts", () => {
       expect(auditScript).toContain(gate);
       expect(evidenceReadme).toContain(gate);
     }
+  });
+
+  it("keeps launch smoke focused on public routes, hero video, location and media", () => {
+    const launchSmokeScript = read("scripts/launch-smoke.mjs");
+
+    expect(launchSmokeScript).toContain("tests/e2e/publish-routes.spec.ts");
+    expect(launchSmokeScript).toContain("tests/e2e/hero-video.spec.ts");
+    expect(launchSmokeScript).toContain("tests/e2e/contact-location.spec.ts");
+    expect(launchSmokeScript).toContain("tests/e2e/media-assets.spec.ts");
+    expect(launchSmokeScript).toContain("PW_BASE_URL");
+    expect(launchSmokeScript).toContain("npm i -g vercel");
+    expect(launchSmokeScript).toContain(".next/BUILD_ID");
+    expect(launchSmokeScript).toContain("node_modules/@playwright/test/cli.js");
   });
 
   it("keeps server env helpers out of client components", () => {

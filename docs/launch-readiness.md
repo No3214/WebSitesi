@@ -24,6 +24,10 @@ kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + p
 ile izlenen ayrı bir evidence gate'e bağlıdır. `npm run launch:audit:strict`,
 `docs/evidence/*` altındaki HMS, Garanti POS, analytics purchase, local SEO ve
 legal/DPA kanıtları tamamlanmadan bilinçli olarak fail verir.
+2026-06-14 devam güncellemesi: Deploy sonrası kritik canlı kontrol artık `npm
+run launch:smoke:live` ile tek komutta çalışır; public rotalar, hero video,
+iletişim koordinatı, organizasyon medyası ve görünür medya kırıkları aynı kapıda
+denetlenir.
 
 ## 2. Current Score (rev. 2026-06-13)
 
@@ -59,6 +63,8 @@ legal/DPA kanıtları tamamlanmadan bilinçli olarak fail verir.
 - `npm run build` — PASS, 66 routes generated.
 - `npm audit --omit=dev --audit-level=high` — PASS, 0 vulnerabilities.
 - `npm run publish:verify` — PASS: quality + 115 publish Playwright tests (113 passed / 2 skipped) + publish target inventory.
+- `npm run publish:verify` — PASS (2026-06-14): quality + 121 publish Playwright tests (119 passed / 2 skipped) + publish target inventory.
+- `npm run launch:smoke:live` — PASS (2026-06-14): canlı Vercel URL üzerinde public rota, hero video, iletişim konumu ve medya smoke.
 - `npx playwright test tests/smoke.spec.ts tests/security.spec.ts tests/e2e/checkout-contract.spec.ts --reporter=line` — PASS, 17 passed / 2 skipped.
 - `npx playwright test tests/monkey.spec.ts tests/destructive-chaos.spec.ts` — PASS, 3/3.
 - Local production preview: `http://127.0.0.1:3010`.
