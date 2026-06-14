@@ -3,10 +3,12 @@
 import { useState, useMemo, useEffect, type FormEvent } from "react";
 import { Room } from "@/data/rooms";
 import { getWhatsAppHref } from "@/lib/contact";
-import { Step, SCENTS, PILLOWS, SOUNDS, LIGHTS } from "./types";
+import { BookingLocale, Step, WIZARD_COPY, WIZARD_OPTIONS } from "./types";
 
 // Sihirbazin tum state'i, turetilmis degerleri ve handler'lari tek hook'ta
-export function usePaymentWizard() {
+export function usePaymentWizard(locale: BookingLocale = "tr") {
+  const copy = WIZARD_COPY[locale];
+  const options = WIZARD_OPTIONS[locale];
   const [step, setStep] = useState<Step>("dates");
 
   // State variables
@@ -16,10 +18,10 @@ export function usePaymentWizard() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
 
   // Sensory customization
-  const [scent, setScent] = useState(SCENTS[0]);
-  const [pillow, setPillow] = useState(PILLOWS[0]);
-  const [sound, setSound] = useState(SOUNDS[0]);
-  const [light, setLight] = useState(LIGHTS[0]);
+  const [scent, setScent] = useState(options.scents[0]);
+  const [pillow, setPillow] = useState(options.pillows[0]);
+  const [sound, setSound] = useState(options.sounds[0]);
+  const [light, setLight] = useState(options.lights[0]);
 
   // Billing & Payment
   const [guestName, setGuestName] = useState("");
@@ -32,6 +34,14 @@ export function usePaymentWizard() {
   // yapılacak — PAN bu uygulamaya hiç girmez (Audit F13).
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentError, setPaymentError] = useState("");
+
+  // Initialize dates with tomorrow and day after tomorrow
+  useEffect(() => {
+    setScent(options.scents[0]);
+    setPillow(options.pillows[0]);
+    setSound(options.sounds[0]);
+    setLight(options.lights[0]);
+  }, [options.lights, options.pillows, options.scents, options.sounds]);
 
   // Initialize dates with tomorrow and day after tomorrow
   useEffect(() => {
@@ -74,11 +84,11 @@ export function usePaymentWizard() {
   const handlePaymentSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!guestName || !guestEmail || !guestPhone) {
-      setPaymentError("Lütfen ad, telefon ve e-posta alanlarını doldurun.");
+      setPaymentError(copy.errors.missingFields);
       return;
     }
     if (!consent) {
-      setPaymentError("Rezervasyon talebi için KVKK ve gizlilik onayı zorunludur.");
+      setPaymentError(copy.errors.missingConsent);
       return;
     }
 
@@ -115,10 +125,10 @@ export function usePaymentWizard() {
       if (res.ok && result.ok) {
         setStep("success");
       } else {
-        setPaymentError(result.message || "Ödeme işlemi gerçekleştirilemedi.");
+        setPaymentError(result.message || copy.errors.paymentFailed);
       }
     } catch {
-      setPaymentError("Ödeme ağ geçidine bağlanılamadı. Lütfen tekrar deneyiniz.");
+      setPaymentError(copy.errors.gatewayFailed);
     } finally {
       setIsSubmitting(false);
     }
@@ -127,21 +137,21 @@ export function usePaymentWizard() {
   // WhatsApp confirm text
   // Not: ikinci satirdaki ${"    "} orijinal metindeki 4 bosluklu satiri birebir korur
   const getWhatsAppMessage = () => {
-    const text = `Merhaba Kozbeyli Konağı, web sitenizden interaktif rezervasyon gerçekleştirdim.
+    const text = `${copy.whatsapp.hello}
 ${"    "}
-📝 Rezervasyon No: ${bookingId}
-🏨 Oda: ${selectedRoom?.title}
-📅 Giriş: ${checkIn}
-📅 Çıkış: ${checkOut} (${nights} Gece)
-👥 Konuk: ${guests} Yetişkin
-🌸 Oda Kokusu: ${scent.label}
-🪶 Yastık Menüsü: ${pillow.label}
-🔊 Ses Atmosferi: ${sound.label}
-💡 Işık Tercihi: ${light.label}
-💰 Toplam Tutar: ${finalPrice.toLocaleString("tr-TR")} ₺
-👤 Misafir: ${guestName} (${guestPhone})
+📝 ${copy.whatsapp.bookingNo}: ${bookingId}
+🏨 ${copy.whatsapp.room}: ${selectedRoom?.title}
+📅 ${copy.whatsapp.checkIn}: ${checkIn}
+📅 ${copy.whatsapp.checkOut}: ${checkOut} (${nights} ${copy.payment.nights})
+👥 ${copy.whatsapp.guest}: ${guests} ${copy.payment.adults}
+🌸 ${copy.whatsapp.scent}: ${scent.label}
+🪶 ${copy.whatsapp.pillow}: ${pillow.label}
+🔊 ${copy.whatsapp.sound}: ${sound.label}
+💡 ${copy.whatsapp.light}: ${light.label}
+💰 ${copy.whatsapp.total}: ${finalPrice.toLocaleString("tr-TR")} ₺
+👤 ${copy.whatsapp.guestName}: ${guestName} (${guestPhone})
 
-Rezervasyonumun onaylanmasını rica ederim.`;
+${copy.whatsapp.closing}`;
     return getWhatsAppHref(text);
   };
 
@@ -157,7 +167,7 @@ Rezervasyonumun onaylanmasını rica ederim.`;
 
   return {
     // Adim kontrolu
-    step, setStep,
+    step, setStep, locale, copy, options,
     // Tarih & konuk
     checkIn, setCheckIn, checkOut, setCheckOut, guests, setGuests,
     // Oda secimi

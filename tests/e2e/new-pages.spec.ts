@@ -19,6 +19,10 @@ test.describe("Rezervasyon sayfasi", () => {
     await expect(page.getByRole("heading", { name: "Reserve Your Stay" })).toBeVisible();
     await expect(main.getByText("Your choice:")).toBeVisible();
     await expect(main.getByText("Seçiminiz:")).toHaveCount(0);
+    await expect(main.getByRole("heading", { name: "Dates and Guests" })).toBeVisible();
+    await expect(main.getByText("Check-in Date")).toBeVisible();
+    await expect(main.getByRole("button", { name: "List Rooms" })).toBeVisible();
+    await expect(main.getByText("Tarih ve Konuk Seçimi")).toHaveCount(0);
     await expect(main.getByRole("link", { name: "Explore Rooms" })).toHaveAttribute("href", "/en/odalar");
     await expect(main.getByRole("link", { name: "Guest Guide" })).toHaveAttribute("href", "/en/misafir-rehberi");
     await expect(main.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/en/iletisim");

@@ -48,7 +48,7 @@ export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBooki
   if (!bookingUrl) {
     return (
       <div style={{ display: "grid", gap: 20 }}>
-        <PaymentWizard />
+        <PaymentWizard locale={locale} />
         <div style={{ display: "flex", justifyContent: "center" }}>
           <a
             className="button secondary"

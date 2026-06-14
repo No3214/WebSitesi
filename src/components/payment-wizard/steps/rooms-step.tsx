@@ -7,7 +7,7 @@ import type { usePaymentWizard } from "../use-payment-wizard";
 
 // Adim 2: Oda secimi ve gecelik fiyat listesi
 export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWizard> }) {
-  const { nights, selectedRoom, setSelectedRoom, setStep } = wizard;
+  const { nights, selectedRoom, setSelectedRoom, setStep, copy } = wizard;
 
   return (
     <motion.div
@@ -16,8 +16,8 @@ export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
       exit={{ opacity: 0, x: -20 }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <h3 className="serif" style={{ fontSize: "1.7rem", color: "var(--olive)", margin: 0 }}>Oda Seçimi</h3>
-        <span style={{ fontSize: "0.9rem", color: "var(--gold)", fontWeight: 600 }}>{nights} Gece Konaklama</span>
+        <h3 className="serif" style={{ fontSize: "1.7rem", color: "var(--olive)", margin: 0 }}>{copy.rooms.title}</h3>
+        <span style={{ fontSize: "0.9rem", color: "var(--gold)", fontWeight: 600 }}>{nights} {copy.rooms.stay}</span>
       </div>
 
       <div className="rooms-grid" style={{ display: "grid", gap: 18, maxHeight: "400px", overflowY: "auto", paddingRight: 8, marginBottom: 24 }}>
@@ -53,7 +53,7 @@ export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
               </div>
               <div style={{ textAlign: "right" }}>
                 <div style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--olive)" }}>{total.toLocaleString("tr-TR")} ₺</div>
-                <div className="muted" style={{ fontSize: "0.8rem", marginTop: 2 }}>{rate.toLocaleString("tr-TR")} ₺ / gece</div>
+                <div className="muted" style={{ fontSize: "0.8rem", marginTop: 2 }}>{rate.toLocaleString("tr-TR")} ₺ / {copy.rooms.perNight}</div>
                 <button
                   className={`button sm ${isSelected ? "primary" : "secondary"}`}
                   style={{ marginTop: 10, padding: "6px 14px", fontSize: "0.75rem" }}
@@ -63,7 +63,7 @@ export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
                     setStep("sensory");
                   }}
                 >
-                  {isSelected ? "Seçildi" : "Seç"}
+                  {isSelected ? copy.rooms.selected : copy.rooms.select}
                 </button>
               </div>
             </div>
@@ -73,7 +73,7 @@ export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
 
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <button onClick={() => setStep("dates")} className="button secondary" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <ArrowLeft size={16} /> Geri
+          <ArrowLeft size={16} /> {copy.rooms.back}
         </button>
         <button
           onClick={() => setStep("sensory")}
@@ -81,7 +81,7 @@ export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
           disabled={!selectedRoom}
           style={{ display: "flex", alignItems: "center", gap: 8 }}
         >
-          Atmosfer Tercihleri <ArrowRight size={16} />
+          {copy.rooms.next} <ArrowRight size={16} />
         </button>
       </div>
     </motion.div>

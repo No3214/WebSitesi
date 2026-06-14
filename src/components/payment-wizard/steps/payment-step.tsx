@@ -17,7 +17,9 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
     selectedRoom, checkIn, checkOut, nights, guests,
     scent, pillow, sound, light,
     totalRawPrice,
+    copy,
   } = wizard;
+  const t = copy.payment;
 
   return (
     <motion.div
@@ -28,7 +30,7 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
     >
       {/* Form Side */}
       <form onSubmit={handlePaymentSubmit} style={{ display: "grid", gap: 18 }}>
-        <h3 className="serif" style={{ fontSize: "1.7rem", color: "var(--olive)", marginBottom: 0 }}>Misafir & Fatura Bilgileri</h3>
+        <h3 className="serif" style={{ fontSize: "1.7rem", color: "var(--olive)", marginBottom: 0 }}>{t.title}</h3>
 
         {/* Ödeme bilgilendirmesi — kart bilgisi bu sitede İSTENMEZ (F1/F13) */}
         <div
@@ -47,23 +49,19 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
           }}
         >
           <ShieldCheck size={18} aria-hidden style={{ flex: "none", marginTop: 2 }} />
-          <span>
-            Bu adım bir <strong>ön-rezervasyon talebidir</strong> — kart bilgisi istemiyoruz.
-            Ödemeniz, <strong>Garanti BBVA Sanal POS</strong> güvenli 3D Secure ödeme sayfası
-            üzerinden alınacaktır; ekibimiz onay ve ödeme adımı için sizinle iletişime geçecek.
-          </span>
+          <span>{t.notice}</span>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <input
-            placeholder="Ad Soyad"
+            placeholder={t.name}
             value={guestName}
             onChange={(e) => setGuestName(e.target.value)}
             required
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
           />
           <input
-            placeholder="Telefon"
+            placeholder={t.phone}
             value={guestPhone}
             onChange={(e) => setGuestPhone(e.target.value)}
             required
@@ -71,7 +69,7 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
           />
         </div>
         <input
-          placeholder="E-posta Adresi"
+          placeholder={t.email}
           type="email"
           value={guestEmail}
           onChange={(e) => setGuestEmail(e.target.value)}
@@ -100,15 +98,15 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
             style={{ marginTop: 3, flex: "none" }}
           />
           <span>
-            Ön-rezervasyon talebimin değerlendirilmesi için kişisel verilerimin{" "}
+            {t.consentBefore}{" "}
             <a href="/kvkk" style={{ color: "var(--olive)", fontWeight: 700 }}>
-              KVKK aydınlatma metni
+              {t.kvkk}
             </a>{" "}
-            ve{" "}
+            {wizard.locale === "tr" ? "ve" : "and"}{" "}
             <a href="/gizlilik-politikasi" style={{ color: "var(--olive)", fontWeight: 700 }}>
-              gizlilik politikası
+              {t.privacy}
             </a>{" "}
-            kapsamında işlenmesini onaylıyorum.
+            {t.consentAfter}
           </span>
         </label>
 
@@ -116,7 +114,7 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
 
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
           <button type="button" onClick={() => setStep("sensory")} className="button secondary" style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <ArrowLeft size={16} /> Geri
+            <ArrowLeft size={16} /> {t.back}
           </button>
           <button
             type="submit"
@@ -125,46 +123,46 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
             style={{ display: "flex", alignItems: "center", gap: 8 }}
           >
             {isSubmitting
-              ? "Gönderiliyor..."
-              : `Rezervasyon Talebini Gönder (${finalPrice.toLocaleString("tr-TR")} ₺)`}
+              ? t.submitting
+              : `${t.submit} (${finalPrice.toLocaleString("tr-TR")} ₺)`}
           </button>
         </div>
       </form>
 
       {/* Receipt Summary Side */}
       <div style={{ borderLeft: "1px solid var(--border)", paddingLeft: 32, display: "flex", flexDirection: "column", gap: 16 }}>
-        <h4 className="serif" style={{ fontSize: "1.35rem", color: "var(--olive)", margin: 0 }}>Özet</h4>
+        <h4 className="serif" style={{ fontSize: "1.35rem", color: "var(--olive)", margin: 0 }}>{t.summary}</h4>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: "0.9rem" }}>
-          <div><strong>Seçilen Oda:</strong> {selectedRoom?.title}</div>
-          <div><strong>Giriş:</strong> {checkIn}</div>
-          <div><strong>Çıkış:</strong> {checkOut}</div>
-          <div><strong>Süre:</strong> {nights} Gece</div>
-          <div><strong>Konuk:</strong> {guests} Yetişkin</div>
+          <div><strong>{t.selectedRoom}</strong> {selectedRoom?.title}</div>
+          <div><strong>{t.checkIn}</strong> {checkIn}</div>
+          <div><strong>{t.checkOut}</strong> {checkOut}</div>
+          <div><strong>{t.duration}</strong> {nights} {t.nights}</div>
+          <div><strong>{t.guests}</strong> {guests} {t.adults}</div>
         </div>
 
         <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16, display: "flex", flexDirection: "column", gap: 8, fontSize: "0.85rem" }}>
-          <span style={{ fontWeight: 700, color: "var(--gold)" }}>Oda Tercihleriniz:</span>
-          <div>🌸 Koku: {scent.label}</div>
-          <div>🪶 Yastık: {pillow.label}</div>
-          <div>🔊 Ses: {sound.label}</div>
-          <div>💡 Işık: {light.label}</div>
+          <span style={{ fontWeight: 700, color: "var(--gold)" }}>{t.preferences}</span>
+          <div>🌸 {t.scent} {scent.label}</div>
+          <div>🪶 {t.pillow} {pillow.label}</div>
+          <div>🔊 {t.sound} {sound.label}</div>
+          <div>💡 {t.light} {light.label}</div>
         </div>
 
         <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16, display: "grid", gap: 8 }}>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.95rem" }}>
-            <span>Toplam Oda Tutarı:</span>
+            <span>{t.roomTotal}</span>
             <span>{totalRawPrice.toLocaleString("tr-TR")} ₺</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: "1.2rem", color: "var(--olive)", borderTop: "1px solid var(--border)", paddingTop: 12 }}>
-            <span>Ödenecek Tutar:</span>
+            <span>{t.due}</span>
             <span>{finalPrice.toLocaleString("tr-TR")} ₺</span>
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(61, 74, 59, 0.05)", padding: 12, borderRadius: 8, fontSize: "0.78rem", color: "var(--olive)", marginTop: 12 }}>
           <ShieldCheck size={16} />
-          <span>Kart bilgileriniz yalnızca Garanti BBVA&apos;nın güvenli ödeme sayfasında işlenir; bu sitede saklanmaz</span>
+          <span>{t.cardSafety}</span>
         </div>
       </div>
     </motion.div>

@@ -7,11 +7,12 @@ import { RoomsStep } from "./steps/rooms-step";
 import { SensoryStep } from "./steps/sensory-step";
 import { PaymentStep } from "./steps/payment-step";
 import { SuccessStep } from "./steps/success-step";
+import type { BookingLocale } from "./types";
 
 // 5 adimli rezervasyon sihirbazi: ilerleme basligi + adim gecisleri
-export function PaymentWizard() {
-  const wizard = usePaymentWizard();
-  const { step, selectedRoom } = wizard;
+export function PaymentWizard({ locale = "tr" }: { locale?: BookingLocale }) {
+  const wizard = usePaymentWizard(locale);
+  const { step, selectedRoom, copy } = wizard;
   const activeStepColor = "var(--gold-text)";
   const completedStepColor = "var(--olive)";
   const upcomingStepColor = "var(--muted)";
@@ -21,10 +22,10 @@ export function PaymentWizard() {
       {/* Step Indicators */}
       {step !== "success" && (
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "32px", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700, borderBottom: "1px solid var(--border)", paddingBottom: "18px" }}>
-          <span style={{ color: step === "dates" ? activeStepColor : completedStepColor }}>1. Tarihler</span>
-          <span style={{ color: step === "rooms" ? activeStepColor : selectedRoom ? completedStepColor : upcomingStepColor }}>2. Odalar</span>
-          <span style={{ color: step === "sensory" ? activeStepColor : step === "payment" ? completedStepColor : upcomingStepColor }}>3. Atmosfer</span>
-          <span style={{ color: step === "payment" ? activeStepColor : upcomingStepColor }}>4. Talep</span>
+          <span style={{ color: step === "dates" ? activeStepColor : completedStepColor }}>{copy.steps[0]}</span>
+          <span style={{ color: step === "rooms" ? activeStepColor : selectedRoom ? completedStepColor : upcomingStepColor }}>{copy.steps[1]}</span>
+          <span style={{ color: step === "sensory" ? activeStepColor : step === "payment" ? completedStepColor : upcomingStepColor }}>{copy.steps[2]}</span>
+          <span style={{ color: step === "payment" ? activeStepColor : upcomingStepColor }}>{copy.steps[3]}</span>
         </div>
       )}
 
