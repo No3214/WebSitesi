@@ -3,12 +3,19 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 
+type Locale = "tr" | "en";
+
 /**
  * Heritage Archive (Deep Digital Twin)
  * High-density technical data for architectural and restoration enthusiasts.
  */
-export const HeritageArchive = () => {
-  const archives = [
+const archiveCopy = {
+  tr: {
+    watermark: "Miras",
+    title: "Miras Arşivi: Görsel Hafıza",
+    text:
+      "Kozbeyli Konağı'nın ruhunu oluşturan dokuların, kokuların ve ışıkların sinematik arşivi. Bilimin değil, mimarinin ve doğanın şiirsel detaylarını keşfedin.",
+    archives: [
     {
       title: "Horasan'ın Gözyaşı",
       specs: [
@@ -43,24 +50,73 @@ export const HeritageArchive = () => {
       description: "Zemin katın devasa taş kemerleri altındaki ahşap detaylar, konağın tüccar geçmişinin sessiz temsilcileridir. Ahşabın kokusu, tarihin içinden süzülüp bugüne ulaşan bir zaman yolculuğudur.",
       image: "/images/odalar/standart-oda/1.jpg"
     }
-  ];
+    ],
+  },
+  en: {
+    watermark: "Heritage",
+    title: "Heritage Archive: Visual Memory",
+    text:
+      "A cinematic archive of the textures, scents and light that shape Kozbeyli Konağı. Discover the poetic detail of architecture and nature through the mansion's historic texture.",
+    archives: [
+      {
+        title: "The Trace of Horasan",
+        specs: [
+          "Tile Dust Patina",
+          "Lime Texture",
+          "Centuries of Binding",
+          "Breathing Stone",
+        ],
+        description:
+          "These walls are not only stone and sand. Traditional Horasan mortar gives the building its living character and keeps the historic fabric breathable.",
+        image: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/2.jpg",
+      },
+      {
+        id: "zeytinyagi",
+        title: "Liquid Gold: Kozbeyli",
+        specs: [
+          "Cold-Pressed Purity",
+          "Ancient Olive Trees",
+          "Unfiltered Character",
+          "Harvest Heritage",
+        ],
+        description:
+          "Beyond labels, this is the purest expression of our soil: honest, untouched olive oil carrying the character of Kozbeyli in every drop.",
+        image: "/images/odalar/standart-bahce-manzarali-oda/2.jpg",
+      },
+      {
+        title: "The Poetry of Wood",
+        specs: [
+          "Cedar Scent",
+          "Baghdadi Craft",
+          "Merchant Elegance",
+          "Old Pithoi Jars",
+        ],
+        description:
+          "The wooden details beneath the ground-floor stone arches quietly echo the mansion's merchant past and bring a sense of time into the present.",
+        image: "/images/odalar/standart-oda/1.jpg",
+      },
+    ],
+  },
+};
+
+export const HeritageArchive = ({ locale = "tr" }: { locale?: Locale }) => {
+  const copy = archiveCopy[locale];
 
   return (
     <div className="py-24 bg-zinc-950 rounded-[40px] border border-zinc-900 p-12 overflow-hidden relative group">
       <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-        <div className="serif text-[120px] text-gold uppercase tracking-tighter">Miras</div>
+        <div className="serif text-[120px] text-gold uppercase tracking-tighter">{copy.watermark}</div>
       </div>
 
       <div className="relative z-10 mb-16">
-        <h3 className="serif text-4xl text-gold italic mb-4">Miras Arşivi: Görsel Hafıza</h3>
+        <h3 className="serif text-4xl text-gold italic mb-4">{copy.title}</h3>
         <p className="text-zinc-500 max-w-2xl text-sm leading-relaxed">
-          Kozbeyli Konağı&apos;nın ruhunu oluşturan dokuların, kokuların ve ışıkların sinematik arşivi. 
-          Bilimin değil, mimarinin ve doğanın şiirsel detaylarını keşfedin.
+          {copy.text}
         </p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-12 relative z-10">
-        {archives.map((item, i) => (
+        {copy.archives.map((item, i) => (
           <motion.div 
             key={i}
             initial={{ opacity: 0, y: 20 }}

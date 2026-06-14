@@ -5,29 +5,96 @@ import { SiteHeader } from "@/components/site-header";
 import { LivingMuseumMap } from "@/components/living-museum-map";
 import { HeritageArchive } from "@/components/heritage-archive";
 
-export function HistoryClient() {
+type Locale = "tr" | "en";
+
+const historyCopy = {
+  tr: {
+    heroTitle: "Hikayemiz",
+    heroSubtitle: "500 YILLIK TAŞLARIN FISILTISI",
+    sunsetTitle: "Kozbeyli'de Gün Batımı",
+    sunsetText: "Konağın terasından Ege'ye doğru, günün en yumuşak ışığında kısa bir an.",
+    sunsetCaption: "Terastan Ege'ye, akşamüstü",
+    segments: [
+      {
+        title: "Tarihi Doku",
+        content:
+          "Kozbeyli Konağı, sadece bir otel değil; Horasan harcıyla örülmüş, 500 yıllık tescilli bir Osmanlı mimarisi şaheseridir. Köyün en eski sivil mimari örneklerinden biridir.",
+        image: "/images/hero.jpg",
+        side: "left" as const,
+      },
+      {
+        title: "Tüccar Mirası",
+        content:
+          "1870-1891 yılları arasında bölgenin en varlıklı tüccar aileleri için inşa edilen yapı, zemin katındaki devasa şarap ve zeytinyağı mahzenleriyle dönemin ticari gücünü yansıtır.",
+        image: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/3.jpg",
+        side: "right" as const,
+      },
+      {
+        title: "Modern Restorasyon",
+        content:
+          "2012 yılında başlayan restorasyon, Anıtlar Kurulu denetiminde, çimento kullanılmadan orijinal tekniklerle tamamlandı. 'Living Museum' felsefesiyle her taş aslına sadık kalarak korundu.",
+        image: "/images/odalar/balkonlu-aile-odasi-4-kisilik/2.jpg",
+        side: "left" as const,
+      },
+    ],
+  },
+  en: {
+    heroTitle: "Our Story",
+    heroSubtitle: "THE WHISPER OF 500-YEAR-OLD STONE",
+    sunsetTitle: "Sunset in Kozbeyli",
+    sunsetText: "A quiet moment from the terrace toward the Aegean in the softest light of the day.",
+    sunsetCaption: "From the terrace to the Aegean, late afternoon",
+    segments: [
+      {
+        title: "Historic Texture",
+        content:
+          "Kozbeyli Konağı is more than a hotel. It is a registered stone mansion shaped by Horasan mortar and one of the village's oldest examples of civil architecture.",
+        image: "/images/hero.jpg",
+        side: "left" as const,
+      },
+      {
+        title: "Merchant Heritage",
+        content:
+          "Built between 1870 and 1891 for the region's prosperous merchant families, the mansion still carries the memory of wine and olive-oil cellars on its ground floor.",
+        image: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/3.jpg",
+        side: "right" as const,
+      },
+      {
+        title: "Modern Restoration",
+        content:
+          "The restoration that began in 2012 was completed under heritage-board supervision, using original techniques and preserving each stone within a Living Museum philosophy.",
+        image: "/images/odalar/balkonlu-aile-odasi-4-kisilik/2.jpg",
+        side: "left" as const,
+      },
+    ],
+  },
+};
+
+export function HistoryClient({ locale = "tr" }: { locale?: Locale }) {
+  const copy = historyCopy[locale];
+
   return (
     <main className="min-h-screen" style={{ background: "var(--ink)" }}>
       <SiteHeader variant="overlay" />
 
       <div className="relative">
         <StoryHero 
-          title="Hikayemiz" 
-          subtitle="500 YILLIK TAŞLARIN FISILTISI" 
+          title={copy.heroTitle}
+          subtitle={copy.heroSubtitle}
         />
       </div>
 
       <section className="py-24 px-6 max-w-7xl mx-auto">
-        <LivingMuseumMap />
+        <LivingMuseumMap locale={locale} />
       </section>
 
       <section className="py-12 px-6 max-w-7xl mx-auto">
         <div className="mb-10 text-center">
           <h3 className="text-ivory font-serif text-3xl md:text-4xl mb-3">
-            Kozbeyli&apos;de Gün Batımı
+            {copy.sunsetTitle}
           </h3>
           <p className="text-zinc-500 text-sm max-w-2xl mx-auto">
-            Konağın terasından Ege&apos;ye doğru, günün en yumuşak ışığında kısa bir an.
+            {copy.sunsetText}
           </p>
         </div>
         <figure>
@@ -42,35 +109,24 @@ export function HistoryClient() {
             <source src="/videos/sunset.mp4" type="video/mp4" />
           </video>
           <figcaption className="text-zinc-500 text-xs text-center mt-4">
-            Terastan Ege&apos;ye, akşamüstü
+            {copy.sunsetCaption}
           </figcaption>
         </figure>
       </section>
 
       <section className="py-12 px-6 max-w-7xl mx-auto">
-        <HeritageArchive />
+        <HeritageArchive locale={locale} />
       </section>
 
-      <StorySegment 
-        title="Tarihi Doku"
-        content="Kozbeyli Konağı, sadece bir otel değil; Horasan harcıyla örülmüş, 500 yıllık tescilli bir Osmanlı mimarisi şaheseridir. Köyün en eski sivil mimari örneklerinden biridir."
-        image="/images/hero.jpg"
-        side="left"
-      />
-
-      <StorySegment 
-        title="Tüccar Mirası"
-        content="1870-1891 yılları arasında bölgenin en varlıklı tüccar aileleri için inşa edilen yapı, zemin katındaki devasa şarap ve zeytinyağı mahzenleriyle dönemin ticari gücünü yansıtır."
-        image="/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/3.jpg"
-        side="right"
-      />
-
-      <StorySegment 
-        title="Modern Restorasyon"
-        content="2012 yılında başlayan restorasyon, Anıtlar Kurulu denetiminde, çimento kullanılmadan orijinal tekniklerle tamamlandı. 'Living Museum' felsefesiyle her taş aslına sadık kalarak korundu."
-        image="/images/odalar/balkonlu-aile-odasi-4-kisilik/2.jpg"
-        side="left"
-      />
+      {copy.segments.map((segment) => (
+        <StorySegment
+          key={segment.title}
+          title={segment.title}
+          content={segment.content}
+          image={segment.image}
+          side={segment.side}
+        />
+      ))}
     </main>
   );
 }

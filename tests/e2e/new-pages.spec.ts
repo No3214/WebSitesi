@@ -75,6 +75,45 @@ test.describe("EN public localization", () => {
     await expect(page.getByText("Organizasyon Tercihi")).toHaveCount(0);
     await expect(page.getByText("Teklif Talebini Gönder")).toHaveCount(0);
   });
+
+  test("EN gastronomy page body is localized", async ({ page }) => {
+    await page.goto("/en/gastronomi");
+
+    await expect(page.getByRole("heading", { name: "Culinary Heritage" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Live Frames from the Kitchen" })).toBeVisible();
+    await expect(page.getByText("Gastronomi Mirası")).toHaveCount(0);
+    await expect(page.getByText("Mutfaktan Canlı Kareler")).toHaveCount(0);
+  });
+
+  test("EN story page body is localized", async ({ page }) => {
+    await page.goto("/en/hikayemiz");
+
+    await expect(page.getByRole("heading", { name: "Our Story" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Heritage Discovery Map" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Heritage Archive: Visual Memory" })).toBeVisible();
+    await expect(page.getByText("Hikayemiz")).toHaveCount(0);
+    await expect(page.getByText("Miras Keşif Haritası")).toHaveCount(0);
+  });
+
+  test("EN FAQ page body is localized", async ({ page }) => {
+    await page.goto("/en/sss");
+
+    await expect(page.getByRole("heading", { name: "Before You Arrive" })).toBeVisible();
+    await expect(page.getByText("What are the check-in / check-out times?")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("href", "/en/rezervasyon");
+    await expect(page.getByText("Merak Ettikleriniz")).toHaveCount(0);
+    await expect(page.getByText("Organizasyon rezervasyonu nasıl yapılır?")).toHaveCount(0);
+  });
+
+  test("EN experiences page body is localized", async ({ page }) => {
+    await page.goto("/en/deneyimler");
+
+    await expect(page.getByRole("heading", { name: "Experience Kozbeyli" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Aegean Gastronomy Route" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Read the Guide" }).first()).toBeVisible();
+    await expect(page.getByText("Kozbeyli'yi Deneyimleyin")).toHaveCount(0);
+    await expect(page.getByText("Ege Gastronomi Rotası")).toHaveCount(0);
+  });
 });
 
 test.describe("Iletisim sayfasi", () => {
