@@ -200,11 +200,15 @@ describe("production readiness contracts", () => {
     expect(layout).not.toContain('display: "swap"');
   });
 
-  it("keeps TR language switching from /en on a deterministic navigation path", () => {
+  it("keeps language switching on hydration-safe href navigation", () => {
     const switcher = read("src/components/language-switcher.tsx");
 
-    expect(switcher).toContain("window.location.assign(target)");
-    expect(switcher).toContain('const target = pathname.slice(3) || "/"');
+    expect(switcher).toContain("function getTurkishHref");
+    expect(switcher).toContain("function getEnglishHref");
+    expect(switcher).toContain("href={trHref}");
+    expect(switcher).toContain("href={enHref}");
+    expect(switcher).not.toContain("router.push");
+    expect(switcher).not.toContain("window.location.assign");
   });
 
   it("keeps Lighthouse CI as a realistic hard release budget", () => {

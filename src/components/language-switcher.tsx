@@ -1,8 +1,10 @@
 "use client";
 
 import { Languages } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { CSSProperties } from "react";
+import type { MouseEvent } from "react";
 
 // /en altında birebir karşılığı bulunan rota kökleri ("" = ana sayfa).
 // Alt detaylar (örn. /odalar/[slug]) kök eşleşmesi üzerinden /en'e taşınır.
@@ -26,39 +28,38 @@ function isEnPath(pathname: string): boolean {
   return pathname === "/en" || pathname.startsWith("/en/");
 }
 
+function getEnglishHref(pathname: string): string {
+  if (isEnPath(pathname)) return pathname;
+  if (pathname === "/") return "/en";
+
+  const root = `/${pathname.split("/")[1] ?? ""}`;
+  return EN_ROUTES.includes(root) ? `/en${pathname}` : "/en";
+}
+
+function getTurkishHref(pathname: string): string {
+  if (isEnPath(pathname)) return pathname.slice(3) || "/";
+  return pathname || "/";
+}
+
 export function LanguageSwitcher() {
-  const router = useRouter();
   const pathname = usePathname() ?? "/";
   const isEnglish = isEnPath(pathname);
+  const trHref = getTurkishHref(pathname);
+  const enHref = getEnglishHref(pathname);
 
-  const selectLanguage = (locale: "tr" | "en") => {
+  const persistLanguage = (locale: "tr" | "en", event: MouseEvent<HTMLAnchorElement>) => {
     // Çerez yazımı korunur — içerik dili client bileşenlerde bu çerezden çözülür.
     document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000`;
 
-    if (locale === "en") {
-      let target = "/en";
-      if (isEnPath(pathname)) {
-        target = pathname;
-      } else if (pathname !== "/") {
-        const root = `/${pathname.split("/")[1] ?? ""}`;
-        target = EN_ROUTES.includes(root) ? `/en${pathname}` : "/en";
-      }
-      router.push(target);
-      return;
-    }
-
-    if (isEnPath(pathname)) {
-      const target = pathname.slice(3) || "/";
-      window.location.assign(target);
-      return;
-    }
-
     // /en dışında TR seçimi: mevcut tam sayfa yenileme davranışı korunur,
     // çerez tabanlı içerik dili böylece tazelenir.
-    window.location.reload();
+    if (locale === "tr" && !isEnPath(pathname)) {
+      event.preventDefault();
+      window.location.reload();
+    }
   };
 
-  const buttonStyle = (active: boolean): CSSProperties => ({
+  const optionStyle = (active: boolean): CSSProperties => ({
     background: "none",
     border: "none",
     padding: 0,
@@ -67,6 +68,8 @@ export function LanguageSwitcher() {
     fontSize: "0.8rem",
     fontWeight: active ? 700 : 500,
     opacity: active ? 1 : 0.65,
+    lineHeight: 1,
+    textDecoration: "none",
   });
 
   return (
@@ -88,23 +91,23 @@ export function LanguageSwitcher() {
       }}
     >
       <Languages size={16} aria-hidden="true" />
-      <button
-        type="button"
-        onClick={() => selectLanguage("tr")}
-        aria-pressed={!isEnglish}
-        style={buttonStyle(!isEnglish)}
+      <Link
+        href={trHref}
+        onClick={(event) => persistLanguage("tr", event)}
+        aria-current={!isEnglish ? "true" : undefined}
+        style={optionStyle(!isEnglish)}
       >
         TR
-      </button>
+      </Link>
       <span aria-hidden="true">|</span>
-      <button
-        type="button"
-        onClick={() => selectLanguage("en")}
-        aria-pressed={isEnglish}
-        style={buttonStyle(isEnglish)}
+      <Link
+        href={enHref}
+        onClick={(event) => persistLanguage("en", event)}
+        aria-current={isEnglish ? "true" : undefined}
+        style={optionStyle(isEnglish)}
       >
         EN
-      </button>
+      </Link>
     </div>
   );
 }
