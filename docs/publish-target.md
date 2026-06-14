@@ -14,6 +14,24 @@ karıştırmamaktır.
 | Marketing Publish | 90/100 | GO | Site canlıya çıkabilir; rezervasyon motoru yoksa WhatsApp fallback çalışır. |
 | Booking & Payment Publish | 100/100 | NO-GO until external | HMS booking engine, Garanti Sanal POS, GA4 purchase ve canlı UAT tamamlanmadan "tam ticari yayın" denmez. |
 
+## 100/100 Ticari Hedef Kapısı
+
+Tam ticari yayın hedefi artık çalıştırılabilir bir gate ile izlenir:
+
+```bash
+npm run launch:audit
+npm run launch:audit:strict
+```
+
+`launch:audit` mevcut commercial launch skorunu ve eksik kanıtları listeler.
+`launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
+
+- HMS booking engine canlı URL + booking UAT: `docs/evidence/hms-booking-engine.md`
+- Garanti Sanal POS sandbox/callback/refund kanıtı: `docs/evidence/garanti-pos.md`
+- GTM/GA4/Meta production + purchase doğrulaması: `docs/evidence/analytics-purchase.md`
+- Search Console / GBP / Hotel Center kanıtı: `docs/evidence/search-local-seo.md`
+- Vendor DPA + hukuk onayı: `docs/evidence/legal-dpa.md`
+
 ## Mevcut Durum
 
 - Repo/Kod Kalitesi: **95/100**

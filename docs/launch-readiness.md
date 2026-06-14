@@ -20,6 +20,11 @@ Business Profile/Hotel Center doğrulamaları ve hukuk/onay süreçleri henüz
 kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + purchase
 ölçüm testi yapılamaz; bu yüzden ticari go-live kararı koşulludur.
 
+2026-06-14 hedef güncellemesi: Tam ticari yayın artık `npm run launch:audit`
+ile izlenen ayrı bir evidence gate'e bağlıdır. `npm run launch:audit:strict`,
+`docs/evidence/*` altındaki HMS, Garanti POS, analytics purchase, local SEO ve
+legal/DPA kanıtları tamamlanmadan bilinçli olarak fail verir.
+
 ## 2. Current Score (rev. 2026-06-13)
 
 - **Repo/Kod Kalite Skoru: 95/100** — iç kalite kapıları yeşil; kalan 5 puan
@@ -108,6 +113,9 @@ kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + p
 3. Engine geldikten sonra: canlı test rezervasyonu + iptal/iade + GA4 purchase doğrulaması
 4. GTM/GA4 ID'lerinin prod env'e girilmesi + Consent Mode doğrulaması
 5. Search Console + GBP kurulumu ve doğrulaması
+
+Bu blokajların kanıt dosyaları `docs/evidence/README.md` içinde tanımlıdır.
+Kod tarafı bu kanıtları üretmez; kanıt gelince strict launch gate yeşile döner.
 
 ## 5. İlk 10 Öncelik
 1. HMS vendor'a 15 soruluk listeyi gönder (master doküman §3.2) — DIŞ

@@ -51,9 +51,39 @@ describe("production readiness contracts", () => {
     const readinessScript = read("scripts/publish-readiness.mjs");
 
     expect(readinessScript).toContain('"IYZICO_WEBHOOK_SECRET"');
+    expect(readinessScript).toContain('"GARANTI_3D_STORE_KEY"');
     expect(readinessScript).toContain('"test:monkey"');
     expect(readinessScript).toContain('"test:chaos"');
     expect(readinessScript).toContain('"test:stress"');
+    expect(readinessScript).toContain('"launch:audit"');
+    expect(readinessScript).toContain('"launch:audit:strict"');
+    expect(readinessScript).toContain('"docs/evidence/README.md"');
+  });
+
+  it("keeps the commercial launch audit executable and evidence-based", () => {
+    const packageJson = JSON.parse(read("package.json")) as {
+      scripts?: Record<string, string>;
+    };
+    const auditScript = read("scripts/commercial-launch-audit.mjs");
+    const evidenceReadme = read("docs/evidence/README.md");
+
+    expect(packageJson.scripts?.["launch:audit"]).toBe(
+      "node scripts/commercial-launch-audit.mjs",
+    );
+    expect(packageJson.scripts?.["launch:audit:strict"]).toBe(
+      "node scripts/commercial-launch-audit.mjs --strict",
+    );
+
+    for (const gate of [
+      "hms-booking-engine.md",
+      "garanti-pos.md",
+      "analytics-purchase.md",
+      "search-local-seo.md",
+      "legal-dpa.md",
+    ]) {
+      expect(auditScript).toContain(gate);
+      expect(evidenceReadme).toContain(gate);
+    }
   });
 
   it("keeps server env helpers out of client components", () => {

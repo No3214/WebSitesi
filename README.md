@@ -46,6 +46,11 @@ Payload admin paneli: `http://localhost:3000/admin` (ilk kullanıcı panelden ol
 | `NEXT_PUBLIC_WHATSAPP_URL` | WhatsApp iletişim/rezervasyon fallback linki | `https://wa.me/<telefon>` formatında otel numarası |
 | `HOTELRUNNER_WEBHOOK_SECRET` | HMS/legacy webhook HMAC imza doğrulama sırrı | HMS webhook ayarlarında tanımlanan secret |
 | `IYZICO_WEBHOOK_SECRET` | Iyzico/PSP webhook HMAC imza doğrulama sırrı | Iyzico webhook ayarlarında tanımlanan ayrı secret |
+| `GARANTI_POS_MODE` | Garanti Sanal POS çalışma modu (`test` / `production`) | Garanti BBVA Sanal POS paneli |
+| `GARANTI_MERCHANT_ID` | Garanti üye işyeri kimliği | Garanti BBVA Sanal POS paneli |
+| `GARANTI_TERMINAL_ID` | Garanti terminal kimliği | Garanti BBVA Sanal POS paneli |
+| `GARANTI_PROVISION_USER` | Garanti provizyon kullanıcı adı | Garanti BBVA Sanal POS paneli |
+| `GARANTI_3D_STORE_KEY` | Garanti 3D Secure store key | Garanti BBVA Sanal POS paneli |
 | `HMS_WEBHOOK_ES256_PUBLIC_KEY` | HMS ECC imzalı webhook public key'i | HMS SPKI PEM public key |
 | `B2B_PARTNER_PUBLIC_KEY` | B2B availability endpoint partner public key'i | Partner onboarding sonrası SPKI PEM |
 | `NEXT_PUBLIC_GTM_ID` | Google Tag Manager container ID | GTM paneli (`GTM-XXXXXXX`) |
@@ -73,6 +78,8 @@ npm run test:unit                # Vitest unit suite
 npm run test:monkey              # Lokal deterministik desktop/mobile monkey testi
 npm run test:chaos               # Lokal sert etkileşim stres testi
 npm run test:stress              # monkey + chaos
+npm run launch:audit             # Ticari 100/100 hedefi için env/kanıt denetimi
+npm run launch:audit:strict      # Tüm ticari kanıtlar tamamlanmadan fail verir
 npm run quality                  # lint + typecheck + unit + build
 npm run publish:target           # Yayın hedef/env/rota envanteri
 npm run publish:verify           # Tam publish kapısı
@@ -87,6 +94,7 @@ npm run storybook                # Storybook (port 6006)
 npx vitest run --project unit    # Unit testler (free-apis, sitemap, güvenlik vb.)
 npx playwright test              # E2E testler (lokal sunucuya karşı)
 npm run test:stress              # Canlı prod'u yormadan lokal monkey/chaos paketi
+npm run launch:audit             # Booking/payment 100/100 için kalan kanıtları listeler
 
 # Canlı/staging ortamına karşı e2e koşmak için:
 PW_BASE_URL=https://kozbeylikonagi.example npx playwright test tests/e2e/ --project=chromium
