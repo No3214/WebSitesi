@@ -142,6 +142,7 @@ describe("production readiness contracts", () => {
 
   it("keeps CI running the launch smoke gate before publish verification", () => {
     const ciWorkflow = read(".github/workflows/ci.yml");
+    const playwrightConfig = read("playwright.config.ts");
     const launchSmokeIndex = ciWorkflow.indexOf("npm run launch:smoke");
     const publishVerifyIndex = ciWorkflow.indexOf("Publish verification tests");
 
@@ -150,7 +151,11 @@ describe("production readiness contracts", () => {
     expect(publishVerifyIndex).toBeGreaterThan(-1);
     expect(launchSmokeIndex).toBeLessThan(publishVerifyIndex);
     expect(ciWorkflow).toMatch(/quality:[\s\S]*timeout-minutes: 60/);
-    expect(ciWorkflow).not.toContain("--with-deps");
+    expect(ciWorkflow).toContain('PW_USE_SYSTEM_CHROME: "1"');
+    expect(ciWorkflow).toContain("google-chrome --version");
+    expect(ciWorkflow).not.toContain("npx playwright install");
+    expect(playwrightConfig).toContain("PW_USE_SYSTEM_CHROME");
+    expect(playwrightConfig).toContain('channel: "chrome"');
   });
 
   it("keeps the health endpoint safe for uptime monitors", () => {

@@ -21,6 +21,7 @@ jobs:
     env:
       CI: "true"
       NEXT_TELEMETRY_DISABLED: "1"
+      PW_USE_SYSTEM_CHROME: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,8 +53,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Install Playwright (chromium)
-        run: npx playwright install chromium
+      - name: Verify system Chrome
+        run: google-chrome --version
 
       - name: Launch smoke gate
         run: npm run launch:smoke

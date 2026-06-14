@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const liveUrl = process.env.PW_BASE_URL;
+const useSystemChrome = process.env.PW_USE_SYSTEM_CHROME === "1";
 
 export default defineConfig({
   testDir: "./tests",
@@ -16,6 +17,12 @@ export default defineConfig({
     reuseExistingServer: false
   },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } }
+    {
+      name: "chromium",
+      use: {
+        ...devices["Desktop Chrome"],
+        ...(useSystemChrome ? { channel: "chrome" } : {}),
+      },
+    }
   ]
 });
