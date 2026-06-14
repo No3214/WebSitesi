@@ -224,7 +224,7 @@ Aşağıdaki yüzeyler **gerçek değildir**; yeni geliştiriciler canlı sanmas
 
 ## CI
 
-`.github/workflows/ci.yml`: her push/PR'da **lint → typecheck → vitest(unit) → build → Playwright e2e smoke → Lighthouse CI**.
+`.github/workflows/ci.yml`: her push/PR'da **lint → typecheck → vitest(unit) → build → launch smoke → Playwright e2e/security/a11y → Lighthouse CI**.
 Kırmızı pipeline'da merge etmeyin. `lib/env.ts` `CI=true` iken zorunlu secret kontrolünü atlar;
 bu sayede CI build'i secret'sız çalışır.
 

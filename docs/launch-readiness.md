@@ -31,6 +31,9 @@ denetlenir.
 2026-06-14 monitoring güncellemesi: Uptime/rollback monitor yüzeyi olarak
 `/api/health` eklendi; cache'siz JSON döner ve secret/private env değeri
 yayınlamaz.
+2026-06-14 CI güncellemesi: `npm run launch:smoke` artık GitHub Actions içinde
+publish verification'dan önce çalışır; health, hero video, konum ve medya smoke
+lokal doğrulamada kalmaz.
 
 ## 2. Current Score (rev. 2026-06-13)
 
@@ -68,6 +71,7 @@ yayınlamaz.
 - `npm run publish:verify` — PASS: quality + 115 publish Playwright tests (113 passed / 2 skipped) + publish target inventory.
 - `npm run publish:verify` — PASS (2026-06-14): quality + 121 publish Playwright tests (119 passed / 2 skipped) + publish target inventory.
 - `npm run launch:smoke:live` — PASS (2026-06-14): canlı Vercel URL üzerinde public rota, `/api/health`, hero video, iletişim konumu ve medya smoke.
+- `.github/workflows/ci.yml` — launch smoke gate publish verification öncesine eklendi.
 - `npx playwright test tests/smoke.spec.ts tests/security.spec.ts tests/e2e/checkout-contract.spec.ts --reporter=line` — PASS, 17 passed / 2 skipped.
 - `npx playwright test tests/monkey.spec.ts tests/destructive-chaos.spec.ts` — PASS, 3/3.
 - Local production preview: `http://127.0.0.1:3010`.

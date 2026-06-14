@@ -53,7 +53,8 @@ export const SunsetMode = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 pointer-events-none z-[1] mix-blend-multiply bg-[#1a0f00]/10"
+            className="fixed inset-0 pointer-events-none z-[0] bg-[#1a0f00]/5"
+            aria-hidden="true"
           />
         )}
       </AnimatePresence>
@@ -95,6 +96,16 @@ export const SunsetMode = () => {
           .card, .section-alt, .feature-box {
             background-color: #1a1a1a !important;
             border-color: rgba(255,255,255,0.05) !important;
+          }
+          .card .card-body h3,
+          .card .card-link {
+            color: #f4efe6 !important;
+          }
+          .card .card-body p {
+            color: #d7d1c7 !important;
+          }
+          .card .card-body .meta {
+            color: #e0bf7a !important;
           }
           .header {
             background: rgba(18, 18, 18, 0.9) !important;

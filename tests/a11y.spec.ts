@@ -13,6 +13,42 @@ const PAGES = ["/", "/odalar", "/rezervasyon", "/organizasyonlar", "/en/organiza
 test.describe("Axe a11y taraması", () => {
   // Yorgun makinede goto+analyze 30sn varsayılanını aşabiliyor
   test.describe.configure({ timeout: 90000 });
+
+  test("sunset mode oda kartlari AA kontrastini korur", async ({ page }) => {
+    await page.route("**/api/local-pulse", async (route) => {
+      const now = Date.now();
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          generatedAt: new Date(now).toISOString(),
+          sun: {
+            sunrise: new Date(now + 60 * 60 * 1000).toISOString(),
+            sunset: new Date(now - 60 * 60 * 1000).toISOString(),
+          },
+        }),
+      });
+    });
+
+    await page.goto("/odalar", { waitUntil: "load", timeout: 60000 });
+    await expect(page.locator(".card").first()).toBeVisible({ timeout: 15000 });
+    await page.waitForFunction(() => {
+      const card = document.querySelector(".card");
+      return card instanceof Element && getComputedStyle(card).backgroundColor.includes("26, 26, 26");
+    });
+
+    const results = await new AxeBuilder({ page })
+      .include(".card-grid")
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+
+    const blocking = results.violations.filter(
+      (v) => v.impact === "critical" || v.impact === "serious",
+    );
+
+    expect(blocking).toEqual([]);
+  });
+
   for (const path of PAGES) {
     test(`critical+serious ihlal yok: ${path}`, async ({ page }) => {
       await page.goto(path, { waitUntil: "load", timeout: 60000 });

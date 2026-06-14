@@ -68,7 +68,8 @@ Bu komut aşağıdaki işleri kapsar:
 
 `launch:smoke` production build üstünde public rotaları, hero video playback,
 iletişim koordinatı, düğün/organizasyon medyası ve görünür medya kırıklarını
-kontrol eder. Canlı Vercel deployment için:
+kontrol eder. Aynı smoke gate her push/PR'da GitHub Actions içinde publish
+verification'dan önce çalışır. Canlı Vercel deployment için:
 
 ```bash
 npm run launch:smoke:live

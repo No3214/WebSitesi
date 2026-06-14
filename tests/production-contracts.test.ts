@@ -117,6 +117,17 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("node_modules/@playwright/test/cli.js");
   });
 
+  it("keeps CI running the launch smoke gate before publish verification", () => {
+    const ciWorkflow = read(".github/workflows/ci.yml");
+    const launchSmokeIndex = ciWorkflow.indexOf("npm run launch:smoke");
+    const publishVerifyIndex = ciWorkflow.indexOf("Publish verification tests");
+
+    expect(ciWorkflow).toContain("Launch smoke gate");
+    expect(launchSmokeIndex).toBeGreaterThan(-1);
+    expect(publishVerifyIndex).toBeGreaterThan(-1);
+    expect(launchSmokeIndex).toBeLessThan(publishVerifyIndex);
+  });
+
   it("keeps the health endpoint safe for uptime monitors", () => {
     const healthRoute = read("src/app/api/health/route.ts");
 
@@ -127,6 +138,18 @@ describe("production readiness contracts", () => {
     expect(healthRoute).not.toContain("PAYLOAD_SECRET");
     expect(healthRoute).not.toContain("GARANTI_3D_STORE_KEY");
     expect(healthRoute).not.toContain("GA4_API_SECRET");
+  });
+
+  it("keeps sunset mode from degrading room-card text contrast", () => {
+    const sunsetMode = read("src/components/sunset-mode.tsx");
+
+    expect(sunsetMode).not.toContain("mix-blend-multiply");
+    expect(sunsetMode).toContain(".card .card-body h3");
+    expect(sunsetMode).toContain(".card .card-body p");
+    expect(sunsetMode).toContain(".card .card-body .meta");
+    expect(sunsetMode).toContain("#f4efe6");
+    expect(sunsetMode).toContain("#d7d1c7");
+    expect(sunsetMode).toContain("#e0bf7a");
   });
 
   it("keeps server env helpers out of client components", () => {
