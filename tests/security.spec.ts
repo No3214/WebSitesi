@@ -159,7 +159,7 @@ test.describe("Security Audit Test", () => {
     expect(response.status()).toBe(403);
   });
 
-  test("chat API should not be exposed after Digital Kahya removal", async ({ request, baseURL }) => {
+  test("legacy chat API should not be exposed", async ({ request, baseURL }) => {
     const url = baseURL || "http://localhost:3006";
     const response = await request.post(`${url}/api/chat`, {
       data: {

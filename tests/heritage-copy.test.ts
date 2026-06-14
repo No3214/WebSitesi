@@ -3,12 +3,13 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-const checkedRoots = ["src", "public", "docs"];
+const checkedRoots = ["src", "public", "docs", "brand"];
 const ignoredDirectories = new Set(["node_modules", ".next", "test-results"]);
 const heritageAgePatterns = [
   /200\s*yıllık\s+bir\s+hikaye/i,
   /200-year-old\s+story/i,
   /200\s*year\s+old\s+story/i,
+  /\b(?:180|200)\s*yıllık\s+tescilli\s+(?:bir\s+)?taş\s+yapı/i,
 ];
 
 function listTextFiles(dir: string): string[] {
@@ -35,5 +36,12 @@ describe("heritage copy consistency", () => {
       });
 
     expect(offenders).toEqual([]);
+  });
+
+  it("keeps the brand knowledge base aligned with the 500-year registered stone heritage claim", () => {
+    const about = fs.readFileSync(path.join(process.cwd(), "brand/knowledge_base/optimized_about.md"), "utf8");
+
+    expect(about).toContain("500 yıllık tescilli taş mimari");
+    expect(about).not.toMatch(/\b180\s*yıllık\s+tescilli/i);
   });
 });
