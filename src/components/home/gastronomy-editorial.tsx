@@ -1,9 +1,63 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
+
+type LazyEditorialVideoProps = {
+  src: string;
+  poster: string;
+  label: string;
+};
+
+function LazyEditorialVideo({ src, poster, label }: LazyEditorialVideoProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [shouldPlay, setShouldPlay] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (!("IntersectionObserver" in window)) {
+      setShouldPlay(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setShouldPlay(true);
+        observer.disconnect();
+      },
+      { rootMargin: "320px 0px" }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldPlay) return;
+    void videoRef.current?.play().catch(() => {});
+  }, [shouldPlay]);
+
+  return (
+    <video
+      ref={videoRef}
+      poster={poster}
+      autoPlay={shouldPlay}
+      muted
+      loop
+      playsInline
+      preload="none"
+      aria-label={label}
+    >
+      <source src={src} type="video/mp4" />
+    </video>
+  );
+}
 
 export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
   return (
@@ -25,15 +79,10 @@ export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
           <FadeIn>
             <div className="editorial">
               <div className="editorial-media">
-                <video
+                <LazyEditorialVideo
                   src="/videos/kahvalti.mp4"
                   poster="/videos/kahvalti-poster.jpg"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  aria-label={locale === "tr" ? "Serpme köy kahvaltısı videosu" : "Village breakfast video"}
+                  label={locale === "tr" ? "Serpme köy kahvaltısı videosu" : "Village breakfast video"}
                 />
                 <span className="media-frame" aria-hidden />
               </div>
@@ -60,15 +109,10 @@ export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
           <FadeIn>
             <div className="editorial reverse">
               <div className="editorial-media">
-                <video
+                <LazyEditorialVideo
                   src="/videos/mihlama.mp4"
                   poster="/videos/mihlama-poster.jpg"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  aria-label={locale === "tr" ? "Ocakta hazırlanan yöresel lezzet videosu" : "Regional dish on the stove video"}
+                  label={locale === "tr" ? "Ocakta hazırlanan yöresel lezzet videosu" : "Regional dish on the stove video"}
                 />
                 <span className="media-frame" aria-hidden />
               </div>

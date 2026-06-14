@@ -193,6 +193,15 @@ describe("production readiness contracts", () => {
     }
   });
 
+  it("keeps below-fold homepage videos from preloading on first paint", () => {
+    const gastronomyEditorial = read("src/components/home/gastronomy-editorial.tsx");
+
+    expect(gastronomyEditorial).toContain("function LazyEditorialVideo");
+    expect(gastronomyEditorial).toContain("IntersectionObserver");
+    expect(gastronomyEditorial).toContain('preload="none"');
+    expect(gastronomyEditorial).not.toContain('preload="metadata"');
+  });
+
   it("keeps first-visit hero rendering from waiting on late webfont swaps", () => {
     const layout = read("src/app/layout.tsx");
 

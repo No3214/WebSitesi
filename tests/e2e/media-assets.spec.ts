@@ -106,6 +106,26 @@ test.describe("Media, video and mobile publish readiness", () => {
     }
   });
 
+  test("homepage first viewport does not preload below-fold kitchen videos", async ({ page }) => {
+    const videoRequests: string[] = [];
+
+    page.on("request", (request) => {
+      const url = request.url();
+      if (url.includes("/videos/kahvalti.mp4") || url.includes("/videos/mihlama.mp4")) {
+        videoRequests.push(url);
+      }
+    });
+
+    const response = await page.goto("/", { waitUntil: "load" });
+    expect(response?.status(), "/ should return usable HTML").toBeLessThan(400);
+    await expect(page.getByRole("heading", { name: /Tarihin Kalbinde/i })).toBeVisible({
+      timeout: 15000,
+    });
+    await page.waitForTimeout(1500);
+
+    expect(videoRequests, videoRequests.join("\n")).toEqual([]);
+  });
+
   for (const route of visualRoutes) {
     test(`${route} renders without broken visible images`, async ({ page }) => {
       const assetFailures: string[] = [];
