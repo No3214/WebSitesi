@@ -7,8 +7,10 @@ credentials. Store redacted screenshots, ticket IDs, approval notes, test
 summaries, and links to the source systems.
 
 `npm run launch:audit` checks these files together with the relevant production
-environment variables. `npm run launch:audit:strict` intentionally fails until
-all evidence is present and no gate is blocked.
+environment variables. `npm run launch:audit:json` returns the same result as
+machine-readable JSON for CI, dashboards and agent review. `npm run
+launch:audit:strict` intentionally fails until all evidence is present and no
+gate is blocked.
 
 ## Required Evidence Files
 

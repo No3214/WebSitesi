@@ -20,10 +20,13 @@ Tam ticari yayın hedefi artık çalıştırılabilir bir gate ile izlenir:
 
 ```bash
 npm run launch:audit
+npm run launch:audit:json
 npm run launch:audit:strict
 ```
 
 `launch:audit` mevcut commercial launch skorunu ve eksik kanıtları listeler.
+`launch:audit:json`, aynı sonucu CI, dashboard veya ajan denetimleri için
+makine okunur JSON olarak verir.
 `launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
 
 - HMS booking engine canlı URL + booking UAT: `docs/evidence/hms-booking-engine.md`

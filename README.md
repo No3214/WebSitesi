@@ -79,6 +79,7 @@ npm run test:monkey              # Lokal deterministik desktop/mobile monkey tes
 npm run test:chaos               # Lokal sert etkileşim stres testi
 npm run test:stress              # monkey + chaos
 npm run launch:audit             # Ticari 100/100 hedefi için env/kanıt denetimi
+npm run launch:audit:json        # Aynı ticari denetimin makine okunur JSON çıktısı
 npm run launch:audit:strict      # Tüm ticari kanıtlar tamamlanmadan fail verir
 npm run quality                  # lint + typecheck + unit + build
 npm run publish:target           # Yayın hedef/env/rota envanteri
@@ -95,6 +96,7 @@ npx vitest run --project unit    # Unit testler (free-apis, sitemap, güvenlik v
 npx playwright test              # E2E testler (lokal sunucuya karşı)
 npm run test:stress              # Canlı prod'u yormadan lokal monkey/chaos paketi
 npm run launch:audit             # Booking/payment 100/100 için kalan kanıtları listeler
+npm run launch:audit:json        # CI/ajanlar için structured launch audit çıktısı
 
 # Canlı/staging ortamına karşı e2e koşmak için:
 PW_BASE_URL=https://kozbeylikonagi.example npx playwright test tests/e2e/ --project=chromium

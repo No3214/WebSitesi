@@ -166,8 +166,9 @@ export function formatCommercialLaunchReport(result) {
 
 function main() {
   const strict = process.argv.includes("--strict");
+  const json = process.argv.includes("--json");
   const result = evaluateCommercialLaunch();
-  console.log(formatCommercialLaunchReport(result));
+  console.log(json ? JSON.stringify(result, null, 2) : formatCommercialLaunchReport(result));
   process.exit(strict && result.score < result.target ? 1 : 0);
 }
 

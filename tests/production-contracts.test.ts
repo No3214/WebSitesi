@@ -56,8 +56,10 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"test:chaos"');
     expect(readinessScript).toContain('"test:stress"');
     expect(readinessScript).toContain('"launch:audit"');
+    expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
+    expect(readinessScript).toContain("evaluateCommercialLaunch");
   });
 
   it("keeps the commercial launch audit executable and evidence-based", () => {
@@ -70,9 +72,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["launch:audit"]).toBe(
       "node scripts/commercial-launch-audit.mjs",
     );
+    expect(packageJson.scripts?.["launch:audit:json"]).toBe(
+      "node scripts/commercial-launch-audit.mjs --json",
+    );
     expect(packageJson.scripts?.["launch:audit:strict"]).toBe(
       "node scripts/commercial-launch-audit.mjs --strict",
     );
+    expect(auditScript).toContain("--json");
 
     for (const gate of [
       "hms-booking-engine.md",

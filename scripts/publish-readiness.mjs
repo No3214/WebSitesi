@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { evaluateCommercialLaunch } from "./commercial-launch-audit.mjs";
+
 const root = process.cwd();
 
 const requiredFiles = [
@@ -84,14 +86,6 @@ const requiredEnvExampleKeys = [
   "TURNSTILE_SECRET_KEY",
 ];
 
-const externalGoLiveBlockers = [
-  "HMS booking engine live URL",
-  "Garanti Sanal POS merchant/terminal credentials",
-  "GA4/Meta/GTM production IDs and purchase validation",
-  "Search Console, Google Business Profile, Hotel Center verification",
-  "Vendor DPA and legal review",
-];
-
 function exists(relPath) {
   return fs.existsSync(path.join(root, relPath));
 }
@@ -142,6 +136,7 @@ const requiredScripts = [
   "test:chaos",
   "test:stress",
   "launch:audit",
+  "launch:audit:json",
   "launch:audit:strict",
   "build",
   "publish:routes",
@@ -150,17 +145,24 @@ const requiredScripts = [
 const missingScripts = requiredScripts.filter((script) => !packageJson.scripts?.[script]);
 
 const fatal = [...missingFiles, ...missingEnvExampleKeys, ...missingScripts, ...missingSitemapRoutes];
+const commercialLaunch = evaluateCommercialLaunch();
+const blockedCommercialGates = commercialLaunch.gateResults.filter((gate) => !gate.ready);
+const externalGoLiveBlockers = blockedCommercialGates.map((gate) => gate.label);
 
 const report = [
   "Kozbeyli Konagi publish readiness",
   "Target: repo 95/100, marketing publish 90/100, booking/payment 100/100",
-  "Current: repo 95/100, marketing publish 90/100, commercial launch 86/100",
+  `Current: repo 95/100, marketing publish 90/100, commercial launch ${commercialLaunch.score}/100`,
   failLine("required files", missingFiles),
   failLine("env example keys", missingEnvExampleKeys),
   failLine("package scripts", missingScripts),
   failLine("sitemap public route inventory", missingSitemapRoutes),
   `INFO public route smoke inventory: ${publicRoutes.length} routes`,
-  `INFO external blockers before full commercial launch: ${externalGoLiveBlockers.join("; ")}`,
+  `INFO commercial launch decision: ${commercialLaunch.decision}`,
+  `INFO commercial launch blocked gates: ${
+    blockedCommercialGates.length === 0 ? "none" : blockedCommercialGates.map((gate) => gate.id).join(", ")
+  }`,
+  `INFO external blockers before full commercial launch: ${externalGoLiveBlockers.join("; ") || "none"}`,
   fatal.length === 0
     ? "RESULT marketing publish gate inventory PASS"
     : "RESULT marketing publish gate inventory FAIL",
