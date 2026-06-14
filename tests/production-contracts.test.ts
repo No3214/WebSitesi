@@ -68,7 +68,9 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
       "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/launch-smoke.mjs",
     );
+    expect(packageJson.scripts?.prebuild).toBe("node scripts/clean-next-build.mjs");
     expect(packageJson.scripts?.["release:verify"]).toBe("node scripts/release-verify.mjs");
+    expect(readinessScript).toContain('"scripts/clean-next-build.mjs"');
     expect(readinessScript).toContain('"src/app/api/health/route.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
