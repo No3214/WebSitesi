@@ -3,9 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 
-import { FadeIn, RevealLines } from "@/components/animations";
+import { FadeIn } from "@/components/animations";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
@@ -14,7 +13,7 @@ const HERO_VIDEO_SRC = "/videos/hero-property.mp4";
 /**
  * Hero arka plan videosu — LCP'ye dokunmadan:
  * - LCP elemanı her zaman poster görselidir (priority + preload); video sayfa
- *   yüklendikten sonra video üstüne fade-in olur.
+ *   yüklendikten ve ana metrikler sakinleştikten sonra video üstüne fade-in olur.
  * - Data Saver ve reduced-motion'da hiç yüklenmez; mobilde ise Emergent
  *   önizlemesindeki gibi sessiz/playsInline arka plan reel'i devreye girer.
  */
@@ -26,9 +25,40 @@ function HeroVideo() {
   useEffect(() => {
     const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!reduceMotion && !conn?.saveData) {
+    if (reduceMotion || conn?.saveData) return;
+
+    let idleHandle: number | null = null;
+    let loadDelay: number | null = null;
+
+    const revealVideo = () => {
+      idleHandle = null;
       setShouldRender(true);
+    };
+
+    const scheduleVideo = () => {
+      loadDelay = window.setTimeout(() => {
+        if ("requestIdleCallback" in window) {
+          idleHandle = window.requestIdleCallback(revealVideo, { timeout: 2500 });
+          return;
+        }
+
+        revealVideo();
+      }, 3200);
+    };
+
+    if (document.readyState === "complete") {
+      scheduleVideo();
+    } else {
+      window.addEventListener("load", scheduleVideo, { once: true });
     }
+
+    return () => {
+      window.removeEventListener("load", scheduleVideo);
+      if (loadDelay !== null) window.clearTimeout(loadDelay);
+      if (idleHandle !== null && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleHandle);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -81,7 +111,7 @@ function HeroVideo() {
       muted
       loop
       playsInline
-      preload="auto"
+      preload="none"
       poster="/images/hero-video-poster.jpg"
       aria-hidden
       tabIndex={-1}
@@ -95,16 +125,14 @@ function HeroVideo() {
 }
 
 export function HomeHero({ locale, eyebrow }: Props) {
-  const reduceMotion = useReducedMotion();
+  const heroLines =
+    locale === "tr"
+      ? ["Tarihin Kalbinde", "Zarif Bir Ege Kaçamağı"]
+      : ["In the Heart of History", "An Elegant Aegean Escape"];
 
   return (
     <section className="hero grain">
-      <motion.div
-        initial={reduceMotion ? false : { scale: 1.12 }}
-        animate={reduceMotion ? undefined : { scale: 1 }}
-        transition={reduceMotion ? undefined : { duration: 9, ease: "easeOut" }}
-        className="hero-media"
-      >
+      <div className="hero-media">
         <Image
           src="/images/hero-video-poster.jpg"
           alt={locale === "tr" ? "Kozbeyli Konağı taş cephesi ve Ege manzarası" : "Kozbeyli Konağı stone facade and Aegean view"}
@@ -118,7 +146,7 @@ export function HomeHero({ locale, eyebrow }: Props) {
           blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
         />
         <HeroVideo />
-      </motion.div>
+      </div>
 
       <div className="container" style={{ position: "relative", zIndex: 2, padding: "140px 0 120px" }}>
         <FadeIn direction="down">
@@ -127,15 +155,13 @@ export function HomeHero({ locale, eyebrow }: Props) {
           </span>
         </FadeIn>
 
-        <RevealLines
-          as="h1"
-          trigger="mount"
-          lines={
-            locale === "tr"
-              ? ["Tarihin Kalbinde", "Zarif Bir Ege Kaçamağı"]
-              : ["In the Heart of History", "An Elegant Aegean Escape"]
-          }
-        />
+        <h1 aria-label={heroLines.join(" ")}>
+          {heroLines.map((line) => (
+            <span key={line} aria-hidden="true" style={{ display: "block" }}>
+              {line}
+            </span>
+          ))}
+        </h1>
 
         <FadeIn delay={0.35}>
           <p className="hero-text">

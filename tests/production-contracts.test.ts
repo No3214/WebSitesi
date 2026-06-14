@@ -140,6 +140,18 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("node_modules/@playwright/test/cli.js");
   });
 
+  it("keeps homepage hero video deferred behind the LCP poster", () => {
+    const homeHero = read("src/components/home/home-hero.tsx");
+
+    expect(homeHero).toContain('preload="none"');
+    expect(homeHero).toContain("requestIdleCallback");
+    expect(homeHero).toContain("setShouldRender(true)");
+    expect(homeHero).toContain('fetchPriority="high"');
+    expect(homeHero).not.toContain("RevealLines");
+    expect(homeHero).not.toContain("<motion.div");
+    expect(homeHero).not.toContain('preload="auto"');
+  });
+
   it("keeps CI running the launch smoke gate before publish verification", () => {
     const ciWorkflow = read(".github/workflows/ci.yml");
     const playwrightConfig = read("playwright.config.ts");
