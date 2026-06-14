@@ -4,12 +4,13 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Gift, ArrowRight } from "lucide-react";
 
+import { publicEnv } from "@/lib/public-env";
+
 export const ExitIntent = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [hasShown, setHasShown] = useState(false);
 
-  const target =
-    process.env.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL || "/rezervasyon";
+  const target = publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL || "/rezervasyon";
 
   useEffect(() => {
     if (hasShown) return;

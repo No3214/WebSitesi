@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Script from "next/script";
 
-import { env } from "@/lib/env";
 import { CONSENT_STORAGE_KEY, getDefaultConsent, parseConsent, type ConsentState } from "@/lib/consent";
+import { publicEnv } from "@/lib/public-env";
 
 export function TrackingScripts() {
   const [consent, setConsent] = useState<ConsentState>(getDefaultConsent());
@@ -27,18 +27,18 @@ export function TrackingScripts() {
 
   return (
     <>
-      {consent.analytics && env.NEXT_PUBLIC_GTM_ID ? (
+      {consent.analytics && publicEnv.NEXT_PUBLIC_GTM_ID ? (
         <>
           <Script id="gtm-loader" strategy="afterInteractive">
             {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${env.NEXT_PUBLIC_GTM_ID}');`}
+            })(window,document,'script','dataLayer','${publicEnv.NEXT_PUBLIC_GTM_ID}');`}
           </Script>
           <noscript>
             <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${env.NEXT_PUBLIC_GTM_ID}`}
+              src={`https://www.googletagmanager.com/ns.html?id=${publicEnv.NEXT_PUBLIC_GTM_ID}`}
               height="0"
               width="0"
               style={{ display: "none", visibility: "hidden" }}
@@ -47,7 +47,7 @@ export function TrackingScripts() {
         </>
       ) : null}
 
-      {consent.marketing && env.NEXT_PUBLIC_META_PIXEL_ID ? (
+      {consent.marketing && publicEnv.NEXT_PUBLIC_META_PIXEL_ID ? (
         <>
           <Script id="fb-pixel" strategy="afterInteractive">
             {`!function(f,b,e,v,n,t,s)
@@ -58,7 +58,7 @@ export function TrackingScripts() {
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${env.NEXT_PUBLIC_META_PIXEL_ID}');
+            fbq('init', '${publicEnv.NEXT_PUBLIC_META_PIXEL_ID}');
             fbq('track', 'PageView');`}
           </Script>
           <noscript>
@@ -67,7 +67,7 @@ export function TrackingScripts() {
               height="1"
               width="1"
               style={{ display: "none" }}
-              src={`https://www.facebook.com/tr?id=${env.NEXT_PUBLIC_META_PIXEL_ID}&ev=PageView&noscript=1`}
+              src={`https://www.facebook.com/tr?id=${publicEnv.NEXT_PUBLIC_META_PIXEL_ID}&ev=PageView&noscript=1`}
               alt=""
             />
           </noscript>

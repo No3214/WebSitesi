@@ -1,0 +1,9 @@
+export const publicEnv = {
+  NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL:
+    process.env.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL?.trim() || "",
+  NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID?.trim() || "",
+  NEXT_PUBLIC_META_PIXEL_ID: process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() || "",
+  NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() || "",
+  NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim() || "",
+  NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() || "https://eu.i.posthog.com",
+};

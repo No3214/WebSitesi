@@ -8,6 +8,7 @@ import { PaymentWizard } from "./payment-wizard";
 
 import { getWhatsAppHref } from "@/lib/contact";
 import { trackBeginCheckout } from "@/lib/gtm";
+import { publicEnv } from "@/lib/public-env";
 
 function withBookingUtm(url: string) {
   if (url.includes("?")) return url;
@@ -26,7 +27,7 @@ type HMSBookingEmbedProps = {
 };
 
 export function HMSBookingEmbed({ roomSlug, roomLabel }: HMSBookingEmbedProps) {
-  const bookingUrl = process.env.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL || "";
+  const bookingUrl = publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL;
 
   // GA4 begin_checkout: rezervasyon arayüzü (engine veya talep sihirbazı)
   // misafirin önüne geldiği anda huni başlangıcı sayılır.

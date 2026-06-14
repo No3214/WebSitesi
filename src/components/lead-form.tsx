@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { pushEvent, trackGenerateLead } from '@/lib/gtm';
+import { publicEnv } from '@/lib/public-env';
 
 type LeadStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -176,10 +177,10 @@ export function LeadForm() {
       {renderError("consent")}
 
       {/* Cloudflare Turnstile Widget — only render when sitekey is configured */}
-      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+      {publicEnv.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
         <div
           className="cf-turnstile"
-          data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+          data-sitekey={publicEnv.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
           style={{ marginBottom: '16px' }}
         ></div>
       )}

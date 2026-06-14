@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, ReactNode, useState } from "react";
 
 import { CONSENT_STORAGE_KEY, getDefaultConsent, parseConsent } from "@/lib/consent";
+import { publicEnv } from "@/lib/public-env";
 
 let posthogReady = false;
 
@@ -16,7 +17,7 @@ function hasAnalyticsConsent() {
 
 function ensurePostHogReady() {
   if (typeof window === "undefined") return false;
-  const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim();
+  const posthogKey = publicEnv.NEXT_PUBLIC_POSTHOG_KEY;
   if (!posthogKey || !hasAnalyticsConsent()) {
     if (posthogReady) posthog.opt_out_capturing();
     return false;
@@ -24,7 +25,7 @@ function ensurePostHogReady() {
 
   if (!posthogReady) {
     posthog.init(posthogKey, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com",
+      api_host: publicEnv.NEXT_PUBLIC_POSTHOG_HOST,
       person_profiles: "identified_only",
       capture_pageview: false,
     });

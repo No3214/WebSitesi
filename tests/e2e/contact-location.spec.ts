@@ -5,7 +5,7 @@ const EXPECTED_LNG = "26.896018";
 
 test.describe("Contact location", () => {
   test("iletisim haritasi ve yol tarifi Kozbeyli Konagi bina koordinatina gider", async ({ page }) => {
-    await page.goto("/iletisim", { waitUntil: "load" });
+    await page.goto("/iletisim", { waitUntil: "domcontentloaded" });
 
     const directions = page.locator('[data-event="directions_click"]').first();
     await expect(directions).toHaveAttribute("href", new RegExp(`${EXPECTED_LAT}.*${EXPECTED_LNG}`));
