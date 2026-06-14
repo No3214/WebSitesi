@@ -53,7 +53,7 @@ jobs:
         run: npm run build
 
       - name: Install Playwright (chromium)
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Launch smoke gate
         run: npm run launch:smoke

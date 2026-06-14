@@ -150,6 +150,7 @@ describe("production readiness contracts", () => {
     expect(publishVerifyIndex).toBeGreaterThan(-1);
     expect(launchSmokeIndex).toBeLessThan(publishVerifyIndex);
     expect(ciWorkflow).toMatch(/quality:[\s\S]*timeout-minutes: 60/);
+    expect(ciWorkflow).not.toContain("--with-deps");
   });
 
   it("keeps the health endpoint safe for uptime monitors", () => {
