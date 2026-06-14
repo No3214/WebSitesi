@@ -84,6 +84,7 @@ npm run launch:audit:strict      # Tüm ticari kanıtlar tamamlanmadan fail veri
 npm run launch:smoke             # Lokal production build'e kritik launch smoke
 npm run launch:smoke:live        # Canlı Vercel URL'ye kritik launch smoke
 npm run quality                  # lint + typecheck + unit + build
+npm run release:verify           # Full release gate: security + publish + smoke + stress + audit
 npm run publish:target           # Yayın hedef/env/rota envanteri
 npm run publish:verify           # Tam publish kapısı
 npm run payload:types            # Payload tip üretimi (payload-types.ts)
@@ -101,6 +102,7 @@ npm run launch:audit             # Booking/payment 100/100 için kalan kanıtlar
 npm run launch:audit:json        # CI/ajanlar için structured launch audit çıktısı
 npm run launch:smoke             # Public rota, health, hero video, konum ve medya smoke
 npm run launch:smoke:live        # https://kozbeyli-konagi.vercel.app üzerinde aynı smoke
+npm run release:verify           # Lokal final release kapısı
 
 # Canlı/staging ortamına karşı e2e koşmak için:
 PW_BASE_URL=https://kozbeylikonagi.example npx playwright test tests/e2e/ --project=chromium
@@ -152,11 +154,14 @@ Yayın hedefi ve GO/NO-GO kapıları: `docs/publish-target.md`.
 Yayın öncesi tek komut:
 
 ```bash
-npm run publish:verify
+npm run release:verify
 ```
 
-Bu komut lint, typecheck, unit, production build, tüm TR/EN public rota smoke,
-security, prestige/mobile, a11y ve publish target envanterini çalıştırır.
+Bu komut runtime dependency audit, `publish:verify`, lokal `launch:smoke`,
+monkey/chaos stres testleri ve JSON commercial launch audit'i tek sırada
+çalıştırır. `publish:verify` içinde lint, typecheck, unit, production build,
+tüm TR/EN public rota smoke, security, prestige/mobile, a11y ve publish target
+envanteri kalır.
 Deploy sonrası canlı yüzey için hızlı doğrulama:
 
 ```bash
@@ -224,7 +229,7 @@ Aşağıdaki yüzeyler **gerçek değildir**; yeni geliştiriciler canlı sanmas
 
 ## CI
 
-`.github/workflows/ci.yml`: her push/PR'da **lint → typecheck → vitest(unit) → build → launch smoke → Playwright e2e/security/a11y → Lighthouse CI**.
+`.github/workflows/ci.yml`: her push/PR'da **release gate manifest → audit → lint → typecheck → vitest(unit) → build → launch smoke → Playwright e2e/security/a11y → Lighthouse CI**.
 Kırmızı pipeline'da merge etmeyin. `lib/env.ts` `CI=true` iken zorunlu secret kontrolünü atlar;
 bu sayede CI build'i secret'sız çalışır.
 

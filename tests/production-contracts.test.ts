@@ -63,14 +63,37 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"launch:audit:strict"');
     expect(readinessScript).toContain('"launch:smoke"');
     expect(readinessScript).toContain('"launch:smoke:live"');
+    expect(readinessScript).toContain('"release:verify"');
     expect(packageJson.scripts?.["launch:smoke"]).toBe("node scripts/launch-smoke.mjs");
     expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
       "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/launch-smoke.mjs",
     );
+    expect(packageJson.scripts?.["release:verify"]).toBe("node scripts/release-verify.mjs");
     expect(readinessScript).toContain('"src/app/api/health/route.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
+  });
+
+  it("keeps release verification orchestrating the full local release gate", () => {
+    const releaseScript = read("scripts/release-verify.mjs");
+    const ciWorkflow = read(".github/workflows/ci.yml");
+
+    for (const gate of [
+      "security:audit",
+      "publish:verify",
+      "launch:smoke",
+      "test:stress",
+      "launch:audit:json",
+    ]) {
+      expect(releaseScript).toContain(`script: "${gate}"`);
+    }
+
+    expect(releaseScript).toContain("--list");
+    expect(releaseScript).toContain("process.env.ComSpec");
+    expect(releaseScript).not.toContain("launch:audit:strict");
+    expect(ciWorkflow).toContain("Release gate manifest");
+    expect(ciWorkflow).toContain("node scripts/release-verify.mjs --list");
   });
 
   it("keeps the commercial launch audit executable and evidence-based", () => {
@@ -138,6 +161,14 @@ describe("production readiness contracts", () => {
     expect(healthRoute).not.toContain("PAYLOAD_SECRET");
     expect(healthRoute).not.toContain("GARANTI_3D_STORE_KEY");
     expect(healthRoute).not.toContain("GA4_API_SECRET");
+  });
+
+  it("keeps unknown room slugs returning page-level 404s without static fallback errors", () => {
+    const roomDetailRoute = read("src/app/odalar/[slug]/page.tsx");
+
+    expect(roomDetailRoute).toContain("export const dynamicParams = true");
+    expect(roomDetailRoute).toContain("notFound()");
+    expect(roomDetailRoute).not.toContain("dynamicParams = false");
   });
 
   it("keeps sunset mode from degrading room-card text contrast", () => {

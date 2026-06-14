@@ -34,6 +34,10 @@ yayınlamaz.
 2026-06-14 CI güncellemesi: `npm run launch:smoke` artık GitHub Actions içinde
 publish verification'dan önce çalışır; health, hero video, konum ve medya smoke
 lokal doğrulamada kalmaz.
+2026-06-14 release gate güncellemesi: `npm run release:verify` eklendi. Bu üst
+komut security audit, `publish:verify`, `launch:smoke`, monkey/chaos stres
+testleri ve JSON commercial launch audit'i tek sırada çalıştırır; CI ayrıca
+bu release manifestini `--list` ile doğrular.
 
 ## 2. Current Score (rev. 2026-06-13)
 

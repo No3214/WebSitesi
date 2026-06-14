@@ -1,6 +1,6 @@
 # Kozbeyli Konağı — Publish Target & Gate
 
-Son revizyon: 2026-06-13
+Son revizyon: 2026-06-14
 
 Bu dosya yayın hedefini tek yerde tanımlar. Amaç: "hazır mı?" sorusuna
 ölçülebilir kapılarla cevap vermek ve dış bağımlılıkları kod kalitesiyle
@@ -51,11 +51,18 @@ makine okunur JSON olarak verir.
 Yayın öncesi yerel kapı:
 
 ```bash
-npm run publish:verify
-npm run launch:smoke
+npm run release:verify
 ```
 
-Bu komut aşağıdaki işleri kapsar:
+Bu üst komut aşağıdaki kapıları sırayla çalıştırır:
+
+- Runtime dependency audit (`npm run security:audit`)
+- Tam publish doğrulaması (`npm run publish:verify`)
+- Lokal launch smoke (`npm run launch:smoke`)
+- Monkey/chaos stres testleri (`npm run test:stress`)
+- Makine okunur commercial launch audit (`npm run launch:audit:json`)
+
+`publish:verify` içinde aşağıdaki işler kalır:
 
 - ESLint
 - TypeScript
@@ -68,8 +75,8 @@ Bu komut aşağıdaki işleri kapsar:
 
 `launch:smoke` production build üstünde public rotaları, hero video playback,
 iletişim koordinatı, düğün/organizasyon medyası ve görünür medya kırıklarını
-kontrol eder. Aynı smoke gate her push/PR'da GitHub Actions içinde publish
-verification'dan önce çalışır. Canlı Vercel deployment için:
+kontrol eder. CI her push/PR'da release gate manifestini doğrular ve aynı smoke
+gate'i publish verification'dan önce çalıştırır. Canlı Vercel deployment için:
 
 ```bash
 npm run launch:smoke:live

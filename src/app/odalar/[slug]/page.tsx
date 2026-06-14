@@ -9,12 +9,12 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-// Oda verisi lokal (rooms.ts) — sayfalar build'de statik üretilir,
-// bilinmeyen slug'lar dynamicParams=false ile otomatik 404 olur.
+// Oda verisi lokal (rooms.ts); bilinen sayfalar build'de statik üretilir,
+// bilinmeyen slug'lar sayfa seviyesinde notFound() ile sessiz 404 olur.
 export function generateStaticParams() {
   return fallbackRooms.map((room) => ({ slug: room.slug }));
 }
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

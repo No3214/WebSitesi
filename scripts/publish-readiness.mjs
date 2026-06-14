@@ -142,6 +142,7 @@ const requiredScripts = [
   "launch:audit:strict",
   "launch:smoke",
   "launch:smoke:live",
+  "release:verify",
   "build",
   "publish:routes",
   "publish:verify",
