@@ -114,6 +114,19 @@ test.describe("EN public localization", () => {
     await expect(page.getByText("Kozbeyli'yi Deneyimleyin")).toHaveCount(0);
     await expect(page.getByText("Ege Gastronomi Rotası")).toHaveCount(0);
   });
+
+  test("EN restaurant menu uses English section and item copy", async ({ page }) => {
+    await page.goto("/en/menu");
+
+    await expect(page.getByRole("heading", { name: "Breakfast" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Warm Starters & Appetizers" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Main Courses" })).toBeVisible();
+    await expect(page.getByText("Gourmet Village Breakfast")).toBeVisible();
+    await expect(page.getByText("A Kozbeyli Morning")).toBeVisible();
+    await expect(page.getByText("Kozbeyli'de Güne Başlamak")).toHaveCount(0);
+    await expect(page.getByText("Gurme Serpme Kahvaltı")).toHaveCount(0);
+    await expect(page.getByText("Akşam Yemeği Sonrası")).toHaveCount(0);
+  });
 });
 
 test.describe("Iletisim sayfasi", () => {
