@@ -41,6 +41,27 @@ test.describe("EN public localization", () => {
     await expect(main.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("href", "/en/rezervasyon");
   });
 
+  test("EN ana sayfa uppercase metinleri Ingilizce locale ile render eder", async ({ page }) => {
+    await page.goto("/en");
+    await page.waitForTimeout(1000);
+
+    const bodyText = await page.locator("body").evaluate((element) => {
+      return (element as HTMLElement).innerText;
+    });
+
+    expect(bodyText).toContain("500-YEAR STONE ARCHITECTURE");
+    expect(bodyText).toContain("DIBEK COFFEE RITUAL");
+    expect(bodyText).toContain("AEGEAN & ANTAKYA CUISINE");
+    expect(bodyText).not.toContain("ARCHİTECTURE");
+    expect(bodyText).not.toContain("DİBEK");
+    expect(bodyText).not.toContain("RİTUAL");
+    expect(bodyText).not.toContain("CUİSİNE");
+    expect(bodyText).not.toContain("VİLLAGE");
+    expect(bodyText).not.toContain("LİVİNG");
+    expect(bodyText).not.toContain("GUİDE");
+    expect(bodyText).not.toContain("EXPERİENCE");
+  });
+
   test("EN iletisim sayfasi Ingilizce destek metinleriyle acilir", async ({ page }) => {
     await page.goto("/en/iletisim");
 
