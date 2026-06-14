@@ -139,7 +139,7 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
           <p className="muted" style={{ fontSize: "0.92rem", marginBottom: 18 }}>
             {f.formText}
           </p>
-          <LeadForm />
+          <LeadForm locale={locale} />
         </div>
       </div>
     </div>

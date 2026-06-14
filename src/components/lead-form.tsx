@@ -14,7 +14,78 @@ type MarketingMeta = {
   referrer: string;
 };
 
-export function LeadForm() {
+type LeadFormLocale = "tr" | "en";
+
+const leadFormCopy = {
+  tr: {
+    successTitle: "Talebiniz Alındı",
+    successText: "Satış ekibimiz müsaitlik ve fiyat bilgisini kısa sürede paylaşacak. Teşekkür ederiz.",
+    newRequest: "Yeni Talep Gönder",
+    placeholders: {
+      name: "Tam Adınız",
+      phone: "Telefon Numaranız",
+      email: "E-posta Adresiniz",
+      eventDate: "Etkinlik Tarihi",
+      guestCount: "Tahmini Kişi Sayısı",
+      message: "Özel talepleriniz ve diğer notlar...",
+    },
+    budget: {
+      label: "Tahmini bütçe",
+      placeholder: "Tahmini Bütçe",
+      under100k: "100.000 TL altı",
+      from100kTo250k: "100.000 - 250.000 TL",
+      from250kTo500k: "250.000 - 500.000 TL",
+      over500k: "500.000 TL üzeri",
+    },
+    eventType: {
+      label: "Organizasyon tercihi",
+      placeholder: "Organizasyon Tercihi",
+      wedding: "Butik Düğün",
+      engagement: "Nişan / Söz",
+      corporate: "Kurumsal Etkinlik",
+      privateCelebration: "Özel Kutlama",
+    },
+    consent: "Kişisel verilerimin teklif ve bilgilendirme amacıyla işlenmesini kabul ediyorum.",
+    loading: "Gönderiliyor...",
+    submit: "Teklif Talebini Gönder",
+    error: "Talep gönderilemedi. Lütfen eksik/hatalı bilgileri kontrol edip tekrar deneyin.",
+  },
+  en: {
+    successTitle: "Request Received",
+    successText: "Our team will share availability and proposal details shortly. Thank you.",
+    newRequest: "Send Another Request",
+    placeholders: {
+      name: "Full Name",
+      phone: "Phone Number",
+      email: "Email Address",
+      eventDate: "Event Date",
+      guestCount: "Estimated Guest Count",
+      message: "Special requests and additional notes...",
+    },
+    budget: {
+      label: "Estimated budget",
+      placeholder: "Estimated Budget",
+      under100k: "Under 100,000 TL",
+      from100kTo250k: "100,000 - 250,000 TL",
+      from250kTo500k: "250,000 - 500,000 TL",
+      over500k: "Over 500,000 TL",
+    },
+    eventType: {
+      label: "Event preference",
+      placeholder: "Event Preference",
+      wedding: "Boutique Wedding",
+      engagement: "Engagement / Promise Ceremony",
+      corporate: "Corporate Event",
+      privateCelebration: "Private Celebration",
+    },
+    consent: "I consent to the processing of my personal data for proposal and information purposes.",
+    loading: "Sending...",
+    submit: "Send Proposal Request",
+    error: "The request could not be sent. Please check missing or incorrect details and try again.",
+  },
+} as const;
+
+export function LeadForm({ locale = "tr" }: { locale?: LeadFormLocale }) {
   const [status, setStatus] = useState<LeadStatus>('idle');
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [meta, setMeta] = useState<MarketingMeta>({
@@ -23,6 +94,7 @@ export function LeadForm() {
     utmCampaign: '',
     referrer: ''
   });
+  const t = leadFormCopy[locale];
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -89,9 +161,9 @@ export function LeadForm() {
   if (status === 'success') {
     return (
       <div className="feature-box" style={{ textAlign: 'center', padding: '40px' }}>
-        <h3 className="serif">Talebiniz Alındı</h3>
-        <p>Satış ekibimiz müsaitlik ve fiyat bilgisini kısa sürede paylaşacak. Teşekkür ederiz.</p>
-        <button className="button secondary" onClick={() => setStatus('idle')}>Yeni Talep Gönder</button>
+        <h3 className="serif">{t.successTitle}</h3>
+        <p>{t.successText}</p>
+        <button className="button secondary" onClick={() => setStatus('idle')}>{t.newRequest}</button>
       </div>
     );
   }
@@ -118,53 +190,53 @@ export function LeadForm() {
         <input name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <input name="name" placeholder="Tam Adınız" required style={getInputStyle("name")} />
+      <input name="name" placeholder={t.placeholders.name} required style={getInputStyle("name")} />
       {renderError("name")}
 
-      <input name="phone" placeholder="Telefon Numaranız" required style={getInputStyle("phone")} />
+      <input name="phone" placeholder={t.placeholders.phone} required style={getInputStyle("phone")} />
       {renderError("phone")}
 
-      <input name="email" placeholder="E-posta Adresiniz" type="email" style={getInputStyle("email")} />
+      <input name="email" placeholder={t.placeholders.email} type="email" style={getInputStyle("email")} />
       {renderError("email")}
 
-      <input name="eventDate" placeholder="Etkinlik Tarihi" style={getInputStyle("eventDate")} />
+      <input name="eventDate" placeholder={t.placeholders.eventDate} style={getInputStyle("eventDate")} />
       {renderError("eventDate")}
 
-      <input name="guestCount" type="number" min={1} placeholder="Tahmini Kişi Sayısı" style={getInputStyle("guestCount")} />
+      <input name="guestCount" type="number" min={1} placeholder={t.placeholders.guestCount} style={getInputStyle("guestCount")} />
       {renderError("guestCount")}
       
       <select
         name="estimatedBudget"
-        aria-label="Tahmini bütçe"
+        aria-label={t.budget.label}
         defaultValue=""
         style={getInputStyle("estimatedBudget")}
       >
-        <option value="" disabled>Tahmini Bütçe</option>
-        <option value="under-100k">100.000 TL altı</option>
-        <option value="100k-250k">100.000 - 250.000 TL</option>
-        <option value="250k-500k">250.000 - 500.000 TL</option>
-        <option value="over-500k">500.000 TL üzeri</option>
+        <option value="" disabled>{t.budget.placeholder}</option>
+        <option value="under-100k">{t.budget.under100k}</option>
+        <option value="100k-250k">{t.budget.from100kTo250k}</option>
+        <option value="250k-500k">{t.budget.from250kTo500k}</option>
+        <option value="over-500k">{t.budget.over500k}</option>
       </select>
       {renderError("estimatedBudget")}
 
       <select
         name="type"
-        aria-label="Organizasyon tercihi"
+        aria-label={t.eventType.label}
         required
         defaultValue=""
         style={getInputStyle("type")}
       >
-        <option value="" disabled>Organizasyon Tercihi</option>
-        <option value="dugun">Butik Düğün</option>
-        <option value="nisan">Nişan / Söz</option>
-        <option value="kurumsal">Kurumsal Etkinlik</option>
-        <option value="ozel-kutlama">Özel Kutlama</option>
+        <option value="" disabled>{t.eventType.placeholder}</option>
+        <option value="dugun">{t.eventType.wedding}</option>
+        <option value="nisan">{t.eventType.engagement}</option>
+        <option value="kurumsal">{t.eventType.corporate}</option>
+        <option value="ozel-kutlama">{t.eventType.privateCelebration}</option>
       </select>
       {renderError("type")}
 
       <textarea
         name="message"
-        placeholder="Özel talepleriniz ve diğer notlar..."
+        placeholder={t.placeholders.message}
         required
         style={getInputStyle("message")}
       />
@@ -172,7 +244,7 @@ export function LeadForm() {
 
       <label className="consent-row">
         <input type="checkbox" name="consent" required />
-        <span>Kişisel verilerimin teklif ve bilgilendirme amacıyla işlenmesini kabul ediyorum.</span>
+        <span>{t.consent}</span>
       </label>
       {renderError("consent")}
 
@@ -191,12 +263,12 @@ export function LeadForm() {
         style={{ width: '100%' }}
         disabled={status === 'loading'}
       >
-        {status === 'loading' ? 'Gönderiliyor...' : 'Teklif Talebini Gönder'}
+        {status === 'loading' ? t.loading : t.submit}
       </button>
       
       {status === 'error' && (
         <p style={{ color: '#c2410c', marginTop: '10px', fontSize: '0.9rem', fontWeight: 500 }}>
-          Talep gönderilemedi. Lütfen eksik/hatalı bilgileri kontrol edip tekrar deneyin.
+          {t.error}
         </p>
       )}
     </form>

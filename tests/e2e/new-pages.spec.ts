@@ -47,6 +47,20 @@ test.describe("EN public localization", () => {
     await expect(page.getByRole("heading", { name: "Contact the Mansion" })).toBeVisible();
     await expect(page.getByText("Konağa Ulaşın")).toHaveCount(0);
     await expect(page.getByRole("link", { name: "WhatsApp Support" })).toBeVisible();
+    await expect(page.getByPlaceholder("Full Name")).toBeVisible();
+    await expect(page.getByLabel("Estimated budget")).toBeVisible();
+    await expect(page.getByText("Tahmini Bütçe")).toHaveCount(0);
+    await expect(page.getByText("Butik Düğün")).toHaveCount(0);
+  });
+
+  test("EN organizasyon teklif formu Ingilizce kalir", async ({ page }) => {
+    await page.goto("/en/organizasyonlar#teklif");
+
+    await expect(page.getByRole("heading", { name: "Let Us Curate Your Event" })).toBeVisible();
+    await expect(page.getByPlaceholder("Full Name")).toBeVisible();
+    await expect(page.getByLabel("Event preference")).toBeVisible();
+    await expect(page.getByText("Organizasyon Tercihi")).toHaveCount(0);
+    await expect(page.getByText("Teklif Talebini Gönder")).toHaveCount(0);
   });
 });
 

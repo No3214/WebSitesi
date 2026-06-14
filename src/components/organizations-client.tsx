@@ -240,7 +240,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
                   title={t.lead.title}
                   text={t.lead.text}
                 />
-              <LeadForm />
+              <LeadForm locale={locale} />
             </div>
           </FadeIn>
         </div>
