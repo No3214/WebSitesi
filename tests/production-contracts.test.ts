@@ -200,6 +200,13 @@ describe("production readiness contracts", () => {
     expect(layout).not.toContain('display: "swap"');
   });
 
+  it("keeps TR language switching from /en on a deterministic navigation path", () => {
+    const switcher = read("src/components/language-switcher.tsx");
+
+    expect(switcher).toContain("window.location.assign(target)");
+    expect(switcher).toContain('const target = pathname.slice(3) || "/"');
+  });
+
   it("keeps Lighthouse CI as a realistic hard release budget", () => {
     const lighthouseConfig = JSON.parse(read("lighthouserc.json")) as {
       ci?: {

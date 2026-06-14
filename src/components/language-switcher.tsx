@@ -48,7 +48,8 @@ export function LanguageSwitcher() {
     }
 
     if (isEnPath(pathname)) {
-      router.push(pathname.slice(3) || "/");
+      const target = pathname.slice(3) || "/";
+      window.location.assign(target);
       return;
     }
 
