@@ -66,9 +66,9 @@ export default function EnglishMenuPage() {
           <FadeIn delay={0.6}>
             <div className="menu-cta">
               <h3 className="serif">Planning a Private Dinner?</h3>
-              <p>For celebrations and group dining, our concierge team can curate the evening with you.</p>
+              <p>For celebrations and group dining, our guest relations team can curate the evening with you.</p>
               <a href="/en/organizasyonlar#teklif" className="button primary">
-                CONTACT THE CONCIERGE
+                CONTACT GUEST RELATIONS
               </a>
             </div>
           </FadeIn>

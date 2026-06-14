@@ -59,7 +59,7 @@ export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBooki
           >
             {locale === "tr"
               ? "Hızlı Destek & Teyit için WhatsApp Destek"
-              : "WhatsApp Concierge for Fast Support"}
+              : "WhatsApp Support for Fast Confirmation"}
           </a>
         </div>
       </div>
@@ -82,7 +82,7 @@ export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBooki
           rel="noreferrer"
           data-event="whatsapp_click"
         >
-          {locale === "tr" ? "WhatsApp Destek" : "WhatsApp Concierge"}
+          {locale === "tr" ? "WhatsApp Destek" : "WhatsApp Support"}
         </a>
       </div>
     </div>

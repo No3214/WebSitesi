@@ -10,7 +10,7 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Curated Offers",
   description:
-    "Seasonal stay and event offers at Kozbeyli Konağı. Contact the concierge team for curated romantic escapes, family weekends and private event proposals.",
+    "Seasonal stay and event offers at Kozbeyli Konağı. Contact the guest relations team for curated romantic escapes, family weekends and private event proposals.",
   alternates: { canonical: "/en/teklifler" },
   openGraph: {
     url: absoluteUrl("/en/teklifler"),
@@ -56,7 +56,7 @@ export default function EnglishOffersPage() {
         <PageHero
           eyebrow="SEASONAL"
           title="Curated Offers from the Mansion"
-          text="Our seasonal stays and event proposals are shaped around availability, occasion and guest profile. The concierge team will help you choose the right experience."
+          text="Our seasonal stays and event proposals are shaped around availability, occasion and guest profile. The guest relations team will help you choose the right experience."
         />
 
         <section className="section">
@@ -75,7 +75,7 @@ export default function EnglishOffersPage() {
                 <p style={{ margin: 0, maxWidth: 640 }}>
                   Offers are updated seasonally and prepared for a limited room
                   inventory. For current availability and a personalised plan,
-                  contact the WhatsApp Concierge.
+                  contact WhatsApp Support.
                 </p>
                 <a
                   href={whatsappOffersHref}
@@ -84,7 +84,7 @@ export default function EnglishOffersPage() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  WhatsApp Concierge
+                  WhatsApp Support
                 </a>
               </div>
             </FadeIn>

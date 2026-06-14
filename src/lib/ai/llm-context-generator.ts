@@ -53,7 +53,7 @@ export const LLMContextGenerator = {
       })),
       conversion_hints: {
         direct_booking_perks: [
-          "Direct concierge availability check",
+          "Direct reservation availability check",
           "Room preference note",
           "Availability-based early check-in request"
         ],

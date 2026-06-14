@@ -17,6 +17,14 @@ const DEFAULT_LINKS: NavLink[] = [
   { href: "/deneyimler", label: "Deneyimler" },
   { href: "/iletisim", label: "İletişim" },
 ];
+const EN_LINKS: NavLink[] = [
+  { href: "/hikayemiz", label: "Our Story" },
+  { href: "/odalar", label: "Rooms" },
+  { href: "/gastronomi", label: "Dining" },
+  { href: "/organizasyonlar", label: "Events" },
+  { href: "/deneyimler", label: "Experiences" },
+  { href: "/iletisim", label: "Contact" },
+];
 
 function isEnPath(pathname: string): boolean {
   return pathname === "/en" || pathname.startsWith("/en/");
@@ -35,14 +43,20 @@ type SiteHeaderProps = {
 export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
   const pathname = usePathname();
   const englishPath = isEnPath(pathname || "/");
-  const [links, setLinks] = useState<NavLink[]>(DEFAULT_LINKS);
-  const [bookingLabel, setBookingLabel] = useState("Rezervasyon");
+  const [links, setLinks] = useState<NavLink[]>(englishPath ? EN_LINKS : DEFAULT_LINKS);
+  const [bookingLabel, setBookingLabel] = useState(englishPath ? "Booking" : "Rezervasyon");
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
-    if (locale === "tr") return; // TR varsayılanları zaten render edildi
+    const locale = englishPath || document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    if (locale === "tr") {
+      setLinks(DEFAULT_LINKS);
+      setBookingLabel("Rezervasyon");
+      return;
+    }
+    setLinks(EN_LINKS);
+    setBookingLabel("Booking");
     getDictionary(locale).then((dict) => {
       const nav = (dict?.Navigation ?? {}) as Record<string, string>;
       setLinks([
@@ -55,7 +69,7 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
       ]);
       setBookingLabel(nav.booking || "Book Now");
     });
-  }, []);
+  }, [englishPath]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);

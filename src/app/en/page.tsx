@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Page from "@/app/page";
+import { HomePageContent } from "@/app/page";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -15,4 +15,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default Page;
+export default function EnglishHomePage() {
+  return <HomePageContent locale="en" />;
+}

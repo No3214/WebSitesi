@@ -31,7 +31,7 @@ export const SPECIALIST_KNOWLEDGE = {
     expert: "Growth Architect (No3214 Prestige)",
     heritage: "Direct Booking Luxury",
     signature_tokens: [
-      "Direct concierge availability check",
+      "Direct reservation availability check",
       "Merchant Welcome Ritual",
       "Availability-based room preference note",
       "Foça transfer guidance",

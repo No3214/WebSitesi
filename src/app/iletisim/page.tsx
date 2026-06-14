@@ -8,6 +8,8 @@ import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { PHONE_E164 } from "@/lib/contact";
 import { absoluteUrl } from "@/lib/utils";
 
+type ContactLocale = "tr" | "en";
+
 export const metadata: Metadata = {
   title: "İletişim & Ulaşım Yol Tarifi",
   description:
@@ -18,9 +20,25 @@ export const metadata: Metadata = {
 
 const EMAIL = "info@kozbeylikonagi.com";
 
-export default async function ContactPage() {
-  const initialDict = await getDictionary("tr");
+const contactCopy = {
+  tr: {
+    eyebrow: "İLETİŞİM",
+    title: "Konağa Ulaşın",
+    text: "Telefon, WhatsApp destek ve yol tarifi — sorularınız için aynı gün dönüş yapıyoruz.",
+    url: "/iletisim",
+  },
+  en: {
+    eyebrow: "CONTACT",
+    title: "Contact the Mansion",
+    text: "Phone, WhatsApp support and directions — our team replies to guest questions the same day.",
+    url: "/en/iletisim",
+  },
+} as const;
+
+export async function ContactPageContent({ locale = "tr" }: { locale?: ContactLocale }) {
+  const initialDict = await getDictionary(locale);
   const { lat, lng } = KOZBEYLI_COORDS;
+  const copy = contactCopy[locale];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -36,7 +54,7 @@ export default async function ContactPage() {
       addressCountry: "TR",
     },
     geo: { "@type": "GeoCoordinates", latitude: lat, longitude: lng },
-    url: absoluteUrl("/iletisim"),
+    url: absoluteUrl(copy.url),
   };
 
   return (
@@ -44,13 +62,17 @@ export default async function ContactPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SiteHeader variant="overlay" />
       <PageHero
-        eyebrow="İLETİŞİM"
-        title="Konağa Ulaşın"
-        text="Telefon, WhatsApp destek ve yol tarifi — sorularınız için aynı gün dönüş yapıyoruz."
+        eyebrow={copy.eyebrow}
+        title={copy.title}
+        text={copy.text}
       />
       <main className="section" style={{ paddingTop: 56 }}>
-        <ContactClient initialDict={initialDict} initialLocale="tr" />
+        <ContactClient initialDict={initialDict} initialLocale={locale} />
       </main>
     </>
   );
+}
+
+export default async function ContactPage() {
+  return <ContactPageContent locale="tr" />;
 }

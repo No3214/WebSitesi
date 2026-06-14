@@ -73,9 +73,9 @@ async function waitForVisibleImages(page: import("@playwright/test").Page) {
               Number(style.opacity) !== 0
             );
           })
-          .every((image) => image.complete),
+          .every((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0),
       undefined,
-      { timeout: 10000 }
+      { timeout: 20000 }
     )
     .catch(() => {});
 }

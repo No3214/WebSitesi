@@ -25,9 +25,9 @@ export function SiteFooter() {
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
-    const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    const locale = englishPath || document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
     getDictionary(locale).then(setDict);
-  }, []);
+  }, [englishPath]);
 
   const t = dict?.Footer;
 
@@ -42,7 +42,9 @@ export function SiteFooter() {
             <h3 className="brand-serif">Kozbeyli Konağı</h3>
             <p className="brand-tagline">
               {t?.description ||
-                "Foça'nın kalbinde, 500 yıllık taş bir hikayenin zarafet ve konforla yeniden yorumlandığı rafine bir durak."}
+                (englishPath
+                  ? "A refined stop at the heart of Foça, where a 500-year-old story is reinterpreted with luxury and comfort."
+                  : "Foça'nın kalbinde, 500 yıllık taş bir hikayenin zarafet ve konforla yeniden yorumlandığı rafine bir durak.")}
             </p>
             <div className="social-links">
               <a
@@ -65,7 +67,7 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h4>{t?.explore || "Keşfedin"}</h4>
+            <h4>{t?.explore || (englishPath ? "Explore" : "Keşfedin")}</h4>
             <ul>
               <li><Link href={localizedHref("/hikayemiz", englishPath)}>{englishPath ? "Our Story" : "Hikayemiz"}</Link></li>
               <li><Link href={localizedHref("/odalar", englishPath)}>{englishPath ? "Rooms" : "Odalarımız"}</Link></li>
@@ -81,7 +83,7 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h4>{t?.legal || "Hukuki"}</h4>
+            <h4>{t?.legal || (englishPath ? "Legal" : "Hukuki")}</h4>
             <ul>
               <li><Link href="/kvkk">KVKK Aydınlatma Metni</Link></li>
               <li><Link href="/gizlilik-politikasi">Gizlilik Politikası</Link></li>
@@ -91,7 +93,7 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h4>{t?.contact || "İletişim"}</h4>
+            <h4>{t?.contact || (englishPath ? "Contact" : "İletişim")}</h4>
             <div className="contact-item">
               <MapPin size={17} aria-hidden />
               <a href={MAPS_URL} target="_blank" rel="noreferrer">

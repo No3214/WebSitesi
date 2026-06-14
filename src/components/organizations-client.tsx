@@ -81,7 +81,7 @@ const copy = {
     },
     requestCta: "REQUEST A PROPOSAL",
     lead: {
-      eyebrow: "CONCIERGE",
+      eyebrow: "GUEST RELATIONS",
       title: "Let Us Curate Your Event",
       text: "Share the occasion, guest profile and preferred rhythm; our team will prepare a tailored proposal for your celebration or gathering.",
     },

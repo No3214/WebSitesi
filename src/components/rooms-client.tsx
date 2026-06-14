@@ -68,7 +68,7 @@ export function RoomsClient() {
               <p style={{ color: "var(--muted)", marginBottom: 20 }}>
                 {locale === "tr"
                   ? "Hangi odanın size uygun olduğundan emin değil misiniz? Misafir ilişkileri ekibimiz yardımcı olsun."
-                  : "Not sure which room suits you best? Let our concierge team help."}
+                  : "Not sure which room suits you best? Let our guest relations team help."}
               </p>
               <Link href={locale === "en" ? "/en/rezervasyon" : "/rezervasyon"} className="button gold">
                 {locale === "tr" ? "Müsaitlik Sorgula" : "Check Availability"}

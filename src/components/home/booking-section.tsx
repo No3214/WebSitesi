@@ -18,7 +18,7 @@ export function BookingSection({ locale, eyebrow }: Props) {
             text={
               locale === "tr"
                 ? "Müsaitlik, oda tercihi ve güvenli ödeme adımı için talebinizi doğrudan rezervasyon ekibimize iletin."
-                : "Send your availability, room preference and secure payment request directly to our concierge team."
+                : "Send your availability, room preference and secure payment request directly to our reservation team."
             }
           />
           <WeatherRibbon />

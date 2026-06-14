@@ -6,6 +6,7 @@ import { FadeIn } from "@/components/animations";
 import { getWhatsAppHref } from "@/lib/contact";
 
 export function FinalCta({ locale }: { locale: "tr" | "en" }) {
+  const reservationHref = locale === "en" ? "/en/rezervasyon" : "/rezervasyon";
   const whatsappHref = getWhatsAppHref(
     locale === "tr"
       ? "Merhaba, Kozbeyli Konağı'nda konaklama planlıyorum. Yardımcı olur musunuz?"
@@ -26,7 +27,7 @@ export function FinalCta({ locale }: { locale: "tr" | "en" }) {
               : "History, gastronomy and Aegean serenity in a single courtyard. Reserve today and become part of the story."}
           </p>
           <div className="hero-actions" style={{ marginTop: 0 }}>
-            <Link href="/rezervasyon" className="button gold">
+            <Link href={reservationHref} className="button gold">
               {locale === "tr" ? "Rezervasyon Yap" : "Book Your Stay"}
             </Link>
             <a
@@ -36,7 +37,7 @@ export function FinalCta({ locale }: { locale: "tr" | "en" }) {
               className="button ghost-light"
               data-event="whatsapp_click"
             >
-              {locale === "tr" ? "WhatsApp Destek" : "WhatsApp Concierge"}
+              {locale === "tr" ? "WhatsApp Destek" : "WhatsApp Support"}
             </a>
           </div>
         </FadeIn>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { LeadForm } from "@/components/lead-form";
@@ -22,7 +23,7 @@ const FALLBACK = {
       "Düğün, organizasyon ve grup konaklama talepleri için formu doldurun; aynı gün dönüş yapalım.",
   },
   en: {
-    whatsapp: "WhatsApp Concierge",
+    whatsapp: "WhatsApp Support",
     whatsappMessage: "Hello, I am reaching out from the website.",
     addressLine: "Kozbeyli Village Küme Evler No:188, Foça / İzmir",
     addressNote: "~55 min to İzmir Adnan Menderes Airport, 15 min to Foça center.",
@@ -42,13 +43,18 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(initialDict ?? null);
   const [locale, setLocale] = useState<'tr' | 'en'>(initialLocale);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const currentLocale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    const currentLocale = pathname === "/en" || pathname?.startsWith("/en/")
+      ? "en"
+      : document.cookie.includes("NEXT_LOCALE=en")
+        ? "en"
+        : "tr";
     if (currentLocale === initialLocale && initialDict) return; // SSR sözlüğü zaten doğru
     setLocale(currentLocale as 'tr' | 'en');
     getDictionary(currentLocale as 'tr' | 'en').then(setDict);
-  }, [initialDict, initialLocale]);
+  }, [initialDict, initialLocale, pathname]);
 
   if (!dict) return <div className="loading-screen" />;
 

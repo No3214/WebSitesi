@@ -28,7 +28,7 @@
   },
   "FAQPage": {
     "title": "Your Questions, Answered",
-    "heroText": "We have gathered the questions most often asked when planning a stay. For any detail left unanswered, our concierge team is only a message away."
+    "heroText": "We have gathered the questions most often asked when planning a stay. For any detail left unanswered, our guest relations team is only a message away."
   },
   "GalleryPage": {
     "title": "A Journal of Stone and Light",
@@ -36,8 +36,8 @@
   },
   "OffersPage": {
     "title": "Offers from the Mansion",
-    "heroText": "Speak with our concierge team about stay and event packages thoughtfully curated for each season and special occasion; together we will plan the experience that suits you best.",
-    "whatsappCta": "WhatsApp Concierge"
+    "heroText": "Speak with our guest relations team about stay and event packages thoughtfully curated for each season and special occasion; together we will plan the experience that suits you best.",
+    "whatsappCta": "WhatsApp Support"
   },
   "ExperiencesHub": {
     "eyebrow": "DISCOVER",

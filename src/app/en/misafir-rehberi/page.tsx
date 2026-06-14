@@ -43,7 +43,7 @@ const guideItems = [
     icon: <MapPin className="w-6 h-6 text-gold" />,
     title: "Location & Transfers",
     content:
-      "We are in the heart of Kozbeyli Village, 12 km from Yeni Foça and 18 km from Eski Foça. Contact the concierge for transfer support.",
+      "We are in the heart of Kozbeyli Village, 12 km from Yeni Foça and 18 km from Eski Foça. Contact guest relations for transfer support.",
   },
   {
     icon: <ShieldCheck className="w-6 h-6 text-gold" />,
@@ -67,7 +67,7 @@ export default function EnglishGuestGuidePage() {
         <PageHero
           eyebrow="GUEST STANDARDS"
           title="Guest Guide"
-          text="Practical details for a calm stay at Kozbeyli Konağı. For anything more specific, the concierge team is close at hand."
+          text="Practical details for a calm stay at Kozbeyli Konağı. For anything more specific, the guest relations team is close at hand."
         />
 
         <section className="section py-24 bg-white">
@@ -97,7 +97,7 @@ export default function EnglishGuestGuidePage() {
             <FadeIn>
               <h2 className="serif text-3xl md:text-5xl mb-8">Need a Specific Answer?</h2>
               <p className="mb-10 max-w-xl mx-auto" style={{ color: "rgba(250,249,246,0.7)" }}>
-                The Kozbeyli Konağı concierge can help you refine arrival,
+                The Kozbeyli Konağı guest relations team can help you refine arrival,
                 dining and local experience details before your stay.
               </p>
               <a

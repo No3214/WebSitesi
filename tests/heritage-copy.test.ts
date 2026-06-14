@@ -20,6 +20,13 @@ const turkishPublicCopyFiles = [
   "src/app/sss/page.tsx",
   "src/app/api/swarm/route.ts",
 ];
+const publicConciergeCopyRoots = [
+  "src/app/en",
+  "src/components",
+  "src/dictionaries/en.json",
+  "src/lib/dictionary.ts",
+  "src/lib/ai",
+];
 const turkishConciergePatterns = [
   /Dijital\s*K[aâ]hya/i,
   /Doğrudan\s+Concierge/i,
@@ -29,6 +36,12 @@ const turkishConciergePatterns = [
   /concierge\s+ile/i,
   /concierge\s+akış/i,
   /concierge\s+onay/i,
+];
+const publicConciergePatterns = [
+  /Dijital\s*K[aâ]hya/i,
+  /\bWhatsApp\s+Concierge\b/i,
+  /\bDirect\s+Concierge\b/i,
+  /\bconcierge\b/i,
 ];
 
 function listTextFiles(dir: string): string[] {
@@ -41,6 +54,12 @@ function listTextFiles(dir: string): string[] {
       if (!/\.(ts|tsx|js|jsx|json|md|txt)$/i.test(entry.name)) return [];
       return fullPath;
     });
+}
+
+function listTextFilesFromRoot(root: string): string[] {
+  const absoluteRoot = path.join(process.cwd(), root);
+  const stat = fs.statSync(absoluteRoot);
+  return stat.isDirectory() ? listTextFiles(absoluteRoot) : [absoluteRoot];
 }
 
 describe("heritage copy consistency", () => {
@@ -73,6 +92,19 @@ describe("heritage copy consistency", () => {
     expect(offenders).toEqual([]);
   });
 
+  it("keeps public English booking copy free of concierge wording", () => {
+    const offenders = publicConciergeCopyRoots
+      .flatMap((root) => listTextFilesFromRoot(root))
+      .flatMap((file) => {
+        const content = fs.readFileSync(file, "utf8");
+        return publicConciergePatterns.some((pattern) => pattern.test(content))
+          ? [path.relative(process.cwd(), file)]
+          : [];
+      });
+
+    expect(offenders).toEqual([]);
+  });
+
   it("uses Turkish reservation support labels on mixed locale booking surfaces", () => {
     const dictionary = fs.readFileSync(path.join(process.cwd(), "src/lib/dictionary.ts"), "utf8");
     const bookingEmbed = fs.readFileSync(path.join(process.cwd(), "src/components/hms-booking-embed.tsx"), "utf8");
@@ -80,6 +112,7 @@ describe("heritage copy consistency", () => {
     expect(dictionary).toContain("bestPrice: 'Doğrudan Rezervasyon'");
     expect(dictionary).not.toContain("bestPrice: 'Doğrudan Concierge'");
     expect(bookingEmbed).toContain('locale === "tr" ? "WhatsApp Destek"');
+    expect(bookingEmbed).toContain("WhatsApp Support for Fast Confirmation");
     expect(bookingEmbed).not.toContain("Hızlı Destek & Teyit için WhatsApp Concierge");
   });
 });

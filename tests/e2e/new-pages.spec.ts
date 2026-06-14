@@ -29,6 +29,27 @@ test.describe("Rezervasyon sayfasi", () => {
   });
 });
 
+test.describe("EN public localization", () => {
+  test("EN ana sayfa ilk icerikte Ingilizce kalir ve CTA linkleri /en rotalarina gider", async ({ page }) => {
+    await page.goto("/en");
+
+    const main = page.locator("main");
+    await expect(page.getByRole("heading", { name: "In the Heart of History An Elegant Aegean Escape" })).toBeVisible();
+    await expect(main.getByText("Tarihin Kalbinde")).toHaveCount(0);
+    await expect(main.getByRole("link", { name: "Book Now" })).toHaveAttribute("href", "/en/rezervasyon");
+    await expect(main.getByRole("link", { name: "Plan an Event" })).toHaveAttribute("href", "/en/organizasyonlar");
+    await expect(main.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("href", "/en/rezervasyon");
+  });
+
+  test("EN iletisim sayfasi Ingilizce destek metinleriyle acilir", async ({ page }) => {
+    await page.goto("/en/iletisim");
+
+    await expect(page.getByRole("heading", { name: "Contact the Mansion" })).toBeVisible();
+    await expect(page.getByText("Konağa Ulaşın")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "WhatsApp Support" })).toBeVisible();
+  });
+});
+
 test.describe("Iletisim sayfasi", () => {
   test("baslik, header ve footer render olur", async ({ page }) => {
     await page.goto("/iletisim");

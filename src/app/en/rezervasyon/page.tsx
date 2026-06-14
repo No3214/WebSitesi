@@ -5,13 +5,13 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Reservation",
   description:
-    "Send a direct concierge request for your stone room stay at Kozbeyli Konağı; availability, room preferences and secure payment steps are confirmed by our team.",
+    "Send a direct reservation request for your stone room stay at Kozbeyli Konağı; availability, room preferences and secure payment steps are confirmed by our team.",
   alternates: { canonical: "/en/rezervasyon" },
   openGraph: {
     url: absoluteUrl("/en/rezervasyon"),
     title: "Reservation | Kozbeyli Konağı",
     description:
-      "Direct concierge support for availability, room preferences and secure payment confirmation.",
+      "Direct reservation support for availability, room preferences and secure payment confirmation.",
   },
 };
 

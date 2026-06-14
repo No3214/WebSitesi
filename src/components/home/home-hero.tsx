@@ -127,6 +127,8 @@ export function HomeHero({ locale, eyebrow }: Props) {
     locale === "tr"
       ? ["Tarihin Kalbinde", "Zarif Bir Ege Kaçamağı"]
       : ["In the Heart of History", "An Elegant Aegean Escape"];
+  const reservationHref = locale === "en" ? "/en/rezervasyon" : "/rezervasyon";
+  const eventsHref = locale === "en" ? "/en/organizasyonlar" : "/organizasyonlar";
 
   return (
     <section className="hero grain">
@@ -173,10 +175,10 @@ export function HomeHero({ locale, eyebrow }: Props) {
         </p>
 
         <div className="hero-actions">
-          <Link href="/rezervasyon" className="button gold">
+          <Link href={reservationHref} className="button gold">
             {locale === "tr" ? "Hemen Rezervasyon" : "Book Now"}
           </Link>
-          <Link href="/organizasyonlar" className="button ghost-light">
+          <Link href={eventsHref} className="button ghost-light">
             {locale === "tr" ? "Davet & Etkinlik Planla" : "Plan an Event"}
           </Link>
         </div>

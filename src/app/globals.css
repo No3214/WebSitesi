@@ -28,7 +28,8 @@
   --olive: #3d4a3b;
   --olive-deep: #2c3729;
   --gold: #b3925c;
-  --gold-text: #765522;
+  /* a11y: remains AA even while fade-in opacity is still settling on light cards. */
+  --gold-text: #6e4b18;
   --gold-soft: #cfb389;
   --ivory: #faf9f6;
   --soft: #f0ede6;

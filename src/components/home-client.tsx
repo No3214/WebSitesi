@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 import { SiteHeader } from "@/components/site-header";
 import { getDictionary } from "@/lib/dictionary";
@@ -57,13 +58,18 @@ export function HomeClient({ initialDict, initialLocale = "tr" }: HomeClientProp
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(initialDict ?? null);
   const [locale, setLocale] = useState<"tr" | "en">(initialLocale);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const currentLocale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    const currentLocale = pathname === "/en" || pathname?.startsWith("/en/")
+      ? "en"
+      : document.cookie.includes("NEXT_LOCALE=en")
+        ? "en"
+        : "tr";
     if (currentLocale === initialLocale && initialDict) return; // SSR sözlüğü zaten doğru
     setLocale(currentLocale as "tr" | "en");
     getDictionary(currentLocale as "tr" | "en").then(setDict);
-  }, [initialDict, initialLocale]);
+  }, [initialDict, initialLocale, pathname]);
 
   if (!dict) return <div className="loading-screen" />;
 

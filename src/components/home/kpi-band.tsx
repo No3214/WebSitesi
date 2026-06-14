@@ -24,7 +24,7 @@ export function KpiBand({ locale }: { locale: "tr" | "en" }) {
               <strong>
                 <Counter to={24} suffix={locale === "tr" ? " Saat" : " Hrs"} />
               </strong>
-              <span>{locale === "tr" ? "Concierge Geri Dönüş" : "Concierge Response"}</span>
+              <span>{locale === "tr" ? "Destek Geri Dönüş" : "Support Response"}</span>
             </div>
           </div>
         </FadeIn>
