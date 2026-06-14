@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -17,11 +17,12 @@ export function RoomDetailClient({ slug }: { slug: string }) {
   const [dict, setDict] = useState<any>(null);
   const [activeImg, setActiveImg] = useState(0);
   const room = fallbackRooms.find((item) => item.slug === slug);
+  const pathname = usePathname();
 
   useEffect(() => {
-    const locale = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    const locale = pathname === "/en" || Boolean(pathname?.startsWith("/en/")) ? "en" : "tr";
     getDictionary(locale).then(setDict);
-  }, []);
+  }, [pathname]);
 
   if (!room) notFound();
   if (!dict) return <div className="loading-screen" />;

@@ -84,7 +84,7 @@ export function CookieConsent() {
   const [locale, setLocale] = useState<ConsentLocale>(isEnglishPath(pathname) ? "en" : "tr");
 
   useEffect(() => {
-    setLocale(isEnglishPath(pathname) || document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr");
+    setLocale(isEnglishPath(pathname) ? "en" : "tr");
   }, [pathname]);
 
   const copy = consentCopy[locale];

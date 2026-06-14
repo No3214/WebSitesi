@@ -48,9 +48,7 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
   useEffect(() => {
     const currentLocale = pathname === "/en" || pathname?.startsWith("/en/")
       ? "en"
-      : document.cookie.includes("NEXT_LOCALE=en")
-        ? "en"
-        : "tr";
+      : "tr";
     if (currentLocale === initialLocale && initialDict) return; // SSR sözlüğü zaten doğru
     setLocale(currentLocale as 'tr' | 'en');
     getDictionary(currentLocale as 'tr' | 'en').then(setDict);

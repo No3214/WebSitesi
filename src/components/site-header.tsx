@@ -49,7 +49,7 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const locale = englishPath || document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    const locale = englishPath ? "en" : "tr";
     if (locale === "tr") {
       setLinks(DEFAULT_LINKS);
       setBookingLabel("Rezervasyon");

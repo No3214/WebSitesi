@@ -170,6 +170,38 @@ test.describe("EN public localization", () => {
   });
 });
 
+test.describe("Locale route precedence", () => {
+  test("TR rotalar stale EN cookie varken de Turkce chrome ve sayfa metni kullanir", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => {
+      document.cookie = "NEXT_LOCALE=en; path=/; max-age=31536000";
+    });
+
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Tarihin Kalbinde Zarif Bir Ege Kaçamağı" })).toBeVisible();
+    await expect(page.getByText("In the Heart of History")).toHaveCount(0);
+
+    await page.goto("/odalar");
+    await expect(page.getByRole("heading", { name: "Rafine Oda ve Süitler" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Müsaitlik Sorgula" })).toHaveAttribute("href", "/rezervasyon");
+    await expect(page.locator("header.site-header").getByRole("link", { name: "Rezervasyon" })).toHaveAttribute(
+      "href",
+      "/rezervasyon",
+    );
+    await expect(page.locator("footer.footer").getByText("Tüm hakları saklıdır.")).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Çerez tercihleri" })).toBeVisible();
+    await expect(page.getByText("Refined Rooms & Suites")).toHaveCount(0);
+    await expect(page.getByText("Cookie preferences")).toHaveCount(0);
+
+    await page.goto("/iletisim");
+    await expect(page.getByRole("heading", { name: "Konağa Ulaşın" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "WhatsApp Destek" })).toBeVisible();
+    await expect(page.getByLabel("Tahmini bütçe")).toBeVisible();
+    await expect(page.getByText("WhatsApp Support")).toHaveCount(0);
+    await expect(page.getByLabel("Estimated budget")).toHaveCount(0);
+  });
+});
+
 test.describe("Iletisim sayfasi", () => {
   test("baslik, header ve footer render olur", async ({ page }) => {
     await page.goto("/iletisim");

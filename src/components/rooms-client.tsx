@@ -5,6 +5,7 @@ import Link from "next/link";
 import { rooms as fallbackRooms } from "@/data/rooms";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { getDictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
 import { PageHero } from "@/components/page-hero";
@@ -13,12 +14,13 @@ export function RoomsClient() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
   const [locale, setLocale] = useState<"tr" | "en">("tr");
+  const pathname = usePathname();
 
   useEffect(() => {
-    const current = document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    const current = pathname === "/en" || Boolean(pathname?.startsWith("/en/")) ? "en" : "tr";
     setLocale(current);
     getDictionary(current).then(setDict);
-  }, []);
+  }, [pathname]);
 
   if (!dict) return <div className="loading-screen" />;
 

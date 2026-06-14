@@ -40,7 +40,7 @@ export function SiteFooter() {
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
-    const locale = englishPath || document.cookie.includes("NEXT_LOCALE=en") ? "en" : "tr";
+    const locale = englishPath ? "en" : "tr";
     getDictionary(locale).then(setDict);
   }, [englishPath]);
 
