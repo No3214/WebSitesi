@@ -67,6 +67,8 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
       "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/launch-smoke.mjs",
     );
+    expect(readinessScript).toContain('"src/app/api/health/route.ts"');
+    expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
   });
@@ -105,6 +107,7 @@ describe("production readiness contracts", () => {
     const launchSmokeScript = read("scripts/launch-smoke.mjs");
 
     expect(launchSmokeScript).toContain("tests/e2e/publish-routes.spec.ts");
+    expect(launchSmokeScript).toContain("tests/e2e/health.spec.ts");
     expect(launchSmokeScript).toContain("tests/e2e/hero-video.spec.ts");
     expect(launchSmokeScript).toContain("tests/e2e/contact-location.spec.ts");
     expect(launchSmokeScript).toContain("tests/e2e/media-assets.spec.ts");
@@ -112,6 +115,18 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("npm i -g vercel");
     expect(launchSmokeScript).toContain(".next/BUILD_ID");
     expect(launchSmokeScript).toContain("node_modules/@playwright/test/cli.js");
+  });
+
+  it("keeps the health endpoint safe for uptime monitors", () => {
+    const healthRoute = read("src/app/api/health/route.ts");
+
+    expect(healthRoute).toContain('status: "ok"');
+    expect(healthRoute).toContain('service: "kozbeyli-konagi"');
+    expect(healthRoute).toContain('"Cache-Control": "no-store, max-age=0"');
+    expect(healthRoute).not.toContain("DATABASE_URI");
+    expect(healthRoute).not.toContain("PAYLOAD_SECRET");
+    expect(healthRoute).not.toContain("GARANTI_3D_STORE_KEY");
+    expect(healthRoute).not.toContain("GA4_API_SECRET");
   });
 
   it("keeps server env helpers out of client components", () => {

@@ -13,9 +13,11 @@ const requiredFiles = [
   "docs/publish-target.md",
   "lighthouserc.json",
   "next.config.ts",
+  "src/app/api/health/route.ts",
   "src/app/robots.ts",
   "src/app/sitemap.ts",
   "src/app/manifest.ts",
+  "tests/e2e/health.spec.ts",
   "tests/e2e/publish-routes.spec.ts",
 ];
 

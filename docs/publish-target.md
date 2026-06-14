@@ -97,6 +97,8 @@ Aşağıdakilerin tamamı sağlanırsa site marketing yayınına çıkarılabili
   fallback gösterir.
 - `/robots.txt`, `/sitemap.xml`, `/llms.txt`, canonical ve hreflang çıktıları
   yayında erişilebilir.
+- `/api/health` 200 JSON döner, `Cache-Control: no-store` taşır ve secret/env
+  değeri sızdırmaz.
 
 ### Booking & Payment NO-GO
 
@@ -111,7 +113,7 @@ Aşağıdakiler tamamlanmadan "tam ticari yayın" yok:
 
 ## Yayın Sonrası 30 Dakika Kontrolü
 
-1. Ana sayfa, `/rezervasyon`, `/odalar`, `/en`, `/sitemap.xml`, `/robots.txt`.
+1. Ana sayfa, `/rezervasyon`, `/odalar`, `/en`, `/sitemap.xml`, `/robots.txt`, `/api/health`.
 2. WhatsApp fallback linki.
 3. Lead formu consent doğrulaması.
 4. Admin giriş ekranı ve `/admin/growth` oturum guard.

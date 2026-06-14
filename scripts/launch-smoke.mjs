@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 const liveTarget = process.env.PW_BASE_URL;
 const playwrightSpecs = [
   "tests/e2e/publish-routes.spec.ts",
+  "tests/e2e/health.spec.ts",
   "tests/e2e/hero-video.spec.ts",
   "tests/e2e/contact-location.spec.ts",
   "tests/e2e/media-assets.spec.ts",

@@ -99,7 +99,7 @@ npx playwright test              # E2E testler (lokal sunucuya karşı)
 npm run test:stress              # Canlı prod'u yormadan lokal monkey/chaos paketi
 npm run launch:audit             # Booking/payment 100/100 için kalan kanıtları listeler
 npm run launch:audit:json        # CI/ajanlar için structured launch audit çıktısı
-npm run launch:smoke             # Public rota, hero video, konum ve medya smoke
+npm run launch:smoke             # Public rota, health, hero video, konum ve medya smoke
 npm run launch:smoke:live        # https://kozbeyli-konagi.vercel.app üzerinde aynı smoke
 
 # Canlı/staging ortamına karşı e2e koşmak için:
@@ -205,7 +205,10 @@ public/              # Statik varlıklar (görseller, fontlar)
 | `/kvkk`, `/gizlilik-politikasi`, `/mesafeli-satis-sozlesmesi` | Yasal sayfalar |
 | `/admin` | Payload CMS yönetim paneli |
 
-API uç noktaları: `/api/local-pulse`, `/api/lead`, `/api/llm-context`, `/api/webhook/hotelrunner`, `/llms.txt`.
+API uç noktaları: `/api/health`, `/api/local-pulse`, `/api/lead`, `/api/llm-context`, `/api/webhook/hotelrunner`, `/llms.txt`.
+
+`/api/health` uptime monitorleri için cache'siz JSON döner; secret, ödeme anahtarı
+veya private env değeri yayınlamaz.
 
 ## Demo / Mock Yüzeyler (ÖNEMLİ)
 
@@ -244,4 +247,4 @@ Yayında kritik hata görülürse sıralama:
    tam rollback'ten daha az yıkıcı bir ilk müdahaledir.
 
 Rollback sonrası: `docs/launch-readiness.md` go-live protokolündeki smoke adımlarını
-(ana sayfa, /rezervasyon, /api/health varsa) tekrar koşun.
+(ana sayfa, `/rezervasyon`, `/api/health`) tekrar koşun.

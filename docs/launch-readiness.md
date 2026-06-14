@@ -28,6 +28,9 @@ legal/DPA kanıtları tamamlanmadan bilinçli olarak fail verir.
 run launch:smoke:live` ile tek komutta çalışır; public rotalar, hero video,
 iletişim koordinatı, organizasyon medyası ve görünür medya kırıkları aynı kapıda
 denetlenir.
+2026-06-14 monitoring güncellemesi: Uptime/rollback monitor yüzeyi olarak
+`/api/health` eklendi; cache'siz JSON döner ve secret/private env değeri
+yayınlamaz.
 
 ## 2. Current Score (rev. 2026-06-13)
 
@@ -64,7 +67,7 @@ denetlenir.
 - `npm audit --omit=dev --audit-level=high` — PASS, 0 vulnerabilities.
 - `npm run publish:verify` — PASS: quality + 115 publish Playwright tests (113 passed / 2 skipped) + publish target inventory.
 - `npm run publish:verify` — PASS (2026-06-14): quality + 121 publish Playwright tests (119 passed / 2 skipped) + publish target inventory.
-- `npm run launch:smoke:live` — PASS (2026-06-14): canlı Vercel URL üzerinde public rota, hero video, iletişim konumu ve medya smoke.
+- `npm run launch:smoke:live` — PASS (2026-06-14): canlı Vercel URL üzerinde public rota, `/api/health`, hero video, iletişim konumu ve medya smoke.
 - `npx playwright test tests/smoke.spec.ts tests/security.spec.ts tests/e2e/checkout-contract.spec.ts --reporter=line` — PASS, 17 passed / 2 skipped.
 - `npx playwright test tests/monkey.spec.ts tests/destructive-chaos.spec.ts` — PASS, 3/3.
 - Local production preview: `http://127.0.0.1:3010`.
@@ -82,6 +85,7 @@ denetlenir.
 - Teknik SEO: `src/app/sitemap.ts`, `robots.ts`, `manifest.ts`, her sayfada canonical (`src/lib/metadata.ts`), GEO için `llms.txt` route'u
 - Performans temeli: hero `priority + fetchPriority="high"` (`home/home-hero.tsx`), next/image, font optimizasyonu
 - QA: GitHub Actions CI (lint+typecheck+unit+e2e+build), publish Playwright kümesi ve monkey/chaos yeşil (checkout kontrat testleri: origin 403, bozuk gövde 400, fiyat tamper 400 dahil)
+- Uptime monitor: `/api/health` cache'siz JSON döner; deploy ortamı/commit kısa bilgisi dışında secret yayınlamaz
 - KVKK sayfaları: `/kvkk`, `/gizlilik-politikasi`, `/mesafeli-satis-sozlesmesi`
 - Mobil: 375px yatay taşma giderildi (FAQ ikon rotate bounding fix)
 
