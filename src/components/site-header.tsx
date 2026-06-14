@@ -101,7 +101,7 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
 
   return (
     <>
-      <header className={headerClass}>
+      <header className={headerClass} lang={englishPath ? "en" : "tr"}>
         <div className="container header-inner">
           <Link
             href={localizedHref("/", englishPath)}
@@ -160,7 +160,7 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
       </header>
 
       {menuOpen && (
-        <div id="mobile-menu" className="mobile-menu">
+        <div id="mobile-menu" className="mobile-menu" lang={englishPath ? "en" : "tr"}>
           <nav aria-label={englishPath ? "Mobile menu" : "Mobil menü"}>
             {links.map((link, i) => (
               <div key={link.href}>

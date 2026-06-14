@@ -118,6 +118,14 @@ test.describe("EN public localization", () => {
   test("EN restaurant menu uses English section and item copy", async ({ page }) => {
     await page.goto("/en/menu");
 
+    const headerText = await page.locator("header.site-header").evaluate((element) => {
+      return (element as HTMLElement).innerText;
+    });
+
+    expect(headerText).toContain("BOOKING");
+    expect(headerText).toContain("EXPERIENCES");
+    expect(headerText).not.toContain("BOOKİNG");
+    expect(headerText).not.toContain("EXPERİENCES");
     await expect(page.getByRole("heading", { name: "Breakfast" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Warm Starters & Appetizers" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Main Courses" })).toBeVisible();
@@ -126,6 +134,18 @@ test.describe("EN public localization", () => {
     await expect(page.getByText("Kozbeyli'de Güne Başlamak")).toHaveCount(0);
     await expect(page.getByText("Gurme Serpme Kahvaltı")).toHaveCount(0);
     await expect(page.getByText("Akşam Yemeği Sonrası")).toHaveCount(0);
+  });
+
+  test("EN mobile conversion bar uses English uppercase casing", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/en/menu");
+
+    const mobileActionText = await page.getByTestId("mobile-action-bar").evaluate((element) => {
+      return (element as HTMLElement).innerText;
+    });
+
+    expect(mobileActionText).toContain("BOOKING");
+    expect(mobileActionText).not.toContain("BOOKİNG");
   });
 });
 

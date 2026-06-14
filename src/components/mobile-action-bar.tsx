@@ -30,6 +30,8 @@ export const MobileActionBar = () => {
   return (
     <div
       className="fixed bottom-0 left-0 right-0 z-[90] md:hidden"
+      data-testid="mobile-action-bar"
+      lang={englishPath ? "en" : "tr"}
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="bg-white/85 backdrop-blur-xl border-t border-zinc-200 px-6 py-3 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.06)]">
