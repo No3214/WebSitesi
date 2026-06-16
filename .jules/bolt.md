@@ -1,0 +1,3 @@
+## 2026-06-16 - Removed Unnecessary Client-Side Dictionary Fetch
+**Learning:** The `RoomDetailClient` component was fetching the i18n dictionary on mount via `useEffect`, which forced an artificial loading state and delayed LCP. The dictionary data (`dict`) wasn't actually used within the component since the content is statically defined or passed via the `room` data.
+**Action:** Always verify if fetched data is actually consumed in the component before implementing blocking loading states. Client-side fetches for static resources should be replaced with SSR props or removed entirely if unused.
