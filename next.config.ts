@@ -12,9 +12,10 @@ import type { NextConfig } from "next";
 // "frame-src https: blob:" allows the HMS booking engine iframe (domain not
 // yet known) and the www.openstreetmap.org embed without further config changes.
 const csp = [
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://challenges.cloudflare.com https://*.posthog.com",
-  "connect-src 'self' https://*.posthog.com https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://connect.facebook.net https://www.facebook.com https://challenges.cloudflare.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://challenges.cloudflare.com https://*.posthog.com https://app.hms.gen.tr",
+  "connect-src 'self' https://*.posthog.com https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://connect.facebook.net https://www.facebook.com https://challenges.cloudflare.com https://app.hms.gen.tr https://kozbeyli-konagi.hmshotel.net",
   "img-src 'self' data: blob: https:",
+  "media-src 'self' blob:",
   "frame-src https: blob:",
   "frame-ancestors 'self'",
 ].join("; ");

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 import { PaymentWizard } from "./payment-wizard";
+import { HMSFullScriptEmbed } from "./hms-full-script-embed";
 
 import { getWhatsAppHref } from "@/lib/contact";
 import { trackBeginCheckout } from "@/lib/gtm";
@@ -32,6 +33,7 @@ type HMSBookingEmbedProps = {
 
 export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBookingEmbedProps) {
   const bookingUrl = publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL;
+  const scriptUrl = publicEnv.NEXT_PUBLIC_HMS_SCRIPT_URL;
 
   // GA4 begin_checkout: rezervasyon arayüzü (engine veya talep sihirbazı)
   // misafirin önüne geldiği anda huni başlangıcı sayılır.
@@ -44,6 +46,11 @@ export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBooki
       : `Hello, I would like to check availability for ${roomLabel}.`
     : WHATSAPP_MESSAGE[locale];
   const whatsappHref = getWhatsAppHref(whatsappMessage);
+
+  // Oncelik: HMS script (iFrame TAM) > iframe URL > talep sihirbazi fallback
+  if (scriptUrl) {
+    return <HMSFullScriptEmbed locale={locale} />;
+  }
 
   if (!bookingUrl) {
     return (
