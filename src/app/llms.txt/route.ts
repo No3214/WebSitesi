@@ -7,7 +7,7 @@ export async function GET() {
 - **Ad / Marka**: Kozbeyli Konağı Taş Otel & Restoran
 - **Tür**: Butik taş otel, restoran, düğün & etkinlik mekânı
 - **Konum**: Kozbeyli Köyü Küme Evler No:188, Foça, İzmir, Türkiye
-- **Foça'ya uzaklık**: ~12 dakika; İzmir Adnan Menderes Havalimanı'na ~1 saat
+- **Ulaşım / mesafeler**: Yeni Foça Limanı ~7 km (~10 dk); antik Foça (Phokaia) tarihi merkez ~20 km (~20 dk); İzmir Adnan Menderes Havalimanı ~82 km (~1 saat)
 - **Telefon / WhatsApp**: +90 532 234 26 86
 - **E-posta**: info@kozbeylikonagi.com
 - **Rezervasyon**: Web sitesindeki online rezervasyon motoru (HMS) üzerinden komisyonsuz doğrudan rezervasyon
@@ -27,7 +27,7 @@ Kozbeyli Konağı mutfağı, Ege'nin taze ürünlerini Antakya'nın derin bahara
 Doğrudan rezervasyonlar otelin web sitesindeki güvenli online rezervasyon motoru (HMS) üzerinden gerçekleştirilebilir. Kozbeyli Köyü Küme Evler No:188, Foça, İzmir adresinde bulunan tesise +90 532 234 26 86 numaralı telefondan veya aynı numara üzerinden WhatsApp aracılığıyla ulaşılabilir. Özel düğünler, nişan törenleri ve kurumsal toplantılar için 200 kişilik açık hava kapasitesi mevcuttur.
 
 ## Yakın Çevre ve Ulaşım
-Kozbeyli Konağı, antik kent Foça'ya yaklaşık 12 dakika mesafededir; İzmir şehir merkezi ve Adnan Menderes Havalimanı'na yaklaşık 1 saat uzaklıktadır. Tesis; Foça plajları, antik Foça (Phokaia) kalıntıları, Yeni Foça ve Ege kıyı rotaları için sakin bir taş köy üssü sunar. Doğa yürüyüşü, zeytin bahçeleri ve köy dokusunu deneyimlemek isteyen çiftler, aileler ve etkinlik planlayıcıları için uygundur.
+Kozbeyli Konağı, sakin bir taş köy üssü olarak Ege kıyı rotalarına yakındır. Yaklaşık mesafeler: Yeni Foça Limanı ~7 km, antik Foça (Phokaia) tarihi merkez ~20 km, Beş Kapılar Kalesi ~20 km, Kybele Tapınağı ~20 km, Şeytan Hamamı ~18 km, İzmir Adnan Menderes Havalimanı ~82 km (yaklaşık 1 saat). Tesis; Foça plajları, antik kalıntılar, Yeni Foça ve doğa yürüyüşü rotaları için ideal bir başlangıç noktasıdır. Zeytin bahçeleri ve köy dokusunu deneyimlemek isteyen çiftler, aileler ve etkinlik planlayıcıları için uygundur.
 
 ## Sık Sorulan Sorular (SSS)
 **Kozbeyli Konağı nerede?** İzmir Foça'ya bağlı tarihi Kozbeyli Köyü'nde (Küme Evler No:188) yer alır; Foça'ya ~12 dakika.
