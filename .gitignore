@@ -27,3 +27,7 @@ memory/
 scratch/
 
 tsconfig.tsbuildinfo
+
+# gecici dogrulama scripti
+gate.ps1
+gate-w6.log
