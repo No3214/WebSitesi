@@ -147,8 +147,10 @@ describe("production readiness contracts", () => {
   it("keeps homepage hero video deferred behind the LCP poster", () => {
     const homeHero = read("src/components/home/home-hero.tsx");
 
-    expect(homeHero).toContain('preload="none"');
-    expect(homeHero).toContain("HERO_VIDEO_IDLE_DELAY_MS = 7600");
+    // LCP guvenligi: poster priority eleman; video metadata preload + gecikmeli
+    // fade-in (auto degil). Onceki 7600ms/none cok pasifti — video hic gorunmuyordu.
+    expect(homeHero).toContain('preload="metadata"');
+    expect(homeHero).toContain("HERO_VIDEO_IDLE_DELAY_MS = 1500");
     expect(homeHero).toContain("requestIdleCallback");
     expect(homeHero).toContain("setShouldRender(true)");
     expect(homeHero).toContain('fetchPriority="high"');

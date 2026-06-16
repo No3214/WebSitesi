@@ -37,11 +37,6 @@ export function HMSFullScriptEmbed({ locale = "tr", scriptUrl }: Props) {
     script.src = url;
     script.async = true;
     script.dataset.hmsEmbed = url;
-    script.onload = () => {
-      if (process.env.NODE_ENV !== "production") {
-        console.info("hms_script_loaded", url);
-      }
-    };
     script.onerror = () => {
       console.warn("hms_script_error", url);
       setFailed(true);
