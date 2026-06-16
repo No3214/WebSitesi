@@ -72,6 +72,17 @@ const copy = {
         },
       ],
     },
+    gallery: {
+      eyebrow: "GERÇEK DÜĞÜNLER",
+      title: "Konakta Yaşanan Anlardan",
+      text: "Taş avlu, çiçek kürasyonu ve Ege ışığında gerçekleşen davetlerden kareler.",
+      items: [
+        { src: "/images/organizasyonlar/dugun/dugun-2.jpg", alt: "Kozbeyli Konağı avlusunda çiçek kemeri ve karşılama panosu" },
+        { src: "/images/organizasyonlar/dugun/dugun-4.jpg", alt: "Gelin buketi, pasta ve Ege manzarası" },
+        { src: "/images/organizasyonlar/dugun/dugun-3.jpg", alt: "Düğünde elde dövülen Türk kahvesi servisi" },
+        { src: "/images/organizasyonlar/dugun/dugun-1.jpg", alt: "Taş avluda hazırlanan düğün masası ve davetiye detayı" },
+      ],
+    },
   },
   en: {
     hero: {
@@ -135,6 +146,17 @@ const copy = {
         },
       ],
     },
+    gallery: {
+      eyebrow: "REAL WEDDINGS",
+      title: "Moments Lived at the Mansion",
+      text: "Frames from celebrations held in the stone courtyard, among floral curation and the Aegean light.",
+      items: [
+        { src: "/images/organizasyonlar/dugun/dugun-2.jpg", alt: "Floral arch and welcome sign in the Kozbeyli Konağı courtyard" },
+        { src: "/images/organizasyonlar/dugun/dugun-4.jpg", alt: "Bridal bouquet, cake and Aegean view" },
+        { src: "/images/organizasyonlar/dugun/dugun-3.jpg", alt: "Hand-poured Turkish coffee served at the wedding" },
+        { src: "/images/organizasyonlar/dugun/dugun-1.jpg", alt: "Wedding table setting and invitation detail in the stone courtyard" },
+      ],
+    },
   },
 } satisfies Record<
   Locale,
@@ -151,6 +173,12 @@ const copy = {
       mediaAlt: string;
       detailMediaAlt: string;
       items: { title: string; description: string }[];
+    };
+    gallery: {
+      eyebrow: string;
+      title: string;
+      text: string;
+      items: { src: string; alt: string }[];
     };
   }
 >;
@@ -229,6 +257,28 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
                     </article>
                   ))}
                 </div>
+              </div>
+            </section>
+          </FadeIn>
+
+          <FadeIn delay={0.35}>
+            <section className="wedding-gallery" aria-labelledby="wedding-gallery-title">
+              <span className="eyebrow">{t.gallery.eyebrow}</span>
+              <h2 id="wedding-gallery-title" className="serif">{t.gallery.title}</h2>
+              <p>{t.gallery.text}</p>
+              <div className="wedding-gallery-grid">
+                {t.gallery.items.map((shot, index) => (
+                  <figure key={shot.src} className="wedding-gallery-item">
+                    <Image
+                      src={shot.src}
+                      alt={shot.alt}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      loading={index === 0 ? "eager" : "lazy"}
+                    />
+                  </figure>
+                ))}
               </div>
             </section>
           </FadeIn>
@@ -381,6 +431,44 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
           margin: 0;
         }
 
+        .wedding-gallery {
+          margin-top: clamp(72px, 9vw, 120px);
+          text-align: center;
+        }
+
+        .wedding-gallery .eyebrow {
+          color: var(--gold-text);
+        }
+
+        .wedding-gallery h2 {
+          color: var(--olive);
+          font-size: clamp(1.9rem, 3.6vw, 3rem);
+          margin: 12px 0 14px;
+        }
+
+        .wedding-gallery > p {
+          color: var(--muted);
+          font-size: 1.05rem;
+          line-height: 1.8;
+          max-width: 620px;
+          margin: 0 auto 40px;
+        }
+
+        .wedding-gallery-grid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+          gap: 16px;
+        }
+
+        .wedding-gallery-item {
+          position: relative;
+          margin: 0;
+          aspect-ratio: 2 / 3;
+          border-radius: 4px;
+          overflow: hidden;
+          box-shadow: var(--shadow-lift);
+        }
+
         .lead-section {
           margin-top: 150px;
           padding: 100px 0;
@@ -423,6 +511,9 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
           }
           .wedding-media {
             min-height: 430px;
+          }
+          .wedding-gallery-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
           .wedding-image {
             inset: 0 0 26% 0;

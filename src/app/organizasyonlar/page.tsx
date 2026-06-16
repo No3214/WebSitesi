@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     url: absoluteUrl("/organizasyonlar"),
     images: [
       {
-        url: absoluteUrl("/images/organizasyonlar/butik-dugun.jpg"),
+        url: absoluteUrl("/images/organizasyonlar/dugun/dugun-2.jpg"),
         alt: "Kozbeyli Konağı taş avlusunda butik düğün atmosferi",
       },
     ],
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Kozbeyli Konağı Düğün & Davet Organizasyonları",
     description: "Tescilli taş konak avlusunda masalsı butik düğünler ve kurumsal toplantılar.",
-    images: [absoluteUrl("/images/organizasyonlar/butik-dugun.jpg")],
+    images: [absoluteUrl("/images/organizasyonlar/dugun/dugun-2.jpg")],
   }
 };
 
