@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { rooms } from '@/data/rooms';
+import { siteUrl } from '@/lib/utils';
 
 // hreflang (T16): Google alternatifleri HTML, HTTP header VEYA sitemap ile kabul
 // eder. Sayfa bazlı metadata.alternates çocukta ezildiğinden (Next merge
@@ -22,7 +23,7 @@ const EN_ROUTES = new Set([
 ]);
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.kozbeylikonagi.com';
+  const baseUrl = siteUrl;
 
   const withAlternates = (route: string) =>
     EN_ROUTES.has(route)

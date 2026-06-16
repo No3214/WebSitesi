@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 
+import { siteUrl } from '@/lib/utils';
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
@@ -7,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin', '/api'],
     },
-    sitemap: 'https://www.kozbeylikonagi.com/sitemap.xml',
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }
