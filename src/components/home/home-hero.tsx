@@ -5,8 +5,8 @@ import { useEffect, useRef, useState } from "react";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
-const HERO_VIDEO_SRC = "/videos/hero-property.mp4";
-const HERO_VIDEO_IDLE_DELAY_MS = 7600;
+const HERO_VIDEO_SRC = "/videos/hero.mp4";
+const HERO_VIDEO_IDLE_DELAY_MS = 1500;
 
 /**
  * Hero arka plan videosu — LCP'ye dokunmadan:
@@ -104,21 +104,23 @@ function HeroVideo() {
     <video
       ref={videoRef}
       className={`hero-video ${playing ? "playing" : ""}`}
-      src={HERO_VIDEO_SRC}
       autoPlay
       muted
       loop
       playsInline
-      preload="none"
+      preload="metadata"
       poster="/images/hero-video-poster.jpg"
       aria-hidden
       tabIndex={-1}
+      onLoadedData={() => void videoRef.current?.play().catch(() => {})}
       onCanPlay={() => void videoRef.current?.play().catch(() => {})}
       onPlaying={() => setPlaying(true)}
       onTimeUpdate={(event) => {
         if (event.currentTarget.currentTime > 0) setPlaying(true);
       }}
-    />
+    >
+      <source src={HERO_VIDEO_SRC} type="video/mp4" />
+    </video>
   );
 }
 
