@@ -9,6 +9,7 @@ export type GalleryShot = {
 // Not (2026-06-11): tas-cephe / aksam-sofrasi / konagin-yuzu / tas-firin-pide
 // kareleri Google Drive arşivindeki profesyonel çekimlerden alındı.
 export const galleryShots: GalleryShot[] = [
+  { src: "/images/galeri/g1.jpg", caption: { tr: "Kuşbakışı Konak", en: "The Mansion from Above" } },
   { src: "/images/galeri/tas-cephe.jpg", caption: { tr: "Taş Cephe", en: "Stone Facade" } },
   { src: "/images/hero.jpg", caption: { tr: "Taş Avlu", en: "Stone Courtyard" } },
   { src: "/images/galeri/aksam-sofrasi.jpg", caption: { tr: "Akşam Sofrası", en: "Evening Table" } },
@@ -24,7 +25,6 @@ export const galleryShots: GalleryShot[] = [
 // /galeri tam sayfası: şerit kareleri + oda arşivinden ek seçkiler.
 export const galleryExtended: GalleryShot[] = [
   ...galleryShots,
-  { src: "/images/galeri/g1.jpg", caption: { tr: "Kuşbakışı Konak", en: "The Mansion from Above" } },
   { src: "/images/galeri/g2.jpg", caption: { tr: "Taş Konağın Cephesi", en: "Stone Mansion Facade" } },
   { src: "/images/galeri/g6.jpg", caption: { tr: "Akşam Şarap Servisi", en: "Evening Wine Service" } },
   { src: "/images/galeri/g4.jpg", caption: { tr: "Ahşap ve El İşçiliği", en: "Timber & Craftsmanship" } },
