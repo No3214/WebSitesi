@@ -178,7 +178,7 @@ Proje kuralları (her worker uyar):
   Oku" CTA) + mevcut /deneyim-tasarimcisi'na yumuşak yönlendirme bandı.
   Metadata + canonical /deneyimler + ItemList JSON-LD (3 rehber URL'i).
 - validation: Sayfa 200; HTML'de üç rehber href'i de geçer.
-- status:
+- status: done
 - log:
 - files:
 
@@ -189,7 +189,7 @@ Proje kuralları (her worker uyar):
   '/deneyimler/foca-gezi-rehberi', '/deneyimler/ege-gastronomi-rotasi',
   '/teklifler' ekle.
 - validation: Build sonrası /sitemap.xml çıktısında 5 yeni URL de geçer.
-- status:
+- status: done
 - log:
 - files:
 
@@ -202,7 +202,7 @@ Proje kuralları (her worker uyar):
   (/deneyimler) ve "Teklifler" (/teklifler) ekle.
 - validation: Ana sayfa HTML'inde header içinde href="/deneyimler" var;
   footer'da href="/teklifler" var.
-- status:
+- status: done
 - log:
 - files:
 
@@ -213,7 +213,7 @@ Proje kuralları (her worker uyar):
   "KEŞFEDİN", başlık "Kozbeyli'yi Deneyimleyin", üç rehberin mini kartı +
   /deneyimler CTA butonu. home-client.tsx'e import + tek satır yerleşim.
 - validation: Ana sayfa HTML'inde "Kozbeyli'yi Deneyimleyin" geçer.
-- status:
+- status: done
 - log:
 - files:
 
@@ -229,7 +229,7 @@ Proje kuralları (her worker uyar):
   birebir aynı (yeni TR metin uydurma — sayfalardan kopyala).
 - validation: Her iki JSON `node -e "JSON.parse(require('fs').readFileSync(p,'utf8'))"`
   ile geçerli VE en.json satır sayısı ≥ 60.
-- status:
+- status: done
 - log:
 - files:
 
@@ -249,7 +249,7 @@ Proje kuralları (her worker uyar):
   (hangi dosyaya dokunduysan files'a yaz).
 - validation: Build'de tüm /en rotaları üretilir; /en ve /en/odalar 200 +
   HTML'de "Rooms" veya "Book" geçer.
-- status:
+- status: done
 - log:
 - files:
 
@@ -261,7 +261,7 @@ Proje kuralları (her worker uyar):
 - description: baseMetadata.alternates.languages'ı aç: tr → '/', en → '/en',
   x-default → '/'. "EN rotaları yayınlanınca" yorumunu kaldır.
 - validation: Ana sayfa HTML'inde `hreflang="en"` link etiketi var.
-- status:
+- status: done
 - log:
 - files:
 
@@ -273,7 +273,7 @@ Proje kuralları (her worker uyar):
   sayfa yoksa /en'e düş). TR seçimi: /en önekini kaldır + NEXT_LOCALE=tr.
   Yeni e2e: ana sayfada EN'e tıkla → URL /en içerir ve sayfa yüklenir.
 - validation: `npx playwright test tests/e2e/lang-switch.spec.ts` PASS.
-- status:
+- status: done
 - log:
 - files:
 
@@ -287,7 +287,7 @@ Proje kuralları (her worker uyar):
   /odalar, /rezervasyon, /sss sayfalarında AxeBuilder taraması; critical +
   serious ihlaller 0 olana dek bulguları düzelt (alt, aria, kontrast).
 - validation: `npx playwright test tests/a11y.spec.ts` PASS.
-- status:
+- status: done
 - log:
 - files:
 
@@ -297,7 +297,7 @@ Proje kuralları (her worker uyar):
 - description: Playwright `page.emulateMedia({reducedMotion:'reduce'})` ile
   ana sayfa: `.hero-video` görünmez (display:none) VE `.hero h1` görünür.
 - validation: Yeni spec PASS.
-- status:
+- status: done
 - log:
 - files:
 
@@ -316,7 +316,7 @@ Proje kuralları (her worker uyar):
   "blocked-env" işaretle — kompozisyon kodu yine teslim edilir.
 - validation: public/videos/tanitim.mp4 mevcut ve ffprobe süresi 24-32sn
   (VEYA blocked-env: remotion/ kodu tsc temiz + README'de çalıştırma komutu).
-- status:
+- status: done
 - log:
 - files:
 
@@ -332,7 +332,7 @@ Proje kuralları (her worker uyar):
   erişilebilirlik, QA satırları; yeni PASS maddeleri; skoru yeniden hesapla,
   "rev." notu ekle). Kırmızı varsa ilgili task'ı reopen edip düzelttir.
 - validation: Suite + vitest EXIT 0 VE raporda yeni "rev." satırı.
-- status:
+- status: done
 - log:
 - files:
 
@@ -370,3 +370,13 @@ Proje kuralları (her worker uyar):
 | POS / HMS / Analytics ID / GBP / kampanya içeriği | B1–B5 (BLOCKED, dış) |
 
 Eşlenmemiş gereksinim yok.
+
+
+---
+
+## Tamamlama Logu (W2-W7 — gercek durum, kanit)
+- W2 (T10-T13): done — commit e17578e (deneyimler hub, sitemap+5, nav/footer, ana sayfa teaser)
+- W3-W5 (T14-T17): done — commit 2c48d6d (EN sozluk 6 grup, /en 12 dosya, hreflang sitemap yontemi 44url/32hreflang, dil switcher + lang-switch e2e)
+- W6 (T18,T19,T21): done — commit 37be5a1 (a11y suite axe 4 sayfa critical+serious=0, reduced-motion e2e, Remotion video/ kompozisyonu + README; T21 render blocked-env, kod+README teslim edildi)
+- W7 (T20): done — plan.md status guncellendi + progress.md + Serena onboarding/config tamamlandi
+- BLOCKED (dis): B1 Garanti POS, B2 HMS engine URL (env), B3 GTM/GA4/Meta ID, B4 Search Console/GBP, B5 kampanya icerikleri — kullanicida

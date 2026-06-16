@@ -31,3 +31,6 @@ tsconfig.tsbuildinfo
 # gecici dogrulama scripti
 gate.ps1
 gate-w6.log
+
+# Serena tool cache (memories versiyonlanir)
+.serena/cache/
