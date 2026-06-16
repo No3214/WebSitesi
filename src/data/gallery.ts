@@ -24,6 +24,12 @@ export const galleryShots: GalleryShot[] = [
 // /galeri tam sayfası: şerit kareleri + oda arşivinden ek seçkiler.
 export const galleryExtended: GalleryShot[] = [
   ...galleryShots,
+  { src: "/images/galeri/g1.jpg", caption: { tr: "Kuşbakışı Konak", en: "The Mansion from Above" } },
+  { src: "/images/galeri/g2.jpg", caption: { tr: "Taş Konağın Cephesi", en: "Stone Mansion Facade" } },
+  { src: "/images/galeri/g6.jpg", caption: { tr: "Akşam Şarap Servisi", en: "Evening Wine Service" } },
+  { src: "/images/galeri/g4.jpg", caption: { tr: "Ahşap ve El İşçiliği", en: "Timber & Craftsmanship" } },
+  { src: "/images/galeri/g3.jpg", caption: { tr: "Bir Kadeh Eşliğinde", en: "Over a Glass" } },
+  { src: "/images/galeri/g5.jpg", caption: { tr: "Avluda Sofra", en: "Table in the Courtyard" } },
   { src: "/images/galeri/konagin-yuzu.jpg", caption: { tr: "Konağın Yüzü", en: "Face of the Mansion" } },
   { src: "/images/galeri/tas-firin-pide.jpg", caption: { tr: "Taş Fırından", en: "From the Stone Oven" } },
   { src: "/images/odalar/standart-oda/1.jpg", caption: { tr: "Standart Oda", en: "Standard Room" } },
