@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
-const HERO_VIDEO_SRC = "/videos/hero.mp4";
+const HERO_VIDEO_SRC = "/videos/hero-property.mp4";
 const HERO_VIDEO_IDLE_DELAY_MS = 1500;
 
 /**
