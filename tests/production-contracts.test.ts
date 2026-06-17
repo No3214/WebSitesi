@@ -150,6 +150,10 @@ describe("production readiness contracts", () => {
     // LCP guvenligi: poster priority eleman; video metadata preload + gecikmeli
     // fade-in (auto degil). Onceki 7600ms/none cok pasifti — video hic gorunmuyordu.
     expect(homeHero).toContain('preload="metadata"');
+    // Onayli hero asseti kilitle: 15.78s montaj hero.mp4 (eski 2.75s hero-property
+    // klibi superseded). Bkz docs/media-placement-audit.md.
+    expect(homeHero).toContain('HERO_VIDEO_SRC = "/videos/hero.mp4"');
+    expect(homeHero).not.toContain("hero-property.mp4");
     expect(homeHero).toContain("HERO_VIDEO_IDLE_DELAY_MS = 1500");
     expect(homeHero).toContain("requestIdleCallback");
     expect(homeHero).toContain("setShouldRender(true)");
@@ -331,14 +335,4 @@ describe("production readiness contracts", () => {
       "GA4_API_SECRET",
       "TURNSTILE_SECRET_KEY",
       "B2B_PARTNER_PUBLIC_KEY",
-      "HMS_WEBHOOK_ES256_PUBLIC_KEY",
-    ];
-
-    expect(referencedEnvKeys.length).toBeGreaterThan(0);
-    expect(referencedEnvKeys.every((key) => key.startsWith("NEXT_PUBLIC_"))).toBe(true);
-
-    for (const key of forbiddenServerEnvKeys) {
-      expect(publicEnvSource).not.toContain(key);
-    }
-  });
-});
+      "HMS_WEBHOOK_ES256_PUBLIC_KE
