@@ -43,6 +43,17 @@ export function validateSameOrigin(request: Request) {
 }
 
 /**
+ * Escapes a given object or array as a JSON string safe for injection
+ * into HTML <script> tags. It prevents XSS by escaping HTML control characters.
+ */
+export function sanitizeJsonLd(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+}
+
+/**
  * Audit T4: in-memory Map kaldırıldı; paylaşımlı backend'e (lib/rate-limit)
  * delege edilir. İmza async oldu — çağıranlar `await` kullanmalı.
  */

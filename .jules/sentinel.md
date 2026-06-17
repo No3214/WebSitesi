@@ -1,0 +1,4 @@
+## 2026-06-17 - XSS in JSON-LD Scripts using dangerouslySetInnerHTML
+**Vulnerability:** Found `JSON.stringify(...)` directly injected into `<script type="application/ld+json">` tags using `dangerouslySetInnerHTML`. This is vulnerable to Cross-Site Scripting (XSS) because `JSON.stringify` does not escape HTML control characters like `<` or `>`.
+**Learning:** Even if the data source is considered trusted (like CMS output), treating CMS content as code without appropriate escaping is a known security anti-pattern and often leads to stored XSS. Next.js does not escape `dangerouslySetInnerHTML` automatically.
+**Prevention:** Always use a utility function (like `sanitizeJsonLd` in `src/lib/security.ts`) to properly escape HTML characters (`<`, `>`, `&`) when stringifying JSON for script injections.

@@ -1,3 +1,4 @@
+import { sanitizeJsonLd } from "@/lib/security";
 import Link from "next/link";
 
 import { FadeIn } from "@/components/animations";
@@ -44,7 +45,7 @@ export function FaqPageContent({ locale = "tr" }: { locale?: Locale }) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(faqJsonLd) }}
       />
       <SiteHeader />
       <main>
