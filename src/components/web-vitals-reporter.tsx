@@ -17,20 +17,21 @@ function roundMetricValue(name: string, value: number) {
  * not configured. Only the pathname is included: query parameters and full
  * URLs are deliberately excluded because they may contain personal data.
  */
-export function WebVitalsReporter() {
-  useReportWebVitals((metric) => {
-    if (!SUPPORTED_METRICS.has(metric.name)) return;
+const reportWebVitals: Parameters<typeof useReportWebVitals>[0] = (metric) => {
+  if (!SUPPORTED_METRICS.has(metric.name)) return;
 
-    trackEvent("web_vital", {
-      metric_id: metric.id,
-      metric_name: metric.name,
-      metric_value: roundMetricValue(metric.name, metric.value),
-      metric_delta: roundMetricValue(metric.name, metric.delta),
-      metric_rating: metric.rating ?? "unknown",
-      navigation_type: metric.navigationType ?? "unknown",
-      path: window.location.pathname,
-    });
+  trackEvent("web_vital", {
+    metric_id: metric.id,
+    metric_name: metric.name,
+    metric_value: roundMetricValue(metric.name, metric.value),
+    metric_delta: roundMetricValue(metric.name, metric.delta),
+    metric_rating: metric.rating ?? "unknown",
+    navigation_type: metric.navigationType ?? "unknown",
+    path: window.location.pathname,
   });
+};
 
+export function WebVitalsReporter() {
+  useReportWebVitals(reportWebVitals);
   return null;
 }
