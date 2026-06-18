@@ -1681,7 +1681,8 @@
   }
 }
 
-/* Hareket azaltma tercihi: animasyon/geçişler kapanır, hero videosu yerine poster kalır (WCAG) */
+/* Hareket azaltma tercihi: animasyon/geçişler kapanır; açılış videosu
+   işletmenin ana ürün medyası olduğu için tamamen gizlenmez. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1689,7 +1690,6 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .hero-video { display: none !important; }
   .hero-media,
   .hero h1 span span {
     transform: none !important;

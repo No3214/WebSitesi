@@ -6,14 +6,14 @@ import { useEffect, useRef, useState } from "react";
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
 const HERO_VIDEO_SRC = "/videos/hero.mp4";
-const HERO_VIDEO_IDLE_DELAY_MS = 1500;
+const HERO_VIDEO_BOOT_DELAY_MS = 150;
 
 /**
- * Hero arka plan videosu — LCP'ye dokunmadan:
+ * Hero arka plan videosu:
  * - LCP elemanı her zaman poster görselidir (priority + preload); video sayfa
- *   yüklendikten ve ana metrikler sakinleştikten sonra video üstüne fade-in olur.
- * - Data Saver ve reduced-motion'da hiç yüklenmez; mobilde ise Emergent
- *   önizlemesindeki gibi sessiz/playsInline arka plan reel'i devreye girer.
+ *   açılışında çok erken üstüne fade-in olur.
+ * - Data Saver'da hiç yüklenmez; mobilde ise Emergent önizlemesindeki gibi
+ *   sessiz/playsInline arka plan reel'i devreye girer.
  */
 function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -22,40 +22,11 @@ function HeroVideo() {
 
   useEffect(() => {
     const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion || conn?.saveData) return;
+    if (conn?.saveData) return;
 
-    let idleHandle: number | null = null;
-    let loadDelay: number | null = null;
-
-    const revealVideo = () => {
-      idleHandle = null;
-      setShouldRender(true);
-    };
-
-    const scheduleVideo = () => {
-      loadDelay = window.setTimeout(() => {
-        if ("requestIdleCallback" in window) {
-          idleHandle = window.requestIdleCallback(revealVideo, { timeout: 2500 });
-          return;
-        }
-
-        revealVideo();
-      }, HERO_VIDEO_IDLE_DELAY_MS);
-    };
-
-    if (document.readyState === "complete") {
-      scheduleVideo();
-    } else {
-      window.addEventListener("load", scheduleVideo, { once: true });
-    }
-
+    const bootTimer = window.setTimeout(() => setShouldRender(true), HERO_VIDEO_BOOT_DELAY_MS);
     return () => {
-      window.removeEventListener("load", scheduleVideo);
-      if (loadDelay !== null) window.clearTimeout(loadDelay);
-      if (idleHandle !== null && "cancelIdleCallback" in window) {
-        window.cancelIdleCallback(idleHandle);
-      }
+      window.clearTimeout(bootTimer);
     };
   }, []);
 
@@ -108,10 +79,11 @@ function HeroVideo() {
       muted
       loop
       playsInline
-      preload="metadata"
+      preload="auto"
       poster="/images/hero-video-poster.jpg"
       aria-hidden
       tabIndex={-1}
+      disablePictureInPicture
       onLoadedData={() => void videoRef.current?.play().catch(() => {})}
       onCanPlay={() => void videoRef.current?.play().catch(() => {})}
       onPlaying={() => setPlaying(true)}

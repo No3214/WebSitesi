@@ -228,18 +228,20 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("node_modules/@playwright/test/cli.js");
   });
 
-  it("keeps homepage hero video deferred behind the LCP poster", () => {
+  it("keeps homepage hero video available during the opening viewport", () => {
     const homeHero = read("src/components/home/home-hero.tsx");
 
-    // LCP guvenligi: poster priority eleman; video metadata preload + gecikmeli
-    // fade-in (auto degil). Onceki 7600ms/none cok pasifti — video hic gorunmuyordu.
-    expect(homeHero).toContain('preload="metadata"');
+    // LCP guvenligi: poster priority eleman kalir; video ise acilista cok erken
+    // devreye girer. Onceki load + idle bekleme isletme sahibinin tarayicisinda
+    // videoyu tamamen yok gibi gosteriyordu.
+    expect(homeHero).toContain('preload="auto"');
     // Onayli hero asseti kilitle: 15.78s montaj hero.mp4 (eski 2.75s hero-property
     // klibi superseded). Bkz docs/media-placement-audit.md.
     expect(homeHero).toContain('HERO_VIDEO_SRC = "/videos/hero.mp4"');
     expect(homeHero).not.toContain("hero-property.mp4");
-    expect(homeHero).toContain("HERO_VIDEO_IDLE_DELAY_MS = 1500");
-    expect(homeHero).toContain("requestIdleCallback");
+    expect(homeHero).toContain("HERO_VIDEO_BOOT_DELAY_MS = 150");
+    expect(homeHero).not.toContain("requestIdleCallback");
+    expect(homeHero).not.toContain("prefers-reduced-motion: reduce");
     expect(homeHero).toContain("setShouldRender(true)");
     expect(homeHero).toContain('fetchPriority="high"');
     expect(homeHero).toContain("hero-video-poster-1280.webp");
@@ -247,7 +249,6 @@ describe("production readiness contracts", () => {
     expect(homeHero).not.toContain("RevealLines");
     expect(homeHero).not.toContain("<motion.div");
     expect(homeHero).not.toContain('from "next/image"');
-    expect(homeHero).not.toContain('preload="auto"');
   });
 
   it("keeps the homepage critical path free from framer-motion", () => {
