@@ -25,6 +25,10 @@ const gates = [
     script: "launch:audit:json",
     label: "Commercial launch evidence audit",
   },
+  {
+    script: "launch:cutover:json",
+    label: "Commercial production cutover plan",
+  },
 ];
 
 const isWindows = process.platform === "win32";
@@ -79,12 +83,12 @@ function main() {
 
   if (process.argv.includes("--help")) {
     console.log("Usage: node scripts/release-verify.mjs [--list]");
-    console.log("Runs the local release gate: security, evidence scan, publish verify, launch smoke, stress, audit json.");
+    console.log("Runs the local release gate: security, evidence scan, publish verify, launch smoke, stress, audit json and cutover plan.");
     return;
   }
 
   console.log("Kozbeyli Konagi release verification");
-  console.log("Target: security + evidence scan + publish verification + launch smoke + stress + commercial audit");
+  console.log("Target: security + evidence scan + publish verification + launch smoke + stress + commercial audit + cutover plan");
 
   const results = [];
 

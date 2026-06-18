@@ -21,6 +21,8 @@ Tam ticari yayın hedefi artık çalıştırılabilir bir gate ile izlenir:
 ```bash
 npm run launch:audit
 npm run launch:audit:json
+npm run launch:cutover
+npm run launch:cutover:json
 npm run launch:audit:strict
 npm run domain:verify
 ```
@@ -28,6 +30,8 @@ npm run domain:verify
 `launch:audit` mevcut commercial launch skorunu ve eksik kanıtları listeler.
 `launch:audit:json`, aynı sonucu CI, dashboard veya ajan denetimleri için
 makine okunur JSON olarak verir.
+`launch:cutover`, eksik ticari kapıları sahip, zamanlama, komut, kanıt ve KPI
+kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
 `launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
 
 - Canonical domain health + current Vercel commit: `docs/evidence/canonical-domain.md`
@@ -64,6 +68,7 @@ Bu üst komut aşağıdaki kapıları sırayla çalıştırır:
 - Lokal launch smoke (`npm run launch:smoke`)
 - Monkey/chaos stres testleri (`npm run test:stress`)
 - Makine okunur commercial launch audit (`npm run launch:audit:json`)
+- Makine okunur commercial cutover planı (`npm run launch:cutover:json`)
 
 `publish:verify` içinde aşağıdaki işler kalır:
 

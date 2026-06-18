@@ -10,11 +10,20 @@ Run:
 
 ```bash
 npm run vercel:ops
+npm run launch:cutover
 ```
 
 Expected local decision before final cutover is usually `PASS_WITH_WARNINGS`:
 the project link and repo contracts can pass while the global Vercel CLI or
 canonical domain evidence still needs action.
+
+`launch:cutover` converts the current 100/100 commercial blockers into an
+operator checklist with owner, timing, missing env keys, redacted evidence files,
+commands and KPI/review loop. Use the JSON form for handoff dashboards:
+
+```bash
+npm run launch:cutover:json
+```
 
 For a strict handoff gate, run:
 
@@ -28,6 +37,17 @@ Strict mode fails on warnings. It should only pass when:
 - `.vercel/project.json` points at `kozbeyli-konagi`;
 - domain/env scripts are present;
 - canonical domain evidence is marked `ready`.
+
+## Cutover operating model
+
+- Operational goal: move from the current commercial launch score to 100/100
+  without confusing code readiness with external proof.
+- Owner and timing: each blocked gate in `npm run launch:cutover` names the
+  accountable operator and the point in the launch sequence.
+- Guest-facing script/copy: keep public booking language conservative until HMS
+  and payment evidence are ready; WhatsApp fallback remains the guest-safe path.
+- KPI and review loop: each gate must pass its listed verification command and
+  keep redacted evidence under `docs/evidence/` before the launch score is raised.
 
 ## Canonical domain proof
 

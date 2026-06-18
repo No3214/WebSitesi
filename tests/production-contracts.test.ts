@@ -258,6 +258,13 @@ describe("production readiness contracts", () => {
     const runbook = read("docs/vercel-operations.md");
 
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
+    expect(packageJson.scripts?.["launch:cutover"]).toBe("node scripts/production-cutover-plan.mjs");
+    expect(packageJson.scripts?.["launch:cutover:json"]).toBe(
+      "node scripts/production-cutover-plan.mjs --json",
+    );
+    expect(packageJson.scripts?.["launch:cutover:strict"]).toBe(
+      "node scripts/production-cutover-plan.mjs --strict",
+    );
     expect(packageJson.scripts?.["vercel:ops:strict"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --strict",
     );
@@ -268,6 +275,8 @@ describe("production readiness contracts", () => {
     expect(vercelOps).toContain("canonical-domain.md");
     expect(vercelOps).toContain("kozbeyli-konagi");
     expect(runbook).toContain("npm run vercel:ops");
+    expect(runbook).toContain("npm run launch:cutover");
+    expect(runbook).toContain("KPI and review loop");
     expect(runbook).toContain("npm run vercel:ops:strict");
     expect(runbook).toContain("npm i -g vercel");
     expect(runbook).toContain("Do not store secrets in this repository");
@@ -374,6 +383,20 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("dist\", \"vc.js");
     expect(launchSmokeScript).toContain(".next/BUILD_ID");
     expect(launchSmokeScript).toContain("node_modules/@playwright/test/cli.js");
+  });
+
+  it("keeps release verification producing the commercial cutover plan", () => {
+    const releaseScript = read("scripts/release-verify.mjs");
+    const publishReadiness = read("scripts/publish-readiness.mjs");
+    const cutoverPlan = read("scripts/production-cutover-plan.mjs");
+
+    expect(releaseScript).toContain("launch:cutover:json");
+    expect(publishReadiness).toContain("scripts/production-cutover-plan.mjs");
+    expect(publishReadiness).toContain("launch:cutover:strict");
+    expect(cutoverPlan).toContain("Kozbeyli Konagi production cutover plan");
+    expect(cutoverPlan).toContain("npm i -g vercel");
+    expect(cutoverPlan).toContain("npm run domain:verify:strict");
+    expect(cutoverPlan).toContain("npm run launch:audit:strict");
   });
 
   it("keeps homepage hero video available during the opening viewport", () => {
