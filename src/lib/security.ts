@@ -122,7 +122,9 @@ export async function verifyEs256Signature(
  * Prevents XSS vulnerabilities by escaping dangerous characters.
  */
 export function sanitizeJsonLd(data: unknown): string {
-  return JSON.stringify(data)
+  const str = JSON.stringify(data);
+  if (!str) return "";
+  return str
     .replace(/</g, '\\u003c')
     .replace(/>/g, '\\u003e')
     .replace(/&/g, '\\u0026')
