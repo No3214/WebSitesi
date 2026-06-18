@@ -1,31 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { notFound, usePathname } from "next/navigation";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FadeIn } from "@/components/animations";
-import { useEffect, useState } from "react";
-import { getDictionary } from "@/lib/dictionary";
+import { useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { WeatherRibbon } from "@/components/weather-ribbon";
 import { rooms as fallbackRooms } from "@/data/rooms";
 
 export function RoomDetailClient({ slug }: { slug: string }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(null);
   const [activeImg, setActiveImg] = useState(0);
   const room = fallbackRooms.find((item) => item.slug === slug);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    const locale = pathname === "/en" || Boolean(pathname?.startsWith("/en/")) ? "en" : "tr";
-    getDictionary(locale).then(setDict);
-  }, [pathname]);
 
   if (!room) notFound();
-  if (!dict) return <div className="loading-screen" />;
 
   return (
     <>
