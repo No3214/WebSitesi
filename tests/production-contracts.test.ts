@@ -82,6 +82,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"test:stress"');
     expect(readinessScript).toContain('"evidence:scan"');
     expect(readinessScript).toContain('"evidence:scan:json"');
+    expect(readinessScript).toContain('"media:hero"');
+    expect(readinessScript).toContain('"media:hero:json"');
+    expect(readinessScript).toContain('"media:hero:strict"');
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
@@ -106,6 +109,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["evidence:scan:json"]).toBe(
       "node scripts/evidence-redaction-scan.mjs --json",
     );
+    expect(packageJson.scripts?.["media:hero"]).toBe("node scripts/hero-media-audit.mjs");
+    expect(packageJson.scripts?.["media:hero:json"]).toBe(
+      "node scripts/hero-media-audit.mjs --json",
+    );
+    expect(packageJson.scripts?.["media:hero:strict"]).toBe(
+      "node scripts/hero-media-audit.mjs --strict",
+    );
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
     expect(packageJson.scripts?.["vercel:ops:json"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --json",
@@ -124,6 +134,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"docs/evidence/README.md"');
     expect(readinessScript).toContain('"docs/vercel-operations.md"');
     expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
+    expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
   });
@@ -135,6 +146,7 @@ describe("production readiness contracts", () => {
     for (const gate of [
       "security:audit",
       "evidence:scan",
+      "media:hero:json",
       "publish:verify",
       "launch:smoke",
       "test:stress",

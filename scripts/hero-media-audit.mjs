@@ -1,0 +1,324 @@
+import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = process.cwd();
+
+export const HERO_MEDIA_EXPECTATION = {
+  videoPath: "public/videos/hero.mp4",
+  publicVideoPath: "/videos/hero.mp4",
+  posterPaths: [
+    "public/images/hero-video-poster-640.webp",
+    "public/images/hero-video-poster-960.webp",
+    "public/images/hero-video-poster-1280.webp",
+    "public/images/hero-video-poster-1440.webp",
+  ],
+  sha256: "62bb0b9fc0c71912913d763d1446a768e0718f4f9da689e76c4fe41d6f8b371e",
+  width: 1280,
+  height: 2276,
+  minDurationSec: 15.7,
+  maxDurationSec: 15.9,
+  minBitrateBps: 3_000_000,
+  minSizeBytes: 6_000_000,
+  minPosterSizeBytes: 35_000,
+};
+
+function exists(relPath, baseDir = root) {
+  return fs.existsSync(path.join(baseDir, relPath));
+}
+
+function read(relPath, baseDir = root) {
+  return fs.readFileSync(path.join(baseDir, relPath));
+}
+
+function readText(relPath, baseDir = root) {
+  return fs.readFileSync(path.join(baseDir, relPath), "utf8");
+}
+
+function hashFile(relPath, baseDir = root) {
+  return crypto.createHash("sha256").update(read(relPath, baseDir)).digest("hex");
+}
+
+function readUInt64BE(buffer, offset) {
+  const value = buffer.readBigUInt64BE(offset);
+  if (value > BigInt(Number.MAX_SAFE_INTEGER)) {
+    throw new Error(`MP4 box size is too large to inspect safely at offset ${offset}`);
+  }
+  return Number(value);
+}
+
+function* boxes(buffer, start, end) {
+  let offset = start;
+
+  while (offset + 8 <= end) {
+    let size = buffer.readUInt32BE(offset);
+    const type = buffer.toString("ascii", offset + 4, offset + 8);
+    let headerSize = 8;
+
+    if (size === 1) {
+      if (offset + 16 > end) throw new Error(`Invalid extended MP4 box header for ${type}`);
+      size = readUInt64BE(buffer, offset + 8);
+      headerSize = 16;
+    } else if (size === 0) {
+      size = end - offset;
+    }
+
+    if (size < headerSize || offset + size > end) {
+      throw new Error(`Invalid MP4 box ${type} at offset ${offset}`);
+    }
+
+    yield {
+      type,
+      start: offset,
+      end: offset + size,
+      payloadStart: offset + headerSize,
+      payloadEnd: offset + size,
+    };
+
+    offset += size;
+  }
+}
+
+function parseMvhd(buffer, box) {
+  const version = buffer[box.payloadStart];
+
+  if (version === 0) {
+    const timescale = buffer.readUInt32BE(box.payloadStart + 12);
+    const duration = buffer.readUInt32BE(box.payloadStart + 16);
+    return timescale > 0 ? duration / timescale : undefined;
+  }
+
+  if (version === 1) {
+    const timescale = buffer.readUInt32BE(box.payloadStart + 20);
+    const duration = readUInt64BE(buffer, box.payloadStart + 24);
+    return timescale > 0 ? duration / timescale : undefined;
+  }
+
+  return undefined;
+}
+
+function parseTkhd(buffer, box) {
+  if (box.payloadEnd - box.payloadStart < 8) return undefined;
+
+  return {
+    width: Math.round(buffer.readUInt32BE(box.payloadEnd - 8) / 65536),
+    height: Math.round(buffer.readUInt32BE(box.payloadEnd - 4) / 65536),
+  };
+}
+
+function parseHdlr(buffer, box) {
+  if (box.payloadEnd - box.payloadStart < 12) return undefined;
+  return buffer.toString("ascii", box.payloadStart + 8, box.payloadStart + 12);
+}
+
+function parseTrack(buffer, trakBox) {
+  let dimensions;
+  let handler;
+
+  for (const child of boxes(buffer, trakBox.payloadStart, trakBox.payloadEnd)) {
+    if (child.type === "tkhd") {
+      dimensions = parseTkhd(buffer, child);
+    }
+
+    if (child.type === "mdia") {
+      for (const mdiaChild of boxes(buffer, child.payloadStart, child.payloadEnd)) {
+        if (mdiaChild.type === "hdlr") handler = parseHdlr(buffer, mdiaChild);
+      }
+    }
+  }
+
+  return handler === "vide" ? dimensions : undefined;
+}
+
+export function parseMp4Metadata(buffer) {
+  let durationSec;
+  let dimensions;
+
+  for (const box of boxes(buffer, 0, buffer.length)) {
+    if (box.type !== "moov") continue;
+
+    for (const child of boxes(buffer, box.payloadStart, box.payloadEnd)) {
+      if (child.type === "mvhd") {
+        durationSec = parseMvhd(buffer, child);
+      }
+
+      if (child.type === "trak") {
+        dimensions = parseTrack(buffer, child) || dimensions;
+      }
+    }
+  }
+
+  const bitrateBps = durationSec ? Math.round((buffer.length * 8) / durationSec) : undefined;
+
+  return {
+    sizeBytes: buffer.length,
+    width: dimensions?.width,
+    height: dimensions?.height,
+    durationSec,
+    bitrateBps,
+  };
+}
+
+function check(checks, id, label, pass, detail) {
+  checks.push({
+    id,
+    label,
+    status: pass ? "PASS" : "FAIL",
+    detail,
+  });
+}
+
+export function auditHeroMedia(options = {}) {
+  const baseDir = options.root || root;
+  const expected = options.expected || HERO_MEDIA_EXPECTATION;
+  const checks = [];
+  let metadata = null;
+  let hash = null;
+
+  const videoExists = exists(expected.videoPath, baseDir);
+  check(checks, "hero_video_file", "Hero video file is present", videoExists, expected.videoPath);
+
+  if (videoExists) {
+    const video = read(expected.videoPath, baseDir);
+    metadata = parseMp4Metadata(video);
+    hash = crypto.createHash("sha256").update(video).digest("hex");
+
+    check(
+      checks,
+      "hero_video_hash",
+      "Hero video matches the approved media manifest hash",
+      hash === expected.sha256,
+      hash ? `${hash.slice(0, 12)}...` : "missing hash",
+    );
+    check(
+      checks,
+      "hero_video_size",
+      "Hero video keeps the premium source size",
+      metadata.sizeBytes >= expected.minSizeBytes,
+      `${metadata.sizeBytes} bytes`,
+    );
+    check(
+      checks,
+      "hero_video_dimensions",
+      "Hero video keeps the approved vertical cinematic resolution",
+      metadata.width === expected.width && metadata.height === expected.height,
+      `${metadata.width || "?"}x${metadata.height || "?"}`,
+    );
+    check(
+      checks,
+      "hero_video_duration",
+      "Hero video keeps the approved 15.78s cinematic loop length",
+      Boolean(metadata.durationSec && metadata.durationSec >= expected.minDurationSec && metadata.durationSec <= expected.maxDurationSec),
+      metadata.durationSec ? `${metadata.durationSec.toFixed(3)}s` : "duration unavailable",
+    );
+    check(
+      checks,
+      "hero_video_bitrate",
+      "Hero video bitrate stays above the visible quality floor",
+      Boolean(metadata.bitrateBps && metadata.bitrateBps >= expected.minBitrateBps),
+      metadata.bitrateBps ? `${metadata.bitrateBps} bps` : "bitrate unavailable",
+    );
+  }
+
+  for (const posterPath of expected.posterPaths) {
+    const posterExists = exists(posterPath, baseDir);
+    const size = posterExists ? fs.statSync(path.join(baseDir, posterPath)).size : 0;
+    check(
+      checks,
+      `poster_${path.basename(posterPath).replace(/[^a-z0-9]/gi, "_").toLowerCase()}`,
+      `Hero poster derivative is present: ${posterPath}`,
+      posterExists && size >= expected.minPosterSizeBytes,
+      posterExists ? `${size} bytes` : "missing",
+    );
+  }
+
+  const homeHero = exists("src/components/home/home-hero.tsx", baseDir)
+    ? readText("src/components/home/home-hero.tsx", baseDir)
+    : "";
+  const heroSpec = exists("tests/e2e/hero-video.spec.ts", baseDir)
+    ? readText("tests/e2e/hero-video.spec.ts", baseDir)
+    : "";
+
+  check(
+    checks,
+    "hero_component_source",
+    "Homepage hero uses the approved opening video asset",
+    homeHero.includes(`HERO_VIDEO_SRC = "${expected.publicVideoPath}"`) && !homeHero.includes("hero-property.mp4"),
+    expected.publicVideoPath,
+  );
+  check(
+    checks,
+    "hero_autoplay_contract",
+    "Homepage hero keeps mobile-safe muted autoplay attributes",
+    ["autoPlay", "muted", "playsInline", 'preload="auto"', 'data-testid="hero-video-toggle"'].every((token) =>
+      homeHero.includes(token),
+    ),
+    "autoPlay + muted + playsInline + preload + visible toggle",
+  );
+  check(
+    checks,
+    "hero_playwright_contract",
+    "Playwright covers desktop/mobile playback and visual quality",
+    heroSpec.includes("expectHeroVideoPlaying") &&
+      heroSpec.includes("expectHeroVideoQuality") &&
+      heroSpec.includes("mobile also loads") &&
+      heroSpec.includes(`width: ${expected.width}`) &&
+      heroSpec.includes(`height: ${expected.height}`),
+    "tests/e2e/hero-video.spec.ts",
+  );
+
+  const failures = checks.filter((item) => item.status === "FAIL");
+
+  return {
+    status: failures.length === 0 ? "PASS" : "FAIL",
+    expected,
+    metadata,
+    sha256: hash,
+    checks,
+    failures,
+  };
+}
+
+export function formatHeroMediaAudit(result) {
+  const lines = [
+    "Kozbeyli Konagi hero media audit",
+    `RESULT ${result.status}`,
+    `Video: ${result.expected.videoPath}`,
+  ];
+
+  if (result.metadata) {
+    lines.push(
+      `Metadata: ${result.metadata.width}x${result.metadata.height}, ${result.metadata.durationSec?.toFixed(3)}s, ${result.metadata.bitrateBps} bps, ${result.metadata.sizeBytes} bytes`,
+    );
+  }
+
+  if (result.sha256) lines.push(`SHA-256: ${result.sha256}`);
+  lines.push("");
+
+  for (const item of result.checks) {
+    lines.push(`${item.status} ${item.id}: ${item.detail}`);
+  }
+
+  return lines.join("\n");
+}
+
+function main() {
+  const result = auditHeroMedia();
+
+  if (process.argv.includes("--json")) {
+    console.log(JSON.stringify(result, null, 2));
+  } else {
+    console.log(formatHeroMediaAudit(result));
+  }
+
+  const strict = process.argv.includes("--strict");
+  if (result.status !== "PASS" || (strict && result.failures.length > 0)) {
+    process.exitCode = 1;
+  }
+}
+
+const invokedPath = process.argv[1] ? path.resolve(process.argv[1]) : "";
+if (invokedPath && invokedPath === fileURLToPath(import.meta.url)) {
+  main();
+}

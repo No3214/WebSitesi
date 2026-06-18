@@ -23,6 +23,7 @@ npm run launch:audit
 npm run launch:audit:json
 npm run launch:cutover
 npm run launch:cutover:json
+npm run media:hero
 npm run launch:audit:strict
 npm run domain:verify
 ```
@@ -32,6 +33,8 @@ npm run domain:verify
 makine okunur JSON olarak verir.
 `launch:cutover`, eksik ticari kapıları sahip, zamanlama, komut, kanıt ve KPI
 kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
+`media:hero`, açılış videosunun onaylı hash, çözünürlük, süre, bitrate, poster
+türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
 `launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
 
 - Canonical domain health + current Vercel commit: `docs/evidence/canonical-domain.md`
@@ -64,6 +67,7 @@ npm run release:verify
 Bu üst komut aşağıdaki kapıları sırayla çalıştırır:
 
 - Runtime dependency audit (`npm run security:audit`)
+- Açılış videosu kalite/provenance audit'i (`npm run media:hero:json`)
 - Tam publish doğrulaması (`npm run publish:verify`)
 - Lokal launch smoke (`npm run launch:smoke`)
 - Monkey/chaos stres testleri (`npm run test:stress`)

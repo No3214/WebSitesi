@@ -2,6 +2,16 @@
 
 Last updated: 2026-06-18
 
+Verification command:
+
+```bash
+npm run media:hero
+```
+
+This gate checks the approved opening video hash, MP4 dimensions, duration,
+bitrate, poster derivatives, homepage component wiring, and the Playwright
+desktop/mobile playback contract before a release is accepted.
+
 ## Placement Rules
 
 - Do not use generated, stock-like, or uncertain venue imagery for product sections.
