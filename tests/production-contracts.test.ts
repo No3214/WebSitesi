@@ -170,6 +170,14 @@ describe("production readiness contracts", () => {
     expect(auditScript).toContain("--json");
     expect(auditScript).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL");
     expect(auditScript).toContain("^https://");
+    expect(auditScript).toContain("source_refs");
+    expect(auditScript).toContain("missing source refs");
+    expect(auditScript).toContain("scanEvidenceSource");
+    expect(auditScript).toContain("redaction findings");
+    expect(auditScript).toContain("process.exitCode");
+    expect(auditScript).not.toContain("process.exit(strict");
+    expect(evidenceReadme).toContain("source_refs:");
+    expect(evidenceReadme).toContain("Ready evidence must include redacted source-system references");
 
     for (const gate of [
       "hms-booking-engine.md",

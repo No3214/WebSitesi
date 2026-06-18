@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
+import { scanEvidenceSource } from "./evidence-redaction-scan.mjs";
+
 const root = process.cwd();
 const BASE_COMMERCIAL_SCORE = 82;
 
@@ -87,6 +89,7 @@ export const commercialLaunchGates = [
 
 const envFiles = [".env.production.local", ".env.production", ".env.local", ".env"];
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
+const requiredReadySections = ["## Summary", "## Proof", "## Residual Risk"];
 
 function parseEnvFile(source) {
   return Object.fromEntries(
@@ -152,6 +155,24 @@ function evidenceState(relPath, baseDir) {
     return { path: relPath, ready: false, reason: "pending status" };
   }
 
+  if (!/status:\s*ready/i.test(content)) {
+    return { path: relPath, ready: false, reason: "missing ready status" };
+  }
+
+  const missingSections = requiredReadySections.filter((section) => !content.includes(section));
+  if (missingSections.length > 0) {
+    return { path: relPath, ready: false, reason: `missing sections: ${missingSections.join(", ")}` };
+  }
+
+  if (!/^source_refs:\s*\S+/im.test(content) || /^source_refs:\s*(<.*>|replace_with.*|todo|tbd|none)\s*$/im.test(content)) {
+    return { path: relPath, ready: false, reason: "missing source refs" };
+  }
+
+  const redactionFindings = scanEvidenceSource(content, relPath);
+  if (redactionFindings.length > 0) {
+    return { path: relPath, ready: false, reason: "redaction findings" };
+  }
+
   return { path: relPath, ready: true, reason: "present" };
 }
 
@@ -214,7 +235,7 @@ function main() {
   const json = process.argv.includes("--json");
   const result = evaluateCommercialLaunch();
   console.log(json ? JSON.stringify(result, null, 2) : formatCommercialLaunchReport(result));
-  process.exit(strict && result.score < result.target ? 1 : 0);
+  process.exitCode = strict && result.score < result.target ? 1 : 0;
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] || "").href) {

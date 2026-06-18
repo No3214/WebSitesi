@@ -56,12 +56,16 @@ function writeEvidence(baseDir: string, relPath: string, status = "ready") {
       `status: ${status}`,
       "date: 2026-06-14",
       "owner: launch-qa",
+      "source_refs: OPS-1234, UAT-5678",
       "",
       "## Summary",
       "Redacted operational evidence confirms this launch gate was validated in the source system.",
       "",
       "## Proof",
       "Ticket, screenshot and UAT references are stored outside the repository without secrets or PII.",
+      "",
+      "## Residual Risk",
+      "No unresolved residual risk remains for this redacted test fixture.",
     ].join("\n"),
   );
 }
@@ -143,6 +147,67 @@ describe("commercial launch audit", () => {
         path: "docs/evidence/hms-booking-engine.md",
         ready: false,
         reason: "pending status",
+      },
+    ]);
+  });
+
+  it("blocks ready-looking evidence that has no source-system references", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const hmsPath = path.join(baseDir, "docs/evidence/hms-booking-engine.md");
+    fs.writeFileSync(
+      hmsPath,
+      fs.readFileSync(hmsPath, "utf8").replace(/^source_refs:.*$/m, "source_refs: todo"),
+    );
+
+    const result = audit.evaluateCommercialLaunch({ env, baseDir });
+    const hmsGate = result.gateResults.find((gate) => gate.id === "hms_booking_engine");
+
+    expect(result.score).toBeLessThan(100);
+    expect(hmsGate?.ready).toBe(false);
+    expect(hmsGate?.missingEvidence).toEqual([
+      {
+        path: "docs/evidence/hms-booking-engine.md",
+        ready: false,
+        reason: "missing source refs",
+      },
+    ]);
+  });
+
+  it("blocks ready evidence that contains redaction findings", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const garantiPath = path.join(baseDir, "docs/evidence/garanti-pos.md");
+    fs.writeFileSync(
+      garantiPath,
+      [
+        fs.readFileSync(garantiPath, "utf8"),
+        `masked regression fixture: 4242 ${"4242"} 4242 4242`,
+      ].join("\n"),
+    );
+
+    const result = audit.evaluateCommercialLaunch({ env, baseDir });
+    const garantiGate = result.gateResults.find((gate) => gate.id === "garanti_pos");
+
+    expect(result.score).toBeLessThan(100);
+    expect(garantiGate?.ready).toBe(false);
+    expect(garantiGate?.missingEvidence).toEqual([
+      {
+        path: "docs/evidence/garanti-pos.md",
+        ready: false,
+        reason: "redaction findings",
       },
     ]);
   });

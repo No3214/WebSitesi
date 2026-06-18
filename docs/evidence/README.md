@@ -12,6 +12,11 @@ machine-readable JSON for CI, dashboards and agent review. `npm run
 launch:audit:strict` intentionally fails until all evidence is present and no
 gate is blocked.
 
+Ready evidence must include redacted source-system references, such as ticket
+IDs, dashboard permalink IDs, approval note IDs, or UAT run IDs. Do not paste
+raw contracts, credentials, card data, customer PII, or private guest data into
+this repository.
+
 ## Required Evidence Files
 
 | File | Required proof |
@@ -34,6 +39,7 @@ Use this minimal structure:
 status: ready
 date: YYYY-MM-DD
 owner: <person/team>
+source_refs: <ticket-id>, <dashboard-link-id>, <uat-run-id>
 
 ## Summary
 
