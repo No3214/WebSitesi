@@ -173,6 +173,12 @@ describe("production readiness contracts", () => {
     ]) {
       expect(auditScript).toContain(gate);
       expect(evidenceReadme).toContain(gate);
+      const evidenceFile = read(`docs/evidence/${gate}`);
+      expect(evidenceFile.length, `${gate} should be a real evidence template`).toBeGreaterThan(300);
+      expect(evidenceFile, `${gate} must not be marked ready without source-system proof`).toMatch(
+        /status:\s*pending/i,
+      );
+      expect(evidenceFile).toContain("## Residual Risk");
     }
   });
 
