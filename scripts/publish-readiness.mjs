@@ -18,11 +18,13 @@ const requiredFiles = [
   "scripts/domain-readiness.mjs",
   "scripts/vercel-ops-readiness.mjs",
   "src/app/api/health/route.ts",
+  "src/lib/production-readiness.ts",
   "src/app/robots.ts",
   "src/app/sitemap.ts",
   "src/app/manifest.ts",
   "tests/e2e/health.spec.ts",
   "tests/e2e/publish-routes.spec.ts",
+  "tests/production-readiness.test.ts",
 ];
 
 const publicRoutes = [

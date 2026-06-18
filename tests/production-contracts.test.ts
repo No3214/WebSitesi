@@ -111,7 +111,9 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["release:verify"]).toBe("node scripts/release-verify.mjs");
     expect(readinessScript).toContain('"scripts/clean-next-build.mjs"');
     expect(readinessScript).toContain('"src/app/api/health/route.ts"');
+    expect(readinessScript).toContain('"src/lib/production-readiness.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
+    expect(readinessScript).toContain('"tests/production-readiness.test.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
     expect(readinessScript).toContain('"docs/vercel-operations.md"');
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
@@ -465,14 +467,20 @@ describe("production readiness contracts", () => {
 
   it("keeps the health endpoint safe for uptime monitors", () => {
     const healthRoute = read("src/app/api/health/route.ts");
+    const productionReadiness = read("src/lib/production-readiness.ts");
 
     expect(healthRoute).toContain('status: "ok"');
     expect(healthRoute).toContain('service: "kozbeyli-konagi"');
+    expect(healthRoute).toContain("getRuntimeReadiness");
+    expect(productionReadiness).toContain("canonical_domain");
+    expect(productionReadiness).toContain("production_abuse_controls");
+    expect(productionReadiness).toContain("hms_booking_engine");
     expect(healthRoute).toContain('"Cache-Control": "no-store, max-age=0"');
     expect(healthRoute).not.toContain("DATABASE_URI");
     expect(healthRoute).not.toContain("PAYLOAD_SECRET");
     expect(healthRoute).not.toContain("GARANTI_3D_STORE_KEY");
     expect(healthRoute).not.toContain("GA4_API_SECRET");
+    expect(healthRoute).not.toContain("TURNSTILE_SECRET_KEY");
   });
 
   it("keeps unknown room slugs returning page-level 404s without static fallback errors", () => {

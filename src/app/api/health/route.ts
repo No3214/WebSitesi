@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { getRuntimeReadiness } from "@/lib/production-readiness";
+
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
@@ -20,6 +22,9 @@ export function GET() {
       checks: {
         app: "ok",
         runtime: "nodejs",
+      },
+      readiness: {
+        runtimeConfiguration: getRuntimeReadiness(),
       },
       deployment: {
         environment: deploymentEnvironment(),

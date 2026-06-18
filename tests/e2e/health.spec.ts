@@ -17,6 +17,28 @@ test.describe("Health endpoint", () => {
         runtime: "nodejs",
       },
     });
+    const runtimeReadiness = body.readiness.runtimeConfiguration;
+    expect(runtimeReadiness.status).toMatch(/ready|blocked/);
+    expect(Array.isArray(runtimeReadiness.blockedGates)).toBe(true);
+    if (runtimeReadiness.status === "blocked") {
+      expect(runtimeReadiness.blockedGates.length).toBeGreaterThan(0);
+    }
+    expect(runtimeReadiness.checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "canonical_domain",
+          ready: expect.any(Boolean),
+          requiredCount: expect.any(Number),
+          configuredCount: expect.any(Number),
+        }),
+        expect.objectContaining({
+          id: "production_abuse_controls",
+          ready: expect.any(Boolean),
+          requiredCount: expect.any(Number),
+          configuredCount: expect.any(Number),
+        }),
+      ]),
+    );
     expect(Date.parse(body.timestamp)).not.toBeNaN();
     expect(typeof body.deployment.environment).toBe("string");
     expect(typeof body.deployment.commit).toBe("string");
@@ -30,6 +52,8 @@ test.describe("Health endpoint", () => {
       "TURNSTILE_SECRET_KEY",
       "IYZICO_WEBHOOK_SECRET",
       "HOTELRUNNER_WEBHOOK_SECRET",
+      "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
+      "UPSTASH_REDIS_REST_TOKEN",
     ]) {
       expect(serialized).not.toContain(forbidden);
     }
