@@ -13,6 +13,7 @@ describe("consent-gated analytics RUM contracts", () => {
   it("documents the public PostHog configuration used by the client", () => {
     const envExample = read(".env.example");
     const publicEnv = read("src/lib/public-env.ts");
+    const cookiePolicy = read("src/app/cerez-politikasi/page.tsx");
 
     for (const key of ["NEXT_PUBLIC_POSTHOG_KEY", "NEXT_PUBLIC_POSTHOG_HOST"]) {
       expect(envExample).toContain(key);
@@ -20,6 +21,9 @@ describe("consent-gated analytics RUM contracts", () => {
     }
 
     expect(envExample).toContain("https://eu.i.posthog.com");
+    expect(cookiePolicy).toContain("PostHog");
+    expect(cookiePolicy).toContain("gerçek kullanıcı site performansı");
+    expect(cookiePolicy).toContain("Açık rıza");
   });
 
   it("reports field Web Vitals only through the existing consent gate", () => {
