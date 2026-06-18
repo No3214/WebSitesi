@@ -75,6 +75,8 @@ function makeReadyEnv(audit: CommercialLaunchModule) {
           ? "production"
           : key === "NEXT_PUBLIC_SITE_URL"
             ? "https://kozbeylikonagi.com"
+            : key === "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"
+              ? "https://kozbeyli-konagi.hmshotel.net/bv3/search"
             : `live_${key}`,
       ]),
     ),

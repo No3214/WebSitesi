@@ -42,7 +42,7 @@ Payload admin paneli: `http://localhost:3000/admin` (ilk kullanıcı panelden ol
 | `NEXT_PUBLIC_SITE_URL` | Canonical site adresi (SEO, sitemap, OG) | Lokalde `http://localhost:3000`, canlıda alan adı |
 | `DATABASE_URI` | Postgres bağlantı dizesi (Payload CMS) | Supabase Dashboard > Project Settings > Database > Connection string |
 | `PAYLOAD_SECRET` | Payload oturum/şifreleme anahtarı | Uzun rastgele dize üret (`openssl rand -hex 32`) |
-| `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` | Online rezervasyon motoru linki | HMS panelindeki booking engine linki. Boş bırakılırsa site WhatsApp fallback ile çalışır; yayını engellemez |
+| `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` | Online rezervasyon motoru linki | HMS panelindeki HTTPS booking engine linki. Tanımlanınca rezervasyon yeni sekmede açılır; boş bırakılırsa site WhatsApp fallback ile çalışır; yayını engellemez |
 | `NEXT_PUBLIC_WHATSAPP_URL` | WhatsApp iletişim/rezervasyon fallback linki | `https://wa.me/<telefon>` formatında otel numarası |
 | `HOTELRUNNER_WEBHOOK_SECRET` | HMS/legacy webhook HMAC imza doğrulama sırrı | HMS webhook ayarlarında tanımlanan secret |
 | `IYZICO_WEBHOOK_SECRET` | Iyzico/PSP webhook HMAC imza doğrulama sırrı | Iyzico webhook ayarlarında tanımlanan ayrı secret |
@@ -205,7 +205,7 @@ public/              # Statik varlıklar (görseller, fontlar)
 | Rota | İçerik |
 | --- | --- |
 | `/` | Ana sayfa (hero, dönüşüm bölümleri) |
-| `/rezervasyon` | Rezervasyon (HMS embed veya WhatsApp fallback) |
+| `/rezervasyon` | Rezervasyon (HMS yeni sekme handoff veya WhatsApp fallback) |
 | `/iletisim` | İletişim, harita, lead formu |
 | `/odalar` ve `/odalar/[slug]` | Oda listesi ve detayları |
 | `/gastronomi` | Restoran ve mutfak deneyimi |

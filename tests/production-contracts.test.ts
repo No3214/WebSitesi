@@ -134,6 +134,8 @@ describe("production readiness contracts", () => {
       "node scripts/commercial-launch-audit.mjs --strict",
     );
     expect(auditScript).toContain("--json");
+    expect(auditScript).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL");
+    expect(auditScript).toContain("^https://");
 
     for (const gate of [
       "hms-booking-engine.md",
@@ -147,6 +149,22 @@ describe("production readiness contracts", () => {
       expect(auditScript).toContain(gate);
       expect(evidenceReadme).toContain(gate);
     }
+  });
+
+  it("keeps the HMS booking engine as a new-tab handoff instead of a cramped iframe", () => {
+    const bookingEmbed = read("src/components/hms-booking-embed.tsx");
+    const bookingUrlHelper = read("src/lib/booking-engine-url.ts");
+
+    expect(bookingEmbed).toContain("getBookingEngineHref");
+    expect(bookingEmbed).toContain("bookingHref");
+    expect(bookingEmbed).toContain('target="_blank"');
+    expect(bookingEmbed).toContain('rel="noopener noreferrer"');
+    expect(bookingEmbed).toContain("Rezervasyonu Ayrı Sekmede Aç");
+    expect(bookingEmbed).toContain("Open Booking in New Tab");
+    expect(bookingEmbed).not.toContain("<iframe");
+    expect(bookingUrlHelper).toContain('url.protocol !== "https:"');
+    expect(bookingUrlHelper).toContain('utm_source", "website"');
+    expect(bookingUrlHelper).toContain('utm_medium", "booking_engine"');
   });
 
   it("keeps canonical domain readiness executable and out of the green release gate until DNS is ready", () => {

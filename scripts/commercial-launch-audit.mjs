@@ -36,6 +36,12 @@ export const commercialLaunchGates = [
     points: 4,
     label: "HMS booking engine live URL and booking UAT evidence",
     env: ["NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"],
+    expectedEnv: {
+      NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: {
+        pattern: "^https://",
+        label: "HTTPS live booking engine URL",
+      },
+    },
     evidence: ["docs/evidence/hms-booking-engine.md"],
   },
   {

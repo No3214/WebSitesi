@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { PaymentWizard } from "./payment-wizard";
 import { HMSFullScriptEmbed } from "./hms-full-script-embed";
 
+import { getBookingEngineHref } from "@/lib/booking-engine-url";
 import { getWhatsAppHref } from "@/lib/contact";
 import { trackBeginCheckout } from "@/lib/gtm";
 import { publicEnv } from "@/lib/public-env";
@@ -13,17 +14,6 @@ const WHATSAPP_MESSAGE = {
   tr: "Merhaba, web sitesinden geldim. Müsaitlik öğrenmek istiyorum.",
   en: "Hello, I came from the website and would like to check availability.",
 } as const;
-
-function withBookingUtm(url: string) {
-  if (url.includes("?")) return url;
-  return `${url}?utm_source=website&utm_medium=booking_engine`;
-}
-
-function withRoomParam(url: string, roomSlug?: string) {
-  if (!roomSlug) return url;
-  const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}room=${encodeURIComponent(roomSlug)}`;
-}
 
 type HMSBookingEmbedProps = {
   locale?: "tr" | "en";
@@ -34,6 +24,7 @@ type HMSBookingEmbedProps = {
 export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBookingEmbedProps) {
   const bookingUrl = publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL;
   const scriptUrl = publicEnv.NEXT_PUBLIC_HMS_SCRIPT_URL;
+  const bookingHref = getBookingEngineHref(bookingUrl, { roomSlug });
 
   // GA4 begin_checkout: rezervasyon arayüzü (engine veya talep sihirbazı)
   // misafirin önüne geldiği anda huni başlangıcı sayılır.
@@ -47,12 +38,13 @@ export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBooki
     : WHATSAPP_MESSAGE[locale];
   const whatsappHref = getWhatsAppHref(whatsappMessage);
 
-  // Oncelik: HMS script (iFrame TAM) > iframe URL > talep sihirbazi fallback
-  if (scriptUrl) {
+  // Oncelik: resmi booking engine yeni sekme > HMS script fallback > talep sihirbazi.
+  // Iframe kullanmiyoruz; mobilde ve dar ekranlarda tarih/oda secimi sikisiyor.
+  if (!bookingHref && scriptUrl) {
     return <HMSFullScriptEmbed locale={locale} />;
   }
 
-  if (!bookingUrl) {
+  if (!bookingHref) {
     return (
       <div style={{ display: "grid", gap: 20 }}>
         <PaymentWizard locale={locale} />
@@ -74,19 +66,35 @@ export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBooki
   }
 
   return (
-    <div className="embed-box">
-      <iframe
-        src={withRoomParam(withBookingUtm(bookingUrl), roomSlug)}
-        title={locale === "tr" ? "Kozbeyli Konağı Rezervasyon" : "Kozbeyli Konağı Booking"}
-        style={{ width: "100%", minHeight: 720, border: 0 }}
-        data-event="booking_engine_open"
-      />
-      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "20px" }}>
+    <div className="embed-box booking-engine-handoff">
+      <div>
+        <p className="eyebrow">
+          {locale === "tr" ? "RESMİ REZERVASYON" : "OFFICIAL BOOKING"}
+        </p>
+        <h3 className="serif" style={{ fontSize: "clamp(1.7rem, 4vw, 2.4rem)", marginBottom: 12 }}>
+          {locale === "tr" ? "Rezervasyon Ekranı Ayrı Sekmede" : "Booking Opens in a New Tab"}
+        </h3>
+        <p className="muted" style={{ maxWidth: 620, lineHeight: 1.7 }}>
+          {locale === "tr"
+            ? "Canlı müsaitlik, tarih ve oda seçimi resmi rezervasyon ekranında tamamlanır. Bu sayfa oda detayları ve hızlı destek için açık kalır."
+            : "Live availability, dates and room selection are completed on the official booking screen while this page remains available for room details and support."}
+        </p>
+      </div>
+      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "24px" }}>
+        <a
+          className="button gold"
+          href={bookingHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-event="booking_engine_open"
+        >
+          {locale === "tr" ? "Rezervasyonu Ayrı Sekmede Aç" : "Open Booking in New Tab"}
+        </a>
         <a
           className="button secondary"
           href={whatsappHref}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           data-event="whatsapp_click"
         >
           {locale === "tr" ? "WhatsApp Destek" : "WhatsApp Support"}

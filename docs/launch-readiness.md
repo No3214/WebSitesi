@@ -146,7 +146,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 - Vendor DPA listesi + yurtdışı veri aktarımı değerlendirmesi: kanıt yok (hukuk danışmanı gerekli)
 
 ## 4. Kritik Blokajlar (yayına çıkma koşulları)
-1. HMS booking engine URL + entegrasyon modu (redirect/embed) → master dokümandaki 15 vendor sorusu sorulmalı
+1. HMS booking engine HTTPS URL + yeni sekme redirect/handoff UAT → master dokümandaki 15 vendor sorusu sorulmalı
 2. Garanti Sanal POS: Merchant/Terminal ID, 3D Store Key, test ortamı (`docs/odeme-karari.md` planı hazır)
 3. Engine geldikten sonra: canlı test rezervasyonu + iptal/iade + GA4 purchase doğrulaması
 4. GTM/GA4 ID'lerinin prod env'e girilmesi + Consent Mode doğrulaması
@@ -159,7 +159,7 @@ Kod tarafı bu kanıtları üretmez; kanıt gelince strict launch gate yeşile d
 1. HMS vendor'a 15 soruluk listeyi gönder (master doküman §3.2) — DIŞ
 2. Garanti POS evraklarını ve test bilgilerini tamamla — DIŞ
 3. GA4/GTM/Meta production ID'lerini Vercel env'e gir ve consent mode ile doğrula — DIŞ/KOD
-4. HMS engine geldikten sonra canlı booking redirect/embed kararını test et — DIŞ/KOD
+4. HMS engine geldikten sonra canlı booking yeni sekme handoff kararını test et — DIŞ/KOD
 5. HMS webhook'tan server-side purchase/booking_complete ölçümünü gerçek event ile doğrula — KOD+DIŞ
 6. Search Console, GBP, Hotel Center ve Apple Business Connect doğrulamalarını tamamla — DIŞ
 7. Vendor DPA, yurtdışı veri aktarımı ve KVKK metinlerini hukukçuya onaylat — HUKUK
