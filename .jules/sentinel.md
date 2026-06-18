@@ -1,0 +1,4 @@
+## 2024-06-18 - XSS Risk in JSON-LD Injection
+**Vulnerability:** Using raw `JSON.stringify` inside `dangerouslySetInnerHTML` for injecting `<script type="application/ld+json">` exposes the application to XSS attacks if the JSON data contains user-controlled strings with HTML tags or script closing tags (e.g. `</script>`).
+**Learning:** React's `dangerouslySetInnerHTML` does not sanitize JSON content. Even in a `<script>` tag, if an attacker can inject `</script><script>alert(1)</script>` into the JSON payload, it will execute in the browser context.
+**Prevention:** Always use a dedicated sanitizer function (like `sanitizeJsonLd` in `@/lib/security`) to stringify and escape dangerous characters (`<`, `>`, `&`, `\u2028`, `\u2029`) before injecting JSON data into `<script>` tags via `dangerouslySetInnerHTML`.

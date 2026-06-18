@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import sitemap from "../src/app/sitemap";
 
-const BASE_URL = "https://www.kozbeylikonagi.com";
+const BASE_URL = "https://www.kozbeylikonagi.com.tr";
 
 describe("sitemap", () => {
   it("/rezervasyon ve /iletisim URL'lerini icerir", () => {

@@ -1,3 +1,4 @@
+import { sanitizeJsonLd } from "@/lib/security";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -55,7 +56,7 @@ export default function KozbeyliVillageGuidePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(breadcrumbJsonLd) }}
       />
       <SiteHeader />
       <main>
