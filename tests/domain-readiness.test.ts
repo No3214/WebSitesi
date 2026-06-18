@@ -18,6 +18,11 @@ type DomainReadinessModule = {
     decision: string;
     blockers: string[];
     warnings: string[];
+    preview: {
+      home: {
+        hasOpeningHeroVideo: boolean;
+      };
+    };
   }>;
 };
 
@@ -34,11 +39,15 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-function htmlResponse(title: string, status = 200) {
-  return new Response(`<html><head><title>${title}</title></head><body></body></html>`, {
+function htmlResponse(title: string, status = 200, body = "") {
+  return new Response(`<html><head><title>${title}</title></head><body>${body}</body></html>`, {
     status,
     headers: { "content-type": "text/html" },
   });
+}
+
+function appShellResponse(title = "Kozbeyli Konağı") {
+  return htmlResponse(title, 200, '<video class="hero-video"><source src="/videos/hero.mp4" /></video>');
 }
 
 const healthyBody = {
@@ -57,7 +66,7 @@ describe("domain readiness", () => {
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.includes("kozbeyli-konagi.vercel.app/api/health")) return jsonResponse(healthyBody);
-        if (href.includes("kozbeyli-konagi.vercel.app")) return htmlResponse("Kozbeyli Konağı");
+        if (href.includes("kozbeyli-konagi.vercel.app")) return appShellResponse();
         if (href.endsWith("/api/health")) return htmlResponse("Not Found", 404);
         return htmlResponse("Kozbeyli Konağı - Landing Page");
       },
@@ -71,9 +80,36 @@ describe("domain readiness", () => {
     expect(result.blockers).toContain(
       "https://kozbeylikonagi.com does not serve kozbeyli-konagi at current commit",
     );
+    expect(result.blockers).toContain(
+      "https://kozbeylikonagi.com homepage does not expose opening hero video /videos/hero.mp4",
+    );
   });
 
-  it("returns GO when preview and canonical domains serve the same current app health", async () => {
+  it("returns NO-GO when app health is current but the homepage is not the opening video shell", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://kozbeylikonagi.com"],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      fetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
+        if (href.includes("kozbeyli-konagi.vercel.app")) return appShellResponse();
+        return htmlResponse("Kozbeyli Konağı - Landing Page");
+      },
+      resolveNsImpl: async () => ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
+      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
+    });
+
+    expect(result.previewReady).toBe(true);
+    expect(result.canonicalReady).toBe(false);
+    expect(result.decision).toBe("CANONICAL DOMAIN NO-GO");
+    expect(result.blockers).toEqual([
+      "https://kozbeylikonagi.com homepage does not expose opening hero video /videos/hero.mp4",
+    ]);
+  });
+
+  it("returns GO when preview and canonical domains serve the same current app health and hero video shell", async () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
     const result = await evaluateDomainReadiness({
       canonicalOrigins: ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"],
@@ -82,7 +118,7 @@ describe("domain readiness", () => {
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
-        return htmlResponse("Kozbeyli Konağı");
+        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
       },
       resolveNsImpl: async () => ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
       resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
@@ -92,6 +128,7 @@ describe("domain readiness", () => {
     expect(result.canonicalReady).toBe(true);
     expect(result.dnsReady).toBe(true);
     expect(result.decision).toBe("CANONICAL DOMAIN GO");
+    expect(result.preview.home.hasOpeningHeroVideo).toBe(true);
     expect(result.blockers).toEqual([]);
   });
 
@@ -104,7 +141,7 @@ describe("domain readiness", () => {
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
-        return htmlResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
+        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
       },
       resolveNsImpl: async () => {
         throw new Error("queryNs ECONNREFUSED kozbeylikonagi.com");

@@ -5,6 +5,7 @@ import { pathToFileURL } from "node:url";
 const DEFAULT_CANONICAL_ORIGINS = ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"];
 const DEFAULT_PREVIEW_ORIGIN = "https://kozbeyli-konagi.vercel.app";
 const EXPECTED_SERVICE = "kozbeyli-konagi";
+const EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4";
 
 function normalizeOrigin(origin) {
   return origin.replace(/\/+$/, "");
@@ -92,7 +93,9 @@ async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutM
   const serviceOk = healthJson?.service === EXPECTED_SERVICE && healthJson?.status === "ok";
   const actualCommit = String(healthJson?.deployment?.commit || "");
   const commitOk = commitMatches(actualCommit, expectedCommit);
-  const ready = Boolean(serviceOk && commitOk);
+  const hasOpeningHeroVideo = home.text.includes(EXPECTED_HERO_VIDEO_SRC);
+  const homeOk = Boolean(home.ok && hasOpeningHeroVideo);
+  const ready = Boolean(serviceOk && commitOk && homeOk);
 
   return {
     origin: normalizedOrigin,
@@ -113,8 +116,27 @@ async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutM
       contentType: home.contentType,
       title: extractTitle(home.text),
       error: home.error || "",
+      expectedHeroVideoSrc: EXPECTED_HERO_VIDEO_SRC,
+      hasOpeningHeroVideo,
+      homeOk,
     },
   };
+}
+
+function originBlockers(item) {
+  const blockers = [];
+
+  if (!item.health.serviceOk || !item.health.commitOk) {
+    blockers.push(`${item.origin} does not serve ${EXPECTED_SERVICE} at current commit`);
+  }
+
+  if (!item.home.homeOk) {
+    blockers.push(
+      `${item.origin} homepage does not expose opening hero video ${EXPECTED_HERO_VIDEO_SRC}`,
+    );
+  }
+
+  return blockers;
 }
 
 async function checkDns({
@@ -167,10 +189,8 @@ export async function evaluateDomainReadiness({
     ...(dns.mxOk ? [] : ["canonical domain MX record could not be verified as mx.kozbeylikonagi.com"]),
   ];
   const blockers = [
-    ...canonical
-      .filter((item) => !item.ready)
-      .map((item) => `${item.origin} does not serve ${EXPECTED_SERVICE} at current commit`),
-    ...(previewReady ? [] : [`${preview.origin} preview does not serve ${EXPECTED_SERVICE} at current commit`]),
+    ...canonical.flatMap(originBlockers),
+    ...(previewReady ? [] : originBlockers(preview).map((blocker) => blocker.replace(preview.origin, `${preview.origin} preview`))),
   ];
 
   return {
@@ -197,6 +217,7 @@ export function formatDomainReadiness(result) {
     "",
     `Preview: ${result.preview.ready ? "PASS" : "FAIL"} ${result.preview.origin}`,
     `  health: HTTP ${result.preview.health.status}, service=${result.preview.health.service || "n/a"}, commit=${result.preview.health.deploymentCommit || "n/a"}`,
+    `  home: HTTP ${result.preview.home.status}, title=${result.preview.home.title || "n/a"}, heroVideo=${result.preview.home.hasOpeningHeroVideo ? "yes" : "no"}`,
     "",
     "Canonical domains:",
   ];
@@ -206,7 +227,9 @@ export function formatDomainReadiness(result) {
     lines.push(
       `  health: HTTP ${item.health.status}, content-type=${item.health.contentType || "n/a"}, service=${item.health.service || "n/a"}, commit=${item.health.deploymentCommit || "n/a"}`,
     );
-    lines.push(`  home: HTTP ${item.home.status}, title=${item.home.title || "n/a"}`);
+    lines.push(
+      `  home: HTTP ${item.home.status}, title=${item.home.title || "n/a"}, heroVideo=${item.home.hasOpeningHeroVideo ? "yes" : "no"}`,
+    );
   }
 
   lines.push("");
@@ -240,7 +263,7 @@ async function main() {
   const json = process.argv.includes("--json");
   const result = await evaluateDomainReadiness();
   console.log(json ? JSON.stringify(result, null, 2) : formatDomainReadiness(result));
-  process.exit(strict && result.decision !== "CANONICAL DOMAIN GO" ? 1 : 0);
+  process.exitCode = strict && result.decision !== "CANONICAL DOMAIN GO" ? 1 : 0;
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] || "").href) {

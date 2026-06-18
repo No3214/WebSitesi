@@ -17,8 +17,11 @@ application health endpoint.
 Use `npm run domain:verify` to reproduce the check. The gate requires both
 canonical origins to return `/api/health` JSON with
 `service: "kozbeyli-konagi"` and a deployment commit matching the current
-production commit. Until that passes, the canonical domain is not considered
-production-ready even if the Vercel preview URL is healthy.
+production commit. It also requires the canonical homepage HTML to expose the
+approved opening hero video asset, `/videos/hero.mp4`, so a stale landing page
+or static placeholder cannot pass as production-ready. Until both checks pass,
+the canonical domain is not considered production-ready even if the Vercel
+preview URL is healthy.
 
 ## Residual Risk
 

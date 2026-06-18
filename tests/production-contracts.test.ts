@@ -232,6 +232,11 @@ describe("production readiness contracts", () => {
     );
     expect(domainScript).toContain("CANONICAL DOMAIN NO-GO");
     expect(domainScript).toContain("/api/health");
+    expect(domainScript).toContain('EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4"');
+    expect(domainScript).toContain("hasOpeningHeroVideo");
+    expect(domainScript).toContain("homepage does not expose opening hero video");
+    expect(domainScript).toContain("process.exitCode");
+    expect(domainScript).not.toContain("process.exit(strict");
     expect(domainScript).toContain("kozbeylikonagi.com");
     expect(domainScript).toContain("kozbeyli-konagi.vercel.app");
     expect(releaseScript).not.toContain("domain:verify:strict");
