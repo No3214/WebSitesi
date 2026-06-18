@@ -55,6 +55,8 @@ Payload admin paneli: `http://localhost:3000/admin` (ilk kullanıcı panelden ol
 | `B2B_PARTNER_PUBLIC_KEY` | B2B availability endpoint partner public key'i | Partner onboarding sonrası SPKI PEM |
 | `NEXT_PUBLIC_GTM_ID` | Google Tag Manager container ID | GTM paneli (`GTM-XXXXXXX`) |
 | `NEXT_PUBLIC_META_PIXEL_ID` | Meta (Facebook) Pixel kimliği | Meta Events Manager |
+| `NEXT_PUBLIC_POSTHOG_KEY` | Analytics rızası sonrası sayfa görüntüleme ve Core Web Vitals RUM | PostHog Project Settings > Project API key |
+| `NEXT_PUBLIC_POSTHOG_HOST` | PostHog veri alım hostu; EU bölgesi varsayılandır | PostHog proje bölgesi; varsayılan `https://eu.i.posthog.com` |
 | `GOOGLE_SITE_VERIFICATION` | Search Console site doğrulama meta etiketi | Google Search Console > Ownership verification |
 | `FACEBOOK_DOMAIN_VERIFICATION` | Meta alan adı doğrulama etiketi | Meta Business Manager > Brand Safety > Domains |
 | `NEXT_PUBLIC_GOOGLE_MAPS_URL` | İşletmenin Google Haritalar linki | Google Maps > Paylaş > Bağlantıyı kopyala |
@@ -64,7 +66,8 @@ Payload admin paneli: `http://localhost:3000/admin` (ilk kullanıcı panelden ol
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash REST token | Upstash Redis REST |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile bot koruması (istemci) | Cloudflare Dashboard > Turnstile > Site key |
 | `TURNSTILE_SECRET_KEY` | Turnstile sunucu tarafı doğrulama anahtarı | Cloudflare Dashboard > Turnstile > Secret key |
-Not: `NEXT_PUBLIC_` öneki olan değişkenler tarayıcıya açılır; sır içeren değerleri bu önekle tanımlamayın.
+
+Not: `NEXT_PUBLIC_` öneki olan değişkenler tarayıcıya açılır; sır içeren değerleri bu önekle tanımlamayın. PostHog aktivasyonu ve gizlilik doğrulaması için `docs/real-user-monitoring.md` dosyasını izleyin.
 
 ## Komutlar
 
