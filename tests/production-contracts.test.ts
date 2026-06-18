@@ -404,6 +404,14 @@ describe("production readiness contracts", () => {
     expect(homeHero).toContain("video.defaultMuted = true");
     expect(homeHero).toContain("userPausedRef.current && !force");
     expect(globals).toContain(".hero-video-control");
+    expect(globals).toContain("rgba(61, 74, 59, 0.88)");
+    expect(globals).toContain(".hero-title-accent");
+    expect(globals).toContain("color: var(--gold-soft)");
+    expect(globals).toContain("font-style: italic");
+    expect(globals).toContain("font-size: clamp(1.75rem, 7vw, 2.25rem)");
+    expect(globals).toContain("color: #fff");
+    expect(globals).toContain("0 2px 34px rgba(0, 0, 0, 0.5)");
+    expect(globals).toContain("text-shadow: 0 2px 40px rgba(0, 0, 0, 0.3)");
     expect(homeHero).toContain("srcSet=");
     expect(homeHero).not.toContain("RevealLines");
     expect(homeHero).not.toContain("<motion.div");

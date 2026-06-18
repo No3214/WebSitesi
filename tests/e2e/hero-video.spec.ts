@@ -32,6 +32,28 @@ async function expectHeroVideoPlaying(page: import("@playwright/test").Page) {
     .toBe(true);
 }
 
+async function expectHeroVideoQuality(page: import("@playwright/test").Page) {
+  await waitForHeroVideoSource(page);
+  await expect
+    .poll(
+      async () =>
+        page.locator(".hero-video").evaluate((video) => {
+          const element = video as HTMLVideoElement;
+          return {
+            width: element.videoWidth,
+            height: element.videoHeight,
+            readyState: element.readyState,
+          };
+        }),
+      { timeout: 15000 }
+    )
+    .toMatchObject({
+      width: 1280,
+      height: 2276,
+      readyState: expect.any(Number),
+    });
+}
+
 async function expectHeroVideoPaused(page: import("@playwright/test").Page) {
   await expect
     .poll(
@@ -52,7 +74,9 @@ test.describe("Homepage hero video", () => {
 
     await expect(page.locator(".hero h1")).toBeVisible({ timeout: 15000 });
     await expect(page.locator(".hero h1")).toContainText("Tarihin Kalbinde");
+    await expect(page.locator(".hero-title-accent")).toContainText("Zarif Bir Ege Kaçamağı");
     await expectHeroVideoPlaying(page);
+    await expectHeroVideoQuality(page);
 
     const videoToggle = page.getByTestId("hero-video-toggle");
     await expect(videoToggle).toBeVisible();
@@ -73,6 +97,15 @@ test.describe("Homepage hero video", () => {
 
     await expect(page.locator(".hero h1")).toBeVisible({ timeout: 15000 });
     await expectHeroVideoPlaying(page);
+    await expectHeroVideoQuality(page);
+    const accentBounds = await page.locator(".hero-title-accent").evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, viewportWidth: window.innerWidth };
+    });
+    expect(accentBounds.left, "Hero accent should stay inside the mobile viewport").toBeGreaterThanOrEqual(-1);
+    expect(accentBounds.right, "Hero accent should stay inside the mobile viewport").toBeLessThanOrEqual(
+      accentBounds.viewportWidth + 1,
+    );
 
     const overflow = await page.evaluate(() => {
       const root = document.documentElement;

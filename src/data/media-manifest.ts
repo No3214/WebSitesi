@@ -44,10 +44,10 @@ export const mediaManifest: MediaAsset[] = [
     page: "/",
     topic: "Tas konak montaji (dis cephe + atmosfer)",
     role: "hero-video",
-    source: "Kozbeyli cekim montaji (2026-06-16)",
+    source: "Kozbeyli/Emergent yuksek kalite cekim montaji (2026-06-18)",
     approved: true,
     sha256:
-      "bec54fd97185b0722bd9984382fa5c5efb6fabfe423932fe4ee7dffe1acfbf67",
+      "62bb0b9fc0c71912913d763d1446a768e0718f4f9da689e76c4fe41d6f8b371e",
   },
   {
     path: "/images/hero-video-poster-1280.webp",

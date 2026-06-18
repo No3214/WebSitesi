@@ -142,10 +142,8 @@ function HeroVideo({ locale }: Pick<Props, "locale">) {
 }
 
 export function HomeHero({ locale, eyebrow }: Props) {
-  const heroLines =
-    locale === "tr"
-      ? ["Tarihin Kalbinde", "Zarif Bir Ege Kaçamağı"]
-      : ["In the Heart of History", "An Elegant Aegean Escape"];
+  const heroTitle = locale === "tr" ? "Tarihin Kalbinde" : "In the Heart of History";
+  const heroAccent = locale === "tr" ? "Zarif Bir Ege Kaçamağı" : "An Elegant Aegean Escape";
   const reservationHref = locale === "en" ? "/en/rezervasyon" : "/rezervasyon";
   const eventsHref = locale === "en" ? "/en/organizasyonlar" : "/organizasyonlar";
 
@@ -175,16 +173,17 @@ export function HomeHero({ locale, eyebrow }: Props) {
       </div>
 
       <div className="container" style={{ position: "relative", zIndex: 2, padding: "140px 0 120px" }}>
-        <span className="eyebrow" style={{ color: "var(--gold-soft)" }}>
+        <span className="eyebrow hero-eyebrow">
           {eyebrow}
         </span>
 
-        <h1 aria-label={heroLines.join(" ")}>
-          {heroLines.map((line) => (
-            <span key={line} aria-hidden="true" style={{ display: "block" }}>
-              {line}
-            </span>
-          ))}
+        <h1 aria-label={`${heroTitle} ${heroAccent}`}>
+          <span aria-hidden="true" className="hero-title-line">
+            {heroTitle}
+          </span>
+          <span aria-hidden="true" className="hero-title-line hero-title-accent">
+            {heroAccent}
+          </span>
         </h1>
 
         <p className="hero-text">
