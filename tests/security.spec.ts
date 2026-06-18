@@ -1,5 +1,23 @@
 import crypto from "node:crypto";
-import { expect, test } from "@playwright/test";
+import { expect, test, type APIRequestContext, type APIResponse } from "@playwright/test";
+
+async function postWithTransientResetRetry(
+  request: APIRequestContext,
+  url: string,
+  options: Parameters<APIRequestContext["post"]>[1],
+): Promise<APIResponse> {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await request.post(url, options);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!message.includes("ECONNRESET") || attempt === 2) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+    }
+  }
+
+  throw new Error("Unreachable transient retry state");
+}
 
 test.describe("Security Audit Test", () => {
   const webhookSecret = process.env.HOTELRUNNER_WEBHOOK_SECRET || "hotelrunner-dev-secret";
@@ -168,7 +186,7 @@ test.describe("Security Audit Test", () => {
 
   test("legacy chat API should not be exposed", async ({ request, baseURL }) => {
     const url = baseURL || "http://localhost:3006";
-    const response = await request.post(`${url}/api/chat`, {
+    const response = await postWithTransientResetRetry(request, `${url}/api/chat`, {
       data: {
         messages: [{ role: "user", content: "Merhaba" }],
       },

@@ -395,11 +395,15 @@ describe("production readiness contracts", () => {
     expect(homeHero).not.toContain("prefers-reduced-motion: reduce");
     expect(homeHero).not.toContain("setShouldRender");
     expect(homeHero).not.toContain("if (!shouldRender) return null");
-    expect(homeHero).not.toContain("useState");
+    expect(homeHero).not.toContain("const [shouldRender");
     expect(heroVideoCss).toContain("opacity: 1");
     expect(heroVideoCss).not.toContain("opacity: 0");
     expect(homeHero).toContain('fetchPriority="high"');
     expect(homeHero).toContain("hero-video-poster-1280.webp");
+    expect(homeHero).toContain('data-testid="hero-video-toggle"');
+    expect(homeHero).toContain("video.defaultMuted = true");
+    expect(homeHero).toContain("userPausedRef.current && !force");
+    expect(globals).toContain(".hero-video-control");
     expect(homeHero).toContain("srcSet=");
     expect(homeHero).not.toContain("RevealLines");
     expect(homeHero).not.toContain("<motion.div");

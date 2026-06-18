@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { Pause, Play } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
@@ -15,8 +16,44 @@ const HERO_VIDEO_SRC = "/videos/hero.mp4";
  * - Data Saver'da oynatma zorlanmaz; normal cihazlarda sessiz/playsInline
  *   arka plan reel'i tekrar tekrar başlatılmaya çalışılır.
  */
-function HeroVideo() {
+function HeroVideo({ locale }: Pick<Props, "locale">) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const userPausedRef = useRef(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackBlocked, setPlaybackBlocked] = useState(false);
+
+  const start = useCallback(async (force = false) => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (userPausedRef.current && !force) return;
+
+    try {
+      video.defaultMuted = true;
+      video.muted = true;
+      video.playsInline = true;
+      await video.play();
+      setIsPlaying(!video.paused);
+      setPlaybackBlocked(false);
+    } catch {
+      setIsPlaying(false);
+      setPlaybackBlocked(true);
+    }
+  }, []);
+
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (!video.paused) {
+      userPausedRef.current = true;
+      video.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    userPausedRef.current = false;
+    void start(true);
+  };
 
   useEffect(() => {
     const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
@@ -25,18 +62,8 @@ function HeroVideo() {
     let cancelled = false;
     const timers: number[] = [];
 
-    const start = async () => {
-      if (cancelled) return;
-      const video = videoRef.current;
-      if (!video) return;
-
-      try {
-        video.muted = true;
-        video.playsInline = true;
-        await video.play();
-      } catch {
-        /* autoplay engellendiyse poster görseliyle devam */
-      }
+    const tryStart = () => {
+      if (!cancelled) void start();
     };
 
     const handleVisibility = () => {
@@ -45,41 +72,72 @@ function HeroVideo() {
 
     void start();
     timers.push(
-      window.setTimeout(start, 300),
-      window.setTimeout(start, 900),
-      window.setTimeout(start, 2200),
+      window.setTimeout(tryStart, 300),
+      window.setTimeout(tryStart, 900),
+      window.setTimeout(tryStart, 2200),
     );
-    window.addEventListener("focus", start);
+    window.addEventListener("focus", tryStart);
     document.addEventListener("visibilitychange", handleVisibility);
-    window.addEventListener("pointerdown", start, { once: true });
+    window.addEventListener("pointerdown", tryStart, { once: true });
 
     return () => {
       cancelled = true;
       timers.forEach((timer) => window.clearTimeout(timer));
-      window.removeEventListener("focus", start);
+      window.removeEventListener("focus", tryStart);
       document.removeEventListener("visibilitychange", handleVisibility);
-      window.removeEventListener("pointerdown", start);
+      window.removeEventListener("pointerdown", tryStart);
     };
-  }, []);
+  }, [start]);
+
+  const controlLabel =
+    locale === "tr"
+      ? isPlaying
+        ? "Açılış videosunu duraklat"
+        : "Açılış videosunu oynat"
+      : isPlaying
+        ? "Pause opening video"
+        : "Play opening video";
 
   return (
-    <video
-      ref={videoRef}
-      className="hero-video"
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="auto"
-      poster="/images/hero-video-poster-1280.webp"
-      aria-hidden
-      tabIndex={-1}
-      disablePictureInPicture
-      onLoadedData={() => void videoRef.current?.play().catch(() => {})}
-      onCanPlay={() => void videoRef.current?.play().catch(() => {})}
-    >
-      <source src={HERO_VIDEO_SRC} type="video/mp4" />
-    </video>
+    <>
+      <video
+        ref={videoRef}
+        className="hero-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        poster="/images/hero-video-poster-1280.webp"
+        aria-hidden
+        tabIndex={-1}
+        disablePictureInPicture
+        onLoadedData={() => void start()}
+        onCanPlay={() => void start()}
+        onPlaying={() => {
+          setIsPlaying(true);
+          setPlaybackBlocked(false);
+        }}
+        onPause={() => setIsPlaying(false)}
+        onError={() => {
+          setIsPlaying(false);
+          setPlaybackBlocked(true);
+        }}
+      >
+        <source src={HERO_VIDEO_SRC} type="video/mp4" />
+      </video>
+      <button
+        type="button"
+        className="hero-video-control"
+        aria-label={controlLabel}
+        title={controlLabel}
+        data-testid="hero-video-toggle"
+        data-state={isPlaying ? "playing" : playbackBlocked ? "blocked" : "paused"}
+        onClick={togglePlayback}
+      >
+        {isPlaying ? <Pause aria-hidden size={18} strokeWidth={2.2} /> : <Play aria-hidden size={18} strokeWidth={2.2} />}
+      </button>
+    </>
   );
 }
 
@@ -113,7 +171,7 @@ export function HomeHero({ locale, eyebrow }: Props) {
             alt={locale === "tr" ? "Kozbeyli Konağı taş cephesi ve Ege manzarası" : "Kozbeyli Konağı stone facade and Aegean view"}
           />
         </picture>
-        <HeroVideo />
+        <HeroVideo locale={locale} />
       </div>
 
       <div className="container" style={{ position: "relative", zIndex: 2, padding: "140px 0 120px" }}>

@@ -539,6 +539,41 @@
     opacity: 1;
   }
 
+  .hero-video-control {
+    position: absolute;
+    right: clamp(20px, 4vw, 56px);
+    bottom: clamp(28px, 5vw, 56px);
+    z-index: 4;
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(250, 249, 246, 0.42);
+    border-radius: 999px;
+    background: rgba(20, 22, 26, 0.35);
+    color: var(--ivory);
+    cursor: pointer;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: background var(--dur) var(--ease-lux), border-color var(--dur) var(--ease-lux),
+      color var(--dur) var(--ease-lux), transform var(--dur) var(--ease-lux);
+  }
+
+  .hero-video-control:hover,
+  .hero-video-control:focus-visible {
+    background: rgba(250, 249, 246, 0.9);
+    border-color: rgba(250, 249, 246, 0.78);
+    color: var(--ink);
+    transform: translateY(-2px);
+  }
+
+  .hero-video-control[data-state="blocked"] {
+    border-color: rgba(207, 179, 137, 0.78);
+    color: var(--gold-soft);
+  }
+
   .hero h1 {
     font-size: var(--fs-hero);
     line-height: 1.08;
@@ -1669,6 +1704,13 @@
 
     .scroll-cue {
       bottom: 110px;
+    }
+
+    .hero-video-control {
+      right: 20px;
+      bottom: 28px;
+      width: 44px;
+      height: 44px;
     }
 
     .faq-a p {
