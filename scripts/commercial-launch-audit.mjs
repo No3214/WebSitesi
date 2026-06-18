@@ -3,9 +3,34 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 const root = process.cwd();
-const BASE_COMMERCIAL_SCORE = 86;
+const BASE_COMMERCIAL_SCORE = 82;
 
 export const commercialLaunchGates = [
+  {
+    id: "canonical_domain",
+    points: 2,
+    label: "Canonical kozbeylikonagi.com domains serve current Vercel production health",
+    env: ["NEXT_PUBLIC_SITE_URL"],
+    expectedEnv: {
+      NEXT_PUBLIC_SITE_URL: {
+        pattern: "^https://(www\\.)?kozbeylikonagi\\.com$",
+        label: "https://kozbeylikonagi.com or https://www.kozbeylikonagi.com",
+      },
+    },
+    evidence: ["docs/evidence/canonical-domain.md"],
+  },
+  {
+    id: "production_abuse_controls",
+    points: 2,
+    label: "Production Turnstile and shared Upstash rate-limit/replay controls",
+    env: [
+      "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
+      "TURNSTILE_SECRET_KEY",
+      "UPSTASH_REDIS_REST_URL",
+      "UPSTASH_REDIS_REST_TOKEN",
+    ],
+    evidence: ["docs/evidence/production-abuse-controls.md"],
+  },
   {
     id: "hms_booking_engine",
     points: 4,
@@ -92,6 +117,20 @@ function hasMeaningfulValue(value) {
   return Boolean(value && value.trim() && !placeholderPattern.test(value));
 }
 
+function envIssues(gate, env) {
+  return gate.env.flatMap((key) => {
+    const value = env[key];
+    if (!hasMeaningfulValue(value)) return [key];
+
+    const expected = gate.expectedEnv?.[key];
+    if (expected && !new RegExp(expected.pattern).test(value)) {
+      return [`${key} (expected ${expected.label})`];
+    }
+
+    return [];
+  });
+}
+
 function evidenceState(relPath, baseDir) {
   const fullPath = path.join(baseDir, relPath);
   if (!fs.existsSync(fullPath)) {
@@ -112,7 +151,7 @@ function evidenceState(relPath, baseDir) {
 
 export function evaluateCommercialLaunch({ env = loadEnvSnapshot(), baseDir = root } = {}) {
   const gateResults = commercialLaunchGates.map((gate) => {
-    const missingEnv = gate.env.filter((key) => !hasMeaningfulValue(env[key]));
+    const missingEnv = envIssues(gate, env);
     const evidence = gate.evidence.map((file) => evidenceState(file, baseDir));
     const missingEvidence = evidence.filter((item) => !item.ready);
     const ready = missingEnv.length === 0 && missingEvidence.length === 0;

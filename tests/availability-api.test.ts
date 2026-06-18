@@ -22,11 +22,13 @@ function signPayload(privateKey: KeyObject, timestamp: string, body: string) {
   return signer.sign(privateKey).toString("base64");
 }
 
-async function loadRoute(publicKeyPem?: string) {
+async function loadRoute(publicKeyPem?: string, options: { allowStaticAvailability?: boolean } = {}) {
   vi.resetModules();
   process.env = { ...ORIGINAL_ENV };
   if (publicKeyPem) process.env.B2B_PARTNER_PUBLIC_KEY = publicKeyPem;
   else delete process.env.B2B_PARTNER_PUBLIC_KEY;
+  if (options.allowStaticAvailability) process.env.B2B_ALLOW_STATIC_AVAILABILITY = "true";
+  else delete process.env.B2B_ALLOW_STATIC_AVAILABILITY;
   return import("@/app/api/v1/availability/route");
 }
 
@@ -127,6 +129,20 @@ describe("/api/v1/availability", () => {
     expect(response.status).toBe(400);
   });
 
+  it("stays fail-closed after valid auth when no live availability source is configured", async () => {
+    const { privateKey, publicKeyPem } = createPartnerFixture();
+    const { POST } = await loadRoute(publicKeyPem);
+
+    const response = await POST(buildSignedRequest({ privateKey }));
+    const body = await response.json();
+
+    expect(response.status).toBe(503);
+    expect(body).toMatchObject({
+      error: "Live availability source is not configured.",
+      status: "manual_required",
+    });
+  });
+
   it("rejects impossible calendar dates", async () => {
     const { privateKey, publicKeyPem } = createPartnerFixture();
     const { POST } = await loadRoute(publicKeyPem);
@@ -143,7 +159,7 @@ describe("/api/v1/availability", () => {
 
   it("accepts valid signed requests and blocks replay", async () => {
     const { privateKey, publicKeyPem } = createPartnerFixture();
-    const { POST } = await loadRoute(publicKeyPem);
+    const { POST } = await loadRoute(publicKeyPem, { allowStaticAvailability: true });
     const timestamp = new Date().toISOString();
     const body = { checkIn: "2026-07-10", checkOut: "2026-07-12", guests: 2 };
 

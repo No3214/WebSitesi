@@ -22,7 +22,7 @@ const museumCopy = {
       x: 200, 
       y: 150, 
       title: "Taşın Hafızası: Horasan", 
-      detail: "500 yıldır bu konağı ayakta tutan Horasan harcı, taşların birbiriyle sessizce konuştuğu bir mirastır. Çimento girmemiş bu duvarlar, konağın her mevsim nefes almasını sağlar.",
+      detail: "19. yüzyıl tescilli taş konağın Horasan harcı, taşların birbiriyle sessizce konuştuğu bir mirastır. Beş asırlık Kozbeyli köy dokusunun içinde çimento girmemiş bu duvarlar, konağın her mevsim nefes almasını sağlar.",
       image: "/images/odalar/standart-deniz-manzarali-oda/2.jpg"
     },
     { 

@@ -12,7 +12,7 @@ export const ContentAgent = {
       },
       {
         condition: "Rainy",
-        update: "Taş şöminemizin başında, 500 yıllık tarihin huzurunu yağmurun sesiyle dinlemek için mükemmel bir gün.",
+        update: "Taş şöminemizin başında, beş asırlık Kozbeyli köy dokusunun huzurunu yağmurun sesiyle dinlemek için mükemmel bir gün.",
         gastronomy_tip: "Sıcak bir dibek kahvesi ve İnci Hanım'ın fırından yeni çıkmış anne kurabiyeleri ruhunuzu ısıtacak."
       }
     ];

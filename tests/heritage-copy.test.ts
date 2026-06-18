@@ -4,12 +4,16 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const checkedRoots = ["src", "public", "docs", "brand"];
+const canonicalDomainRoots = ["src", "public", "docs", "README.md"];
 const ignoredDirectories = new Set(["node_modules", ".next", "test-results"]);
 const heritageAgePatterns = [
   /200\s*yıllık\s+bir\s+hikaye/i,
   /200-year-old\s+story/i,
   /200\s*year\s+old\s+story/i,
   /\b(?:180|200)\s*yıllık\s+tescilli\s+(?:bir\s+)?taş\s+yapı/i,
+  /500\s*yıllık\s+(?:orijinal\s+)?taş\s+dibek/i,
+  /500\s*yıllık[^.\n]*(?:konak|Osmanlı\s+taş\s+mimarisi|tescilli\s+taş\s+mimari)/i,
+  /500-year-old\s+(?:registered\s+)?stone\s+(?:architecture|mansion|dibek)/i,
 ];
 const turkishPublicCopyFiles = [
   "src/dictionaries/tr.json",
@@ -76,11 +80,25 @@ describe("heritage copy consistency", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("keeps the brand knowledge base aligned with the 500-year registered stone heritage claim", () => {
+  it("keeps the brand knowledge base aligned with the canonical heritage age taxonomy", () => {
     const about = fs.readFileSync(path.join(process.cwd(), "brand/knowledge_base/optimized_about.md"), "utf8");
 
-    expect(about).toContain("500 yıllık tescilli taş mimari");
+    expect(about).toContain("beş asırlık Kozbeyli köy dokusu");
+    expect(about).toContain("1870-1891 dönemi tescilli bir taş konaktır");
     expect(about).not.toMatch(/\b180\s*yıllık\s+tescilli/i);
+  });
+
+  it("keeps dibek claims on the 180-year ritual, not the 500-year village texture", () => {
+    const offenders = checkedRoots
+      .flatMap((root) => listTextFiles(path.join(process.cwd(), root)))
+      .flatMap((file) => {
+        const content = fs.readFileSync(file, "utf8");
+        return /500\s*yıllık[^.\n]*(?:dibek|kahve)|500-year-old[^.\n]*(?:dibek|coffee)/i.test(content)
+          ? [path.relative(process.cwd(), file)]
+          : [];
+      });
+
+    expect(offenders).toEqual([]);
   });
 
   it("keeps Turkish public copy free of digital concierge wording", () => {
@@ -114,5 +132,16 @@ describe("heritage copy consistency", () => {
     expect(bookingEmbed).toContain('locale === "tr" ? "WhatsApp Destek"');
     expect(bookingEmbed).toContain("WhatsApp Support for Fast Confirmation");
     expect(bookingEmbed).not.toContain("Hızlı Destek & Teyit için WhatsApp Concierge");
+  });
+
+  it("keeps public canonical URLs and contact copy on kozbeylikonagi.com", () => {
+    const offenders = canonicalDomainRoots
+      .flatMap((root) => listTextFilesFromRoot(root))
+      .flatMap((file) => {
+        const content = fs.readFileSync(file, "utf8");
+        return /kozbeylikonagi\.com\.tr/i.test(content) ? [path.relative(process.cwd(), file)] : [];
+      });
+
+    expect(offenders).toEqual([]);
   });
 });

@@ -20,10 +20,22 @@ Business Profile/Hotel Center doğrulamaları ve hukuk/onay süreçleri henüz
 kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + purchase
 ölçüm testi yapılamaz; bu yüzden ticari go-live kararı koşulludur.
 
+2026-06-18 domain güncellemesi: `kozbeylikonagi.com` ve `www` canonical alan
+adları, Vercel preview sağlıklı olsa bile `/api/health` üzerinden aynı Next.js
+uygulamasını servis ettiğini kanıtlamadan ticari launch için hazır sayılmaz.
+Bu kontrol `npm run domain:verify` ve `docs/evidence/canonical-domain.md`
+kanıtıyla izlenir.
+
+2026-06-18 güvenlik güncellemesi: Tam ticari launch artık production Turnstile
+ve Upstash shared rate-limit/replay kanıtını da ister. Kod fallbackleri dev için
+korunur; `docs/evidence/production-abuse-controls.md` hazır olmadan strict
+commercial gate yeşile dönmez.
+
 2026-06-14 hedef güncellemesi: Tam ticari yayın artık `npm run launch:audit`
 ile izlenen ayrı bir evidence gate'e bağlıdır. `npm run launch:audit:strict`,
-`docs/evidence/*` altındaki HMS, Garanti POS, analytics purchase, local SEO ve
-legal/DPA kanıtları tamamlanmadan bilinçli olarak fail verir.
+`docs/evidence/*` altındaki canonical domain, HMS, Garanti POS, analytics
+purchase, local SEO ve legal/DPA kanıtları tamamlanmadan bilinçli olarak fail
+verir.
 2026-06-14 devam güncellemesi: Deploy sonrası kritik canlı kontrol artık `npm
 run launch:smoke:live` ile tek komutta çalışır; public rotalar, hero video,
 iletişim koordinatı, organizasyon medyası ve görünür medya kırıkları aynı kapıda
@@ -52,17 +64,17 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 - **Repo/Kod Kalite Skoru: 95/100** — iç kalite kapıları yeşil; kalan 5 puan
   gerçek üretim entegrasyonu, canlı analitik doğrulaması ve dış hesap kurulumuna
   bağlıdır.
-- **Ticari Launch Readiness: 86/100 — CONDITIONAL GO / ödeme-rezervasyon için NO-GO**
+- **Ticari Launch Readiness: 82/100 — CONDITIONAL GO / canonical domain + ödeme-rezervasyon için NO-GO**
   — site ve içerik yüzeyi yayına hazır seviyede; gerçek ödeme ve booking akışı
   dış bilgiler gelmeden %100 doğrulanamaz.
 
 | Alan | Max | Puan | Gerekçe |
 |---|---|---|---|
-| Strateji, persona, KPI | 7 | 7 | Marka konumlandırma ve concierge/growth mimarisi net; canlı KPI dashboard kanıtı yok |
+| Strateji, persona, KPI | 7 | 7 | Marka konumlandırma ve misafir ilişkileri/growth mimarisi net; canlı KPI dashboard kanıtı yok |
 | Bilgi mimarisi | 8 | 8 | /teklifler, deneyim silosu, /galeri, /sss, /cerez-politikasi ve EN çekirdek rotalar mevcut |
 | UX/UI mobil rezervasyon | 9 | 8 | Playwright smoke + mobile prestige yeşil; gerçek cihaz testi yapılmadı |
 | Booking/HMS/POS | 12 | 5 | Fallback ve güvenlik sözleşmeleri hazır; canlı HMS URL + Garanti POS bilgisi yok |
-| Güvenlik | 11 | 10 | CSP/HSTS/XFO, rate-limit, ES256+HMAC webhook, CSRF ve fiyat tamper testleri yeşil; WAF/MFA kanıtı yok |
+| Güvenlik | 11 | 9 | CSP/HSTS/XFO, fail-closed B2B availability, provider-specific webhook HMAC, CSRF ve fiyat tamper testleri yeşil; production Turnstile/Upstash/WAF/MFA kanıtı yok |
 | KVKK/çerez | 8 | 8 | Consent-gated scripts; KVKK/gizlilik/mesafeli satış/çerez politikası var; vendor DPA hukuk onayı yok |
 | Teknik SEO | 9 | 9 | sitemap/robots/canonical/schema/llms.txt + EN alternates/hreflang rotaları güncel |
 | Lokal SEO/GBP/Hotel Center | 5 | 1 | Sitede NAP+GeoCoordinates var; GBP/Hotel Center kanıt yok |
@@ -70,8 +82,8 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 | Erişilebilirlik | 5 | 5 | Axe critical+serious = 0: /, /odalar, /rezervasyon, /sss, /organizasyonlar, /en/organizasyonlar |
 | Analytics | 5 | 4 | GA4+Meta ikili funnel (view_item/begin_checkout/generate_lead) + server-side purchase altyapısı (`lib/ga4-server.ts`) hazır; uçtan uca doğrulama engine+ID bekliyor |
 | CMS/rol | 4 | 4 | Düzeltme: admin/editor rol ayrımı zaten mevcut (`payload/collections/Users.ts`, users CRUD admin-only) |
-| QA/UAT/launch | 10 | 10 | `publish:verify`, tam normal Playwright kümesi ve monkey/chaos yeşil; canlı rezervasyon UAT'si kaldı |
-| **Toplam** | **100** | **86** | Kod tarafı 95/100; ticari launch 86/100 çünkü POS/HMS/analytics/GBP dış kanıt bekliyor |
+| QA/UAT/launch | 10 | 9 | `publish:verify`, smoke ve monkey/chaos kapıları var; canonical domain strict, production abuse-control ve canlı rezervasyon UAT'si kaldı |
+| **Toplam** | **100** | **82** | Kod tarafı güçlü; ticari launch 82/100 çünkü canonical domain, production abuse controls, POS/HMS/analytics/GBP/legal dış kanıt bekliyor |
 
 ### 2026-06-13 Verification Evidence
 
@@ -110,7 +122,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 - Server-side purchase altyapısı: `src/lib/ga4-server.ts` (GA4 Measurement Protocol; HMS webhook'unda iptal/no-show hariç tetiklenir; env boşsa no-op; PII göndermez; unit testli)
 - /galeri (ImageGallery schema), /sss (FAQPage schema), /cerez-politikasi sayfaları + footer/sitemap
 - Restaurant schema (`src/app/gastronomi/page.tsx`)
-- Hero arka plan videosu gerçek otel dış cephesine odaklandı (`public/videos/hero-property.mp4`; poster `public/images/hero-video-poster.jpg`)
+- Hero arka plan videosu onaylı 15.78s gerçek Kozbeyli montajına bağlandı (`public/videos/hero.mp4`); ilk boyama dış cephe posterleriyle korunur, 2.75s `hero-property.mp4` artık sadece tarihsel türevdir.
 - Payload rol ayrımı düzeltmesi: admin/editor zaten mevcuttu (`payload/collections/Users.ts`)
 - Sitewide title çiftlenmesi giderildi (metadata template + sayfa title uyumu)
 - Rollback prosedürü README'de

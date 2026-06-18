@@ -5,13 +5,13 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Our Story & Living Museum",
   description:
-    "500-year-old registered stone architecture, the secrets of Horasan mortar and the restoration of a family legacy. Discover our Living Museum philosophy.",
+    "A 19th-century registered stone mansion within Kozbeyli's five-century village texture, the secrets of Horasan mortar and the restoration of a family legacy.",
   alternates: { canonical: "/en/hikayemiz" },
   openGraph: {
     url: absoluteUrl("/en/hikayemiz"),
     title: "Our Story & Living Museum | Kozbeyli Konağı",
     description:
-      "Five centuries of registered stone architecture and the restoration story of a family legacy.",
+      "Kozbeyli's five-century village texture and the restoration story of a 19th-century registered stone mansion.",
   },
 };
 

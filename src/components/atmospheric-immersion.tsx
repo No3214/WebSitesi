@@ -37,7 +37,7 @@ export const AtmosphericImmersion = () => {
     evening: {
       id: "evening" as RitualType,
       title: "Konakta Akşam",
-      description: "Avluda yanan ateş, gaz lambasının sıcaklığı ve 500 yıllık sessizliğin huzuru.",
+      description: "Avluda yanan ateş, gaz lambasının sıcaklığı ve Kozbeyli'nin beş asırlık sessizliği.",
       sound: "https://assets.mixkit.co/sfx/preview/mixkit-crackling-fireplace-754.mp3",
       video: "/images/odalar/3-kisilik-oda/2.jpg",
       icon: Flame
@@ -276,7 +276,7 @@ export const AtmosphericImmersion = () => {
 
               {/* Bottom Brand Slogan */}
               <div className="text-center text-[0.65rem] text-white/30 tracking-widest uppercase">
-                500 Yıllık Taş Konakta Yavaş Rota
+                Beş Asırlık Köy Dokusunda Yavaş Rota
               </div>
             </motion.div>
           )}
@@ -342,4 +342,3 @@ export const AtmosphericImmersion = () => {
     </>
   );
 };
-

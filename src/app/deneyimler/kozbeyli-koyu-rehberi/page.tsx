@@ -9,12 +9,12 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Kozbeyli Köyü Rehberi",
   description:
-    "Yeni Foça'ya 12 km mesafedeki Kozbeyli Köyü rehberi: 500 yıllık taş mimari, Horasan harcı, 180 yıllık dibek kahvesi ritüeli ve köyde yavaş bir gün.",
+    "Yeni Foça'ya 12 km mesafedeki Kozbeyli Köyü rehberi: beş asırlık taş doku, Horasan harcı, 180 yıllık dibek kahvesi ritüeli ve köyde yavaş bir gün.",
   alternates: { canonical: "/deneyimler/kozbeyli-koyu-rehberi" },
   openGraph: {
     title: "Kozbeyli Köyü Rehberi | Kozbeyli Konağı",
     description:
-      "Kozbeyli Köyü: 500 yıllık taş mimari, Horasan harcı ve 180 yıllık dibek kahvesi ritüeli.",
+      "Kozbeyli Köyü: beş asırlık taş doku, Horasan harcı ve 180 yıllık dibek kahvesi ritüeli.",
     url: absoluteUrl("/deneyimler/kozbeyli-koyu-rehberi"),
     images: [
       {
@@ -72,7 +72,7 @@ export default function KozbeyliVillageGuidePage() {
                 <h2>Beş Asırlık Yerleşim ve Tüccar Mirası</h2>
                 <p>
                   Yeni Foça&apos;ya 12, Eski Foça&apos;ya 18 kilometre mesafedeki
-                  Kozbeyli, 500 yıllık tescilli taş mimarisini günümüze taşıyan
+                  Kozbeyli, beş asırlık taş dokusunu günümüze taşıyan
                   bir Ege köyüdür. Köyün sokaklarına karakterini veren taş
                   evler, Osmanlı sivil mimarisinin yaşayan örnekleri arasında
                   yer alır.

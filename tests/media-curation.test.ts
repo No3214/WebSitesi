@@ -60,6 +60,28 @@ describe("media curation contract", () => {
     }
   });
 
+  it("organizasyon galerisi isim veya izin riski tasiyan dugun detaylarini kullanmaz", () => {
+    const client = read("src/components/organizations-client.tsx");
+    for (const p of [
+      "/images/organizasyonlar/dugun/dugun-1.jpg",
+      "/images/organizasyonlar/dugun/dugun-2.jpg",
+    ]) {
+      expect(client, `isim/izin riski tasiyan dugun gorseli kullanilmamali: ${p}`).not.toContain(p);
+    }
+  });
+
+  it("organizasyon galerisi onayli mekan ve detay gorselleriyle acilir", () => {
+    const client = read("src/components/organizations-client.tsx");
+    for (const p of [
+      "/images/organizasyonlar/teras-davet.jpg",
+      "/images/organizasyonlar/butik-dugun.jpg",
+      "/images/organizasyonlar/dugun/dugun-4.jpg",
+      "/images/organizasyonlar/dugun/dugun-3.jpg",
+    ]) {
+      expect(client, `organizasyon galerisi eksik: ${p}`).toContain(p);
+    }
+  });
+
   it("galeri Google Drive profesyonel cekim karelerini icerir", () => {
     const gallery = read("src/data/gallery.ts");
     for (const p of [

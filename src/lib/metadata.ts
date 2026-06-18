@@ -21,7 +21,7 @@ export const defaultMetadata: Metadata = {
     template: "%s | Kozbeyli Konağı",
   },
   description:
-    "Foça Kozbeyli’de 500 yıllık Osmanlı taş mimarisiyle butik konaklama ve gurme restoran deneyimi. Köy kahvaltısı, Ege & Antakya mutfağı ve huzur dolu bir tatil.",
+    "Foça Kozbeyli’de beş asırlık köy dokusu içinde 19. yüzyıl tescilli taş konak, butik konaklama ve gurme restoran deneyimi.",
   keywords: [
     "kozbeyli konağı",
     "foça butik otel",
@@ -65,7 +65,7 @@ export const defaultMetadata: Metadata = {
     images: [
       {
         url: absoluteUrl("/images/hero.jpg"),
-        alt: "Kozbeyli Konağı — 500 yıllık taş konak",
+        alt: "Kozbeyli Konağı — 19. yüzyıl tescilli taş konak",
       },
     ],
   },

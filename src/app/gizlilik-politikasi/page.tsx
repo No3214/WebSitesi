@@ -25,7 +25,12 @@ export default function PrivacyPolicyPage() {
 
               <section>
                 <h2 className="text-zinc-900 font-bold mb-4">VERİ GÜVENLİĞİ</h2>
-                <p>Kredi kartı bilgileriniz 256-bit SSL sertifikası ile korunmakta ve doğrudan banka altyapısına iletilmektedir. Bilgiler tarafımızca saklanmamaktadır.</p>
+                <p>
+                  Web sitemiz bugün kart numarası veya CVV gibi ödeme kartı verilerini istemez ve
+                  saklamaz. Ödeme entegrasyonu devreye alındığında tahsilat, 3D Secure destekli
+                  banka veya yetkili ödeme sağlayıcısı altyapısında tamamlanacak; kart verileri
+                  Kozbeyli Konağı sunucularında tutulmayacaktır.
+                </p>
               </section>
             </div>
           </FadeIn>

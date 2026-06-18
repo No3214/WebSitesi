@@ -16,8 +16,8 @@ const guides: Guide[] = [
     href: "/deneyimler/kozbeyli-koyu-rehberi",
     title: { tr: "Kozbeyli Köyü Rehberi", en: "Kozbeyli Village Guide" },
     desc: {
-      tr: "500 yıllık taş mimari, Horasan harcı ve 180 yıllık dibek kahvesi ritüeliyle köyde yavaş bir gün.",
-      en: "A slow day in the village among 500-year-old stone architecture and the historic dibek coffee ritual.",
+      tr: "Beş asırlık köy dokusu, Horasan harcı ve 180 yıllık dibek kahvesi ritüeliyle yavaş bir gün.",
+      en: "A slow day among five-century village texture, Horasan mortar and the historic dibek coffee ritual.",
     },
   },
   {

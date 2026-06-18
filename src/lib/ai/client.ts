@@ -30,7 +30,7 @@ Core Instructions:
       headers: {
         "Authorization": `Bearer ${this.apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://kozbeylikonagi.com.tr",
+        "HTTP-Referer": "https://kozbeylikonagi.com",
         "X-Title": "Kozbeyli Konagi Operations Engine"
       },
       body: JSON.stringify({

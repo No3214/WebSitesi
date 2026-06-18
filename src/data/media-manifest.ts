@@ -109,6 +109,26 @@ export const mediaManifest: MediaAsset[] = [
     sha256:
       "03f042de671b94203f4ca3888afc5a866675657933784905945bb40f81673ad7",
   },
+  {
+    path: "/images/organizasyonlar/dugun/dugun-4.jpg",
+    page: "/organizasyonlar",
+    topic: "Dugun buketi ve pasta detayi",
+    role: "gallery",
+    source: "Kozbeyli Dugun/Nisan Sunum PDF",
+    approved: true,
+    sha256:
+      "e4701ffca2a461757c2f182bc5268158508799f3302478f82155c18e9076cf40",
+  },
+  {
+    path: "/images/organizasyonlar/dugun/dugun-3.jpg",
+    page: "/organizasyonlar",
+    topic: "Dugun kahve ritueli",
+    role: "gallery",
+    source: "Kozbeyli Dugun/Nisan Sunum PDF",
+    approved: true,
+    sha256:
+      "d86c67fad856899ef2b5d4761e29f27b732027f57103b1a094141544af4c959c",
+  },
 
   // — Galeri (Google Drive profesyonel cekim arsivi) —
   {

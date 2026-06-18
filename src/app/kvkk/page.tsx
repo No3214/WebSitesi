@@ -34,7 +34,14 @@ export default function KVKKPage() {
 
               <section>
                 <h2 className="text-zinc-900 font-bold mb-4">3. İŞLENEN KİŞİSEL VERİLER</h2>
-                <p>İşletme tarafından işlenen veriler şunları kapsayabilir: Kimlik bilgileri (Ad-Soyad, T.C. No), iletişim bilgileri (Telefon, E-posta, Adres), banka/kredi kartı bilgileri, araç plakası ve tesis içi kamera kayıtları.</p>
+                <p>
+                  İşletme tarafından işlenen veriler şunları kapsayabilir: Kimlik bilgileri
+                  (Ad-Soyad, T.C. No), iletişim bilgileri (Telefon, E-posta, Adres), rezervasyon
+                  ve faturalama bilgileri, araç plakası ve tesis içi kamera kayıtları. Web sitesi
+                  kart numarası veya CVV gibi ödeme kartı verilerini toplamaz; ödeme entegrasyonu
+                  devreye alındığında kart işlemleri yetkili banka veya ödeme sağlayıcısı
+                  altyapısında yürütülür.
+                </p>
               </section>
 
               <section>
@@ -47,7 +54,7 @@ export default function KVKKPage() {
               <section>
                 <h2 className="text-zinc-900 font-bold mb-4">5. VERİ SAHİBİNİN HAKLARI</h2>
                 <p>
-                  KVKK’nın 11. maddesi uyarınca; verilerinizin işlenip işlenmediğini öğrenme, düzeltilmesini isteme, silinmesini talep etme ve kanuna aykırı işlemeden doğan zararın giderilmesini talep etme haklarına sahipsiniz. Taleplerinizi info@kozbeylikonagi.com.tr adresine iletebilirsiniz.
+                  KVKK’nın 11. maddesi uyarınca; verilerinizin işlenip işlenmediğini öğrenme, düzeltilmesini isteme, silinmesini talep etme ve kanuna aykırı işlemeden doğan zararın giderilmesini talep etme haklarına sahipsiniz. Taleplerinizi info@kozbeylikonagi.com adresine iletebilirsiniz.
                 </p>
               </section>
             </div>

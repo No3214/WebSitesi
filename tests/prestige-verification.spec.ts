@@ -2,15 +2,18 @@ import { test, expect } from '@playwright/test';
 
 /**
  * Prestige Verification Suite
- * Verifies that the 'No3214' standards and 500-year heritage claims are 
+ * Verifies that the 'No3214' standards and verified heritage claims are
  * correctly presented and functional.
  */
 test.describe('Prestige & Heritage Verification', () => {
   
-  test('Metadata should reflect 500-year heritage', async ({ page }) => {
+  test('Metadata should reflect village texture and registered mansion heritage', async ({ page }) => {
     await page.goto('/');
     const description = await page.locator('meta[name="description"]').getAttribute('content');
-    expect(description).toContain('500 yıllık');
+    expect(description).toContain('beş asırlık köy dokusu');
+    expect(description).toContain('19. yüzyıl tescilli taş konak');
+    expect(description).not.toContain('500 yıllık tescilli');
+    expect(description).not.toContain('500 yıllık taş konak');
   });
 
   // Not (2026-06-10): AtmosphericImmersion perdesi hero'yu örttüğü için

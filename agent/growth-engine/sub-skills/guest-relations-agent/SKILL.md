@@ -1,10 +1,10 @@
 ---
-name: sales-concierge
+name: guest-relations-agent
 description: State-aware conversational agent for hospitality sales and support.
-  Activates on chat messages, booking inquiries, or requests for "help with the concierge".
+  Activates on chat messages, booking inquiries, or guest support requests.
 ---
 
-# Sales Concierge Skill (SalesGPT Inspired)
+# Guest Relations Skill (SalesGPT Inspired)
 
 Managing guest conversations through a structured 5-stage sales funnel to maximize conversion.
 

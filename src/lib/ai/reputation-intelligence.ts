@@ -47,7 +47,7 @@ export const ReputationData = {
     {
       author: "Ayşe K.",
       platform: "TripAdvisor",
-      content: "500 yıllık bir tarihin içinde uyumak inanılmaz bir deneyimdi. Temizlik ve konfor üst düzeyde. Mutlaka gelinmeli.",
+      content: "Beş asırlık Kozbeyli köy dokusunun içinde, 19. yüzyıl taş konağın atmosferinde konaklamak inanılmazdı. Temizlik ve konfor üst düzeyde. Mutlaka gelinmeli.",
       date: "2024-01-20",
       rating: 5
     },

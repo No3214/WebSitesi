@@ -5,7 +5,7 @@ import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Tarihimiz & Living Museum",
-  description: "500 yıllık tescilli taş mimari, Horasan harcı sırları ve bir aile mirasının restorasyon hikayesi. Kozbeyli Konağı'nın 'Living Museum' felsefesini keşfedin.",
+  description: "Beş asırlık Kozbeyli köy dokusu içinde 19. yüzyıl tescilli taş konak, Horasan harcı sırları ve bir aile mirasının restorasyon hikayesi.",
   keywords: [
     "kozbeyli tarihi",
     "horasan harcı nedir",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/hikayemiz" },
   openGraph: {
     title: "Tarihimiz & Living Museum | Kozbeyli Konağı",
-    description: "500 yıllık tescilli taş mimari ve bir aile mirasının restorasyon hikayesi.",
+    description: "Beş asırlık Kozbeyli köy dokusu ve 19. yüzyıl tescilli taş konağın restorasyon hikayesi.",
     url: absoluteUrl("/hikayemiz"),
     images: [
       {
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Kozbeyli Konağı Tarihi",
-    description: "500 yıllık tescilli Osmanlı taş mimarisi ve restorasyon hikayesi.",
+    description: "19. yüzyıl tescilli Osmanlı taş konağı ve restorasyon hikayesi.",
     images: [absoluteUrl("/images/odalar/standart-oda/1.jpg")],
   }
 };

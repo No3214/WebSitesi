@@ -22,7 +22,7 @@ const gastronomyCopy = {
       {
         title: "Orijinal Taş Dibek",
         content:
-          "500 yıllık orijinal taş dibekte, her gün taze olarak elde dövülen Dibek Kahvesi, köydeki tek gerçek uygulayıcısı olduğumuz bir ritüeldir.",
+          "180 yıllık orijinal taş dibekte her gün taze olarak elde dövülen Dibek Kahvesi, Kozbeyli'nin en karakteristik sabah ritüellerinden biridir.",
         side: "right" as const,
       },
       {

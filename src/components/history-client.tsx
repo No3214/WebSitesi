@@ -10,7 +10,7 @@ type Locale = "tr" | "en";
 const historyCopy = {
   tr: {
     heroTitle: "Hikayemiz",
-    heroSubtitle: "500 YILLIK TAŞLARIN FISILTISI",
+    heroSubtitle: "BEŞ ASIRLIK KÖY DOKUSUNUN İÇİNDE",
     sunsetTitle: "Kozbeyli'de Gün Batımı",
     sunsetText: "Konağın terasından Ege'ye doğru, günün en yumuşak ışığında kısa bir an.",
     sunsetCaption: "Terastan Ege'ye, akşamüstü",
@@ -18,7 +18,7 @@ const historyCopy = {
       {
         title: "Tarihi Doku",
         content:
-          "Kozbeyli Konağı, sadece bir otel değil; Horasan harcıyla örülmüş, 500 yıllık tescilli bir Osmanlı mimarisi şaheseridir. Köyün en eski sivil mimari örneklerinden biridir.",
+          "Kozbeyli Konağı, sadece bir otel değil; Kozbeyli'nin beş asırlık taş dokusu içinde, Horasan harcıyla korunmuş 19. yüzyıl tescilli bir konaktır. Köyün en eski sivil mimari örneklerinden biridir.",
         image: "/images/hero.jpg",
         side: "left" as const,
       },
@@ -40,7 +40,7 @@ const historyCopy = {
   },
   en: {
     heroTitle: "Our Story",
-    heroSubtitle: "THE WHISPER OF 500-YEAR-OLD STONE",
+    heroSubtitle: "WITHIN KOZBEYLI'S FIVE-CENTURY VILLAGE TEXTURE",
     sunsetTitle: "Sunset in Kozbeyli",
     sunsetText: "A quiet moment from the terrace toward the Aegean in the softest light of the day.",
     sunsetCaption: "From the terrace to the Aegean, late afternoon",

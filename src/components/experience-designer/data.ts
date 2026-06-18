@@ -62,7 +62,7 @@ export const interests: InterestOption[] = [
   {
     id: "kultur",
     title: "Miras & Tarih Keşfi",
-    desc: "500 yıllık tescilli taş mimari, restorasyon sırları ve Foça'nın antik liman izleri.",
+    desc: "Beş asırlık köy dokusu, tescilli taş konak restorasyonu ve Foça'nın antik liman izleri.",
     icon: Calendar,
     image: "/images/galeri/konagin-yuzu.jpg"
   }
@@ -134,7 +134,7 @@ export const itineraryDb: Record<string, Record<string, ItineraryItem[]>> = {
   kultur: {
     yavas: [
       { time: "09:30", activity: "Miras Kahvaltısı", details: "Konağın tarihi geçmişini yansıtan geleneksel lezzetler ve ev yapımı reçellerle kahvaltı." },
-      { time: "11:00", activity: "Konak Mimarisi & Restorasyon Turu", details: "500 yıllık Horasan harcının hikayesi, tescilli taş kemerler ve binanın restorasyon serüveni üzerine özel sunum." },
+      { time: "11:00", activity: "Konak Mimarisi & Restorasyon Turu", details: "Kozbeyli'nin beş asırlık taş dokusu, tescilli taş kemerler ve konağın restorasyon serüveni üzerine özel sunum." },
       { time: "14:00", activity: "Miras Arşivi İncelemesi", details: "Konağın zemin katındaki taş mahzenleri ziyaret, eski ithal küpleri ve tarihi araç gereçleri inceleme seansı." },
       { time: "16:30", activity: "Tarihi Dibek Söyleşileri", details: "Köyün yaşlıları ve tarihçileriyle konak avlusunda kahve eşliğinde Kozbeyli'nin kuruluşu üzerine sohbet." },
       { time: "19:30", activity: "Tarih Kokan Akşam Yemeği", details: "Osmanlı saray mutfağından esinlenilmiş, taş fırında yavaş pişmiş kuzu incik ve geleneksel şerbet tadımı." }

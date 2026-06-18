@@ -5,7 +5,7 @@ import { errField, logEvent } from "@/lib/logger";
 import { enforceRateLimit, extractClientIp, safeText, validateSameOrigin } from "@/lib/security";
 
 const taskTypes = [
-  "sales-concierge",
+  "guest-relations-agent",
   "pricing-agent",
   "content-architect",
   "design-agent",
@@ -45,9 +45,9 @@ function runTask(taskType: TaskType, payload: Record<string, unknown>): SwarmTas
   const dates = typeof payload.dates === "string" ? payload.dates : "seçilen tarihler";
 
   switch (taskType) {
-    case "sales-concierge":
+    case "guest-relations-agent":
       return {
-        agent: "sales-concierge",
+        agent: "guest-relations-agent",
         summary:
           `Misafir talebi ${dates} için rezervasyon akışına alındı. Yanıt, direkt rezervasyon avantajı yerine uygunluk ve kişiselleştirilmiş planlama üzerinden kurulmalı.`,
         nextActions: [
@@ -106,7 +106,7 @@ function runTask(taskType: TaskType, payload: Record<string, unknown>): SwarmTas
         summary:
           `Growth swarm ${context || "genel yayın hazırlığı"} bağlamında beş alt ajanı koordine etti.`,
         supportingAgents: [
-          runTask("sales-concierge", payload),
+          runTask("guest-relations-agent", payload),
           runTask("pricing-agent", payload),
           runTask("content-architect", payload),
           runTask("design-agent", payload),

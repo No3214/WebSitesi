@@ -81,10 +81,12 @@ npm run test:stress              # monkey + chaos
 npm run launch:audit             # Ticari 100/100 hedefi için env/kanıt denetimi
 npm run launch:audit:json        # Aynı ticari denetimin makine okunur JSON çıktısı
 npm run launch:audit:strict      # Tüm ticari kanıtlar tamamlanmadan fail verir
+npm run domain:verify            # Canonical domainler Vercel health/current commit veriyor mu?
+npm run domain:verify:strict     # Canonical domain hazır değilse fail verir
 npm run launch:smoke             # Lokal production build'e kritik launch smoke
 npm run launch:smoke:live        # Canlı Vercel URL'ye kritik launch smoke
 npm run quality                  # lint + typecheck + unit + build
-npm run release:verify           # Full release gate: security + publish + smoke + stress + audit
+npm run release:verify           # Lokal release gate: security + publish + smoke + stress + audit JSON
 npm run publish:target           # Yayın hedef/env/rota envanteri
 npm run publish:verify           # Tam publish kapısı
 npm run payload:types            # Payload tip üretimi (payload-types.ts)
@@ -100,9 +102,10 @@ npx playwright test              # E2E testler (lokal sunucuya karşı)
 npm run test:stress              # Canlı prod'u yormadan lokal monkey/chaos paketi
 npm run launch:audit             # Booking/payment 100/100 için kalan kanıtları listeler
 npm run launch:audit:json        # CI/ajanlar için structured launch audit çıktısı
+npm run domain:verify            # kozbeylikonagi.com ve www domain health/commit kontrolü
 npm run launch:smoke             # Public rota, health, hero video, konum ve medya smoke
 npm run launch:smoke:live        # https://kozbeyli-konagi.vercel.app üzerinde aynı smoke
-npm run release:verify           # Lokal final release kapısı
+npm run release:verify           # Lokal final release kapısı (commercial/domain strict ayrı)
 
 # Canlı/staging ortamına karşı e2e koşmak için:
 PW_BASE_URL=https://kozbeylikonagi.example npx playwright test tests/e2e/ --project=chromium
@@ -138,6 +141,9 @@ Tüm çağrılar server-side yapılır, 30 dakikalık Next.js fetch cache ile ko
 2. Yukarıdaki tablodaki tüm env değişkenlerini Vercel panelinden (Project > Settings > Environment Variables) gir.
 3. `DATABASE_URI` için Supabase connection pooler adresini kullan.
 4. Deploy sonrası `NEXT_PUBLIC_SITE_URL` değerini canlı alan adıyla güncelle.
+5. DNS/Vercel domain yönlendirmesi tamamlanınca `npm run domain:verify:strict`
+   çalıştır; `kozbeylikonagi.com` ve `www` `/api/health` üzerinden aynı canlı
+   commit'i göstermeden ticari launch evidence'i `ready` yapılmaz.
 
 `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` boşken de site sorunsuz yayınlanır; rezervasyon CTA'ları WhatsApp'a yönlenir.
 
@@ -158,8 +164,9 @@ npm run release:verify
 ```
 
 Bu komut runtime dependency audit, `publish:verify`, lokal `launch:smoke`,
-monkey/chaos stres testleri ve JSON commercial launch audit'i tek sırada
-çalıştırır. `publish:verify` içinde lint, typecheck, unit, production build,
+monkey/chaos stres testleri ve non-strict JSON commercial launch audit'i tek
+sırada çalıştırır. `launch:audit:strict` ve `domain:verify:strict`, dış kanıtlar
+hazır olana kadar ayrı kırmızı kapı olarak tutulur. `publish:verify` içinde lint, typecheck, unit, production build,
 tüm TR/EN public rota smoke, security, prestige/mobile, a11y ve publish target
 envanteri kalır.
 Deploy sonrası canlı yüzey için hızlı doğrulama:
@@ -171,8 +178,8 @@ npm run launch:smoke:live
 Bu komut public rotaları, ana ekran hero videosunu, düğün/organizasyon medyasını,
 iletişim konumunu ve görünür medya kırıklarını canlı URL üzerinde tekrar kontrol eder.
 
-> Vercel CLI bu makinede kurulu değil. Env pull/deploy/logs için:
-> `npm i -g vercel`
+Vercel env/deploy/log kontrolü için Vercel CLI oturumu (`vercel login`) veya
+Vercel panel erişimi gerekir.
 
 ### Railway (legacy)
 
@@ -224,8 +231,8 @@ Aşağıdaki yüzeyler **gerçek değildir**; yeni geliştiriciler canlı sanmas
 | --- | --- |
 | `/api/checkout` + rezervasyon sihirbazı | **Tahsilat YAPMAZ ve kart bilgisi İSTEMEZ.** Akış bir ön-rezervasyon talebi kaydeder; ödeme **Garanti BBVA Sanal POS** 3D Secure sayfasında ayrı adımda alınacak (karar + entegrasyon planı: `docs/odeme-karari.md`). PAN bu uygulamaya asla girmez. |
 | `/api/swarm` | Deterministik advisory endpoint'tir. İzinli task tiplerini doğrular, payload sanitize eder, alt ajan önerileri döndürür; fiyat, ödeme, paid media veya booking action **çalıştırmaz**. |
-| `/api/v1/availability` | `B2B_PARTNER_PUBLIC_KEY` env tanımlı değilse **404** döner (varsayılan kapalı). Gerçek partner onboard olunca SPKI PEM eklenir. İstekler `x-partner-id`, `x-request-timestamp` ve `x-b2b-signature` ister; imza `timestamp.body` kanonik metni üzerinden ECDSA/SHA-256 ile doğrulanır ve replay engellenir. |
-| `/admin/growth` | Payload admin oturumu zorunludur; metrikler simülasyondur. |
+| `/api/v1/availability` | `B2B_PARTNER_PUBLIC_KEY` env tanımlı değilse **404** döner (varsayılan kapalı). Partner anahtarı olsa bile canlı inventory kaynağı yoksa **503 manual_required** döner; statik demo cevapları yalnız `B2B_ALLOW_STATIC_AVAILABILITY=true` ile production dışında çalışır. İstekler `x-partner-id`, `x-request-timestamp` ve `x-b2b-signature` ister; imza `timestamp.body` kanonik metni üzerinden ECDSA/SHA-256 ile doğrulanır ve replay engellenir. |
+| `/admin/growth` | Payload admin rolü zorunludur; metrikler simülasyondur. |
 
 ## CI
 

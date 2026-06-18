@@ -73,12 +73,19 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
+    expect(readinessScript).toContain('"domain:verify"');
+    expect(readinessScript).toContain('"domain:verify:json"');
+    expect(readinessScript).toContain('"domain:verify:strict"');
     expect(readinessScript).toContain('"launch:smoke"');
     expect(readinessScript).toContain('"launch:smoke:live"');
     expect(readinessScript).toContain('"release:verify"');
     expect(packageJson.scripts?.["launch:smoke"]).toBe("node scripts/launch-smoke.mjs");
     expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
       "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/launch-smoke.mjs",
+    );
+    expect(packageJson.scripts?.["domain:verify"]).toBe("node scripts/domain-readiness.mjs");
+    expect(packageJson.scripts?.["domain:verify:strict"]).toBe(
+      "node scripts/domain-readiness.mjs --strict",
     );
     expect(packageJson.scripts?.prebuild).toBe("node scripts/clean-next-build.mjs");
     expect(packageJson.scripts?.["release:verify"]).toBe("node scripts/release-verify.mjs");
@@ -130,6 +137,8 @@ describe("production readiness contracts", () => {
 
     for (const gate of [
       "hms-booking-engine.md",
+      "canonical-domain.md",
+      "production-abuse-controls.md",
       "garanti-pos.md",
       "analytics-purchase.md",
       "search-local-seo.md",
@@ -138,6 +147,69 @@ describe("production readiness contracts", () => {
       expect(auditScript).toContain(gate);
       expect(evidenceReadme).toContain(gate);
     }
+  });
+
+  it("keeps canonical domain readiness executable and out of the green release gate until DNS is ready", () => {
+    const packageJson = JSON.parse(read("package.json")) as {
+      scripts?: Record<string, string>;
+    };
+    const domainScript = read("scripts/domain-readiness.mjs");
+    const releaseScript = read("scripts/release-verify.mjs");
+
+    expect(packageJson.scripts?.["domain:verify:json"]).toBe(
+      "node scripts/domain-readiness.mjs --json",
+    );
+    expect(domainScript).toContain("CANONICAL DOMAIN NO-GO");
+    expect(domainScript).toContain("/api/health");
+    expect(domainScript).toContain("kozbeylikonagi.com");
+    expect(domainScript).toContain("kozbeyli-konagi.vercel.app");
+    expect(releaseScript).not.toContain("domain:verify:strict");
+  });
+
+  it("keeps B2B availability fail-closed without a live inventory source", () => {
+    const availabilityRoute = read("src/app/api/v1/availability/route.ts");
+
+    expect(availabilityRoute).toContain("Live availability source is not configured.");
+    expect(availabilityRoute).toContain("B2B_ALLOW_STATIC_AVAILABILITY");
+    expect(availabilityRoute).toContain('process.env.NODE_ENV !== "production"');
+    expect(availabilityRoute.indexOf("ALLOW_STATIC_AVAILABILITY")).toBeLessThan(
+      availabilityRoute.indexOf("available: true"),
+    );
+  });
+
+  it("keeps Iyzico webhook verification independent from HMS ES256 signing", () => {
+    const iyzicoRoute = read("src/app/api/webhook/iyzico/route.ts");
+
+    expect(iyzicoRoute).toContain("createDigest(bodyText)");
+    expect(iyzicoRoute).not.toContain("HMS_WEBHOOK_ES256_PUBLIC_KEY");
+    expect(iyzicoRoute).not.toContain("verifyEs256Signature");
+  });
+
+  it("keeps admin growth dashboard restricted to Payload admins", () => {
+    const growthPage = read("src/app/admin/growth/page.tsx");
+
+    expect(growthPage).toContain('user?.role === "admin"');
+    expect(growthPage).not.toContain("authenticated = Boolean(user)");
+  });
+
+  it("keeps legal copy aligned with no-card-data payment architecture", () => {
+    const privacy = read("src/app/gizlilik-politikasi/page.tsx");
+    const kvkk = read("src/app/kvkk/page.tsx");
+
+    expect(privacy).toContain("kart numarası veya CVV");
+    expect(privacy).toContain("kart verileri");
+    expect(kvkk).toContain("Web sitesi");
+    expect(kvkk).toContain("kart numarası veya CVV");
+    expect(kvkk).not.toContain("banka/kredi kartı bilgileri");
+  });
+
+  it("keeps generative design guidance out of product media placement", () => {
+    const designSkill = read("agent/growth-engine/sub-skills/design-agent/SKILL.md");
+    const mediaAudit = read("docs/media-placement-audit.md");
+
+    expect(designSkill.toLowerCase()).toContain("concept exploration only");
+    expect(designSkill).toContain("never product media");
+    expect(mediaAudit).toContain("Any generated or hallucinated image");
   });
 
   it("keeps launch smoke focused on public routes, hero video, location and media", () => {

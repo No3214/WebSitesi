@@ -24,7 +24,7 @@ const archiveCopy = {
         "Asırlık Bağlayıcılık",
         "Taşın Nefesi"
       ],
-      description: "Bu duvarlar sadece taş ve kum değil; 500 yılın yorgunluğunu ve huzurunu emmiş bir hayattır. Geleneksel Horasan harcının o yumuşak dokusu, konağımıza o &apos;yaşayan bina&apos; ruhunu veren asıl sırdır.",
+      description: "Bu duvarlar sadece taş ve kum değil; 19. yüzyıl tescilli taş konağın nefes alan dokusudur. Beş asırlık Kozbeyli köy hafızasıyla çevrelenen Horasan harcı, konağımıza o &apos;yaşayan bina&apos; ruhunu veren asıl sırdır.",
       image: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/2.jpg"
     },
     {

@@ -13,8 +13,8 @@ export const RemotionRoot: React.FC = () => {
         height={1920} // Vertical video (9:16)
         defaultProps={{
           title: "Kozbeyli Konağı",
-          subtitle: "500 Yıllık Miras",
-          description: "Horasan harcı ve andezit taşın hikayesi...",
+          subtitle: "Beş Asırlık Köy Dokusu",
+          description: "19. yüzyıl tescilli taş konak, Horasan harcı ve andezit taşın hikayesi...",
         }}
       />
     </>

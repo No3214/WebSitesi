@@ -66,6 +66,21 @@ function writeEvidence(baseDir: string, relPath: string, status = "ready") {
   );
 }
 
+function makeReadyEnv(audit: CommercialLaunchModule) {
+  return Object.fromEntries(
+    audit.commercialLaunchGates.flatMap((gate) =>
+      gate.env.map((key) => [
+        key,
+        key === "GARANTI_POS_MODE"
+          ? "production"
+          : key === "NEXT_PUBLIC_SITE_URL"
+            ? "https://kozbeylikonagi.com"
+            : `live_${key}`,
+      ]),
+    ),
+  );
+}
+
 afterEach(() => {
   for (const dir of tmpDirs.splice(0)) {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -73,12 +88,13 @@ afterEach(() => {
 });
 
 describe("commercial launch audit", () => {
-  it("starts from 86/100 when no external environment or evidence is present", async () => {
+  it("starts from 82/100 when no external environment or evidence is present", async () => {
     const audit = await loadAuditModule();
     const baseDir = makeTmpDir();
     const result = audit.evaluateCommercialLaunch({ env: {}, baseDir });
 
-    expect(result.score).toBe(86);
+    expect(result.baseScore).toBe(82);
+    expect(result.score).toBe(82);
     expect(result.decision).toBe("NO-GO for full booking/payment launch");
     expect(result.gateResults).toHaveLength(audit.commercialLaunchGates.length);
     expect(result.gateResults.every((gate) => !gate.ready)).toBe(true);
@@ -89,11 +105,7 @@ describe("commercial launch audit", () => {
   it("reaches 100/100 only when every env key and evidence file is ready", async () => {
     const audit = await loadAuditModule();
     const baseDir = makeTmpDir();
-    const env = Object.fromEntries(
-      audit.commercialLaunchGates.flatMap((gate) =>
-        gate.env.map((key) => [key, key === "GARANTI_POS_MODE" ? "production" : `live_${key}`]),
-      ),
-    );
+    const env = makeReadyEnv(audit);
 
     for (const gate of audit.commercialLaunchGates) {
       for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
@@ -110,11 +122,7 @@ describe("commercial launch audit", () => {
   it("blocks a gate when its evidence is marked pending even if env is present", async () => {
     const audit = await loadAuditModule();
     const baseDir = makeTmpDir();
-    const env = Object.fromEntries(
-      audit.commercialLaunchGates.flatMap((gate) =>
-        gate.env.map((key) => [key, key === "GARANTI_POS_MODE" ? "production" : `live_${key}`]),
-      ),
-    );
+    const env = makeReadyEnv(audit);
 
     for (const gate of audit.commercialLaunchGates) {
       for (const evidence of gate.evidence) {
@@ -134,6 +142,26 @@ describe("commercial launch audit", () => {
         ready: false,
         reason: "pending status",
       },
+    ]);
+  });
+
+  it("blocks the canonical domain gate when NEXT_PUBLIC_SITE_URL is not the public domain", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+    env.NEXT_PUBLIC_SITE_URL = "http://localhost:3000";
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const result = audit.evaluateCommercialLaunch({ env, baseDir });
+    const domainGate = result.gateResults.find((gate) => gate.id === "canonical_domain");
+
+    expect(result.score).toBe(98);
+    expect(domainGate?.ready).toBe(false);
+    expect(domainGate?.missingEnv).toEqual([
+      "NEXT_PUBLIC_SITE_URL (expected https://kozbeylikonagi.com or https://www.kozbeylikonagi.com)",
     ]);
   });
 });

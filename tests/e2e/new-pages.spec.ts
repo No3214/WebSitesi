@@ -49,8 +49,8 @@ test.describe("EN public localization", () => {
       return (element as HTMLElement).innerText;
     });
 
-    expect(bodyText).toContain("500-YEAR STONE ARCHITECTURE");
-    expect(bodyText).toContain("DIBEK COFFEE RITUAL");
+    expect(bodyText).toContain("FIVE-CENTURY VILLAGE TEXTURE");
+    expect(bodyText).toContain("180-YEAR DIBEK RITUAL");
     expect(bodyText).toContain("AEGEAN & ANTAKYA CUISINE");
     expect(bodyText).not.toContain("ARCHİTECTURE");
     expect(bodyText).not.toContain("DİBEK");

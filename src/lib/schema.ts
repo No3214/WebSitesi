@@ -14,7 +14,7 @@ export function hotelSchema() {
     "@type": ["Hotel", "LodgingBusiness", "Restaurant"],
     name: "Kozbeyli Konağı Taş Otel & Restaurant",
     description:
-      "Foça'nın tarihi Kozbeyli köyünde, 500 yıllık taş mimariyle modern lüksü buluşturan butik otel ve gurme restoran deneyimi.",
+      "Foça'nın tarihi Kozbeyli köyünde, beş asırlık taş doku içinde 19. yüzyıl tescilli konak mirasını modern konforla buluşturan butik otel ve gurme restoran deneyimi.",
     url: absoluteUrl("/"),
     logo: absoluteUrl("/logo.svg"),
     image: [
@@ -48,7 +48,7 @@ export function hotelSchema() {
     amenityFeature: [
       { "@type": "LocationFeatureSpecification", name: "Tarihi Taş Mimari (Horasan Harcı)", value: true },
       { "@type": "LocationFeatureSpecification", name: "İnci Hanım Güvencesinde Antakya & Ege Mutfağı", value: true },
-      { "@type": "LocationFeatureSpecification", name: "500 Yıllık Taş Dibek Kahvesi", value: true },
+      { "@type": "LocationFeatureSpecification", name: "180 Yıllık Taş Dibek Kahvesi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Yavaş Yaşam (Slow Living) Deneyimi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Evcil Hayvan Dostu", value: true },
       { "@type": "LocationFeatureSpecification", name: "Ücretsiz Otopark", value: true },

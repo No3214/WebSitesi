@@ -10,7 +10,7 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Galeri | Taş, Işık ve Sofra Kareleri",
   description:
-    "Kozbeyli Konağı'nın taş avlusu, tarihi odaları, Ege manzaraları ve serpme kahvaltı sofralarından kareler. 500 yıllık dokuyu fotoğraflarla keşfedin.",
+    "Kozbeyli Konağı'nın taş avlusu, tarihi odaları, Ege manzaraları ve serpme kahvaltı sofralarından kareler. Beş asırlık Kozbeyli köy dokusunu fotoğraflarla keşfedin.",
   alternates: { canonical: "/galeri" },
   openGraph: {
     title: "Galeri | Kozbeyli Konağı",

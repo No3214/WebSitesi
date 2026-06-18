@@ -57,7 +57,7 @@ export const LLMContextGenerator = {
           "Room preference note",
           "Availability-based early check-in request"
         ],
-        booking_engine_url: "https://www.kozbeylikonagi.com.tr/#rezervasyon"
+        booking_engine_url: "https://kozbeylikonagi.com/rezervasyon"
       }
     };
   }

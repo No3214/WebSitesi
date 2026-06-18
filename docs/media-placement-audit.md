@@ -1,6 +1,6 @@
 # Kozbeyli Konağı Media Placement Audit
 
-Last updated: 2026-06-17
+Last updated: 2026-06-18
 
 ## Placement Rules
 
@@ -20,15 +20,28 @@ Last updated: 2026-06-17
 | Homepage hero video | `/videos/hero.mp4` | Kozbeyli montage (2026-06-16) | 15.78s cinematic loop; supersedes the 2.75s `hero-property.mp4` clip. |
 | Organization wedding card | `/images/organizasyonlar/butik-dugun.jpg` | Kozbeyli wedding presentation PDF | Shows real terrace wedding table setup and view. |
 | Organization wedding detail media | `/images/organizasyonlar/teras-davet.jpg` and `/images/organizasyonlar/butik-dugun.jpg` | Kozbeyli wedding presentation PDF | Uses real event setup instead of unrelated decorative video. |
+| Organization wedding gallery | `/images/organizasyonlar/teras-davet.jpg`, `/images/organizasyonlar/butik-dugun.jpg`, `/images/organizasyonlar/dugun/dugun-4.jpg`, `/images/organizasyonlar/dugun/dugun-3.jpg` | Kozbeyli wedding presentation PDF | Opens with venue/table/product context; keeps close-detail images only when no face or clear personal identity is shown. |
 | Corporate off-site card | `/images/organizasyonlar/kurumsal-offsite.jpg` | Kozbeyli corporate/toplanti PDF | Shows the actual meeting setup. |
 | Gourmet celebration card | `/videos/kahvalti-poster.jpg` | Existing gastronomy video poster | Keeps food content tied to known restaurant media. |
 | Experience designer cards | `/images/galeri/*`, `/images/odalar/*`, `/images/organizasyonlar/teras-davet.jpg`, `/images/hero-video-poster.jpg` | Existing local Kozbeyli media | Replaces previous generic Unsplash images with real venue/room/food assets. |
+
+## Google Drive Intake Check
+
+2026-06-18 read-only check of the shared Drive folder
+`1yjl-o_ZE5EO4069X8_TuoJix_SmbVNZC` returned a Google Drive folder page named
+`waw` and exposed 34 unique visible media filenames in the page markup. The
+listing included `_AR12446 kopya.jpg` through `_AR16300 kopya.jpg`; the tool
+could not authenticate or bulk-download originals from Drive, so production
+placement remains limited to repo-local assets that were inspected, hashed and
+tested. Any new Drive import must go through the same provenance and privacy
+screen before being used on public pages.
 
 ## Rejected/Not Used
 
 - Stock-like wedding table images from unrelated venues.
 - DJ equipment closeups as a primary organization asset.
 - Instagram grid screenshots as standalone product media.
+- Wedding detail images with clearly readable guest names or direct personal identity markers (`dugun-1.jpg`, `dugun-2.jpg`) on public organization pages.
 - Any generated or hallucinated image.
 - Remote stock/generic image hosts such as Unsplash for product-facing modules.
 
@@ -50,3 +63,5 @@ current extraction auditable.
 | `public/images/organizasyonlar/butik-dugun.jpg` | `5B7294E32076ECA11014009732E8F39793DFF8B7A26820B3BD16F9E61F94956F` |
 | `public/images/organizasyonlar/teras-davet.jpg` | `424DF7D6CF546409AE5803FE62BA8A10F1E2ECF9A2114BBB76ACF292E42BFF0E` |
 | `public/images/organizasyonlar/kurumsal-offsite.jpg` | `F7912E7A2B20BE1A5201FB701A5CA85DFF57CBE4ED18142416249FA1403986CC` |
+| `public/images/organizasyonlar/dugun/dugun-4.jpg` | `E4701FFCA2A461757C2F182BC5268158508799F3302478F82155C18E9076CF40` |
+| `public/images/organizasyonlar/dugun/dugun-3.jpg` | `D86C67FAD856899EF2B5D4761E29F27B732027F57103B1A094141544AF4C959C` |

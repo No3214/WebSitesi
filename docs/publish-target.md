@@ -1,6 +1,6 @@
 # Kozbeyli Konağı — Publish Target & Gate
 
-Son revizyon: 2026-06-14
+Son revizyon: 2026-06-18
 
 Bu dosya yayın hedefini tek yerde tanımlar. Amaç: "hazır mı?" sorusuna
 ölçülebilir kapılarla cevap vermek ve dış bağımlılıkları kod kalitesiyle
@@ -22,6 +22,7 @@ Tam ticari yayın hedefi artık çalıştırılabilir bir gate ile izlenir:
 npm run launch:audit
 npm run launch:audit:json
 npm run launch:audit:strict
+npm run domain:verify
 ```
 
 `launch:audit` mevcut commercial launch skorunu ve eksik kanıtları listeler.
@@ -29,6 +30,8 @@ npm run launch:audit:strict
 makine okunur JSON olarak verir.
 `launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
 
+- Canonical domain health + current Vercel commit: `docs/evidence/canonical-domain.md`
+- Turnstile + Upstash production abuse-control kanıtı: `docs/evidence/production-abuse-controls.md`
 - HMS booking engine canlı URL + booking UAT: `docs/evidence/hms-booking-engine.md`
 - Garanti Sanal POS sandbox/callback/refund kanıtı: `docs/evidence/garanti-pos.md`
 - GTM/GA4/Meta production + purchase doğrulaması: `docs/evidence/analytics-purchase.md`
@@ -39,7 +42,7 @@ makine okunur JSON olarak verir.
 
 - Repo/Kod Kalitesi: **95/100**
 - Marketing Publish Readiness: **90/100**
-- Ticari Launch Readiness: **86/100**
+- Ticari Launch Readiness: **82/100**
 - Karar: **Marketing publish için koşullu hazır; gerçek booking/payment için NO-GO**
 - Son doğrulama: `npm run publish:verify` PASS, tam normal Playwright kümesi PASS
   (113 passed / 2 skipped), monkey/chaos PASS (3/3), `npm audit --omit=dev
@@ -80,7 +83,12 @@ gate'i publish verification'dan önce çalıştırır. Canlı Vercel deployment 
 
 ```bash
 npm run launch:smoke:live
+npm run domain:verify:strict
 ```
+
+Not: `release:verify` lokal repo/release yeşil kapısıdır ve `launch:audit:json`
+çıktısını raporlar; domain/commercial strict gate'leri dış kanıtlar hazır olana
+kadar bilinçli olarak ayrı kırmızı kapı halinde tutulur.
 
 Ek genişletilmiş yerel kapılar:
 
@@ -107,6 +115,8 @@ Aşağıdakilerin tamamı sağlanırsa site marketing yayınına çıkarılabili
   yayında erişilebilir.
 - `/api/health` 200 JSON döner, `Cache-Control: no-store` taşır ve secret/env
   değeri sızdırmaz.
+- Lead formunda Turnstile production anahtarları, rate-limit/replay için Upstash
+  REST production değerleri tanımlıdır.
 
 ### Booking & Payment NO-GO
 
@@ -130,7 +140,7 @@ Aşağıdakiler tamamlanmadan "tam ticari yayın" yok:
 
 ## Dış Blokajlar
 
-- Vercel CLI bu makinede kurulu değil. Agentic deploy/env/log için:
-  `npm i -g vercel`
+- Vercel domain/env/log kontrolü için Vercel CLI oturumunun (`vercel login`)
+  aktif olması veya panel erişimi gerekir.
 - Google Business Profile, Hotel Center, Search Console doğrulamaları operasyonel
   hesap erişimi gerektirir.

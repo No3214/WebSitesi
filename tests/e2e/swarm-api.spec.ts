@@ -42,7 +42,7 @@ test.describe("Swarm API publish contract", () => {
 
     expect(response.status()).toBe(400);
     const json = await response.json();
-    expect(json.allowedTaskTypes).toContain("sales-concierge");
+    expect(json.allowedTaskTypes).toContain("guest-relations-agent");
   });
 
   test("growth-engine returns governed supporting agents", async ({ request, baseURL }) => {

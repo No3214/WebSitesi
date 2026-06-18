@@ -20,7 +20,7 @@ export default async function GrowthDashboardPage() {
     const payload = await getPayloadClient();
     const requestHeaders = await nextHeaders();
     const { user } = await payload.auth({ headers: requestHeaders });
-    authenticated = Boolean(user);
+    authenticated = user?.role === "admin";
   } catch {
     authenticated = false;
   }

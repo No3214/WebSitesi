@@ -172,8 +172,8 @@ export function HomeHero({ locale, eyebrow }: Props) {
 
         <p className="hero-text">
           {locale === "tr"
-            ? "500 yıllık tescilli taş mimarinin içinde, Foça'ya 12 dakika; kişiselleştirilmiş hizmet ve rafine bir sükunet."
-            : "Within 500-year-old registered stone architecture, 12 minutes from Foça; personalized service and refined serenity."}
+            ? "Beş asırlık Kozbeyli köy dokusu içinde, Foça'ya 12 dakika; 19. yüzyıl tescilli taş konakta rafine bir sükunet."
+            : "Within Kozbeyli's five-century village texture, 12 minutes from Foça; refined serenity in a 19th-century registered stone mansion."}
         </p>
 
         <div className="hero-actions">

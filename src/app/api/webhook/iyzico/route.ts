@@ -5,7 +5,7 @@ import { env } from "@/lib/env";
 import { getPayloadClient } from "@/lib/payload";
 import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
-import { safeText, verifyEs256Signature } from "@/lib/security";
+import { safeText } from "@/lib/security";
 
 type IyzicoWebhookBody = {
   status?: string;
@@ -91,10 +91,9 @@ export async function POST(req: Request) {
 
   const bodyText = await req.text();
 
-  // 3. Signature verification (ES256 or Fallback HMAC)
-  const signatureValid = env.HMS_WEBHOOK_ES256_PUBLIC_KEY
-    ? await verifyEs256Signature(bodyText, signature, env.HMS_WEBHOOK_ES256_PUBLIC_KEY)
-    : safeCompare(signature, createDigest(bodyText));
+  // 3. Iyzico webhooks use their own HMAC secret. Do not couple this provider
+  // to HMS ES256 keys; enabling HMS signing must not break Iyzico callbacks.
+  const signatureValid = safeCompare(signature, createDigest(bodyText));
 
   if (!signatureValid) {
     await writeAuditLog({

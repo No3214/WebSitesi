@@ -8,8 +8,8 @@ const experiences = [
     no: "01",
     title: { tr: "Antakya & Ege Gastronomisi", en: "Antakya & Aegean Gastronomy" },
     text: {
-      tr: "İnci Hanım'ın özel reçeteleri, sac kavurma ve 500 yıllık taş dibekte dövülen taze kahve.",
-      en: "İnci Hanım's special recipes, sac kavurma, and fresh coffee ground in a 500-year-old stone dibek.",
+      tr: "İnci Hanım'ın özel reçeteleri, sac kavurma ve 180 yıllık taş dibekte dövülen taze kahve.",
+      en: "İnci Hanım's special recipes, sac kavurma, and fresh coffee ground in a 180-year-old stone dibek.",
     },
   },
   {

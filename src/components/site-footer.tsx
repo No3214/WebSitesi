@@ -58,8 +58,8 @@ export function SiteFooter() {
             <p className="brand-tagline">
               {t?.description ||
                 (englishPath
-                  ? "A refined stop at the heart of Foça, where a 500-year-old story is reinterpreted with luxury and comfort."
-                  : "Foça'nın kalbinde, 500 yıllık taş bir hikayenin zarafet ve konforla yeniden yorumlandığı rafine bir durak.")}
+                  ? "A refined stop at the heart of Foça, where Kozbeyli's five-century texture is reinterpreted with luxury and comfort."
+                  : "Foça'nın kalbinde, beş asırlık Kozbeyli dokusunun zarafet ve konforla yeniden yorumlandığı rafine bir durak.")}
             </p>
             <div className="social-links">
               <a

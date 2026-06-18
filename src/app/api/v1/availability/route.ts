@@ -14,6 +14,9 @@ import { getRoomNightlyRate } from "@/lib/booking-pricing";
 // kabul riski sıfırlandı. Gerçek partner onboard olduğunda SPKI PEM'i
 // B2B_PARTNER_PUBLIC_KEY olarak ekleyin.
 const PARTNER_PUBLIC_KEY = process.env.B2B_PARTNER_PUBLIC_KEY || "";
+const ALLOW_STATIC_AVAILABILITY =
+  process.env.B2B_ALLOW_STATIC_AVAILABILITY === "true" &&
+  process.env.NODE_ENV !== "production";
 
 const MAX_PAYLOAD_BYTES = 10_000;
 const TIMESTAMP_TOLERANCE_MS = 5 * 60 * 1000;
@@ -139,6 +142,16 @@ export async function POST(req: Request) {
     const parsed = availabilitySchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid availability payload.", details: parsed.error.flatten() }, { status: 400 });
+    }
+
+    if (!ALLOW_STATIC_AVAILABILITY) {
+      return NextResponse.json(
+        {
+          error: "Live availability source is not configured.",
+          status: "manual_required",
+        },
+        { status: 503 },
+      );
     }
 
     await markSeen(replayKey, REPLAY_TTL_MS);

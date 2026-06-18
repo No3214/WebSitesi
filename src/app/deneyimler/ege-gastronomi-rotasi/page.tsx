@@ -10,7 +10,7 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Ege Gastronomi Rotası",
   description:
-    "Serpme köy kahvaltısından asırlık zeytin ağaçlarına, 500 yıllık taş dibekte dövülen kahveden taş fırın lezzetlerine: Kozbeyli Konağı'nda Ege gastronomi rotası.",
+    "Serpme köy kahvaltısından asırlık zeytin ağaçlarına, 180 yıllık taş dibekte dövülen kahveden taş fırın lezzetlerine: Kozbeyli Konağı'nda Ege gastronomi rotası.",
   alternates: { canonical: "/deneyimler/ege-gastronomi-rotasi" },
   openGraph: {
     title: "Ege Gastronomi Rotası | Kozbeyli Konağı",
@@ -54,7 +54,7 @@ export default function EgeGastronomiRotasiPage() {
         <PageHero
           eyebrow="DENEYİMLER"
           title="Ege Gastronomi Rotası"
-          text="Kozbeyli'nin taş dokusundan konağın mutfağına uzanan bir lezzet yolculuğu: serpme köy kahvaltısı, asırlık zeytin ağaçları, 500 yıllık taş dibek ve Antakya'dan Ege'ye taşınan bir aile mirası."
+          text="Kozbeyli'nin taş dokusundan konağın mutfağına uzanan bir lezzet yolculuğu: serpme köy kahvaltısı, asırlık zeytin ağaçları, 180 yıllık taş dibek ve Antakya'dan Ege'ye taşınan bir aile mirası."
         />
 
         <section className="section">
@@ -93,11 +93,11 @@ export default function EgeGastronomiRotasiPage() {
               <SectionTitle
                 eyebrow="DURAK 03"
                 title="Dibek Kahvesi ve Taş Fırın Ritüeli"
-                text="Rotanın en kadim durağı: 500 yıllık orijinal taş dibek ve taş fırının ateşi."
+                text="Rotanın en kadim durağı: 180 yıllık orijinal taş dibek ve taş fırının ateşi."
               />
               <p>
-                500 yıllık orijinal taş dibekte her gün taze olarak elde dövülen dibek
-                kahvesi, köydeki tek gerçek uygulayıcısı olduğumuz bir ritüeldir. Taş
+                180 yıllık orijinal taş dibekte her gün taze olarak elde dövülen dibek
+                kahvesi, Kozbeyli&apos;nin en karakteristik ritüellerinden biridir. Taş
                 fırın ise mutfağın kalbidir: mıhlama taş ateşinde pişer, yöresel lezzetler
                 fırının yavaş ısısında olgunlaşır.
               </p>

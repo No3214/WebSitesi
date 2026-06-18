@@ -22,7 +22,7 @@ const experienceCopy = {
       {
         no: "01",
         title: "Kozbeyli Köyü Rehberi",
-        text: "500 yıllık taş mimari, Horasan harcı ve 180 yıllık dibek kahvesi ritüeli. Yeni Foça'ya 12 km mesafedeki Kozbeyli'de yavaş bir günün duraklarını keşfedin.",
+        text: "Beş asırlık köy dokusu, Horasan harcı ve 180 yıllık dibek kahvesi ritüeli. Yeni Foça'ya 12 km mesafedeki Kozbeyli'de yavaş bir günün duraklarını keşfedin.",
         href: "/deneyimler/kozbeyli-koyu-rehberi",
       },
       {
@@ -34,7 +34,7 @@ const experienceCopy = {
       {
         no: "03",
         title: "Ege Gastronomi Rotası",
-        text: "Serpme köy kahvaltısından asırlık zeytin ağaçlarına, 500 yıllık taş dibekte dövülen kahveden taş fırın lezzetlerine uzanan bir lezzet yolculuğu.",
+        text: "Serpme köy kahvaltısından asırlık zeytin ağaçlarına, 180 yıllık taş dibekte dövülen kahveden taş fırın lezzetlerine uzanan bir lezzet yolculuğu.",
         href: "/deneyimler/ege-gastronomi-rotasi",
       },
     ],
@@ -53,7 +53,7 @@ const experienceCopy = {
       {
         no: "01",
         title: "Kozbeyli Village Guide",
-        text: "A slow-day route through 500-year-old stone architecture, Horasan mortar and the dibek coffee ritual, just 12 km from Yeni Foça.",
+        text: "A slow-day route through five-century village texture, Horasan mortar and the dibek coffee ritual, just 12 km from Yeni Foça.",
         href: "/deneyimler/kozbeyli-koyu-rehberi",
       },
       {
