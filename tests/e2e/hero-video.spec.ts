@@ -63,6 +63,15 @@ test.describe("Homepage hero video", () => {
 
     await expect(page.getByRole("heading", { name: "Hayalinizdeki Düğün İçin Kürasyon" })).toBeVisible();
     await expect(page.getByText("Her menü paketinde 6 çift konaklama ve kahvaltı dahildir.")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Sunum ve Bilgi Formları" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Formu Aç" })).toHaveAttribute(
+      "href",
+      "/documents/events/kozbeyli-organizasyon-bilgi-formu.pdf",
+    );
+    await expect(page.getByRole("link", { name: "Sunumu Aç" }).first()).toHaveAttribute(
+      "href",
+      "/documents/events/kozbeyli-dugun-nisan-sunum-1.pdf",
+    );
     await expect(page.getByRole("heading", { name: "Fotoğraf & Video" })).toBeVisible();
     await expect(page.locator('img[alt*="düğün"]').first()).toBeVisible();
     await expect(page.locator('img[alt*="masa düzeni"]').first()).toBeVisible();

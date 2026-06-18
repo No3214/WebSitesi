@@ -90,9 +90,15 @@ test.describe("EN public localization", () => {
   test("EN organizasyon teklif formu Ingilizce kalir", async ({ page }) => {
     await page.goto("/en/organizasyonlar#teklif");
 
+    await expect(page.getByRole("heading", { name: "Presentations and Information Forms" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open Form" })).toHaveAttribute(
+      "href",
+      "/documents/events/kozbeyli-organizasyon-bilgi-formu.pdf",
+    );
     await expect(page.getByRole("heading", { name: "Let Us Curate Your Event" })).toBeVisible();
     await expect(page.getByPlaceholder("Full Name")).toBeVisible();
     await expect(page.getByLabel("Event preference")).toBeVisible();
+    await expect(page.getByText("Sunum ve Bilgi Formları")).toHaveCount(0);
     await expect(page.getByText("Organizasyon Tercihi")).toHaveCount(0);
     await expect(page.getByText("Teklif Talebini Gönder")).toHaveCount(0);
   });

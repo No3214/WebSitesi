@@ -72,6 +72,32 @@ const copy = {
         },
       ],
     },
+    documents: {
+      eyebrow: "TEKLİF DOSYALARI",
+      title: "Sunum ve Bilgi Formları",
+      text: "Sabit fiyat yayınlamıyoruz; kişi sayısı, tarih, menü ve konaklama ihtiyacına göre güncel teklif hazırlanır. Aşağıdaki dosyalar ön görüşmeyi hızlandırmak için kullanılabilir.",
+      items: [
+        {
+          title: "Organizasyon Bilgi Formu",
+          description: "Düğün, nişan, söz ve özel kutlama talepleri için doldurulabilir ön bilgi formu.",
+          href: "/documents/events/kozbeyli-organizasyon-bilgi-formu.pdf",
+          cta: "Formu Aç",
+        },
+        {
+          title: "Düğün & Nişan Sunumu I",
+          description: "Konağın organizasyon yaklaşımı, hizmet detayları ve alan kullanımı için tanıtım dosyası.",
+          href: "/documents/events/kozbeyli-dugun-nisan-sunum-1.pdf",
+          cta: "Sunumu Aç",
+        },
+        {
+          title: "Düğün & Nişan Sunumu II",
+          description: "Organizasyon şirketleri ve planlama ekipleri için mekan, kapasite ve iletişim özeti.",
+          href: "/documents/events/kozbeyli-dugun-nisan-sunum-2.pdf",
+          cta: "Sunumu Aç",
+        },
+      ],
+      note: "Paket ve ödeme koşulları görüşme sonrası güncel teklif dosyasıyla paylaşılır.",
+    },
     gallery: {
       eyebrow: "GERÇEK DÜĞÜNLER",
       title: "Konakta Yaşanan Anlardan",
@@ -146,6 +172,32 @@ const copy = {
         },
       ],
     },
+    documents: {
+      eyebrow: "PROPOSAL FILES",
+      title: "Presentations and Information Forms",
+      text: "We do not publish fixed prices. The current proposal is tailored to the date, guest count, menu and accommodation needs. The files below help our team prepare a more accurate first response.",
+      items: [
+        {
+          title: "Event Information Form",
+          description: "A pre-brief form for weddings, engagements, ceremonies and private celebrations.",
+          href: "/documents/events/kozbeyli-organizasyon-bilgi-formu.pdf",
+          cta: "Open Form",
+        },
+        {
+          title: "Wedding & Engagement Deck I",
+          description: "A venue presentation covering the event approach, service details and space usage.",
+          href: "/documents/events/kozbeyli-dugun-nisan-sunum-1.pdf",
+          cta: "Open Deck",
+        },
+        {
+          title: "Wedding & Engagement Deck II",
+          description: "A planning overview for event companies and production teams.",
+          href: "/documents/events/kozbeyli-dugun-nisan-sunum-2.pdf",
+          cta: "Open Deck",
+        },
+      ],
+      note: "Package and payment terms are shared only through an up-to-date tailored proposal after consultation.",
+    },
     gallery: {
       eyebrow: "REAL WEDDINGS",
       title: "Moments Lived at the Mansion",
@@ -173,6 +225,13 @@ const copy = {
       mediaAlt: string;
       detailMediaAlt: string;
       items: { title: string; description: string }[];
+    };
+    documents: {
+      eyebrow: string;
+      title: string;
+      text: string;
+      items: { title: string; description: string; href: string; cta: string }[];
+      note: string;
     };
     gallery: {
       eyebrow: string;
@@ -258,6 +317,33 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
                   ))}
                 </div>
               </div>
+            </section>
+          </FadeIn>
+
+          <FadeIn delay={0.28}>
+            <section className="event-documents" aria-labelledby="event-documents-title">
+              <div className="event-documents-copy">
+                <span className="eyebrow">{t.documents.eyebrow}</span>
+                <h2 id="event-documents-title" className="serif">{t.documents.title}</h2>
+                <p>{t.documents.text}</p>
+              </div>
+              <div className="event-documents-grid">
+                {t.documents.items.map((item) => (
+                  <article key={item.href} className="event-document-card">
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                    <a
+                      href={item.href}
+                      className="button secondary"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item.cta}
+                    </a>
+                  </article>
+                ))}
+              </div>
+              <p className="event-documents-note">{t.documents.note}</p>
             </section>
           </FadeIn>
 
@@ -431,6 +517,74 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
           margin: 0;
         }
 
+        .event-documents {
+          margin-top: clamp(72px, 9vw, 118px);
+          padding: clamp(32px, 5vw, 54px);
+          background: var(--white);
+          border: 1px solid var(--border);
+          box-shadow: var(--shadow-soft);
+        }
+
+        .event-documents-copy {
+          max-width: 760px;
+        }
+
+        .event-documents-copy .eyebrow {
+          color: var(--gold-text);
+        }
+
+        .event-documents-copy h2 {
+          color: var(--olive);
+          font-size: clamp(1.9rem, 3.6vw, 3rem);
+          line-height: 1.1;
+          margin: 12px 0 16px;
+        }
+
+        .event-documents-copy p,
+        .event-documents-note {
+          color: var(--muted);
+          font-size: 1rem;
+          line-height: 1.8;
+          margin: 0;
+        }
+
+        .event-documents-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 16px;
+          margin-top: 30px;
+        }
+
+        .event-document-card {
+          display: flex;
+          min-height: 270px;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 20px;
+          border: 1px solid var(--border);
+          padding: 24px;
+          background: var(--ivory);
+        }
+
+        .event-document-card h3 {
+          color: var(--olive);
+          font-size: 1.2rem;
+          margin: 0 0 10px;
+        }
+
+        .event-document-card p {
+          color: var(--muted);
+          font-size: 0.94rem;
+          line-height: 1.7;
+          margin: 0;
+        }
+
+        .event-documents-note {
+          margin-top: 18px;
+          font-size: 0.92rem;
+        }
+
         .wedding-gallery {
           margin-top: clamp(72px, 9vw, 120px);
           text-align: center;
@@ -494,6 +648,9 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
             min-height: 520px;
           }
           .wedding-detail-grid {
+            grid-template-columns: 1fr;
+          }
+          .event-documents-grid {
             grid-template-columns: 1fr;
           }
         }

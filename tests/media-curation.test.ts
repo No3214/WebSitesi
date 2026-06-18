@@ -82,6 +82,35 @@ describe("media curation contract", () => {
     }
   });
 
+  it("organizasyon belgeleri sadece public ve fiyat/iban icermeyen secili dosyalara baglanir", () => {
+    const client = read("src/components/organizations-client.tsx");
+    const approvedDocs = [
+      "/documents/events/kozbeyli-organizasyon-bilgi-formu.pdf",
+      "/documents/events/kozbeyli-dugun-nisan-sunum-1.pdf",
+      "/documents/events/kozbeyli-dugun-nisan-sunum-2.pdf",
+    ];
+
+    for (const doc of approvedDocs) {
+      expect(client, `organizasyon belge linki eksik: ${doc}`).toContain(doc);
+      const fp = publicPathOf(doc);
+      expect(fs.existsSync(fp), `eksik public belge: ${doc}`).toBe(true);
+      expect(fs.statSync(fp).size, `bos public belge: ${doc}`).toBeGreaterThan(20_000);
+    }
+
+    for (const blocked of [
+      "Kozbeyli_Standart_Paket_Teklif.pdf",
+      "Kozbeyli_VIP_Paket_Teklif.pdf",
+      "KOZBEYLİ KONAĞI ATIŞTIRMALIK Menu.docx",
+      "Kozbeyli Konağı Düğün  Ana Yemek Menu.docx",
+      "WhatsApp Image 2026-02-24",
+      "TR86",
+      "TR72",
+      "IBAN",
+    ]) {
+      expect(client, `riskli belge veya banka verisi yayinlanmamali: ${blocked}`).not.toContain(blocked);
+    }
+  });
+
   it("galeri Google Drive profesyonel cekim karelerini icerir", () => {
     const gallery = read("src/data/gallery.ts");
     for (const p of [
