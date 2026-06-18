@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
@@ -17,7 +17,6 @@ const HERO_VIDEO_SRC = "/videos/hero.mp4";
  */
 function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
@@ -35,7 +34,6 @@ function HeroVideo() {
         video.muted = true;
         video.playsInline = true;
         await video.play();
-        if (!cancelled) setPlaying(true);
       } catch {
         /* autoplay engellendiyse poster görseliyle devam */
       }
@@ -50,9 +48,6 @@ function HeroVideo() {
       window.setTimeout(start, 300),
       window.setTimeout(start, 900),
       window.setTimeout(start, 2200),
-      window.setTimeout(() => {
-        if (!cancelled && videoRef.current?.currentSrc) setPlaying(true);
-      }, 1600),
     );
     window.addEventListener("focus", start);
     document.addEventListener("visibilitychange", handleVisibility);
@@ -70,7 +65,7 @@ function HeroVideo() {
   return (
     <video
       ref={videoRef}
-      className={`hero-video ${playing ? "playing" : ""}`}
+      className="hero-video"
       autoPlay
       muted
       loop
@@ -82,11 +77,6 @@ function HeroVideo() {
       disablePictureInPicture
       onLoadedData={() => void videoRef.current?.play().catch(() => {})}
       onCanPlay={() => void videoRef.current?.play().catch(() => {})}
-      onPlay={() => setPlaying(true)}
-      onPlaying={() => setPlaying(true)}
-      onTimeUpdate={(event) => {
-        if (event.currentTarget.currentTime > 0) setPlaying(true);
-      }}
     >
       <source src={HERO_VIDEO_SRC} type="video/mp4" />
     </video>

@@ -350,10 +350,13 @@ describe("production readiness contracts", () => {
 
   it("keeps homepage hero video available during the opening viewport", () => {
     const homeHero = read("src/components/home/home-hero.tsx");
+    const globals = read("src/app/globals.css");
+    const heroVideoCss = globals.match(/\.hero-video\s*\{[\s\S]*?\n  \}/)?.[0] ?? "";
 
     // LCP guvenligi: poster priority eleman kalir; video da ilk HTML'de yer
     // alir. Onceki load + idle/timeout bekleme isletme sahibinin tarayicisinda
-    // videoyu tamamen yok gibi gosteriyordu.
+    // videoyu tamamen yok gibi gosteriyordu. CSS de React event'i bekleyip
+    // oynayan videoyu opacity:0'da birakmamali.
     expect(homeHero).toContain('preload="auto"');
     // Onayli hero asseti kilitle: 15.78s montaj hero.mp4 (eski 2.75s hero-property
     // klibi superseded). Bkz docs/media-placement-audit.md.
@@ -364,6 +367,9 @@ describe("production readiness contracts", () => {
     expect(homeHero).not.toContain("prefers-reduced-motion: reduce");
     expect(homeHero).not.toContain("setShouldRender");
     expect(homeHero).not.toContain("if (!shouldRender) return null");
+    expect(homeHero).not.toContain("useState");
+    expect(heroVideoCss).toContain("opacity: 1");
+    expect(heroVideoCss).not.toContain("opacity: 0");
     expect(homeHero).toContain('fetchPriority="high"');
     expect(homeHero).toContain("hero-video-poster-1280.webp");
     expect(homeHero).toContain("srcSet=");
