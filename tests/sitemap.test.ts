@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import sitemap from "../src/app/sitemap";
+import { siteUrl } from "../src/lib/utils";
 
-const BASE_URL = "https://www.kozbeylikonagi.com";
+const BASE_URL = siteUrl;
 
 describe("sitemap", () => {
   it("/rezervasyon ve /iletisim URL'lerini icerir", () => {
