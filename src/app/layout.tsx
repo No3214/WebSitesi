@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { CookieConsent } from "@/components/cookie-consent";
 import { SiteFooter } from "@/components/site-footer";
 import { TrackingScripts } from "@/components/tracking-scripts";
+import { WebVitalsReporter } from "@/components/web-vitals-reporter";
 import { defaultMetadata } from "@/lib/metadata";
 import { hotelSchema } from "@/lib/schema";
 import "./globals.css";
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
                 ConversionVelocity/Motivators uydurma aciliyet üretiyordu (sahte
                 "%92 dolu" / "5 rezervasyon" — güven riski). Dördü de kaldırıldı. */}
             <TrackingScripts />
+            <WebVitalsReporter />
             <div id="icerik">{children}</div>
             <SiteFooter />
             <FloatingContact />
