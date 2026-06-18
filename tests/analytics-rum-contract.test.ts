@@ -27,9 +27,11 @@ describe("consent-gated analytics RUM contracts", () => {
     const analyticsProvider = read("src/components/analytics-provider.tsx");
     const layout = read("src/app/layout.tsx");
 
-    expect(reporter).toContain('useReportWebVitals');
-    expect(reporter).toContain('trackEvent("web_vital"');
-    expect(reporter).toContain('new Set(["CLS", "FCP", "INP", "LCP", "TTFB"])');
+    expect(reporter).toContain("useReportWebVitals");
+    expect(reporter).toContain("const reportWebVitals");
+    expect(reporter).toContain("useReportWebVitals(reportWebVitals)");
+    expect(reporter).toContain("trackEvent(\"web_vital\"");
+    expect(reporter).toContain("CLS\", \"FCP\", \"INP\", \"LCP\", \"TTFB");
     expect(reporter).toContain("window.location.pathname");
     expect(reporter).not.toContain("window.location.href");
     expect(reporter).not.toContain("window.location.search");
@@ -37,7 +39,7 @@ describe("consent-gated analytics RUM contracts", () => {
 
     expect(analyticsProvider).toContain("hasAnalyticsConsent()");
     expect(analyticsProvider).toContain("if (!posthogKey || !hasAnalyticsConsent())");
-    expect(layout).toContain('import { WebVitalsReporter }');
+    expect(layout).toContain("import { WebVitalsReporter }");
     expect(layout).toContain("<WebVitalsReporter />");
   });
 });
