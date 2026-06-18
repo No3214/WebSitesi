@@ -10,7 +10,7 @@ async function waitForHeroVideoSource(page: import("@playwright/test").Page) {
         }),
       { timeout: 15000 }
     )
-    .toContain("/videos/hero-property.mp4");
+    .toContain("/videos/hero.mp4");
 }
 
 async function expectHeroVideoPlaying(page: import("@playwright/test").Page) {

@@ -1,3 +1,4 @@
+import { sanitizeJsonLd } from "@/lib/security";
 import { Metadata } from "next";
 
 import { SiteHeader } from "@/components/site-header";
@@ -59,7 +60,7 @@ export async function ContactPageContent({ locale = "tr" }: { locale?: ContactLo
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(jsonLd) }} />
       <SiteHeader variant="overlay" />
       <PageHero
         eyebrow={copy.eyebrow}

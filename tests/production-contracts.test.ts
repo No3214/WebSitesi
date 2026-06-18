@@ -335,4 +335,10 @@ describe("production readiness contracts", () => {
       "GA4_API_SECRET",
       "TURNSTILE_SECRET_KEY",
       "B2B_PARTNER_PUBLIC_KEY",
-      "HMS_WEBHOOK_ES256_PUBLIC_KE
+      "HMS_WEBHOOK_ES256_PUBLIC_KEY",
+    ];
+    for (const key of forbiddenServerEnvKeys) {
+      expect(referencedEnvKeys).not.toContain(key);
+    }
+  });
+});
