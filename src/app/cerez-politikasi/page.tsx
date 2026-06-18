@@ -11,8 +11,9 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-// Not: Bu metin teknik gerçeklikle (consent.ts + tracking-scripts.tsx) birebir
-// uyumlu tutulmalıdır. Yayın öncesi hukuk danışmanı onayından geçirilmelidir.
+// Not: Bu metin teknik gerçeklikle (consent.ts + tracking-scripts.tsx +
+// analytics-provider.tsx) birebir uyumlu tutulmalıdır. Yayın öncesi hukuk
+// danışmanı onayından geçirilmelidir.
 export default function CookiePolicyPage() {
   return (
     <>
@@ -63,9 +64,12 @@ export default function CookiePolicyPage() {
                       <tr className="border-b border-zinc-100">
                         <td className="py-3 pr-4 font-semibold text-zinc-900">Analitik</td>
                         <td className="py-3 pr-4">
-                          Ziyaret ve dönüşüm istatistikleri; site deneyimini iyileştirme.
+                          Ziyaret, dönüşüm ve gerçek kullanıcı site performansı istatistikleri;
+                          site deneyimini iyileştirme.
                         </td>
-                        <td className="py-3 pr-4">Google Tag Manager / Google Analytics 4</td>
+                        <td className="py-3 pr-4">
+                          Google Tag Manager / Google Analytics 4, PostHog
+                        </td>
                         <td className="py-3">Açık rıza</td>
                       </tr>
                       <tr>
@@ -87,9 +91,9 @@ export default function CookiePolicyPage() {
                   Sitenin işletilmesi kapsamında çalıştığımız başlıca hizmet sağlayıcılar:
                   barındırma ve içerik dağıtımı (hosting/CDN), rezervasyon altyapısı (otel
                   yönetim sistemi ve booking engine), ödeme altyapısı (Garanti BBVA Sanal POS),
-                  ölçümleme (Google), pazarlama (Meta) ve güvenlik (Cloudflare Turnstile).
-                  Güncel ve eksiksiz liste, veri işleme sözleşmeleriyle birlikte talep üzerine
-                  paylaşılır.
+                  ölçümleme ve site performansı analizi (Google ve PostHog), pazarlama (Meta) ve
+                  güvenlik (Cloudflare Turnstile). Güncel ve eksiksiz liste, veri işleme
+                  sözleşmeleriyle birlikte talep üzerine paylaşılır.
                 </p>
               </section>
 
