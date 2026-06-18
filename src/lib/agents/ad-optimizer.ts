@@ -1,4 +1,3 @@
-import { renderHeritageVideo } from "@/remotion/render";
 import { SPECIALIST_KNOWLEDGE } from "@/lib/ai/specialist-hospitality";
 
 export interface AdPerformance {
@@ -9,37 +8,43 @@ export interface AdPerformance {
   conversions: number;
 }
 
-export async function optimizeCampaign(data: AdPerformance[]) {
-  console.log("📊 Analyzing Campaign Performance via Specialist AI Agents...");
+export interface AdRecommendation {
+  id: string;
+  currentHeadline: string;
+  reason: string;
+  proposedHeadline: string;
+  proposedDescription: string;
+  mediaPolicy: "copy-only-review";
+}
 
-  const underperforming = data.filter(ad => ad.ctr < 1.5);
+export interface AdOptimizationReport {
+  status: "review_required" | "no_action";
+  thresholdCtr: number;
+  generatedAssets: [];
+  recommendations: AdRecommendation[];
+}
+
+const LOW_CTR_THRESHOLD = 1.5;
+
+export function optimizeCampaign(data: AdPerformance[]): AdOptimizationReport {
+  const underperforming = data.filter((ad) => ad.ctr < LOW_CTR_THRESHOLD);
+
   const gastronomyTokens = SPECIALIST_KNOWLEDGE.gastronomy.signature_tokens;
   const architectureTokens = SPECIALIST_KNOWLEDGE.local_expert.signature_tokens;
-  
-  for (const ad of underperforming) {
-    console.log(`\n⚠️ Low CTR detected for Ad [${ad.id}]: "${ad.headline}"`);
-    console.log("🤖 Specialized Agents generating heritage-aware copy...");
 
-    // Outcome-Driven Copy Generation
-    const newHeadline = `Kozbeyli'de ${gastronomyTokens[0]}`;
-    const newDescription = `${architectureTokens[0]} yapıda ${gastronomyTokens[2]} lezzeti. Mirasımızı keşfedin.`;
+  const recommendations = underperforming.map((ad) => ({
+    id: ad.id,
+    currentHeadline: ad.headline,
+    reason: `CTR ${ad.ctr}% is below ${LOW_CTR_THRESHOLD}%. Human review is required before publishing.`,
+    proposedHeadline: `Kozbeyli'de ${gastronomyTokens[0]}`,
+    proposedDescription: `${architectureTokens[0]} yapıda ${gastronomyTokens[2]} lezzeti. Mirasımızı keşfedin.`,
+    mediaPolicy: "copy-only-review" as const,
+  }));
 
-    console.log(`✅ [NEW HEADLINE]: ${newHeadline}`);
-    console.log(`✅ [NEW DESCRIPTION]: ${newDescription}`);
-
-    // Cinema Layer Integration: Automated Video Production
-    console.log("🎬 Cinema Layer: Generating optimized video snippet...");
-    try {
-      const videoPath = await renderHeritageVideo(`ad-opt-${ad.id}`, {
-        title: newHeadline,
-        subtitle: "Luxury Heritage",
-        description: newDescription
-      });
-      console.log(`✨ [CINEMA READY]: Video rendered at ${videoPath}`);
-    } catch (e) {
-      console.error("❌ Cinema Layer Error:", e);
-    }
-  }
-
-  console.log("\n📈 Optimization complete. Cinema-grade assets generated.");
+  return {
+    status: recommendations.length > 0 ? "review_required" : "no_action",
+    thresholdCtr: LOW_CTR_THRESHOLD,
+    generatedAssets: [],
+    recommendations,
+  };
 }

@@ -6,32 +6,22 @@ import { useEffect, useRef, useState } from "react";
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
 const HERO_VIDEO_SRC = "/videos/hero.mp4";
-const HERO_VIDEO_BOOT_DELAY_MS = 150;
 
 /**
  * Hero arka plan videosu:
- * - LCP elemanı her zaman poster görselidir (priority + preload); video sayfa
- *   açılışında çok erken üstüne fade-in olur.
- * - Data Saver'da hiç yüklenmez; mobilde ise Emergent önizlemesindeki gibi
- *   sessiz/playsInline arka plan reel'i devreye girer.
+ * - LCP elemanı her zaman poster görselidir (priority + preload), fakat video
+ *   da ilk HTML'de yer alır. Böylece hydration gecikmesi veya event kaçması
+ *   kullanıcıya "video yok" hissi vermez.
+ * - Data Saver'da oynatma zorlanmaz; normal cihazlarda sessiz/playsInline
+ *   arka plan reel'i tekrar tekrar başlatılmaya çalışılır.
  */
 function HeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [shouldRender, setShouldRender] = useState(false);
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
     if (conn?.saveData) return;
-
-    const bootTimer = window.setTimeout(() => setShouldRender(true), HERO_VIDEO_BOOT_DELAY_MS);
-    return () => {
-      window.clearTimeout(bootTimer);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!shouldRender) return;
 
     let cancelled = false;
     const timers: number[] = [];
@@ -45,6 +35,7 @@ function HeroVideo() {
         video.muted = true;
         video.playsInline = true;
         await video.play();
+        if (!cancelled) setPlaying(true);
       } catch {
         /* autoplay engellendiyse poster görseliyle devam */
       }
@@ -55,7 +46,14 @@ function HeroVideo() {
     };
 
     void start();
-    timers.push(window.setTimeout(start, 600), window.setTimeout(start, 1800));
+    timers.push(
+      window.setTimeout(start, 300),
+      window.setTimeout(start, 900),
+      window.setTimeout(start, 2200),
+      window.setTimeout(() => {
+        if (!cancelled && videoRef.current?.currentSrc) setPlaying(true);
+      }, 1600),
+    );
     window.addEventListener("focus", start);
     document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("pointerdown", start, { once: true });
@@ -67,9 +65,7 @@ function HeroVideo() {
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("pointerdown", start);
     };
-  }, [shouldRender]);
-
-  if (!shouldRender) return null;
+  }, []);
 
   return (
     <video
@@ -80,12 +76,13 @@ function HeroVideo() {
       loop
       playsInline
       preload="auto"
-      poster="/images/hero-video-poster.jpg"
+      poster="/images/hero-video-poster-1280.webp"
       aria-hidden
       tabIndex={-1}
       disablePictureInPicture
       onLoadedData={() => void videoRef.current?.play().catch(() => {})}
       onCanPlay={() => void videoRef.current?.play().catch(() => {})}
+      onPlay={() => setPlaying(true)}
       onPlaying={() => setPlaying(true)}
       onTimeUpdate={(event) => {
         if (event.currentTarget.currentTime > 0) setPlaying(true);

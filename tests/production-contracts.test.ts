@@ -112,6 +112,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/clean-next-build.mjs"');
     expect(readinessScript).toContain('"src/app/api/health/route.ts"');
     expect(readinessScript).toContain('"src/lib/production-readiness.ts"');
+    expect(readinessScript).toContain('"tests/agentic-helper-safety.test.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"tests/production-readiness.test.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
@@ -294,10 +295,15 @@ describe("production readiness contracts", () => {
     const leadGen = read("scripts/lead-gen.ts");
     const seoAudit = read("scripts/seo-audit.ts");
     const seoPilot = read("scripts/seo-auto-pilot.ts");
-    const combined = [leadGen, seoAudit, seoPilot].join("\n");
+    const adCopyOptimizer = read("scripts/ad-copy-optimizer.ts");
+    const geoRefactor = read("scripts/geo-refactor.ts");
+    const adOptimizer = read("src/lib/agents/ad-optimizer.ts");
+    const leadService = read("src/lib/ai/lead-service.ts");
+    const combined = [leadGen, seoAudit, seoPilot, adCopyOptimizer, geoRefactor, adOptimizer, leadService].join("\n");
 
     for (const forbidden of [
       "mockLeads",
+      "mockStats",
       "SYSTEM_PILOT",
       "AI-Generated outreach",
       "Simulated Logic",
@@ -305,6 +311,10 @@ describe("production readiness contracts", () => {
       "score: 95",
       "payload.create",
       "agent_discovery",
+      "renderHeritageVideo",
+      "fs.writeFileSync",
+      "Math.random",
+      "Syncing lead",
     ]) {
       expect(combined, `production helper scripts must not contain ${forbidden}`).not.toContain(forbidden);
     }
@@ -315,6 +325,11 @@ describe("production readiness contracts", () => {
     expect(seoAudit).toContain("metadataBase");
     expect(seoPilot).toContain("Evidence-based content gap scan only");
     expect(seoPilot).toContain("nextEditorialBacklog");
+    expect(adCopyOptimizer).toContain("This script never renders video or publishes ads.");
+    expect(adOptimizer).toContain("generatedAssets: []");
+    expect(geoRefactor).toContain("writesPerformed: 0");
+    expect(geoRefactor).toContain("No files are written and no generated claims are inserted.");
+    expect(leadService).toContain("CRM writes are disabled in LeadService");
   });
 
   it("keeps launch smoke focused on public routes, hero video, location and media", () => {
@@ -336,18 +351,19 @@ describe("production readiness contracts", () => {
   it("keeps homepage hero video available during the opening viewport", () => {
     const homeHero = read("src/components/home/home-hero.tsx");
 
-    // LCP guvenligi: poster priority eleman kalir; video ise acilista cok erken
-    // devreye girer. Onceki load + idle bekleme isletme sahibinin tarayicisinda
+    // LCP guvenligi: poster priority eleman kalir; video da ilk HTML'de yer
+    // alir. Onceki load + idle/timeout bekleme isletme sahibinin tarayicisinda
     // videoyu tamamen yok gibi gosteriyordu.
     expect(homeHero).toContain('preload="auto"');
     // Onayli hero asseti kilitle: 15.78s montaj hero.mp4 (eski 2.75s hero-property
     // klibi superseded). Bkz docs/media-placement-audit.md.
     expect(homeHero).toContain('HERO_VIDEO_SRC = "/videos/hero.mp4"');
     expect(homeHero).not.toContain("hero-property.mp4");
-    expect(homeHero).toContain("HERO_VIDEO_BOOT_DELAY_MS = 150");
+    expect(homeHero).not.toContain("HERO_VIDEO_BOOT_DELAY_MS");
     expect(homeHero).not.toContain("requestIdleCallback");
     expect(homeHero).not.toContain("prefers-reduced-motion: reduce");
-    expect(homeHero).toContain("setShouldRender(true)");
+    expect(homeHero).not.toContain("setShouldRender");
+    expect(homeHero).not.toContain("if (!shouldRender) return null");
     expect(homeHero).toContain('fetchPriority="high"');
     expect(homeHero).toContain("hero-video-poster-1280.webp");
     expect(homeHero).toContain("srcSet=");

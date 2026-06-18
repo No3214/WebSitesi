@@ -37,12 +37,21 @@ export const LeadService = {
   },
 
   /**
-   * Syncs lead to Payload CMS.
+   * CRM writes must go through `/api/lead`, where CSRF, consent, Turnstile,
+   * rate-limit and dedupe controls run together. This helper only returns a
+   * redacted handoff result so agentic workflows cannot fake a persisted lead.
    */
   syncLeadToCRM: async (leadData: { budget?: number; guests: number; intent: string; score: number }) => {
-    console.log('[LeadService] Syncing lead to Payload CMS...', leadData);
-    // Simulated fetch call to Payload endpoint
-    // await fetch('/api/leads', { method: 'POST', body: JSON.stringify(leadData) });
-    return { success: true, leadId: 'lead_' + Math.random().toString(36).substr(2, 9) };
+    return {
+      success: false,
+      writesPerformed: 0,
+      reason: "CRM writes are disabled in LeadService; submit through /api/lead.",
+      redactedSummary: {
+        guests: leadData.guests,
+        intent: leadData.intent,
+        score: leadData.score,
+        hasBudget: typeof leadData.budget === "number",
+      },
+    };
   }
 };

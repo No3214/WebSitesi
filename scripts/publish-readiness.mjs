@@ -22,6 +22,7 @@ const requiredFiles = [
   "src/app/robots.ts",
   "src/app/sitemap.ts",
   "src/app/manifest.ts",
+  "tests/agentic-helper-safety.test.ts",
   "tests/e2e/health.spec.ts",
   "tests/e2e/publish-routes.spec.ts",
   "tests/production-readiness.test.ts",
