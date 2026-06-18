@@ -14,6 +14,13 @@ test.describe("Security Audit Test", () => {
     expect(headers["x-content-type-options"]).toBe("nosniff");
     expect(headers["strict-transport-security"]).toContain("max-age=63072000");
     expect(headers["content-security-policy"]).toContain("script-src 'self'");
+    expect(headers["content-security-policy"]).toContain("object-src 'none'");
+    expect(headers["content-security-policy"]).toContain("base-uri 'self'");
+    expect(headers["content-security-policy"]).toContain("form-action 'self'");
+    expect(headers["content-security-policy"]).toContain(
+      "frame-src 'self' https://www.openstreetmap.org https://www.googletagmanager.com https://challenges.cloudflare.com",
+    );
+    expect(headers["content-security-policy"]).not.toContain("frame-src https:");
     expect(headers["content-security-policy"]).not.toContain("unsafe-eval");
     expect(headers["x-xss-protection"]).toBeUndefined();
   });

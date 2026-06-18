@@ -167,6 +167,19 @@ describe("production readiness contracts", () => {
     expect(bookingUrlHelper).toContain('utm_medium", "booking_engine"');
   });
 
+  it("keeps the CSP frame surface narrow after moving booking to new-tab handoff", () => {
+    const nextConfig = read("next.config.ts");
+
+    expect(nextConfig).toContain('"object-src \'none\'"');
+    expect(nextConfig).toContain('"base-uri \'self\'"');
+    expect(nextConfig).toContain('"form-action \'self\'"');
+    expect(nextConfig).toContain(
+      '"frame-src \'self\' https://www.openstreetmap.org https://www.googletagmanager.com https://challenges.cloudflare.com"',
+    );
+    expect(nextConfig).not.toContain("frame-src https: blob:");
+    expect(nextConfig).not.toContain("allows the HMS booking engine iframe");
+  });
+
   it("keeps canonical domain readiness executable and out of the green release gate until DNS is ready", () => {
     const packageJson = JSON.parse(read("package.json")) as {
       scripts?: Record<string, string>;
