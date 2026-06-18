@@ -86,6 +86,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"domain:verify"');
     expect(readinessScript).toContain('"domain:verify:json"');
     expect(readinessScript).toContain('"domain:verify:strict"');
+    expect(readinessScript).toContain('"vercel:ops"');
+    expect(readinessScript).toContain('"vercel:ops:json"');
+    expect(readinessScript).toContain('"vercel:ops:strict"');
     expect(readinessScript).toContain('"launch:smoke"');
     expect(readinessScript).toContain('"launch:smoke:live"');
     expect(readinessScript).toContain('"release:verify"');
@@ -97,12 +100,21 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["domain:verify:strict"]).toBe(
       "node scripts/domain-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
+    expect(packageJson.scripts?.["vercel:ops:json"]).toBe(
+      "node scripts/vercel-ops-readiness.mjs --json",
+    );
+    expect(packageJson.scripts?.["vercel:ops:strict"]).toBe(
+      "node scripts/vercel-ops-readiness.mjs --strict",
+    );
     expect(packageJson.scripts?.prebuild).toBe("node scripts/clean-next-build.mjs");
     expect(packageJson.scripts?.["release:verify"]).toBe("node scripts/release-verify.mjs");
     expect(readinessScript).toContain('"scripts/clean-next-build.mjs"');
     expect(readinessScript).toContain('"src/app/api/health/route.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
+    expect(readinessScript).toContain('"docs/vercel-operations.md"');
+    expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
   });
 
@@ -205,6 +217,29 @@ describe("production readiness contracts", () => {
     expect(domainScript).toContain("kozbeylikonagi.com");
     expect(domainScript).toContain("kozbeyli-konagi.vercel.app");
     expect(releaseScript).not.toContain("domain:verify:strict");
+  });
+
+  it("keeps Vercel operational prerequisites visible without hiding the global CLI requirement", () => {
+    const packageJson = JSON.parse(read("package.json")) as {
+      scripts?: Record<string, string>;
+    };
+    const vercelOps = read("scripts/vercel-ops-readiness.mjs");
+    const runbook = read("docs/vercel-operations.md");
+
+    expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
+    expect(packageJson.scripts?.["vercel:ops:strict"]).toBe(
+      "node scripts/vercel-ops-readiness.mjs --strict",
+    );
+    expect(vercelOps).toContain("Kozbeyli Konagi Vercel operations readiness");
+    expect(vercelOps).toContain("PASS_WITH_WARNINGS");
+    expect(vercelOps).toContain("npm i -g vercel");
+    expect(vercelOps).toContain("vercel env pull, vercel deploy and vercel logs");
+    expect(vercelOps).toContain("canonical-domain.md");
+    expect(vercelOps).toContain("kozbeyli-konagi");
+    expect(runbook).toContain("npm run vercel:ops");
+    expect(runbook).toContain("npm run vercel:ops:strict");
+    expect(runbook).toContain("npm i -g vercel");
+    expect(runbook).toContain("Do not store secrets in this repository");
   });
 
   it("keeps B2B availability fail-closed without a live inventory source", () => {
