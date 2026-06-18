@@ -17,6 +17,28 @@ NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com
 `NEXT_PUBLIC_POSTHOG_KEY` boşsa hem sayfa görüntüleme hem de RUM olayları no-op
 olarak kalır. Env değişikliğinden sonra yeni production deployment gerekir.
 
+PostHog production projesinde **Settings > Project > Privacy > IP data capture**
+ayarını ayrıca kapatın. Bu ayar SDK kodundan yönetilmez; canlı doğrulama kanıtına
+ayar ekranının tarihli görüntüsünü ekleyin.
+
+## Veri minimizasyonu
+
+`src/components/analytics-provider.tsx` aşağıdaki sınırları uygular:
+
+- PostHog yalnız analytics rızasından sonra başlatılır; rıza geri çekilince capture
+  opt-out edilir.
+- `autocapture`, otomatik page-leave ölçümü ve session recording kapalıdır.
+- Sayfa görüntüleme ve ürün olayları yalnız uygulamanın açıkça çağırdığı
+  `posthog.capture` üzerinden gönderilir.
+- `before_send`, tam URL/referrer alanlarını, UTM alanlarını ve reklam tıklama
+  kimliklerini hem ana properties hem `$set` / `$set_once` içinden siler.
+- Uygulama rota için yalnız `path` değerini gönderir; query string ve hash eklemez.
+
+PostHog'un tarayıcı, işletim sistemi ve cihaz sınıfı gibi standart teknik
+özellikleri olaylarda kalabilir. Bunlar RUM segmentasyonu için kullanılır; form
+verisi, e-posta, telefon, rezervasyon kodu veya serbest metin event property olarak
+gönderilmemelidir.
+
 ## Gönderilen olay
 
 `src/components/web-vitals-reporter.tsx`, Next.js `useReportWebVitals` kancasından
@@ -27,19 +49,21 @@ olarak kalır. Env değişikliğinden sonra yeni production deployment gerekir.
 - `metric_rating`, `navigation_type`
 - yalnızca `path` (ör. `/odalar`)
 
-Tam URL, query string, hash, referrer, form verisi veya başka kişisel veri bu
-olaya eklenmez. `trackEvent()` mevcut consent kontrolünü yeniden kullandığı için
-rıza yokken PostHog başlatılmaz ve ölçüm gönderilmez.
+`trackEvent()` mevcut consent kontrolünü yeniden kullandığı için rıza yokken
+PostHog başlatılmaz ve ölçüm gönderilmez.
 
 ## Canlı doğrulama
 
-1. Production env değerlerini tanımlayın ve yeniden deploy edin.
+1. Production env değerlerini tanımlayın, IP data capture ayarını kapatın ve
+   yeniden deploy edin.
 2. Gizli pencerede siteyi açın; analytics rızası vermeden PostHog isteği
    oluşmadığını kontrol edin.
 3. Analytics rızasını kabul edin ve birkaç public rotayı gezin.
 4. PostHog Live Events içinde `$pageview` ve `web_vital` olaylarını doğrulayın.
-5. `web_vital` olayında `path` bulunduğunu; URL query/hash veya PII alanı
-   bulunmadığını kontrol edin.
+5. Olaylarda `path` bulunduğunu; `$current_url`, referrer, UTM, query/hash, reklam
+   click ID veya PII alanı bulunmadığını kontrol edin.
+6. Rızayı analytics=false olarak değiştirip sonraki gezinmelerde yeni event
+   oluşmadığını doğrulayın.
 
 ## Dashboard önerisi
 
