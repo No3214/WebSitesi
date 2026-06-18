@@ -59,6 +59,16 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["test:stress"]).toBe("npm run test:monkey && npm run test:chaos");
   });
 
+  it("keeps cookie banner policy copy readable in Turkish and English", () => {
+    const cookieConsent = read("src/components/cookie-consent.tsx");
+
+    expect(cookieConsent).toContain('policy: "Çerez Politikamızı"');
+    expect(cookieConsent).toContain('suffix: " inceleyebilirsiniz."');
+    expect(cookieConsent).toContain('policy: "Cookie Policy"');
+    expect(cookieConsent).toContain('suffix: "."');
+    expect(cookieConsent).not.toContain("Politikamızıinceleyebilirsiniz");
+  });
+
   it("keeps publish readiness aware of payment and stress gates", () => {
     const packageJson = JSON.parse(read("package.json")) as {
       scripts?: Record<string, string>;

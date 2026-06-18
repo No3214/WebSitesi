@@ -20,7 +20,7 @@ const consentCopy = {
     ariaLabel: "Çerez tercihleri",
     description: "Zorunlu olmayan çerezleri yalnızca onayınızla kullanıyoruz. Detaylar için",
     policy: "Çerez Politikamızı",
-    suffix: "inceleyebilirsiniz.",
+    suffix: " inceleyebilirsiniz.",
     summaries: {
       all: "Analitik ve pazarlama çerezleri açık.",
       analytics: "Sadece analitik çerezler açık.",
