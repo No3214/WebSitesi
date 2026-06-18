@@ -9,6 +9,10 @@ function read(relPath: string) {
   return fs.readFileSync(path.join(root, relPath), "utf8");
 }
 
+function readBytes(relPath: string) {
+  return fs.readFileSync(path.join(root, relPath));
+}
+
 function listSourceFiles(dir: string): string[] {
   return fs.readdirSync(path.join(root, dir), { withFileTypes: true }).flatMap((entry) => {
     const relPath = path.join(dir, entry.name);
@@ -19,6 +23,14 @@ function listSourceFiles(dir: string): string[] {
 }
 
 describe("production readiness contracts", () => {
+  it("keeps source files free from embedded NUL bytes", () => {
+    const filesWithNulBytes = listSourceFiles("src")
+      .concat(listSourceFiles("tests"))
+      .filter((file) => readBytes(file).includes(0));
+
+    expect(filesWithNulBytes).toEqual([]);
+  });
+
   it("keeps Meta Pixel on the documented env key", () => {
     const trackedFiles = [
       "src/components/tracking-scripts.tsx",
@@ -335,4 +347,14 @@ describe("production readiness contracts", () => {
       "GA4_API_SECRET",
       "TURNSTILE_SECRET_KEY",
       "B2B_PARTNER_PUBLIC_KEY",
-      "HMS_WEBHOOK_ES256_PUBLIC_KE
+      "HMS_WEBHOOK_ES256_PUBLIC_KEY",
+    ];
+
+    expect(referencedEnvKeys.length).toBeGreaterThan(0);
+    expect(referencedEnvKeys.every((key) => key.startsWith("NEXT_PUBLIC_"))).toBe(true);
+
+    for (const key of forbiddenServerEnvKeys) {
+      expect(publicEnvSource).not.toContain(key);
+    }
+  });
+});
