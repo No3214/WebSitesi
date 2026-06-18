@@ -10,6 +10,53 @@ import { publicEnv } from "@/lib/public-env";
 
 let posthogReady = false;
 
+const PRIVATE_POSTHOG_PROPERTIES = new Set([
+  "$current_url",
+  "$referrer",
+  "$referring_domain",
+  "$initial_current_url",
+  "$initial_referrer",
+  "$initial_referring_domain",
+  "$gclid",
+  "$gad_source",
+  "$gbraid",
+  "$wbraid",
+  "$msclkid",
+  "$fbclid",
+  "$dclid",
+  "$initial_gclid",
+  "$initial_gad_source",
+  "$initial_gbraid",
+  "$initial_wbraid",
+  "$initial_msclkid",
+  "$initial_fbclid",
+  "$initial_dclid",
+]);
+
+const PRIVATE_POSTHOG_PREFIXES = ["$utm_", "$initial_utm_"] as const;
+
+function stripPrivatePostHogProperties(properties: Record<string, unknown>) {
+  for (const property of Object.keys(properties)) {
+    if (
+      PRIVATE_POSTHOG_PROPERTIES.has(property) ||
+      PRIVATE_POSTHOG_PREFIXES.some((prefix) => property.startsWith(prefix))
+    ) {
+      delete properties[property];
+    }
+  }
+}
+
+function sanitizePostHogProperties(properties: Record<string, unknown>) {
+  stripPrivatePostHogProperties(properties);
+
+  for (const nestedKey of ["$set", "$set_once"] as const) {
+    const nested = properties[nestedKey];
+    if (nested && typeof nested === "object" && !Array.isArray(nested)) {
+      stripPrivatePostHogProperties(nested as Record<string, unknown>);
+    }
+  }
+}
+
 function hasAnalyticsConsent() {
   if (typeof window === "undefined") return false;
   return (parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY)) || getDefaultConsent()).analytics;
@@ -27,7 +74,16 @@ function ensurePostHogReady() {
     posthog.init(posthogKey, {
       api_host: publicEnv.NEXT_PUBLIC_POSTHOG_HOST,
       person_profiles: "identified_only",
+      autocapture: false,
       capture_pageview: false,
+      capture_pageleave: false,
+      disable_session_recording: true,
+      before_send: (event) => {
+        if (event?.properties) {
+          sanitizePostHogProperties(event.properties as Record<string, unknown>);
+        }
+        return event;
+      },
     });
     posthogReady = true;
   }
@@ -55,7 +111,7 @@ export function CSPostHogProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (ready) {
-      posthog.capture("$pageview", { path: pathname });
+      posthog.capture("$pageview", { path: pathname || "/" });
     }
   }, [pathname, ready]);
 
