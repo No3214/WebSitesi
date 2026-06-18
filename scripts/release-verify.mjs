@@ -6,6 +6,10 @@ const gates = [
     label: "Runtime dependency audit",
   },
   {
+    script: "evidence:scan",
+    label: "Commercial evidence redaction scan",
+  },
+  {
     script: "publish:verify",
     label: "Full publish verification",
   },
@@ -75,12 +79,12 @@ function main() {
 
   if (process.argv.includes("--help")) {
     console.log("Usage: node scripts/release-verify.mjs [--list]");
-    console.log("Runs the local release gate: security, publish verify, launch smoke, stress, audit json.");
+    console.log("Runs the local release gate: security, evidence scan, publish verify, launch smoke, stress, audit json.");
     return;
   }
 
   console.log("Kozbeyli Konagi release verification");
-  console.log("Target: security + publish verification + launch smoke + stress + commercial audit");
+  console.log("Target: security + evidence scan + publish verification + launch smoke + stress + commercial audit");
 
   const results = [];
 

@@ -80,6 +80,8 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"test:monkey"');
     expect(readinessScript).toContain('"test:chaos"');
     expect(readinessScript).toContain('"test:stress"');
+    expect(readinessScript).toContain('"evidence:scan"');
+    expect(readinessScript).toContain('"evidence:scan:json"');
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
@@ -100,6 +102,10 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["domain:verify:strict"]).toBe(
       "node scripts/domain-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["evidence:scan"]).toBe("node scripts/evidence-redaction-scan.mjs");
+    expect(packageJson.scripts?.["evidence:scan:json"]).toBe(
+      "node scripts/evidence-redaction-scan.mjs --json",
+    );
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
     expect(packageJson.scripts?.["vercel:ops:json"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --json",
@@ -117,6 +123,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"tests/production-readiness.test.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
     expect(readinessScript).toContain('"docs/vercel-operations.md"');
+    expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
   });
@@ -127,6 +134,7 @@ describe("production readiness contracts", () => {
 
     for (const gate of [
       "security:audit",
+      "evidence:scan",
       "publish:verify",
       "launch:smoke",
       "test:stress",
@@ -136,6 +144,7 @@ describe("production readiness contracts", () => {
     }
 
     expect(releaseScript).toContain("--list");
+    expect(releaseScript).toContain("Commercial evidence redaction scan");
     expect(releaseScript).toContain("process.env.ComSpec");
     expect(releaseScript).not.toContain("launch:audit:strict");
     expect(ciWorkflow).toContain("Release gate manifest");

@@ -20,6 +20,8 @@
     "test:chaos": "playwright test tests/destructive-chaos.spec.ts --reporter=line",
     "test:stress": "npm run test:monkey && npm run test:chaos",
     "security:audit": "npm audit --omit=dev --audit-level=high",
+    "evidence:scan": "node scripts/evidence-redaction-scan.mjs",
+    "evidence:scan:json": "node scripts/evidence-redaction-scan.mjs --json",
     "launch:audit": "node scripts/commercial-launch-audit.mjs",
     "launch:audit:json": "node scripts/commercial-launch-audit.mjs --json",
     "launch:audit:strict": "node scripts/commercial-launch-audit.mjs --strict",
