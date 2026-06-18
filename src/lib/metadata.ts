@@ -27,6 +27,8 @@ export const defaultMetadata: Metadata = {
     "foça butik otel",
     "izmir butik oteller",
     "tarihi taş butik otel",
+    "tarihi taş konak",
+    "kozbeyli kahvaltı",
     "kozbeyli köyü serpme kahvaltı",
     "kozbeyli dibek kahvesi",
     "yetişkin oteli foça",

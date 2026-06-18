@@ -1,49 +1,111 @@
-import { getPayloadClient } from "../src/lib/payload";
+import fs from "node:fs";
+import path from "node:path";
 
-/**
- * Pilot Lead Generation Script
- * 1. Search Node: Identify local event planners and corporate HR in İzmir/Foça.
- * 2. Validation Node: Check for valid contact info.
- * 3. Prep Node: Generate personalized drafts using brand/voice-and-tone.md.
- */
+type RawLeadCandidate = {
+  name?: unknown;
+  email?: unknown;
+  phone?: unknown;
+  sector?: unknown;
+  website?: unknown;
+  notes?: unknown;
+};
 
-async function runPilot() {
-  console.log("🚀 Starting Pilot Lead Generation Pipeline...");
-  
-  // Placeholder for Search & Validation logic
-  // In a real scenario, this would use a Search MCP or Scraping API
-  const mockLeads = [
-    { name: "İzmir Event Planning Co.", email: "info@izmirevent.com", sector: "Wedding Planner" },
-    { name: "Aegean Corporate Retreats", email: "contact@aegeanretreats.com", sector: "Corporate Events" }
-  ];
+type NormalizedLeadCandidate = {
+  name: string;
+  email: string;
+  phone?: string;
+  sector: string;
+  website?: string;
+  notes?: string;
+};
 
-  const payload = await getPayloadClient();
-  if (!payload) {
-    console.error("❌ Payload client not initialized");
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const websitePattern = /^https:\/\/[^\s]+\.[^\s]+$/;
+
+function asString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function validateCandidate(candidate: RawLeadCandidate, index: number) {
+  const name = asString(candidate.name);
+  const email = asString(candidate.email).toLowerCase();
+  const sector = asString(candidate.sector);
+  const phone = asString(candidate.phone);
+  const website = asString(candidate.website);
+  const notes = asString(candidate.notes);
+  const errors: string[] = [];
+
+  if (name.length < 2) errors.push("name is required");
+  if (!emailPattern.test(email)) errors.push("valid email is required");
+  if (sector.length < 2) errors.push("sector is required");
+  if (website && !websitePattern.test(website)) errors.push("website must be https");
+
+  return {
+    index,
+    ok: errors.length === 0,
+    errors,
+    candidate: {
+      name,
+      email,
+      ...(phone ? { phone } : {}),
+      sector,
+      ...(website ? { website } : {}),
+      ...(notes ? { notes } : {}),
+    } satisfies NormalizedLeadCandidate,
+  };
+}
+
+function readCandidates(inputPath: string) {
+  const fullPath = path.resolve(process.cwd(), inputPath);
+  const parsed = JSON.parse(fs.readFileSync(fullPath, "utf8")) as unknown;
+
+  if (!Array.isArray(parsed)) {
+    throw new Error("Lead candidate file must be a JSON array.");
+  }
+
+  return parsed as RawLeadCandidate[];
+}
+
+function main() {
+  const inputIndex = process.argv.indexOf("--input");
+
+  if (inputIndex === -1 || !process.argv[inputIndex + 1]) {
+    console.log(
+      JSON.stringify(
+        {
+          status: "dry-run-only",
+          writesPerformed: 0,
+          message:
+            "Provide --input path/to/leads.json to validate user-supplied lead candidates. This script never writes to Payload/CRM.",
+          requiredFields: ["name", "email", "sector"],
+          optionalFields: ["phone", "website", "notes"],
+        },
+        null,
+        2,
+      ),
+    );
     return;
   }
 
-  for (const lead of mockLeads) {
-    console.log(`Analyzing lead: ${lead.name}...`);
-    
-    // Create a lead in the organization-leads collection for tracking
-    await payload.create({
-      collection: "organization-leads",
-      data: {
-        name: lead.name,
-        email: lead.email,
-        phone: "0000000000",
-        type: lead.sector,
-        message: "SYSTEM_PILOT: AI-Generated outreach pending review.",
-        consent: true,
-        source: "agent_discovery"
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      overrideAccess: true
-    });
-  }
+  const candidates = readCandidates(process.argv[inputIndex + 1]);
+  const results = candidates.map(validateCandidate);
+  const invalid = results.filter((item) => !item.ok);
 
-  console.log("✅ Pilot run complete. Leads added to CRM for review.");
+  console.log(
+    JSON.stringify(
+      {
+        status: invalid.length === 0 ? "ready-for-manual-review" : "needs-correction",
+        writesPerformed: 0,
+        validCount: results.length - invalid.length,
+        invalid,
+        candidates: results.filter((item) => item.ok).map((item) => item.candidate),
+      },
+      null,
+      2,
+    ),
+  );
+
+  if (invalid.length > 0) process.exit(1);
 }
 
-// runPilot().catch(console.error);
+main();

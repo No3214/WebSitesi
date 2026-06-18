@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Düğün & Özel Davetler",
   description: "Foça'da tescilli taş konak avlusunda masalsı butik düğünler, nişan davetleri ve kurumsal 'off-site' toplantılar. Uzman organizasyon ekibi ve şık detaylar.",
   keywords: [
+    "foça düğün mekanı",
     "foça düğün mekanları",
     "izmir butik düğün",
     "kurumsal toplantı mekanları izmir",

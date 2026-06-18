@@ -243,6 +243,33 @@ describe("production readiness contracts", () => {
     expect(mediaAudit).toContain("Any generated or hallucinated image");
   });
 
+  it("keeps growth and SEO helper scripts evidence-based and read-only", () => {
+    const leadGen = read("scripts/lead-gen.ts");
+    const seoAudit = read("scripts/seo-audit.ts");
+    const seoPilot = read("scripts/seo-auto-pilot.ts");
+    const combined = [leadGen, seoAudit, seoPilot].join("\n");
+
+    for (const forbidden of [
+      "mockLeads",
+      "SYSTEM_PILOT",
+      "AI-Generated outreach",
+      "Simulated Logic",
+      "FOUND (Optimized",
+      "score: 95",
+      "payload.create",
+      "agent_discovery",
+    ]) {
+      expect(combined, `production helper scripts must not contain ${forbidden}`).not.toContain(forbidden);
+    }
+
+    expect(leadGen).toContain("writesPerformed: 0");
+    expect(leadGen).toContain("This script never writes to Payload/CRM");
+    expect(seoAudit).toContain("failures");
+    expect(seoAudit).toContain("metadataBase");
+    expect(seoPilot).toContain("Evidence-based content gap scan only");
+    expect(seoPilot).toContain("nextEditorialBacklog");
+  });
+
   it("keeps launch smoke focused on public routes, hero video, location and media", () => {
     const launchSmokeScript = read("scripts/launch-smoke.mjs");
 
