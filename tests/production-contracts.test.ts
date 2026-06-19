@@ -95,6 +95,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"analytics:verify"');
     expect(readinessScript).toContain('"analytics:verify:json"');
     expect(readinessScript).toContain('"analytics:verify:strict"');
+    expect(readinessScript).toContain('"search:verify"');
+    expect(readinessScript).toContain('"search:verify:json"');
+    expect(readinessScript).toContain('"search:verify:strict"');
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
@@ -150,6 +153,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["analytics:verify:strict"]).toBe(
       "node scripts/analytics-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["search:verify"]).toBe("node scripts/search-local-seo-readiness.mjs");
+    expect(packageJson.scripts?.["search:verify:json"]).toBe(
+      "node scripts/search-local-seo-readiness.mjs --json",
+    );
+    expect(packageJson.scripts?.["search:verify:strict"]).toBe(
+      "node scripts/search-local-seo-readiness.mjs --strict",
+    );
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
     expect(packageJson.scripts?.["vercel:ops:json"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --json",
@@ -165,6 +175,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"tests/agentic-helper-safety.test.ts"');
     expect(readinessScript).toContain('"tests/abuse-controls-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/analytics-readiness.test.ts"');
+    expect(readinessScript).toContain('"tests/search-local-seo-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"tests/production-readiness.test.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
@@ -173,6 +184,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
     expect(readinessScript).toContain('"scripts/abuse-controls-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/analytics-readiness.mjs"');
+    expect(readinessScript).toContain('"scripts/search-local-seo-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/hms-booking-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
@@ -188,6 +200,7 @@ describe("production readiness contracts", () => {
       "media:hero:json",
       "abuse:verify:json",
       "analytics:verify:json",
+      "search:verify:json",
       "publish:verify",
       "launch:smoke",
       "test:stress",
@@ -200,6 +213,7 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("Commercial evidence redaction scan");
     expect(releaseScript).toContain("Production abuse-control readiness diagnosis");
     expect(releaseScript).toContain("Analytics purchase readiness diagnosis");
+    expect(releaseScript).toContain("Search and local SEO readiness diagnosis");
     expect(releaseScript).toContain("process.env.ComSpec");
     expect(releaseScript).not.toContain("launch:audit:strict");
     expect(ciWorkflow).toContain("Release gate manifest");
@@ -322,6 +336,50 @@ describe("production readiness contracts", () => {
     expect(hotelrunnerWebhook).toContain("sendGa4Purchase");
     expect(hotelrunnerWebhook).toContain("if (!isCancelled)");
     expect(publicEnv).not.toContain("GA4_API_SECRET");
+  });
+
+  it("keeps search and local SEO verification source-bound and truthfulness-gated", () => {
+    const packageJson = JSON.parse(read("package.json")) as {
+      scripts?: Record<string, string>;
+    };
+    const searchReadiness = read("scripts/search-local-seo-readiness.mjs");
+    const metadata = read("src/lib/metadata.ts");
+    const envSource = read("src/lib/env.ts");
+    const sitemap = read("src/app/sitemap.ts");
+    const robots = read("src/app/robots.ts");
+    const schema = read("src/lib/schema.ts");
+    const locationContent = read("src/components/location-page-content.tsx");
+    const evidence = read("docs/evidence/search-local-seo.md");
+
+    expect(packageJson.scripts?.["search:verify:strict"]).toBe(
+      "node scripts/search-local-seo-readiness.mjs --strict",
+    );
+    expect(searchReadiness).toContain("SEARCH LOCAL SEO BLOCKED");
+    expect(searchReadiness).toContain("search_local_seo");
+    expect(searchReadiness).toContain("docs/evidence/search-local-seo.md");
+    expect(searchReadiness).toContain("GOOGLE_SITE_VERIFICATION must be the raw Search Console token");
+    expect(searchReadiness).toContain("structured_data_truthfulness");
+    expect(searchReadiness).toContain("process.exitCode");
+    expect(searchReadiness).not.toContain("process.exit(strict");
+    expect(metadata).toContain("env.GOOGLE_SITE_VERIFICATION");
+    expect(metadata).toContain("{ google: env.GOOGLE_SITE_VERIFICATION }");
+    expect(envSource).toContain("GOOGLE_SITE_VERIFICATION");
+    expect(sitemap).toContain("alternates");
+    expect(sitemap).toContain("'/lokasyon'");
+    expect(sitemap).toContain("'/deneyimler/foca-gezi-rehberi'");
+    expect(robots).toContain("sitemap: `${siteUrl}/sitemap.xml`");
+    expect(schema).toContain('"@type": ["Hotel", "LodgingBusiness", "Restaurant"]');
+    expect(schema).toContain('"@type": "PostalAddress"');
+    expect(schema).toContain('"@type": "GeoCoordinates"');
+    expect(schema).not.toContain("starRating");
+    expect(schema).not.toContain("aggregateRating");
+    expect(schema).not.toContain("review:");
+    expect(schema).not.toContain("award:");
+    expect(locationContent).toContain('"@type": "LodgingBusiness"');
+    expect(locationContent).toContain('"@type": "BreadcrumbList"');
+    expect(evidence).toContain("Google Business Profile");
+    expect(evidence).toContain("Hotel Center");
+    expect(evidence).toContain("npm run search:verify");
   });
 
   it("keeps the HMS booking engine as a new-tab handoff instead of a cramped iframe", () => {

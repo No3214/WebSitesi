@@ -80,9 +80,10 @@ yayınlamaz.
 publish verification'dan önce çalışır; health, hero video, konum ve medya smoke
 lokal doğrulamada kalmaz.
 2026-06-14 release gate güncellemesi: `npm run release:verify` eklendi. Bu üst
-komut security audit, `publish:verify`, `launch:smoke`, monkey/chaos stres
-testleri ve JSON commercial launch audit'i tek sırada çalıştırır; CI ayrıca
-bu release manifestini `--list` ile doğrular.
+komut security audit, evidence scan, hero media audit, abuse/analytics/search
+readiness, `publish:verify`, `launch:smoke`, monkey/chaos stres testleri ve
+JSON commercial launch audit'i tek sırada çalıştırır; CI ayrıca bu release
+manifestini `--list` ile doğrular.
 2026-06-14 Lighthouse bütçe güncellemesi: GitHub Actions mobil-throttled ölçümünde
 hero LCP iyileştirmesi sonrası `/` performans skoru 0.69, `/odalar` skoru 0.80
 ölçüldü; sonraki CI varyansında home 0.54'e düştü. CI'daki hard performance

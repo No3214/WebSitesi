@@ -574,7 +574,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
         }
 
         .event-document-card p {
-          color: var(--muted);
+          color: #332d24;
           font-size: 0.94rem;
           line-height: 1.7;
           margin: 0;

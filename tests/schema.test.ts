@@ -15,5 +15,7 @@ describe("hotel structured data", () => {
     expect(JSON.stringify(hotel)).not.toContain("500 Yıllık Taş Dibek Kahvesi");
     expect(hotel).not.toHaveProperty("aggregateRating");
     expect(hotel).not.toHaveProperty("review");
+    expect(hotel).not.toHaveProperty("starRating");
+    expect(hotel).not.toHaveProperty("award");
   });
 });

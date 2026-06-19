@@ -41,10 +41,6 @@ export function hotelSchema() {
     checkoutTime: "12:00",
     priceRange: "₺₺₺",
     servesCuisine: "Aegean, Turkish, Breakfast, Antakya",
-    starRating: {
-      "@type": "Rating",
-      "ratingValue": "5"
-    },
     amenityFeature: [
       { "@type": "LocationFeatureSpecification", name: "Tarihi Taş Mimari (Horasan Harcı)", value: true },
       { "@type": "LocationFeatureSpecification", name: "İnci Hanım Güvencesinde Antakya & Ege Mutfağı", value: true },
@@ -54,10 +50,6 @@ export function hotelSchema() {
       { "@type": "LocationFeatureSpecification", name: "Ücretsiz Otopark", value: true },
       { "@type": "LocationFeatureSpecification", name: "Kahvaltı", value: true },
       { "@type": "LocationFeatureSpecification", name: "Klima", value: true },
-    ],
-    award: [
-      "Foça'nın En Otantik Butik Oteli",
-      "Geleneksel Antakya Mutfağı Miras Koruyucusu"
     ],
     potentialAction: {
       "@type": "ReserveAction",

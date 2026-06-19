@@ -22,6 +22,10 @@ const gates = [
     label: "Analytics purchase readiness diagnosis",
   },
   {
+    script: "search:verify:json",
+    label: "Search and local SEO readiness diagnosis",
+  },
+  {
     script: "publish:verify",
     label: "Full publish verification",
   },
@@ -95,12 +99,12 @@ function main() {
 
   if (process.argv.includes("--help")) {
     console.log("Usage: node scripts/release-verify.mjs [--list]");
-    console.log("Runs the local release gate: security, evidence scan, hero media audit, publish verify, launch smoke, stress, audit json and cutover plan.");
+    console.log("Runs the local release gate: security, evidence scan, hero media audit, readiness diagnostics, publish verify, launch smoke, stress, audit json and cutover plan.");
     return;
   }
 
   console.log("Kozbeyli Konagi release verification");
-  console.log("Target: security + evidence scan + hero media audit + publish verification + launch smoke + stress + commercial audit + cutover plan");
+  console.log("Target: security + evidence scan + hero media audit + readiness diagnostics + publish verification + launch smoke + stress + commercial audit + cutover plan");
 
   const results = [];
 

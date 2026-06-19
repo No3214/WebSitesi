@@ -22,6 +22,9 @@ surfaces need source-system proof before full public launch.
 
 ## Validation Commands
 
+- `npm run search:verify`
+- `npm run search:verify:strict` after Search Console, local profile and hotel
+  discovery proof is complete
 - `npm run domain:verify`
 - `npm run launch:audit:json`
 - `npm run launch:audit:strict` after search/local proof is complete
