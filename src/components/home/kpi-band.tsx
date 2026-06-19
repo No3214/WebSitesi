@@ -1,29 +1,26 @@
 "use client";
 
-import { Counter, FadeIn } from "@/components/animations";
+import { FadeIn } from "@/components/animations";
 
 export function KpiBand({ locale }: { locale: "tr" | "en" }) {
+  const experienceScore = locale === "tr" ? "9,4/10" : "9.4/10";
+  const responseTime = locale === "tr" ? "24 Saat" : "24 Hrs";
+
   return (
     <section className="section" style={{ paddingBlock: "72px" }}>
       <div className="container">
         <FadeIn>
           <div className="kpi-row">
             <div>
-              <strong>
-                <Counter to={9.4} decimals={1} suffix="/10" />
-              </strong>
+              <strong>{experienceScore}</strong>
               <span>{locale === "tr" ? "Misafir Deneyimi" : "Guest Experience"}</span>
             </div>
             <div>
-              <strong>
-                <Counter to={500} suffix="+" />
-              </strong>
+              <strong>500+</strong>
               <span>{locale === "tr" ? "Yıllık Taş Miras" : "Years of Stone Heritage"}</span>
             </div>
             <div>
-              <strong>
-                <Counter to={24} suffix={locale === "tr" ? " Saat" : " Hrs"} />
-              </strong>
+              <strong>{responseTime}</strong>
               <span>{locale === "tr" ? "Destek Geri Dönüş" : "Support Response"}</span>
             </div>
           </div>

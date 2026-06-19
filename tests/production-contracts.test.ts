@@ -529,6 +529,17 @@ describe("production readiness contracts", () => {
     expect(globals).toContain(".gallery-grid-item img {\n    width: 100%;\n    height: 100%;\n    display: block;");
   });
 
+  it("keeps homepage KPI values truthful in server-rendered HTML", () => {
+    const kpiBand = read("src/components/home/kpi-band.tsx");
+
+    expect(kpiBand).not.toContain("Counter");
+    expect(kpiBand).toContain('"9,4/10"');
+    expect(kpiBand).toContain('"9.4/10"');
+    expect(kpiBand).toContain("<strong>500+</strong>");
+    expect(kpiBand).toContain('"24 Saat"');
+    expect(kpiBand).not.toContain('to={500}');
+  });
+
   it("keeps first-visit hero rendering from waiting on late webfont swaps", () => {
     const layout = read("src/app/layout.tsx");
 
