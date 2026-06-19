@@ -2,6 +2,7 @@ type BookingEngineHrefOptions = {
   roomSlug?: string;
 };
 
+export const OFFICIAL_HMS_BOOKING_ENGINE_HOST = "kozbeyli-konagi.hmshotel.net";
 export const OFFICIAL_HMS_BOOKING_ENGINE_URL =
   "https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine";
 
@@ -17,6 +18,7 @@ export function getBookingEngineHref(rawUrl: string, options: BookingEngineHrefO
   }
 
   if (url.protocol !== "https:") return "";
+  if (url.hostname !== OFFICIAL_HMS_BOOKING_ENGINE_HOST) return "";
 
   if (!url.searchParams.has("utm_source")) {
     url.searchParams.set("utm_source", "website");

@@ -17,12 +17,13 @@ The site should keep the local `/rezervasyon` page as a branded support and cont
 - Security / Privacy: The external link opens with `target="_blank"` and `rel="noopener noreferrer"`. No guest data, payment details or secrets are passed from the site.
 - Product / Hospitality: Button copy is shortened to "Rezervasyon" / "Booking" so the flow feels direct and premium rather than explanatory.
 - Ops / Performance: New-tab handoff avoids cramped embedded calendars on mobile and avoids adding third-party script cost to the initial page load.
-- Red Team: The full commercial launch gate remains evidence-based. A reachable HMS URL is not the same as completed booking UAT, payment UAT or legal approval.
-- Implementer: Keep the change small, add contract tests for the URL helper, header, mobile, room-detail and `/rezervasyon` flow, then verify with build and Playwright.
+- Red Team: The full commercial launch gate remains evidence-based. A reachable HMS URL is not the same as completed booking UAT, payment UAT or legal approval. Wrong-property URLs such as another hotel or generic HotelRunner link must be rejected.
+- Implementer: Keep the change small, add contract tests for the URL helper, header, mobile, room-detail, HMS target verifier and `/rezervasyon` flow, then verify with build and Playwright.
 
 ## Verification Plan
 
 - `npx vitest run --project unit tests/booking-engine-url.test.ts tests/production-contracts.test.ts`
+- `npm run hms:verify:strict`
 - `npx tsc --noEmit`
 - `npm run lint`
 - `npm run build`

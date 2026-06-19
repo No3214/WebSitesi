@@ -15,6 +15,9 @@ is still not ready until a live booking UAT is validated in production.
 - The public booking URL resolves to the approved HTTPS HMS engine. If
   `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` is set, it must also be HTTPS; otherwise
   the code fallback must remain the approved HMS URL.
+- The public booking target host is `kozbeyli-konagi.hmshotel.net`; another
+  hotel, HotelRunner, or generic booking URL is not acceptable even if it uses
+  HTTPS.
 - The `/rezervasyon` and `/en/rezervasyon` CTAs open the approved HMS booking
   engine in a new tab, not a cramped iframe.
 - A real UAT booking flow has been completed with redacted screenshots or a
@@ -26,6 +29,7 @@ is still not ready until a live booking UAT is validated in production.
 
 ## Validation Commands
 
+- `npm run hms:verify:strict`
 - `npm run launch:smoke:live`
 - `npm run launch:audit:json`
 - `npm run launch:audit:strict` after Vercel env and proof are complete

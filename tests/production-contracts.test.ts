@@ -93,6 +93,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
+    expect(readinessScript).toContain('"hms:verify"');
+    expect(readinessScript).toContain('"hms:verify:json"');
+    expect(readinessScript).toContain('"hms:verify:strict"');
     expect(readinessScript).toContain('"domain:verify"');
     expect(readinessScript).toContain('"domain:verify:json"');
     expect(readinessScript).toContain('"domain:verify:strict"');
@@ -105,6 +108,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["launch:smoke"]).toBe("node scripts/launch-smoke.mjs");
     expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
       "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/launch-smoke.mjs",
+    );
+    expect(packageJson.scripts?.["hms:verify"]).toBe("node scripts/hms-booking-readiness.mjs");
+    expect(packageJson.scripts?.["hms:verify:json"]).toBe(
+      "node scripts/hms-booking-readiness.mjs --json",
+    );
+    expect(packageJson.scripts?.["hms:verify:strict"]).toBe(
+      "node scripts/hms-booking-readiness.mjs --strict",
     );
     expect(packageJson.scripts?.["domain:verify"]).toBe("node scripts/domain-readiness.mjs");
     expect(packageJson.scripts?.["domain:verify:strict"]).toBe(
@@ -140,6 +150,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"docs/vercel-operations.md"');
     expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
+    expect(readinessScript).toContain('"scripts/hms-booking-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
   });
@@ -230,6 +241,7 @@ describe("production readiness contracts", () => {
     const roomDetail = read("src/components/room-detail-client.tsx");
     const faqPageContent = read("src/components/faq-page-content.tsx");
     const envExample = read(".env.example");
+    const hmsReadiness = read("scripts/hms-booking-readiness.mjs");
     const primaryBookingCtas = [
       siteHeader,
       mobileActionBar,
@@ -265,10 +277,17 @@ describe("production readiness contracts", () => {
     expect(roomsClient).not.toContain('href={locale === "en" ? "/en/rezervasyon" : "/rezervasyon"}');
     expect(roomDetail).not.toContain('href={`/rezervasyon?oda=${slug}`}');
     expect(bookingUrlHelper).toContain("OFFICIAL_HMS_BOOKING_ENGINE_URL");
+    expect(bookingUrlHelper).toContain("OFFICIAL_HMS_BOOKING_ENGINE_HOST");
     expect(bookingUrlHelper).toContain("https://kozbeyli-konagi.hmshotel.net/");
     expect(bookingUrlHelper).toContain('url.protocol !== "https:"');
+    expect(bookingUrlHelper).toContain("url.hostname !== OFFICIAL_HMS_BOOKING_ENGINE_HOST");
     expect(bookingUrlHelper).toContain('utm_source", "website"');
     expect(bookingUrlHelper).toContain('utm_medium", "booking_engine"');
+    expect(hmsReadiness).toContain("HMS BOOKING TARGET PASS");
+    expect(hmsReadiness).toContain("OFFICIAL_HMS_BOOKING_ENGINE_HOST");
+    expect(hmsReadiness).toContain("kozbeyli-konagi.hmshotel.net");
+    expect(hmsReadiness).toContain("soleil-mansion");
+    expect(hmsReadiness).toContain("wrong-property signal");
     expect(envExample).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL=https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine");
   });
 
@@ -329,12 +348,16 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["launch:cutover:strict"]).toBe(
       "node scripts/production-cutover-plan.mjs --strict",
     );
+    expect(packageJson.scripts?.["hms:verify:strict"]).toBe(
+      "node scripts/hms-booking-readiness.mjs --strict",
+    );
     expect(packageJson.scripts?.["vercel:ops:strict"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --strict",
     );
     expect(vercelOps).toContain("Kozbeyli Konagi Vercel operations readiness");
     expect(cutover).toContain("VERCEL_AUTH_COMMANDS");
     expect(cutover).toContain("vercel whoami");
+    expect(cutover).toContain("npm run hms:verify:strict");
     expect(vercelOps).toContain("PASS_WITH_WARNINGS");
     expect(vercelOps).toContain("npm i -g vercel");
     expect(vercelOps).toContain("APPDATA");
@@ -470,8 +493,10 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("npm i -g vercel");
     expect(cutoverPlan).toContain("HTTPS-to-HTTP first-hop redirect");
     expect(cutoverPlan).toContain("remove the bad override to use the official code fallback");
+    expect(cutoverPlan).toContain("Run npm run hms:verify:strict");
     expect(cutoverPlan).toContain("Verify the public reservation CTA opens the approved HTTPS HMS engine");
     expect(cutoverPlan).toContain("npm run domain:verify:strict");
+    expect(cutoverPlan).toContain("npm run hms:verify:strict");
     expect(cutoverPlan).toContain("npm run launch:audit:strict");
   });
 

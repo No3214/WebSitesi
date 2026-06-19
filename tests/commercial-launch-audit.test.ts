@@ -196,7 +196,7 @@ describe("commercial launch audit", () => {
     expect(result.score).toBe(96);
     expect(hmsGate?.ready).toBe(false);
     expect(hmsGate?.missingEnv).toEqual([
-      "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL (expected HTTPS live booking engine URL)",
+      "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL (expected approved HTTPS HMS booking engine URL)",
     ]);
     expect(hmsGate?.missingEvidence).toEqual([]);
     expect(hmsGate).toMatchObject({
@@ -205,6 +205,31 @@ describe("commercial launch audit", () => {
       missingEnvCount: 0,
       invalidEnvCount: 1,
       fallbackApplied: false,
+    });
+  });
+
+  it("blocks explicit HTTPS booking URLs that belong to another hotel or vendor host", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+    env.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL = "https://soleil-mansion.hotelrunner.com/bv3/search";
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const result = audit.evaluateCommercialLaunch({ env, baseDir });
+    const hmsGate = result.gateResults.find((gate) => gate.id === "hms_booking_engine");
+
+    expect(result.score).toBe(96);
+    expect(hmsGate?.ready).toBe(false);
+    expect(hmsGate?.missingEnv).toEqual([
+      "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL (expected approved HTTPS HMS booking engine URL)",
+    ]);
+    expect(hmsGate).toMatchObject({
+      configurationSource: "invalid",
+      configuredEnvCount: 1,
+      invalidEnvCount: 1,
     });
   });
 

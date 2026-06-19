@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  OFFICIAL_HMS_BOOKING_ENGINE_HOST,
   OFFICIAL_HMS_BOOKING_ENGINE_URL,
   getBookingEngineHref,
   getConfiguredBookingEngineHref,
@@ -14,26 +15,33 @@ describe("booking-engine-url", () => {
     expect(getBookingEngineHref("http://example.com/booking")).toBe("");
   });
 
+  it("rejects booking urls that do not belong to the approved Kozbeyli HMS host", () => {
+    expect(getBookingEngineHref("https://hotel.example.com/bv3/search")).toBe("");
+    expect(getBookingEngineHref("https://soleil-mansion.hotelrunner.com/bv3/search")).toBe("");
+    expect(getBookingEngineHref("https://hmshotel.net/kozbeyli-konagi")).toBe("");
+    expect(OFFICIAL_HMS_BOOKING_ENGINE_HOST).toBe("kozbeyli-konagi.hmshotel.net");
+  });
+
   it("adds website attribution to a clean https booking engine url", () => {
-    expect(getBookingEngineHref("https://hotel.example.com/bv3/search")).toBe(
-      "https://hotel.example.com/bv3/search?utm_source=website&utm_medium=booking_engine",
+    expect(getBookingEngineHref("https://kozbeyli-konagi.hmshotel.net/bv3/search")).toBe(
+      "https://kozbeyli-konagi.hmshotel.net/bv3/search?utm_source=website&utm_medium=booking_engine",
     );
   });
 
   it("preserves existing query params and appends the selected room slug", () => {
     expect(
-      getBookingEngineHref("https://hotel.example.com/bv3/search?locale=tr", {
+      getBookingEngineHref("https://kozbeyli-konagi.hmshotel.net/bv3/search?locale=tr", {
         roomSlug: "standart-deniz-manzarali-oda",
       }),
     ).toBe(
-      "https://hotel.example.com/bv3/search?locale=tr&utm_source=website&utm_medium=booking_engine&room=standart-deniz-manzarali-oda",
+      "https://kozbeyli-konagi.hmshotel.net/bv3/search?locale=tr&utm_source=website&utm_medium=booking_engine&room=standart-deniz-manzarali-oda",
     );
   });
 
   it("does not overwrite existing attribution values from the PMS vendor", () => {
     expect(
-      getBookingEngineHref("https://hotel.example.com/bv3/search?utm_source=google&utm_medium=cpc"),
-    ).toBe("https://hotel.example.com/bv3/search?utm_source=google&utm_medium=cpc");
+      getBookingEngineHref("https://kozbeyli-konagi.hmshotel.net/bv3/search?utm_source=google&utm_medium=cpc"),
+    ).toBe("https://kozbeyli-konagi.hmshotel.net/bv3/search?utm_source=google&utm_medium=cpc");
   });
 
   it("uses the official HMS engine as the public fallback", () => {

@@ -6,6 +6,7 @@ import { scanEvidenceSource } from "./evidence-redaction-scan.mjs";
 
 const root = process.cwd();
 const BASE_COMMERCIAL_SCORE = 82;
+const OFFICIAL_HMS_BOOKING_ENGINE_HOST = "kozbeyli-konagi\\.hmshotel\\.net";
 const OFFICIAL_HMS_BOOKING_ENGINE_URL =
   "https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine";
 
@@ -43,8 +44,8 @@ export const commercialLaunchGates = [
     fallbackUrl: OFFICIAL_HMS_BOOKING_ENGINE_URL,
     expectedEnv: {
       NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: {
-        pattern: "^https://",
-        label: "HTTPS live booking engine URL",
+        pattern: `^https://${OFFICIAL_HMS_BOOKING_ENGINE_HOST}(?:/|\\?|$)`,
+        label: "approved HTTPS HMS booking engine URL",
       },
     },
     evidence: ["docs/evidence/hms-booking-engine.md"],

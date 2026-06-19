@@ -118,7 +118,7 @@ function makeReadyEnv(audit: CommercialLaunchModule) {
         key === "NEXT_PUBLIC_SITE_URL"
           ? "https://kozbeylikonagi.com"
           : key === "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"
-            ? "https://booking.kozbeylikonagi.com/search"
+            ? "https://kozbeyli-konagi.hmshotel.net/bv3/search"
             : `live_${key}`,
       ]),
     ),
@@ -199,6 +199,9 @@ describe("production cutover plan", () => {
       fallbackApplied: true,
     });
     expect(hms?.checklist).toContain(
+      "Run npm run hms:verify:strict to confirm the public target is the approved Kozbeyli HMS host, not another hotel/vendor URL.",
+    );
+    expect(hms?.checklist).toContain(
       "Verify the public reservation CTA opens the approved HTTPS HMS engine in a new tab.",
     );
     expect(hms?.checklist).toContain(
@@ -255,7 +258,7 @@ describe("production cutover plan", () => {
     const hms = plan.gateSteps.find((step) => step.id === "hms_booking_engine");
 
     expect(hms?.missingEnv).toEqual([
-      "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL (expected HTTPS live booking engine URL)",
+      "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL (expected approved HTTPS HMS booking engine URL)",
     ]);
     expect(hms?.envDiagnostics).toMatchObject({
       source: "invalid",
@@ -291,6 +294,7 @@ describe("production cutover plan", () => {
     expect(plan.currentScore).toBe(100);
     expect(plan.blockedPoints).toBe(0);
     expect(plan.gateSteps).toEqual([]);
+    expect(plan.finalVerificationCommands).toContain("npm run hms:verify:strict");
     expect(plan.finalVerificationCommands).toContain("npm run launch:audit:strict");
   });
 });

@@ -57,6 +57,7 @@ const gateActionCatalog = {
     timing: "Before replacing WhatsApp fallback as primary reservation path",
     objective: "Use the approved HMS handoff and prove a booking UAT path.",
     actions: [
+      "Run npm run hms:verify:strict to confirm the public target is the approved Kozbeyli HMS host, not another hotel/vendor URL.",
       "Verify the public reservation CTA opens the approved HTTPS HMS engine in a new tab.",
       "Run a live booking-engine UAT for dates, guests, room availability and fallback behavior.",
       "Document date, guest, room/rate selection, fallback and modification/refund handling in redacted evidence.",
@@ -64,6 +65,7 @@ const gateActionCatalog = {
     ],
     commands: [
       VERCEL_INSTALL_COMMAND,
+      "npm run hms:verify:strict",
       "npm run launch:smoke:live",
       "npm run launch:audit",
     ],
@@ -244,6 +246,7 @@ export function buildProductionCutoverPlan({
     finalVerificationCommands: [
       "npm run vercel:ops:strict",
       "npm run domain:verify:strict",
+      "npm run hms:verify:strict",
       "npm run launch:smoke:live",
       "npm run launch:audit:strict",
       "npm run release:verify",
