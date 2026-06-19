@@ -33,8 +33,17 @@ describe("public light theme contract", () => {
     expect(combined).not.toContain('background: "var(--ink)"');
     expect(combined).not.toContain("bg-zinc-950");
     expect(combined).not.toContain('y: "108%"');
+    expect(combined).not.toContain('background: "#111"');
+    expect(combined).toContain('background: "var(--stone-warm)"');
     expect(combined).toContain('variant="solid"');
     expect(combined).toContain("#fbf7ed");
+  });
+
+  it("keeps public event imagery placeholders in the warm stone palette", () => {
+    const organizations = read("src/components/organizations-client.tsx");
+
+    expect(organizations).not.toContain("background: var(--ink)");
+    expect(organizations).toContain("background: var(--stone-warm)");
   });
 
   it("keeps home lower bands on warm light surfaces instead of section-dark", () => {

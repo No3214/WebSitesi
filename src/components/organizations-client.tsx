@@ -467,7 +467,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
           border: 10px solid var(--ivory);
           border-radius: 4px;
           object-fit: cover;
-          background: var(--ink);
+          background: var(--stone-warm);
         }
 
         .wedding-copy h2 {

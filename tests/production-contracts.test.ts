@@ -113,9 +113,12 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"GARANTI_3D_STORE_KEY"');
     expect(readinessScript).toContain('"NEXT_PUBLIC_GA4_MEASUREMENT_ID"');
     expect(readinessScript).toContain('"NEXT_PUBLIC_GOOGLE_ADS_ID"');
+    expect(readinessScript).toContain('"quality"');
+    expect(readinessScript).toContain('"test:e2e"');
     expect(readinessScript).toContain('"test:monkey"');
     expect(readinessScript).toContain('"test:chaos"');
     expect(readinessScript).toContain('"test:stress"');
+    expect(readinessScript).toContain('"security:audit"');
     expect(readinessScript).toContain('"evidence:scan"');
     expect(readinessScript).toContain('"evidence:scan:json"');
     expect(readinessScript).toContain('"media:hero"');
@@ -229,6 +232,9 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["github:ci:strict"]).toBe(
       "node scripts/github-ci-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.quality).toBe("npm run lint && npm run typecheck && npm run test:unit && npm run build");
+    expect(packageJson.scripts?.["test:e2e"]).toBe("playwright test");
+    expect(packageJson.scripts?.["security:audit"]).toBe("npm audit --omit=dev --audit-level=high");
     expect(packageJson.scripts?.prebuild).toBe("node scripts/clean-next-build.mjs");
     expect(packageJson.scripts?.["release:verify"]).toBe("node scripts/release-verify.mjs");
     expect(readinessScript).toContain('"scripts/clean-next-build.mjs"');
@@ -607,6 +613,7 @@ describe("production readiness contracts", () => {
     expect(nextConfig).toContain('"object-src \'none\'"');
     expect(nextConfig).toContain('"base-uri \'self\'"');
     expect(nextConfig).toContain('"form-action \'self\'"');
+    expect(nextConfig).toContain('process.env.NODE_ENV !== "production" ? "\'unsafe-eval\'" : ""');
     expect(nextConfig).toContain(
       '"frame-src \'self\' https://www.openstreetmap.org https://www.googletagmanager.com https://challenges.cloudflare.com"',
     );

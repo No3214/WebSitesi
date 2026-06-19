@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ReservationPageContent } from "@/app/rezervasyon/page";
+import { ReservationPageContent } from "@/components/reservation-page-content";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {

@@ -139,7 +139,7 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
                 preload="none"
                 playsInline
                 poster={video.poster}
-                style={{ width: "100%", borderRadius: 16, display: "block", background: "#111" }}
+                style={{ width: "100%", borderRadius: 16, display: "block", background: "var(--stone-warm)" }}
                 data-event={video.event}
               >
                 <source src={video.src} type="video/mp4" />

@@ -104,7 +104,7 @@ export function HistoryClient({ locale = "tr" }: { locale?: Locale }) {
             playsInline
             poster="/videos/sunset-poster.jpg"
             data-event="video_play_sunset"
-            style={{ width: "100%", maxWidth: 720, borderRadius: 16, display: "block", background: "#111", margin: "0 auto" }}
+            style={{ width: "100%", maxWidth: 720, borderRadius: 16, display: "block", background: "var(--stone-warm)", margin: "0 auto" }}
           >
             <source src="/videos/sunset.mp4" type="video/mp4" />
           </video>

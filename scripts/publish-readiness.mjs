@@ -160,10 +160,13 @@ const packageJson = JSON.parse(read("package.json"));
 const requiredScripts = [
   "lint",
   "typecheck",
+  "quality",
   "test:unit",
+  "test:e2e",
   "test:monkey",
   "test:chaos",
   "test:stress",
+  "security:audit",
   "evidence:scan",
   "evidence:scan:json",
   "media:hero",

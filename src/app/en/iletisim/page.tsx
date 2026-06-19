@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ContactPageContent } from "@/app/iletisim/page";
+import { ContactPageContent } from "@/components/contact-page-content";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
