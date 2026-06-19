@@ -30,6 +30,18 @@ const gates = [
     label: "Garanti POS readiness diagnosis",
   },
   {
+    script: "hms:verify:json",
+    label: "HMS booking target readiness diagnosis",
+  },
+  {
+    script: "domain:verify:json",
+    label: "Canonical domain readiness diagnosis",
+  },
+  {
+    script: "vercel:ops:json",
+    label: "Vercel project and CLI operations diagnosis",
+  },
+  {
     script: "vercel:env:json",
     label: "Vercel production env inventory diagnosis",
   },
@@ -111,12 +123,12 @@ function main() {
 
   if (process.argv.includes("--help")) {
     console.log("Usage: node scripts/release-verify.mjs [--list]");
-    console.log("Runs the local release gate: security, evidence scan, hero media audit, readiness diagnostics, publish verify, launch smoke, stress, audit json and cutover plan.");
+    console.log("Runs the local release gate: security, evidence scan, hero media audit, readiness diagnostics, domain/HMS/Vercel diagnostics, publish verify, launch smoke, stress, audit json and cutover plan.");
     return;
   }
 
   console.log("Kozbeyli Konagi release verification");
-  console.log("Target: security + evidence scan + hero media audit + readiness diagnostics + publish verification + launch smoke + stress + commercial audit + cutover plan");
+  console.log("Target: security + evidence scan + hero media audit + readiness diagnostics + domain/HMS/Vercel diagnostics + publish verification + launch smoke + stress + commercial audit + cutover plan");
 
   const results = [];
 

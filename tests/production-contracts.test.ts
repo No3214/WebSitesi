@@ -269,6 +269,9 @@ describe("production readiness contracts", () => {
       "analytics:verify:json",
       "search:verify:json",
       "garanti:verify:json",
+      "hms:verify:json",
+      "domain:verify:json",
+      "vercel:ops:json",
       "vercel:env:json",
       "github:ci:json",
       "publish:verify",
@@ -285,8 +288,12 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("Analytics purchase readiness diagnosis");
     expect(releaseScript).toContain("Search and local SEO readiness diagnosis");
     expect(releaseScript).toContain("Garanti POS readiness diagnosis");
+    expect(releaseScript).toContain("HMS booking target readiness diagnosis");
+    expect(releaseScript).toContain("Canonical domain readiness diagnosis");
+    expect(releaseScript).toContain("Vercel project and CLI operations diagnosis");
     expect(releaseScript).toContain("Vercel production env inventory diagnosis");
     expect(releaseScript).toContain("GitHub Actions CI readiness diagnosis");
+    expect(releaseScript).toContain("domain/HMS/Vercel diagnostics");
     expect(releaseScript).toContain("process.env.ComSpec");
     expect(releaseScript).not.toContain("launch:audit:strict");
     expect(ciWorkflow).toContain("Release gate manifest");
