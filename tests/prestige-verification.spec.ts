@@ -40,11 +40,14 @@ test.describe('Prestige & Heritage Verification', () => {
     // yerine haritanın kendi düğümlerine scope'lanır.
     const map = page.getByTestId('living-museum-map');
     await expect(map).toBeVisible();
-    const mapNodes = map.locator('circle');
-    expect(await mapNodes.count()).toBeGreaterThan(0);
+    const mapNodes = map.getByTestId('living-museum-point');
+    await expect(mapNodes.first()).toBeVisible();
 
     // Hover over a node and check for story popover
-    await mapNodes.first().hover({ force: true });
+    await map.scrollIntoViewIfNeeded();
+    const firstNodeBox = await mapNodes.first().boundingBox();
+    expect(firstNodeBox, "living museum point should have a hover target").not.toBeNull();
+    await page.mouse.move(firstNodeBox!.x + firstNodeBox!.width / 2, firstNodeBox!.y + firstNodeBox!.height / 2);
     await expect(page.locator('h4:has-text("Taşın Hafızası")').or(page.locator('h4:has-text("Zamanın Tortusu")'))).toBeVisible();
   });
 

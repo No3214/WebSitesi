@@ -128,9 +128,15 @@ export const LivingMuseumMap = ({ locale = "tr" }: { locale?: Locale }) => {
         {copy.points.map((point) => (
           <g 
             key={point.id} 
+            role="button"
+            tabIndex={0}
+            aria-label={point.title}
+            data-testid="living-museum-point"
             className="cursor-pointer"
             onMouseEnter={() => setActivePoint(point.id)}
             onMouseLeave={() => setActivePoint(null)}
+            onFocus={() => setActivePoint(point.id)}
+            onBlur={() => setActivePoint(null)}
           >
             <motion.circle 
               cx={point.x} 

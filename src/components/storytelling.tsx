@@ -40,7 +40,7 @@ export const StorySegment = ({ title, content, image, side = "left" }: StorySegm
 
   const startX = desktopHorizontalMotion ? (side === "left" ? -40 : 40) : 0;
   const endX = desktopHorizontalMotion ? (side === "left" ? -24 : 24) : 0;
-  const opacity = useTransform(scrollYProgress, [0, 0.22, 0.78, 1], [0, 1, 1, 0.35]);
+  const opacity = useTransform(scrollYProgress, [0, 0.22, 0.78, 1], [0.72, 1, 1, 0.55]);
   const x = useTransform(
     scrollYProgress,
     [0, 0.22, 0.78, 1],
@@ -127,13 +127,13 @@ export const StoryHero = ({ title, subtitle }: { title: string; subtitle: string
     <div
       className="grain"
       style={{
-        minHeight: "72vh",
+        minHeight: "clamp(460px, 62vh, 680px)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        padding: "140px 24px 80px",
+        padding: "132px 24px 64px",
         position: "relative",
         overflow: "hidden",
         background:

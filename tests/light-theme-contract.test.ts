@@ -51,6 +51,18 @@ describe("public light theme contract", () => {
     expect(combined).toContain("section-alt");
   });
 
+  it("keeps the global footer on the warm stone theme", () => {
+    const globals = read("src/app/globals.css");
+    const footerBlock = globals.slice(globals.indexOf(".footer {"), globals.indexOf(".footer::before"));
+
+    expect(footerBlock).toContain("background-color: #f7f1e7");
+    expect(footerBlock).toContain("#fbf7ed");
+    expect(footerBlock).toContain("color: var(--muted)");
+    expect(footerBlock).not.toContain("background: var(--ink)");
+    expect(footerBlock).not.toContain("var(--border-dark)");
+    expect(footerBlock).not.toContain("rgba(250, 249, 246");
+  });
+
   it("keeps guest guide and gastronomy route accent sections light", () => {
     const files = [
       "src/app/misafir-rehberi/page.tsx",

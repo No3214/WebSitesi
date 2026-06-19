@@ -1619,9 +1619,13 @@
 
   /* ---------- Footer ---------- */
   .footer {
-    background: var(--ink);
-    color: rgba(250, 249, 246, 0.75);
-    border-top: 1px solid var(--border-dark);
+    background-color: #f7f1e7;
+    background-image:
+      radial-gradient(900px 360px at 12% 0%, rgba(179, 146, 92, 0.16), transparent 62%),
+      radial-gradient(760px 320px at 92% 100%, rgba(61, 74, 59, 0.09), transparent 58%),
+      linear-gradient(180deg, #fbf7ed 0%, #f1eadc 100%);
+    color: var(--muted);
+    border-top: 1px solid rgba(61, 74, 59, 0.12);
     padding: clamp(64px, 8vw, 96px) 0 40px;
     position: relative;
     overflow: hidden;
@@ -1632,14 +1636,14 @@
     position: absolute;
     inset: auto -10% -55% -10%;
     height: 70%;
-    background: radial-gradient(50% 100% at 50% 100%, rgba(179, 146, 92, 0.12), transparent 70%);
+    background: radial-gradient(50% 100% at 50% 100%, rgba(179, 146, 92, 0.13), transparent 70%);
     pointer-events: none;
   }
 
   .footer h4 {
     margin: 0 0 24px;
     font-size: 1.2rem;
-    color: var(--ivory);
+    color: var(--olive);
   }
 
   .footer-grid {
@@ -1653,14 +1657,14 @@
   .footer .brand-serif {
     font-family: var(--serif);
     font-size: 1.9rem;
-    color: var(--ivory);
+    color: var(--olive);
     margin: 0 0 18px;
   }
 
   .footer .brand-tagline {
     font-size: 0.93rem;
     line-height: 1.75;
-    color: rgba(250, 249, 246, 0.6);
+    color: var(--muted);
     max-width: 320px;
     margin: 0 0 26px;
   }
@@ -1673,12 +1677,12 @@
   .footer .social-links a {
     width: 40px;
     height: 40px;
-    border: 1px solid var(--border-dark);
+    border: 1px solid rgba(61, 74, 59, 0.16);
     border-radius: 999px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: rgba(250, 249, 246, 0.65);
+    color: var(--olive);
     transition: all var(--dur) var(--ease-lux);
   }
 
@@ -1695,7 +1699,7 @@
     align-items: flex-start;
     gap: 12px;
     margin-bottom: 16px;
-    color: rgba(250, 249, 246, 0.6);
+    color: var(--muted);
     font-size: 0.92rem;
   }
 
@@ -1706,7 +1710,7 @@
   }
 
   .footer .footer-bottom-bar {
-    border-top: 1px solid var(--border-dark);
+    border-top: 1px solid rgba(61, 74, 59, 0.12);
     padding-top: 32px;
     display: flex;
     justify-content: space-between;
@@ -1714,7 +1718,7 @@
     gap: 16px;
     flex-wrap: wrap;
     font-size: 0.8rem;
-    color: rgba(250, 249, 246, 0.45);
+    color: var(--muted);
     position: relative;
   }
 
@@ -1751,7 +1755,7 @@
   .footer-grid li {
     margin-bottom: 12px;
     font-size: 0.9rem;
-    color: rgba(250, 249, 246, 0.6);
+    color: var(--muted);
   }
 
   .footer-grid a:hover {
@@ -1792,15 +1796,15 @@
   .footer-info p {
     max-width: 320px;
     line-height: 1.7;
-    color: rgba(250, 249, 246, 0.6);
+    color: var(--muted);
   }
 
   .footer-bottom {
-    border-top: 1px solid var(--border-dark);
+    border-top: 1px solid rgba(61, 74, 59, 0.12);
     padding-top: 32px;
     text-align: center;
     font-size: 0.8rem;
-    color: rgba(250, 249, 246, 0.45);
+    color: var(--muted);
     position: relative;
   }
 
