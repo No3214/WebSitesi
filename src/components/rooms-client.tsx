@@ -2,14 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { rooms as fallbackRooms } from "@/data/rooms";
-import { FadeIn, StaggerContainer } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { getDictionary } from "@/lib/dictionary";
-import { SiteHeader } from "@/components/site-header";
+
+import { FadeIn, StaggerContainer } from "@/components/animations";
 import { PageHero } from "@/components/page-hero";
+import { SiteHeader } from "@/components/site-header";
+import { rooms as fallbackRooms } from "@/data/rooms";
+import { localizeRooms } from "@/data/rooms-i18n";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
+import { getDictionary } from "@/lib/dictionary";
 import { publicEnv } from "@/lib/public-env";
 
 type RoomsClientProps = {
@@ -34,6 +36,8 @@ export function RoomsClient({ initialDict, initialLocale = "tr" }: RoomsClientPr
   if (!dict) return <div className="loading-screen" />;
 
   const t = dict.Rooms;
+  const displayedRooms = localizeRooms(fallbackRooms, locale);
+  const localePrefix = locale === "en" ? "/en" : "";
   const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
 
   return (
@@ -45,9 +49,9 @@ export function RoomsClient({ initialDict, initialLocale = "tr" }: RoomsClientPr
         <div className="container">
           <StaggerContainer delay={0.1}>
             <div className="card-grid">
-              {fallbackRooms.map((room, index) => (
+              {displayedRooms.map((room, index) => (
                 <FadeIn key={room.slug}>
-                  <Link href={`${locale === "en" ? "/en" : ""}/odalar/${room.slug}`} className="card room-card">
+                  <Link href={`${localePrefix}/odalar/${room.slug}`} className="card room-card">
                     <div className="card-media">
                       <Image
                         src={room.images[0]}
@@ -66,7 +70,9 @@ export function RoomsClient({ initialDict, initialLocale = "tr" }: RoomsClientPr
                       <p>{room.short}</p>
                       <span className="card-link">
                         {t.detail}
-                        <span className="arrow" aria-hidden>→</span>
+                        <span className="arrow" aria-hidden>
+                          →
+                        </span>
                       </span>
                     </div>
                   </Link>
