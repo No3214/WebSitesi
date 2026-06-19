@@ -116,7 +116,7 @@ export function LocationPageContent({ locale }: { locale: LocationLocale }) {
               </div>
 
               <div className="grid gap-3">
-                <a className="button gold" href={MAPS_URL} target="_blank" rel="noreferrer" data-event="directions_click">
+                <a className="button gold" href={MAPS_URL} target="_blank" rel="noopener noreferrer" data-event="directions_click">
                   <Navigation size={17} aria-hidden />
                   {t.directions}
                 </a>
@@ -124,7 +124,7 @@ export function LocationPageContent({ locale }: { locale: LocationLocale }) {
                   className="button secondary"
                   href={getWhatsAppHref(t.whatsappMessage)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   data-event="whatsapp_click"
                 >
                   <MessageCircle size={17} aria-hidden />

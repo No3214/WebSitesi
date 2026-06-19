@@ -83,7 +83,7 @@ export default function OffersPage() {
                   className="button secondary"
                   data-event="whatsapp_click"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   WhatsApp Destek
                 </a>

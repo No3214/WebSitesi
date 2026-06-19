@@ -90,7 +90,7 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
             <a
               href={whatsappHref}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               data-event="whatsapp_click"
               style={{ display: "flex", gap: 12, alignItems: "center" }}
             >
@@ -115,7 +115,7 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
                 </span>
               </span>
             </div>
-            <a className="button secondary" href={MAPS_URL} target="_blank" rel="noreferrer" data-event="directions_click">
+            <a className="button secondary" href={MAPS_URL} target="_blank" rel="noopener noreferrer" data-event="directions_click">
               {t.directions}
             </a>
           </div>

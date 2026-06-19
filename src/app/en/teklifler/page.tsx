@@ -82,7 +82,7 @@ export default function EnglishOffersPage() {
                   className="button secondary"
                   data-event="whatsapp_click"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   WhatsApp Support
                 </a>

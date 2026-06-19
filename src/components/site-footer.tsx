@@ -66,7 +66,7 @@ export function SiteFooter() {
               <a
                 href="https://instagram.com/kozbeylikonagi"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 aria-label="Instagram"
               >
                 <Instagram size={18} />
@@ -74,7 +74,7 @@ export function SiteFooter() {
               <a
                 href="https://facebook.com/kozbeylikonagi"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 aria-label="Facebook"
               >
                 <Facebook size={18} />
@@ -117,7 +117,7 @@ export function SiteFooter() {
             <h4>{t?.contact || (englishPath ? "Contact" : "İletişim")}</h4>
             <div className="contact-item">
               <MapPin size={17} aria-hidden />
-              <a href={MAPS_URL} target="_blank" rel="noreferrer">
+              <a href={MAPS_URL} target="_blank" rel="noopener noreferrer">
                 Kozbeyli Köyü Küme Evler No:188, Foça / İzmir
               </a>
             </div>

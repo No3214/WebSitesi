@@ -31,6 +31,35 @@ describe("production readiness contracts", () => {
     expect(filesWithNulBytes).toEqual([]);
   });
 
+  it("keeps public new-tab exits hardened against opener access", () => {
+    const weakAnchors: string[] = [];
+    const weakWindowOpens: string[] = [];
+
+    for (const file of listSourceFiles("src")) {
+      const source = read(file);
+
+      for (const match of source.matchAll(/<a\b[^>]*target="_blank"[^>]*>/g)) {
+        const tag = match[0];
+        const rel = tag.match(/rel="([^"]+)"/)?.[1] ?? "";
+        const relTokens = new Set(rel.split(/\s+/).filter(Boolean));
+
+        if (!relTokens.has("noopener") || !relTokens.has("noreferrer")) {
+          weakAnchors.push(`${file}: ${tag.replace(/\s+/g, " ").trim()}`);
+        }
+      }
+
+      for (const match of source.matchAll(/window\.open\([^;\n]+/g)) {
+        const call = match[0];
+        if (call.includes("\"_blank\"") && (!call.includes("noopener") || !call.includes("noreferrer"))) {
+          weakWindowOpens.push(`${file}: ${call}`);
+        }
+      }
+    }
+
+    expect(weakAnchors).toEqual([]);
+    expect(weakWindowOpens).toEqual([]);
+  });
+
   it("keeps Meta Pixel on the documented env key", () => {
     const trackedFiles = [
       "src/components/tracking-scripts.tsx",

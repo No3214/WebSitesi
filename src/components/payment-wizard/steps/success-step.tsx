@@ -51,7 +51,7 @@ export function SuccessStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
         <a
           href={getWhatsAppMessage()}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           className="button primary"
           style={{ display: "flex", alignItems: "center", gap: 8 }}
         >

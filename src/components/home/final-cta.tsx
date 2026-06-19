@@ -39,7 +39,7 @@ export function FinalCta({ locale }: { locale: "tr" | "en" }) {
             <a
               href={whatsappHref}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="button secondary"
               data-event="whatsapp_click"
             >

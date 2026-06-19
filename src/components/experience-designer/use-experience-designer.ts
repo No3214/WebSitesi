@@ -59,7 +59,7 @@ export function useExperienceDesigner() {
     message += `Bu rotaya uygun oda müsaitliği ve kişiselleştirilmiş teklif için yardımcı olabilir misiniz?`;
 
     const href = getWhatsAppHref(message);
-    window.open(href, "_blank");
+    window.open(href, "_blank", "noopener,noreferrer");
   };
 
   return {

@@ -53,7 +53,7 @@ export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBooki
             className="button secondary"
             href={whatsappHref}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             data-event="whatsapp_click"
           >
             {locale === "tr"
