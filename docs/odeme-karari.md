@@ -15,7 +15,7 @@ minimumda kalır (SAQ-A sınıfı), Audit bulgusu **F13 kökten kapanır**.
 
 | Yaklaşım | Neden reddedildi |
 |---|---|
-| (a) Yalnız HMS booking engine | HMS URL'i hâlâ yok; tahsilat tamamen üçüncü tarafın UX'ine kilitlenir. HMS gelince iframe zaten üstte durabilir — bu kararla çelişmez. |
+| (a) Yalnız HMS booking engine | Resmi HMS handoff URL'i artık mevcut, ancak tahsilat tamamen üçüncü tarafın UX'ine kilitlenir ve Garanti POS kararının kapsadığı banka kontrollü ödeme akışını sağlamaz. |
 | (b) Sitede kart formu + API tahsilatı | PAN bizim altyapıdan geçer → PCI yükü (SAQ-A-EP+), 3DS akışı, chargeback operasyonu; tek geliştirici için bakım bombası. |
 | (c-eski) iyzico pay-by-link | Banka tercihi Garanti olarak netleşti; komisyon/anlaşma bankayla. |
 

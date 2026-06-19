@@ -272,6 +272,9 @@ describe("production readiness contracts", () => {
     expect(domainScript).toContain('EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4"');
     expect(domainScript).toContain("hasOpeningHeroVideo");
     expect(domainScript).toContain("homepage does not expose opening hero video");
+    expect(domainScript).toContain("firstHopInsecure");
+    expect(domainScript).toContain("redirects first hop to insecure HTTP");
+    expect(domainScript).toContain("insecure first-hop redirect");
     expect(domainScript).toContain("process.exitCode");
     expect(domainScript).not.toContain("process.exit(strict");
     expect(domainScript).toContain("kozbeylikonagi.com");
@@ -424,6 +427,7 @@ describe("production readiness contracts", () => {
     expect(publishReadiness).toContain("launch:cutover:strict");
     expect(cutoverPlan).toContain("Kozbeyli Konagi production cutover plan");
     expect(cutoverPlan).toContain("npm i -g vercel");
+    expect(cutoverPlan).toContain("HTTPS-to-HTTP first-hop redirect");
     expect(cutoverPlan).toContain("npm run domain:verify:strict");
     expect(cutoverPlan).toContain("npm run launch:audit:strict");
   });

@@ -158,6 +158,9 @@ describe("production cutover plan", () => {
     const canonical = plan.gateSteps.find((step) => step.id === "canonical_domain");
     expect(canonical?.owner).toBe("Vercel/DNS operator");
     expect(canonical?.missingEnv).toContain("NEXT_PUBLIC_SITE_URL");
+    expect(canonical?.checklist).toContain(
+      "Remove any HTTPS-to-HTTP first-hop redirect on kozbeylikonagi.com or www before marking the canonical gate ready.",
+    );
     expect(canonical?.commands).toContain("npm run domain:verify:strict");
     expect(canonical?.commands).toContain("npm run launch:smoke:live");
     expect(canonical?.kpiAndReviewLoop).toContain("/api/health");

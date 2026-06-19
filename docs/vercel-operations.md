@@ -58,6 +58,16 @@ npm run domain:verify:strict
 npm run launch:smoke:live
 ```
 
+The domain verifier must show all of the following before evidence is marked
+ready:
+
+- no HTTPS-to-HTTP first-hop redirect on either canonical origin;
+- both `/api/health` responses return `service: "kozbeyli-konagi"` and the
+  current deployment commit;
+- both canonical homepages expose the approved opening hero video,
+  `/videos/hero.mp4`;
+- the Vercel preview remains healthy while the canonical hosts are switched.
+
 Only then update `docs/evidence/canonical-domain.md` from `pending` to `ready`.
 
 ## Agentic Vercel operations

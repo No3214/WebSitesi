@@ -40,7 +40,45 @@ function commitMatches(actual, expected) {
   return actual.startsWith(expected) || expected.startsWith(actual);
 }
 
-async function fetchText(url, fetchImpl, timeoutMs) {
+async function fetchFirstRedirect(url, fetchImpl, timeoutMs) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetchImpl(url, {
+      headers: { accept: "text/html,application/json" },
+      redirect: "manual",
+      signal: controller.signal,
+    });
+
+    const location = response.headers.get("location") || "";
+    const resolvedLocation = location ? new URL(location, url).href : "";
+
+    return {
+      status: response.status,
+      location,
+      resolvedLocation,
+      firstHopInsecure: Boolean(resolvedLocation && new URL(resolvedLocation).protocol === "http:"),
+      firstHopCrossOrigin: Boolean(
+        resolvedLocation && new URL(resolvedLocation).origin !== new URL(url).origin,
+      ),
+      error: "",
+    };
+  } catch (error) {
+    return {
+      status: 0,
+      location: "",
+      resolvedLocation: "",
+      firstHopInsecure: false,
+      firstHopCrossOrigin: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function fetchFollowedText(url, fetchImpl, timeoutMs) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -53,6 +91,8 @@ async function fetchText(url, fetchImpl, timeoutMs) {
       ok: response.ok,
       status: response.status,
       contentType: response.headers.get("content-type") || "",
+      finalUrl: response.url || url,
+      redirected: Boolean(response.redirected),
       text: await response.text(),
     };
   } catch (error) {
@@ -60,6 +100,8 @@ async function fetchText(url, fetchImpl, timeoutMs) {
       ok: false,
       status: 0,
       contentType: "",
+      finalUrl: "",
+      redirected: false,
       text: "",
       error: error instanceof Error ? error.message : String(error),
     };
@@ -68,8 +110,24 @@ async function fetchText(url, fetchImpl, timeoutMs) {
   }
 }
 
+async function fetchText(url, fetchImpl, timeoutMs) {
+  const [redirect, followed] = await Promise.all([
+    fetchFirstRedirect(url, fetchImpl, timeoutMs),
+    fetchFollowedText(url, fetchImpl, timeoutMs),
+  ]);
+
+  return {
+    ...followed,
+    redirect,
+  };
+}
+
 function extractTitle(html) {
   return html.match(/<title[^>]*>(.*?)<\/title>/i)?.[1]?.trim() || "";
+}
+
+function hasInsecureFirstHop(response) {
+  return Boolean(response.redirect?.firstHopInsecure);
 }
 
 async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutMs = 10000 }) {
@@ -95,7 +153,8 @@ async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutM
   const commitOk = commitMatches(actualCommit, expectedCommit);
   const hasOpeningHeroVideo = home.text.includes(EXPECTED_HERO_VIDEO_SRC);
   const homeOk = Boolean(home.ok && hasOpeningHeroVideo);
-  const ready = Boolean(serviceOk && commitOk && homeOk);
+  const secureRedirectsOk = !hasInsecureFirstHop(health) && !hasInsecureFirstHop(home);
+  const ready = Boolean(serviceOk && commitOk && homeOk && secureRedirectsOk);
 
   return {
     origin: normalizedOrigin,
@@ -104,6 +163,9 @@ async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutM
       url: healthUrl,
       status: health.status,
       contentType: health.contentType,
+      finalUrl: health.finalUrl,
+      redirected: health.redirected,
+      redirect: health.redirect,
       error: health.error || "",
       service: healthJson?.service || "",
       deploymentCommit: actualCommit,
@@ -114,6 +176,9 @@ async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutM
       url: homeUrl,
       status: home.status,
       contentType: home.contentType,
+      finalUrl: home.finalUrl,
+      redirected: home.redirected,
+      redirect: home.redirect,
       title: extractTitle(home.text),
       error: home.error || "",
       expectedHeroVideoSrc: EXPECTED_HERO_VIDEO_SRC,
@@ -125,6 +190,16 @@ async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutM
 
 function originBlockers(item) {
   const blockers = [];
+  const insecureRedirects = new Set(
+    [item.health.redirect, item.home.redirect]
+      .filter((redirect) => redirect?.firstHopInsecure)
+      .map((redirect) => redirect.resolvedLocation || redirect.location)
+      .filter(Boolean),
+  );
+
+  for (const location of insecureRedirects) {
+    blockers.push(`${item.origin} redirects first hop to insecure HTTP: ${location}`);
+  }
 
   if (!item.health.serviceOk || !item.health.commitOk) {
     blockers.push(`${item.origin} does not serve ${EXPECTED_SERVICE} at current commit`);
@@ -216,8 +291,8 @@ export function formatDomainReadiness(result) {
     `Expected commit: ${result.expectedCommit || "not checked"}`,
     "",
     `Preview: ${result.preview.ready ? "PASS" : "FAIL"} ${result.preview.origin}`,
-    `  health: HTTP ${result.preview.health.status}, service=${result.preview.health.service || "n/a"}, commit=${result.preview.health.deploymentCommit || "n/a"}`,
-    `  home: HTTP ${result.preview.home.status}, title=${result.preview.home.title || "n/a"}, heroVideo=${result.preview.home.hasOpeningHeroVideo ? "yes" : "no"}`,
+    `  health: HTTP ${result.preview.health.status}, final=${result.preview.health.finalUrl || "n/a"}, service=${result.preview.health.service || "n/a"}, commit=${result.preview.health.deploymentCommit || "n/a"}`,
+    `  home: HTTP ${result.preview.home.status}, final=${result.preview.home.finalUrl || "n/a"}, title=${result.preview.home.title || "n/a"}, heroVideo=${result.preview.home.hasOpeningHeroVideo ? "yes" : "no"}`,
     "",
     "Canonical domains:",
   ];
@@ -225,11 +300,18 @@ export function formatDomainReadiness(result) {
   for (const item of result.canonical) {
     lines.push(`${item.ready ? "PASS" : "FAIL"} ${item.origin}`);
     lines.push(
-      `  health: HTTP ${item.health.status}, content-type=${item.health.contentType || "n/a"}, service=${item.health.service || "n/a"}, commit=${item.health.deploymentCommit || "n/a"}`,
+      `  health: HTTP ${item.health.status}, final=${item.health.finalUrl || "n/a"}, content-type=${item.health.contentType || "n/a"}, service=${item.health.service || "n/a"}, commit=${item.health.deploymentCommit || "n/a"}`,
     );
     lines.push(
-      `  home: HTTP ${item.home.status}, title=${item.home.title || "n/a"}, heroVideo=${item.home.hasOpeningHeroVideo ? "yes" : "no"}`,
+      `  home: HTTP ${item.home.status}, final=${item.home.finalUrl || "n/a"}, title=${item.home.title || "n/a"}, heroVideo=${item.home.hasOpeningHeroVideo ? "yes" : "no"}`,
     );
+    for (const redirect of [item.health.redirect, item.home.redirect]) {
+      if (redirect?.firstHopInsecure) {
+        lines.push(
+          `  insecure first-hop redirect: ${redirect.location} -> ${redirect.resolvedLocation}`,
+        );
+      }
+    }
   }
 
   lines.push("");

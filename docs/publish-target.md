@@ -1,6 +1,6 @@
 # Kozbeyli Konağı — Publish Target & Gate
 
-Son revizyon: 2026-06-18
+Son revizyon: 2026-06-19
 
 Bu dosya yayın hedefini tek yerde tanımlar. Amaç: "hazır mı?" sorusuna
 ölçülebilir kapılarla cevap vermek ve dış bağımlılıkları kod kalitesiyle
@@ -11,8 +11,8 @@ karıştırmamaktır.
 | Hedef | Skor | Karar | Anlamı |
 | --- | ---: | --- | --- |
 | Repo/Kod Kalitesi | 95/100 | Zorunlu | Lint, typecheck, unit, build, route smoke, security ve a11y kapıları yeşil olacak. |
-| Marketing Publish | 90/100 | GO | Site canlıya çıkabilir; rezervasyon motoru yoksa WhatsApp fallback çalışır. |
-| Booking & Payment Publish | 100/100 | NO-GO until external | HMS booking engine, Garanti Sanal POS, GA4 purchase ve canlı UAT tamamlanmadan "tam ticari yayın" denmez. |
+| Marketing Publish | 90/100 | GO | Site canlıya çıkabilir; HMS handoff veya WhatsApp/telefon destek yolu çalışır. |
+| Booking & Payment Publish | 100/100 | NO-GO until external | HMS canlı UAT, Garanti Sanal POS, GA4 purchase ve dış kanıtlar tamamlanmadan "tam ticari yayın" denmez. |
 
 ## 100/100 Ticari Hedef Kapısı
 
@@ -39,7 +39,7 @@ türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
 
 - Canonical domain health + current Vercel commit: `docs/evidence/canonical-domain.md`
 - Turnstile + Upstash production abuse-control kanıtı: `docs/evidence/production-abuse-controls.md`
-- HMS booking engine canlı URL + booking UAT: `docs/evidence/hms-booking-engine.md`
+- HMS booking engine handoff + canlı booking UAT: `docs/evidence/hms-booking-engine.md`
 - Garanti Sanal POS sandbox/callback/refund kanıtı: `docs/evidence/garanti-pos.md`
 - GTM/GA4/Meta production + purchase doğrulaması: `docs/evidence/analytics-purchase.md`
 - Search Console / GBP / Hotel Center kanıtı: `docs/evidence/search-local-seo.md`
@@ -118,8 +118,8 @@ Aşağıdakilerin tamamı sağlanırsa site marketing yayınına çıkarılabili
   `PAYLOAD_SECRET`, `HOTELRUNNER_WEBHOOK_SECRET`, `IYZICO_WEBHOOK_SECRET`,
   `NEXT_PUBLIC_WHATSAPP_URL`
   tanımlı.
-- `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` boşsa rezervasyon sayfası WhatsApp
-  fallback gösterir.
+- Rezervasyon CTA'ları resmi HMS handoff'a veya kontrollü destek fallback'ine
+  gider; iframe içine sıkışmış booking deneyimi kullanılmaz.
 - `/robots.txt`, `/sitemap.xml`, `/llms.txt`, canonical ve hreflang çıktıları
   yayında erişilebilir.
 - `/api/health` 200 JSON döner, `Cache-Control: no-store` taşır ve secret/env
@@ -131,7 +131,7 @@ Aşağıdakilerin tamamı sağlanırsa site marketing yayınına çıkarılabili
 
 Aşağıdakiler tamamlanmadan "tam ticari yayın" yok:
 
-- HMS vendor canlı booking engine URL'i.
+- HMS canlı tarih/konuk/oda seçimi UAT kanıtı.
 - Garanti Sanal POS Merchant/Terminal ID, 3D Store Key ve test ortamı.
 - Başarılı ve başarısız ödeme sandbox testi.
 - Canlı küçük tutarlı test rezervasyonu, iptal/iade ve stok düşümü doğrulaması.

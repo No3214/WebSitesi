@@ -14,17 +14,29 @@ build, Playwright smoke/security/a11y, monkey/chaos ve EN rota bütünlüğü ye
 bütünlüğü, sitemap alternates, gerçek otel/organizasyon medya yerleşimi,
 erişilebilir kontrast ve kalıcı kalite scriptleri tamamlandı.
 
-Lansmanı hâlâ %100'e kilitleyen konular kod dışıdır: HMS booking engine URL'i,
-Garanti Sanal POS bilgileri, prod GTM/GA4/Meta kimlikleri, Search Console/Google
-Business Profile/Hotel Center doğrulamaları ve hukuk/onay süreçleri henüz
-kanıtlı değildir. Bunlar gelmeden uçtan uca gerçek rezervasyon + ödeme + purchase
-ölçüm testi yapılamaz; bu yüzden ticari go-live kararı koşulludur.
+Lansmanı hâlâ %100'e kilitleyen konular kod dışıdır: canonical domain cutover,
+HMS canlı rezervasyon UAT kanıtı, Garanti Sanal POS bilgileri, prod
+GTM/GA4/Meta kimlikleri, Search Console/Google Business Profile/Hotel Center
+doğrulamaları ve hukuk/onay süreçleri henüz kanıtlı değildir. Bunlar gelmeden
+uçtan uca gerçek rezervasyon + ödeme + purchase ölçüm testi yapılamaz; bu
+yüzden ticari go-live kararı koşulludur.
 
 2026-06-18 domain güncellemesi: `kozbeylikonagi.com` ve `www` canonical alan
 adları, Vercel preview sağlıklı olsa bile `/api/health` üzerinden aynı Next.js
 uygulamasını servis ettiğini kanıtlamadan ticari launch için hazır sayılmaz.
 Bu kontrol `npm run domain:verify` ve `docs/evidence/canonical-domain.md`
 kanıtıyla izlenir.
+
+2026-06-19 domain diagnostik güncellemesi: `npm run domain:verify` artık final
+URL ve ilk redirect hop'unu da raporlar. Mevcut canlı durumda apex domain HTTPS
+isteğini ilk hop'ta `http://www.kozbeylikonagi.com/...` adresine düşürüyor ve
+`www` hostu hâlâ eski landing yüzeyini servis ediyor; bu nedenle canonical gate
+NO-GO kalır.
+
+2026-06-19 HMS güncellemesi: Rezervasyon CTA'ları resmi HMS engine'e yeni sekme
+handoff olarak gider ve public fallback kodda mevcuttur. Eksik kalan konu URL
+değil, canlı tarih/konuk/oda seçimi UAT kanıtı ve `docs/evidence/hms-booking-engine.md`
+dosyasının ready durumuna alınmasıdır.
 
 2026-06-18 güvenlik güncellemesi: Tam ticari launch artık production Turnstile
 ve Upstash shared rate-limit/replay kanıtını da ister. Kod fallbackleri dev için
@@ -73,7 +85,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 | Strateji, persona, KPI | 7 | 7 | Marka konumlandırma ve misafir ilişkileri/growth mimarisi net; canlı KPI dashboard kanıtı yok |
 | Bilgi mimarisi | 8 | 8 | /teklifler, deneyim silosu, /galeri, /sss, /cerez-politikasi ve EN çekirdek rotalar mevcut |
 | UX/UI mobil rezervasyon | 9 | 8 | Playwright smoke + mobile prestige yeşil; gerçek cihaz testi yapılmadı |
-| Booking/HMS/POS | 12 | 5 | Fallback ve güvenlik sözleşmeleri hazır; canlı HMS URL + Garanti POS bilgisi yok |
+| Booking/HMS/POS | 12 | 5 | HMS yeni sekme handoff ve public fallback hazır; canlı HMS UAT kanıtı + Garanti POS bilgisi yok |
 | Güvenlik | 11 | 9 | CSP/HSTS/XFO, fail-closed B2B availability, provider-specific webhook HMAC, CSRF ve fiyat tamper testleri yeşil; production Turnstile/Upstash/WAF/MFA kanıtı yok |
 | KVKK/çerez | 8 | 8 | Consent-gated scripts; KVKK/gizlilik/mesafeli satış/çerez politikası var; vendor DPA hukuk onayı yok |
 | Teknik SEO | 9 | 9 | sitemap/robots/canonical/schema/llms.txt + EN alternates/hreflang rotaları güncel |
@@ -136,7 +148,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 - İptal/iade koşulları: mesafeli satış sözleşmesi var; otelcilik iptal politikası ayrı ve net mi — belirsiz
 
 ### FAIL / KANIT YOK (çoğu dış bağımlılık)
-- HMS booking engine: `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` boş → uçtan uca rezervasyon testi YAPILAMADI
+- HMS booking engine: resmi HMS handoff hazır; canlı tarih/konuk/oda seçimi UAT kanıtı YOK
 - Garanti Sanal POS: bankadan bilgiler gelmedi → init/callback akışı YAZILAMADI/test edilemedi
 - purchase / booking_complete ölçümü: engine olmadan doğrulanamaz
 - Google Business Profile, Hotel Center / free booking links, Search Console, Apple Business Connect: kanıt yok (operasyonel kurulum)
@@ -146,7 +158,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 - Vendor DPA listesi + yurtdışı veri aktarımı değerlendirmesi: kanıt yok (hukuk danışmanı gerekli)
 
 ## 4. Kritik Blokajlar (yayına çıkma koşulları)
-1. HMS booking engine HTTPS URL + yeni sekme redirect/handoff UAT → master dokümandaki 15 vendor sorusu sorulmalı
+1. HMS booking engine yeni sekme redirect/handoff UAT → master dokümandaki 15 vendor sorusu ve canlı tarih/konuk/oda seçimi kanıtı tamamlanmalı
 2. Garanti Sanal POS: Merchant/Terminal ID, 3D Store Key, test ortamı (`docs/odeme-karari.md` planı hazır)
 3. Engine geldikten sonra: canlı test rezervasyonu + iptal/iade + GA4 purchase doğrulaması
 4. GTM/GA4 ID'lerinin prod env'e girilmesi + Consent Mode doğrulaması

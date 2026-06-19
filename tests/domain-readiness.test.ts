@@ -21,8 +21,33 @@ type DomainReadinessModule = {
     preview: {
       home: {
         hasOpeningHeroVideo: boolean;
+        redirect?: {
+          firstHopInsecure: boolean;
+          resolvedLocation: string;
+        };
+      };
+      health: {
+        redirect?: {
+          firstHopInsecure: boolean;
+          resolvedLocation: string;
+        };
       };
     };
+    canonical: Array<{
+      origin: string;
+      home: {
+        redirect?: {
+          firstHopInsecure: boolean;
+          resolvedLocation: string;
+        };
+      };
+      health: {
+        redirect?: {
+          firstHopInsecure: boolean;
+          resolvedLocation: string;
+        };
+      };
+    }>;
   }>;
 };
 
@@ -107,6 +132,45 @@ describe("domain readiness", () => {
     expect(result.blockers).toEqual([
       "https://kozbeylikonagi.com homepage does not expose opening hero video /videos/hero.mp4",
     ]);
+  });
+
+  it("returns NO-GO when canonical HTTPS redirects first to insecure HTTP", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://kozbeylikonagi.com"],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      fetchImpl: async (url: string | URL | Request, init?: RequestInit) => {
+        const href = String(url);
+        const redirectMode = init?.redirect;
+
+        if (redirectMode === "manual" && href.startsWith("https://kozbeylikonagi.com")) {
+          return new Response("", {
+            status: 301,
+            headers: {
+              location: href.replace("https://kozbeylikonagi.com", "http://www.kozbeylikonagi.com"),
+            },
+          });
+        }
+
+        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
+        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
+      },
+      resolveNsImpl: async () => ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
+      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
+    });
+
+    expect(result.previewReady).toBe(true);
+    expect(result.canonicalReady).toBe(false);
+    expect(result.decision).toBe("CANONICAL DOMAIN NO-GO");
+    expect(result.canonical[0]?.health.redirect?.firstHopInsecure).toBe(true);
+    expect(result.canonical[0]?.home.redirect?.firstHopInsecure).toBe(true);
+    expect(result.blockers).toContain(
+      "https://kozbeylikonagi.com redirects first hop to insecure HTTP: http://www.kozbeylikonagi.com/api/health",
+    );
+    expect(result.blockers).toContain(
+      "https://kozbeylikonagi.com redirects first hop to insecure HTTP: http://www.kozbeylikonagi.com/",
+    );
   });
 
   it("returns GO when preview and canonical domains serve the same current app health and hero video shell", async () => {

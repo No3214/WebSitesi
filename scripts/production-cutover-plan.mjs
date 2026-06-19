@@ -15,6 +15,7 @@ const gateActionCatalog = {
       "Attach both canonical domains to the kozbeyli-konagi Vercel project.",
       "Set NEXT_PUBLIC_SITE_URL to the chosen canonical HTTPS origin in Vercel production env.",
       "Correct Cloudflare DNS so both domains resolve to the Vercel production deployment, not the old landing host.",
+      "Remove any HTTPS-to-HTTP first-hop redirect on kozbeylikonagi.com or www before marking the canonical gate ready.",
       "Run npm run domain:verify:strict and npm run launch:smoke:live before marking evidence ready.",
     ],
     commands: [

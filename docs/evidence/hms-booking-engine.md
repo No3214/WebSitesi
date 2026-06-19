@@ -1,19 +1,20 @@
 # Evidence: HMS Booking Engine
 
 status: pending
-date: 2026-06-18
+date: 2026-06-19
 owner: reservations-ops
 
 ## Summary
 
-The site code supports a new-tab HMS booking engine handoff, but the full
-commercial launch gate is not ready until the live HMS URL and booking UAT are
-validated in production.
+The site code supports a new-tab HMS booking engine handoff to the official
+`kozbeyli-konagi.hmshotel.net` booking engine. The full commercial launch gate
+is still not ready until a live booking UAT is validated in production.
 
 ## Required Proof
 
-- `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` is configured in Vercel production and
-  starts with `https://`.
+- The public booking URL resolves to the approved HTTPS HMS engine. If
+  `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` is set, it must also be HTTPS; otherwise
+  the code fallback must remain the approved HMS URL.
 - The `/rezervasyon` and `/en/rezervasyon` CTAs open the approved HMS booking
   engine in a new tab, not a cramped iframe.
 - A real UAT booking flow has been completed with redacted screenshots or a
@@ -31,6 +32,6 @@ validated in production.
 
 ## Residual Risk
 
-Do not change this status to `ready` based only on a visible button or local
-fallback URL. The gate requires live HMS configuration plus successful booking
-UAT evidence.
+Do not change this status to `ready` based only on a visible button, public
+fallback URL, or health-check configuration. The gate requires successful
+booking UAT evidence.
