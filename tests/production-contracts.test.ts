@@ -187,6 +187,7 @@ describe("production readiness contracts", () => {
     expect(auditScript).toContain("--json");
     expect(auditScript).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL");
     expect(auditScript).toContain("OFFICIAL_HMS_BOOKING_ENGINE_URL");
+    expect(auditScript).toContain("HMS booking engine handoff and booking UAT evidence");
     expect(auditScript).toContain("code_fallback");
     expect(auditScript).toContain("^https://");
     expect(auditScript).toContain("source_refs");
@@ -428,6 +429,8 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("Kozbeyli Konagi production cutover plan");
     expect(cutoverPlan).toContain("npm i -g vercel");
     expect(cutoverPlan).toContain("HTTPS-to-HTTP first-hop redirect");
+    expect(cutoverPlan).toContain("remove the bad override to use the official code fallback");
+    expect(cutoverPlan).toContain("Verify the public reservation CTA opens the approved HTTPS HMS engine");
     expect(cutoverPlan).toContain("npm run domain:verify:strict");
     expect(cutoverPlan).toContain("npm run launch:audit:strict");
   });

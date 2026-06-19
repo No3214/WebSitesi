@@ -38,7 +38,7 @@ export const commercialLaunchGates = [
   {
     id: "hms_booking_engine",
     points: 4,
-    label: "HMS booking engine live URL and booking UAT evidence",
+    label: "HMS booking engine handoff and booking UAT evidence",
     env: ["NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"],
     fallbackUrl: OFFICIAL_HMS_BOOKING_ENGINE_URL,
     expectedEnv: {

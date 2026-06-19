@@ -51,6 +51,23 @@ test.describe("Oda detay sayfasi", () => {
 });
 
 test.describe("Rezervasyon HMS handoff", () => {
+  test("ana sayfa header ve rezervasyon bandi resmi HMS ekranina gider", async ({ page }) => {
+    await page.goto("/");
+
+    const headerBooking = page.locator("header.site-header").getByRole("link", { name: "Rezervasyon" });
+    await expect(headerBooking).toHaveAttribute("href", HMS_BOOKING_URL);
+    await expect(headerBooking).toHaveAttribute("target", "_blank");
+
+    const bookingSection = page.locator("#rezervasyon");
+    await expect(bookingSection.getByRole("heading", { name: "Rezervasyon", level: 2 })).toBeVisible();
+    await expect(bookingSection.getByText("Rezervasyon Ekranı Ayrı Sekmede")).toHaveCount(0);
+    await expect(bookingSection.getByText("Rezervasyonu Ayrı Sekmede Aç")).toHaveCount(0);
+    await expect(bookingSection.getByRole("link", { name: "Rezervasyon" })).toHaveAttribute(
+      "href",
+      HMS_BOOKING_URL,
+    );
+  });
+
   test("resmi HMS rezervasyon linki gorunur", async ({ page }) => {
     await page.goto("/rezervasyon");
 

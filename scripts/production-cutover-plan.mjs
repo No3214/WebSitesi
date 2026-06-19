@@ -53,16 +53,15 @@ const gateActionCatalog = {
   hms_booking_engine: {
     owner: "Revenue / booking operator",
     timing: "Before replacing WhatsApp fallback as primary reservation path",
-    objective: "Connect the live HTTPS booking engine and prove a booking UAT path.",
+    objective: "Use the approved HMS handoff and prove a booking UAT path.",
     actions: [
-      "Confirm the hotel-specific live booking engine URL with the PMS/HMS vendor.",
-      "Add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL in Vercel production.",
+      "Verify the public reservation CTA opens the approved HTTPS HMS engine in a new tab.",
       "Run a live booking-engine UAT for dates, guests, room availability and fallback behavior.",
-      "Keep WhatsApp fallback available until the live booking engine evidence is ready.",
+      "Document date, guest, room/rate selection, fallback and modification/refund handling in redacted evidence.",
+      "Keep WhatsApp/phone support available until the live booking engine evidence is ready.",
     ],
     commands: [
       VERCEL_INSTALL_COMMAND,
-      "vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production",
       "npm run launch:smoke:live",
       "npm run launch:audit",
     ],
@@ -151,6 +150,37 @@ function unique(values) {
   return [...new Set(values.filter(Boolean))];
 }
 
+function hasEnvIssue(gate, envKey) {
+  return gate.missingEnv.some((item) => item.startsWith(envKey));
+}
+
+function resolveGateChecklist(gate, catalog) {
+  if (gate.id !== "hms_booking_engine") return catalog.actions;
+
+  if (!hasEnvIssue(gate, "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL")) {
+    return catalog.actions;
+  }
+
+  return [
+    "Fix NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL in Vercel production so it is the approved HTTPS HMS URL, or remove the bad override to use the official code fallback.",
+    ...catalog.actions,
+  ];
+}
+
+function resolveGateCommands(gate, catalog) {
+  if (gate.id !== "hms_booking_engine") return catalog.commands;
+
+  if (!hasEnvIssue(gate, "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL")) {
+    return catalog.commands;
+  }
+
+  return [
+    VERCEL_INSTALL_COMMAND,
+    "vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production",
+    ...catalog.commands.filter((command) => command !== VERCEL_INSTALL_COMMAND),
+  ];
+}
+
 function buildGateStep(gate) {
   const catalog = gateActionCatalog[gate.id] || {
     owner: "Launch operator",
@@ -171,8 +201,8 @@ function buildGateStep(gate) {
     operationalGoal: catalog.objective,
     missingEnv: gate.missingEnv,
     missingEvidence: gate.missingEvidence,
-    checklist: catalog.actions,
-    commands: catalog.commands,
+    checklist: resolveGateChecklist(gate, catalog),
+    commands: resolveGateCommands(gate, catalog),
     evidence: unique([...(gate.evidence || []), ...(catalog.evidence || [])]),
     kpiAndReviewLoop: catalog.kpi,
   };

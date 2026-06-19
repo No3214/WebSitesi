@@ -14,11 +14,11 @@ export function BookingSection({ locale, eyebrow }: Props) {
         <FadeIn>
           <SectionTitle
             eyebrow={eyebrow}
-            title={locale === "tr" ? "Yerinizi Ayırtın" : "Reserve Your Stay"}
+            title={locale === "tr" ? "Rezervasyon" : "Booking"}
             text={
               locale === "tr"
-                ? "Müsaitlik, oda tercihi ve güvenli ödeme adımı için talebinizi doğrudan rezervasyon ekibimize iletin."
-                : "Send your availability, room preference and secure payment request directly to our reservation team."
+                ? "Tarih, kişi sayısı ve oda seçimi resmi HMS rezervasyon ekranında açılır; ekibimiz WhatsApp ve telefon desteğiyle yanınızda kalır."
+                : "Dates, guests and room selection open in the official HMS booking screen; our team remains available by WhatsApp and phone."
             }
           />
           <WeatherRibbon />

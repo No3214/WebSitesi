@@ -165,6 +165,16 @@ describe("production cutover plan", () => {
     expect(canonical?.commands).toContain("npm run launch:smoke:live");
     expect(canonical?.kpiAndReviewLoop).toContain("/api/health");
 
+    const hms = plan.gateSteps.find((step) => step.id === "hms_booking_engine");
+    expect(hms?.missingEnv).toEqual([]);
+    expect(hms?.checklist).toContain(
+      "Verify the public reservation CTA opens the approved HTTPS HMS engine in a new tab.",
+    );
+    expect(hms?.checklist).toContain(
+      "Document date, guest, room/rate selection, fallback and modification/refund handling in redacted evidence.",
+    );
+    expect(hms?.commands).not.toContain("vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production");
+
     const formatted = cutover.formatProductionCutoverPlan(plan);
     expect(formatted).toContain("Kozbeyli Konagi production cutover plan");
     expect(formatted).toContain("Vercel CLI install: npm i -g vercel");
@@ -193,6 +203,31 @@ describe("production cutover plan", () => {
     expect(serialized).not.toContain("ga4-secret-value");
     expect(serialized).toContain("GARANTI_3D_STORE_KEY");
     expect(serialized).toContain("GA4_API_SECRET");
+  });
+
+  it("asks for HMS env repair only when an explicit override is invalid", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {
+        NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: "http://kozbeyli-invalid.invalid/search",
+      },
+      baseDir: makeTmpDir(),
+    });
+
+    const plan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const hms = plan.gateSteps.find((step) => step.id === "hms_booking_engine");
+
+    expect(hms?.missingEnv).toEqual([
+      "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL (expected HTTPS live booking engine URL)",
+    ]);
+    expect(hms?.checklist[0]).toBe(
+      "Fix NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL in Vercel production so it is the approved HTTPS HMS URL, or remove the bad override to use the official code fallback.",
+    );
+    expect(hms?.commands).toContain("vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production");
   });
 
   it("reports ready only when every commercial launch gate is proven ready", async () => {

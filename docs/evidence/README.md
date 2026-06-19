@@ -23,7 +23,7 @@ this repository.
 | --- | --- |
 | `docs/evidence/canonical-domain.md` | Canonical `kozbeylikonagi.com` and `www` health endpoint proof, current Vercel commit match, DNS cutover note. |
 | `docs/evidence/production-abuse-controls.md` | Production Turnstile lead-form proof plus Upstash shared rate-limit/replay backend proof. |
-| `docs/evidence/hms-booking-engine.md` | Live HMS booking engine URL, embed/redirect decision, successful booking UAT, cancellation/refund note, stock sync note. |
+| `docs/evidence/hms-booking-engine.md` | Approved HMS handoff URL, new-tab redirect decision, successful booking UAT, cancellation/refund note, stock sync note. |
 | `docs/evidence/garanti-pos.md` | Garanti Sanal POS test environment, successful 3DS sandbox payment, failed payment case, callback verification, refund/cancel note. |
 | `docs/evidence/analytics-purchase.md` | Production GTM, GA4, Meta IDs, consent mode validation, server-side purchase/booking_complete proof. |
 | `docs/evidence/search-local-seo.md` | Search Console ownership, submitted sitemap, Google Business Profile, Hotel Center/free booking links, Apple Business Connect if used. |

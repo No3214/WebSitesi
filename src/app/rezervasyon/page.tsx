@@ -15,16 +15,16 @@ type ReservationPageProps = {
 const reservationCopy = {
   tr: {
     eyebrow: "REZERVASYON",
-    title: "Yerinizi Ayırtın",
-    text: "Müsaitlik, oda tercihi ve güvenli ödeme adımı için talebinizi doğrudan konak ekibimize iletin.",
+    title: "Rezervasyon",
+    text: "Tarih, kişi sayısı ve oda seçimi resmi HMS rezervasyon ekranında açılır; ekibimiz WhatsApp ve telefon desteğiyle yanınızda kalır.",
     schemaName: "Kozbeyli Konağı Rezervasyon",
     schemaDescription: "Kozbeyli Konağı taş butik otel için canlı müsaitlik ve direkt rezervasyon sayfası.",
     urlTemplate: "/rezervasyon",
   },
   en: {
     eyebrow: "RESERVATION",
-    title: "Reserve Your Stay",
-    text: "Send your availability, room preference and secure payment request directly to our team.",
+    title: "Booking",
+    text: "Dates, guests and room selection open in the official HMS booking screen; our team remains available by WhatsApp and phone.",
     schemaName: "Kozbeyli Konağı Reservation",
     schemaDescription: "Direct availability and reservation request page for Kozbeyli Konağı stone boutique hotel.",
     urlTemplate: "/en/rezervasyon",
@@ -32,9 +32,9 @@ const reservationCopy = {
 } as const;
 
 export const metadata: Metadata = {
-  title: "Rezervasyon | Doğrudan Rezervasyon",
+  title: "Rezervasyon | Kozbeyli Konağı",
   description:
-    "Kozbeyli Konağı'nda taş oda konaklamanız için doğrudan rezervasyon talebi oluşturun; müsaitlik, oda tercihi ve güvenli ödeme adımı ekibimiz tarafından teyit edilir.",
+    "Kozbeyli Konağı'nda taş oda konaklamanız için resmi HMS rezervasyon ekranına geçin; WhatsApp ve telefon desteğimiz açık kalır.",
   keywords: [
     "kozbeyli konağı rezervasyon",
     "foça butik otel rezervasyon",

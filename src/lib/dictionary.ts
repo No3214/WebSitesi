@@ -4,8 +4,8 @@ const extras = {
   en: {
     Reservation: {
       eyebrow: 'Booking',
-      title: 'Reserve Your Mansion Stay',
-      text: 'Select your dates and share your stay request directly with our reservation team for availability confirmation and tailored support.',
+      title: 'Booking',
+      text: 'Dates, guests and room selection open in the official HMS booking screen; our team remains available by WhatsApp and phone.',
       bestPrice: 'Direct Reservation',
       bestPriceText: 'Your request reaches the mansion team directly; availability, room preferences and payment steps are confirmed by our team.',
       flexibleCancel: 'Terms Confirmed in Writing',
@@ -27,8 +27,8 @@ const extras = {
   tr: {
     Reservation: {
       eyebrow: 'Rezervasyon',
-      title: 'Konağınızı Şimdi Ayırtın',
-      text: 'Tarihlerinizi seçin; müsaitlik, oda tercihi ve güvenli ödeme adımı için talebiniz doğrudan rezervasyon ekibimize ulaşsın.',
+      title: 'Rezervasyon',
+      text: 'Tarih, kişi sayısı ve oda seçimi resmi HMS rezervasyon ekranında açılır; ekibimiz WhatsApp ve telefon desteğiyle yanınızda kalır.',
       bestPrice: 'Doğrudan Rezervasyon',
       bestPriceText: 'Talebiniz doğrudan konak ekibine ulaşır; müsaitlik, oda tercihleri ve ödeme adımı ekibimiz tarafından teyit edilir.',
       flexibleCancel: 'Koşullar Yazılı Teyit',

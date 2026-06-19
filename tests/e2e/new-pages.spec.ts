@@ -10,7 +10,7 @@ test.describe("Rezervasyon sayfasi", () => {
   test("baslik, header ve footer render olur", async ({ page }) => {
     await page.goto("/rezervasyon");
 
-    await expect(page.getByRole("heading", { name: "Yerinizi Ayırtın" }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Rezervasyon" }).first()).toBeVisible();
     await expect(page.locator("header.site-header")).toBeVisible();
     await expect(page.locator("footer.footer")).toBeVisible();
     await expect(page.locator("main").getByRole("link", { name: "Rezervasyon" })).toHaveAttribute(
@@ -23,7 +23,7 @@ test.describe("Rezervasyon sayfasi", () => {
     await page.goto("/en/rezervasyon?oda=standart-deniz-manzarali-oda");
 
     const main = page.locator("main");
-    await expect(page.getByRole("heading", { name: "Reserve Your Stay" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Booking", level: 1 })).toBeVisible();
     await expect(main.getByText("Your choice:")).toBeVisible();
     await expect(main.getByText("Seçiminiz:")).toHaveCount(0);
     await expect(main.getByRole("heading", { name: "Booking" })).toBeVisible();
