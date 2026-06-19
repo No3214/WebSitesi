@@ -44,6 +44,11 @@ Vercel CLI varlığını Windows AppData fallback'iyle bulmanın yanında `verce
 whoami` oturumunu da doğrular. Bu, `vercel env pull`, deploy ve logs işlemleri
 için giriş yapılmamış operatör durumunu canonical cutover öncesi görünür yapar.
 
+2026-06-19 health diagnostik güncellemesi: `/api/health` runtime readiness
+çıktısı secret veya env key adı yayınlamadan `missing`, `partial`, `invalid`,
+`code_fallback` ve `fallbackApplied` sinyallerini verir. Böylece uptime/ops
+monitörü canonical URL, HMS fallback ve production env gruplarını daha net ayırır.
+
 2026-06-19 HMS güncellemesi: Rezervasyon CTA'ları resmi HMS engine'e yeni sekme
 handoff olarak gider ve public fallback kodda mevcuttur. Eksik kalan konu URL
 değil, canlı tarih/konuk/oda seçimi UAT kanıtı ve `docs/evidence/hms-booking-engine.md`

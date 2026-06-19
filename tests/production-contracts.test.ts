@@ -643,6 +643,10 @@ describe("production readiness contracts", () => {
     expect(productionReadiness).toContain("hms_booking_engine");
     expect(productionReadiness).toContain("OFFICIAL_HMS_BOOKING_ENGINE_URL");
     expect(productionReadiness).toContain("code_fallback");
+    expect(productionReadiness).toContain("fallbackApplied");
+    expect(productionReadiness).toContain("invalidCount");
+    expect(productionReadiness).toContain("placeholderCount");
+    expect(productionReadiness).toContain("partial");
     expect(healthRoute).toContain('"Cache-Control": "no-store, max-age=0"');
     expect(healthRoute).not.toContain("DATABASE_URI");
     expect(healthRoute).not.toContain("PAYLOAD_SECRET");

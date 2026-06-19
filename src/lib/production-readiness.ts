@@ -7,6 +7,8 @@ type RuntimeGate = {
   fallbackUrl?: string;
 };
 
+type RuntimeConfigurationSource = "env" | "code_fallback" | "missing" | "partial" | "invalid" | "not_applicable";
+
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
 
 const runtimeGates: RuntimeGate[] = [
@@ -67,35 +69,57 @@ function hasExplicitValue(value: string | undefined) {
   return Boolean(value && value.trim());
 }
 
-function gateReady(gate: RuntimeGate, env: NodeJS.ProcessEnv) {
-  return gate.requiredEnv.every((key) => {
-    const value = env[key];
-    if (!hasExplicitValue(value)) {
-      return Boolean(gate.fallbackUrl && /^https:\/\//.test(gate.fallbackUrl));
-    }
+function hasValidFallback(gate: RuntimeGate) {
+  return Boolean(gate.fallbackUrl && /^https:\/\//.test(gate.fallbackUrl));
+}
 
-    if (!hasMeaningfulValue(value)) return false;
+function evaluateGate(gate: RuntimeGate, env: NodeJS.ProcessEnv) {
+  const explicitValues = gate.requiredEnv.filter((key) => hasExplicitValue(env[key]));
+  const meaningfulValues = gate.requiredEnv.filter((key) => hasMeaningfulValue(env[key]));
+  const placeholderCount = explicitValues.length - meaningfulValues.length;
+  const invalidCount = meaningfulValues.filter((key) => {
     const expected = gate.expected?.[key];
-    return expected ? expected.test(value || "") : true;
-  });
+    return expected ? !expected.test(env[key] || "") : false;
+  }).length;
+  const missingCount = gate.requiredEnv.length - explicitValues.length;
+  const fallbackApplied = missingCount > 0 && explicitValues.length === 0 && hasValidFallback(gate);
+  const ready =
+    gate.requiredEnv.length === 0 ||
+    fallbackApplied ||
+    (missingCount === 0 && placeholderCount === 0 && invalidCount === 0);
+
+  let configurationSource: RuntimeConfigurationSource = "missing";
+  if (gate.requiredEnv.length === 0) {
+    configurationSource = "not_applicable";
+  } else if (fallbackApplied) {
+    configurationSource = "code_fallback";
+  } else if (ready) {
+    configurationSource = "env";
+  } else if (invalidCount > 0 || placeholderCount > 0) {
+    configurationSource = "invalid";
+  } else if (meaningfulValues.length > 0) {
+    configurationSource = "partial";
+  }
+
+  return {
+    ready,
+    requiredCount: gate.requiredEnv.length,
+    configuredCount: fallbackApplied ? gate.requiredEnv.length : meaningfulValues.length,
+    missingCount: fallbackApplied ? 0 : missingCount,
+    invalidCount,
+    placeholderCount,
+    fallbackApplied,
+    configurationSource,
+  };
 }
 
 export function getRuntimeReadiness(env: NodeJS.ProcessEnv = process.env) {
   const checks = runtimeGates.map((gate) => {
-    const ready = gateReady(gate, env);
-    const readyFromFallback =
-      ready &&
-      Boolean(gate.fallbackUrl) &&
-      gate.requiredEnv.some((key) => !hasExplicitValue(env[key]));
+    const evaluation = evaluateGate(gate, env);
 
     return {
       id: gate.id,
-      ready,
-      requiredCount: gate.requiredEnv.length,
-      configuredCount: ready
-        ? gate.requiredEnv.length
-        : gate.requiredEnv.filter((key) => hasMeaningfulValue(env[key])).length,
-      configurationSource: readyFromFallback ? "code_fallback" : ready ? "env" : "missing",
+      ...evaluation,
     };
   });
   const blockedGates = checks.filter((check) => !check.ready).map((check) => check.id);

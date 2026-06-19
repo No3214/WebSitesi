@@ -39,9 +39,30 @@ describe("runtime production readiness", () => {
     expect(result.blockedGates).not.toContain("hms_booking_engine");
 
     const hmsCheck = result.checks.find((check) => check.id === "hms_booking_engine");
+    const canonicalCheck = result.checks.find((check) => check.id === "canonical_domain");
+    const abuseCheck = result.checks.find((check) => check.id === "production_abuse_controls");
+
+    expect(canonicalCheck).toMatchObject({
+      ready: false,
+      configuredCount: 1,
+      invalidCount: 1,
+      missingCount: 0,
+      fallbackApplied: false,
+      configurationSource: "invalid",
+    });
+    expect(abuseCheck).toMatchObject({
+      ready: false,
+      configuredCount: 1,
+      missingCount: 3,
+      invalidCount: 0,
+      fallbackApplied: false,
+      configurationSource: "partial",
+    });
     expect(hmsCheck).toMatchObject({
       ready: true,
       configuredCount: 1,
+      missingCount: 0,
+      fallbackApplied: true,
       configurationSource: "code_fallback",
     });
 
@@ -87,6 +108,35 @@ describe("runtime production readiness", () => {
     expect(hmsCheck).toMatchObject({
       ready: false,
       configuredCount: 1,
+      missingCount: 0,
+      invalidCount: 1,
+      fallbackApplied: false,
+      configurationSource: "invalid",
+    });
+  });
+
+  it("reports missing and placeholder runtime groups without exposing their key names", () => {
+    const result = getRuntimeReadiness({
+      NODE_ENV: "production",
+      NEXT_PUBLIC_SITE_URL: "https://kozbeylikonagi.com",
+      GARANTI_POS_MODE: "replace_with_real_mode",
+    } as NodeJS.ProcessEnv);
+
+    const posCheck = result.checks.find((check) => check.id === "garanti_pos");
+    const analyticsCheck = result.checks.find((check) => check.id === "analytics_purchase");
+
+    expect(posCheck).toMatchObject({
+      ready: false,
+      configuredCount: 0,
+      missingCount: 4,
+      placeholderCount: 1,
+      configurationSource: "invalid",
+    });
+    expect(analyticsCheck).toMatchObject({
+      ready: false,
+      configuredCount: 0,
+      missingCount: 4,
+      placeholderCount: 0,
       configurationSource: "missing",
     });
   });
