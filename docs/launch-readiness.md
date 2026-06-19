@@ -45,6 +45,12 @@ kurulumu saymaz. Kalıcı `vercel`/`vercel.cmd` kurulumu ve `vercel whoami`
 oturumu, `vercel env pull`, deploy ve logs işlemleri için canonical cutover
 öncesi görünür bir koşuldur.
 
+2026-06-19 Vercel production env envanteri güncellemesi: `npm run vercel:env`
+artık `vercel env ls` çıktısından yalnızca Production env isimlerini okur ve
+ticari launch gate'leriyle karşılaştırır. Değer yazdırmaz; `.env.local`
+hazırlığı ile gerçek Vercel Production ayarları karıştırılmadan eksik env
+blokları makine-okunur hale gelir.
+
 2026-06-19 health diagnostik güncellemesi: `/api/health` runtime readiness
 çıktısı secret veya env key adı yayınlamadan `missing`, `partial`, `invalid`,
 `code_fallback` ve `fallbackApplied` sinyallerini verir. Böylece uptime/ops

@@ -67,7 +67,7 @@ function getNpmGlobalPrefix() {
   }
 }
 
-function getVercelCliCandidates() {
+export function getVercelCliCandidates() {
   const npmPrefix = getNpmGlobalPrefix();
   const candidates = ["vercel"];
 
@@ -88,7 +88,7 @@ function resolveVercelCmdTarget(candidate) {
   return fs.existsSync(scriptPath) ? scriptPath : "";
 }
 
-function runVercelCandidate(candidate, args, timeout = 10000) {
+export function runVercelCandidate(candidate, args, timeout = 10000) {
   const cmdTarget = resolveVercelCmdTarget(candidate);
   if (cmdTarget) {
     return execFileSync(process.execPath, [cmdTarget, ...args], {

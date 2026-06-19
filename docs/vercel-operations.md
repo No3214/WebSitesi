@@ -10,6 +10,7 @@ Run:
 
 ```bash
 npm run vercel:ops
+npm run vercel:env
 npm run launch:cutover
 ```
 
@@ -22,8 +23,13 @@ operator checklist with owner, timing, missing env keys, redacted evidence files
 commands and KPI/review loop. Use the JSON form for handoff dashboards:
 
 ```bash
+npm run vercel:env:json
 npm run launch:cutover:json
 ```
+
+`vercel:env` reads only production environment variable names from `vercel env
+ls`. It never prints values. Use it to distinguish local `.env.local` readiness
+from the real Vercel Production inventory before marking any launch gate ready.
 
 For a strict handoff gate, run:
 
@@ -41,6 +47,9 @@ Strict mode fails on warnings. It should only pass when:
 - `.vercel/project.json` points at `kozbeyli-konagi`;
 - domain/env scripts are present;
 - canonical domain evidence is marked `ready`.
+- `npm run vercel:env:strict` shows every production env requirement for the
+  commercial launch gates is either present in Vercel Production or covered by
+  an approved code fallback.
 
 ## Cutover operating model
 
@@ -82,6 +91,7 @@ Global Vercel CLI is required for reliable agentic operations:
 npm i -g vercel
 vercel login
 vercel whoami
+vercel env ls
 vercel env pull
 vercel deploy
 vercel logs

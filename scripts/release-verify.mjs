@@ -30,6 +30,10 @@ const gates = [
     label: "Garanti POS readiness diagnosis",
   },
   {
+    script: "vercel:env:json",
+    label: "Vercel production env inventory diagnosis",
+  },
+  {
     script: "publish:verify",
     label: "Full publish verification",
   },

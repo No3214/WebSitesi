@@ -116,6 +116,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"vercel:ops"');
     expect(readinessScript).toContain('"vercel:ops:json"');
     expect(readinessScript).toContain('"vercel:ops:strict"');
+    expect(readinessScript).toContain('"vercel:env"');
+    expect(readinessScript).toContain('"vercel:env:json"');
+    expect(readinessScript).toContain('"vercel:env:strict"');
     expect(readinessScript).toContain('"launch:smoke"');
     expect(readinessScript).toContain('"launch:smoke:live"');
     expect(readinessScript).toContain('"release:verify"');
@@ -180,6 +183,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["vercel:ops:strict"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["vercel:env"]).toBe("node scripts/vercel-env-readiness.mjs");
+    expect(packageJson.scripts?.["vercel:env:json"]).toBe(
+      "node scripts/vercel-env-readiness.mjs --json",
+    );
+    expect(packageJson.scripts?.["vercel:env:strict"]).toBe(
+      "node scripts/vercel-env-readiness.mjs --strict",
+    );
     expect(packageJson.scripts?.prebuild).toBe("node scripts/clean-next-build.mjs");
     expect(packageJson.scripts?.["release:verify"]).toBe("node scripts/release-verify.mjs");
     expect(readinessScript).toContain('"scripts/clean-next-build.mjs"');
@@ -202,6 +212,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/search-local-seo-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/hms-booking-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
+    expect(readinessScript).toContain('"scripts/vercel-env-readiness.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
   });
 
@@ -217,6 +228,7 @@ describe("production readiness contracts", () => {
       "analytics:verify:json",
       "search:verify:json",
       "garanti:verify:json",
+      "vercel:env:json",
       "publish:verify",
       "launch:smoke",
       "test:stress",
@@ -231,6 +243,7 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("Analytics purchase readiness diagnosis");
     expect(releaseScript).toContain("Search and local SEO readiness diagnosis");
     expect(releaseScript).toContain("Garanti POS readiness diagnosis");
+    expect(releaseScript).toContain("Vercel production env inventory diagnosis");
     expect(releaseScript).toContain("process.env.ComSpec");
     expect(releaseScript).not.toContain("launch:audit:strict");
     expect(ciWorkflow).toContain("Release gate manifest");
@@ -567,6 +580,7 @@ describe("production readiness contracts", () => {
       scripts?: Record<string, string>;
     };
     const vercelOps = read("scripts/vercel-ops-readiness.mjs");
+    const vercelEnv = read("scripts/vercel-env-readiness.mjs");
     const cutover = read("scripts/production-cutover-plan.mjs");
     const runbook = read("docs/vercel-operations.md");
 
@@ -584,7 +598,18 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["vercel:ops:strict"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["vercel:env:strict"]).toBe(
+      "node scripts/vercel-env-readiness.mjs --strict",
+    );
     expect(vercelOps).toContain("Kozbeyli Konagi Vercel operations readiness");
+    expect(vercelEnv).toContain("Kozbeyli Konagi Vercel production env readiness");
+    expect(vercelEnv).toContain("parseVercelEnvList");
+    expect(vercelEnv).toContain("VERCEL PRODUCTION ENV INCOMPLETE");
+    expect(vercelEnv).toContain("VERCEL ENV INVENTORY UNAVAILABLE");
+    expect(vercelEnv).toContain("Production env names configured");
+    expect(vercelEnv).toContain("values are not read or validated");
+    expect(vercelEnv).toContain("valueValidation: \"not_performed\"");
+    expect(vercelEnv).not.toContain("process.env.");
     expect(cutover).toContain("VERCEL_AUTH_COMMANDS");
     expect(cutover).toContain("vercel whoami");
     expect(cutover).toContain("npm run hms:verify:strict");
@@ -603,6 +628,9 @@ describe("production readiness contracts", () => {
     expect(vercelOps).toContain("canonical-domain.md");
     expect(vercelOps).toContain("kozbeyli-konagi");
     expect(runbook).toContain("npm run vercel:ops");
+    expect(runbook).toContain("npm run vercel:env");
+    expect(runbook).toContain("npm run vercel:env:strict");
+    expect(runbook).toContain("never prints values");
     expect(runbook).toContain("npm run launch:cutover");
     expect(runbook).toContain("KPI and review loop");
     expect(runbook).toContain("npm run vercel:ops:strict");
