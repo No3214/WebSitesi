@@ -66,7 +66,7 @@ const guideItems = [
   {
     icon: <HeartPulse className="w-6 h-6 text-gold" />,
     title: "Esneklik & İptal",
-    content: "Direkt rezervasyonlarda 48 saat öncesine kadar ücretsiz iptal ve tarih değişikliği imkanı sunuyoruz."
+    content: "İptal ve tarih değişikliği koşulları rezervasyon kanalı, seçilen teklif, ödeme tipi ve konaklama tarihine göre değişir; güncel koşullar rezervasyon onayından önce yazılı olarak paylaşılır."
   }
 ];
 

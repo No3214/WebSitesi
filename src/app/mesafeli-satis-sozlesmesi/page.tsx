@@ -35,9 +35,9 @@ export default function SalesAgreementPage() {
               <section>
                 <h2 className="text-zinc-900 font-bold mb-4">4. İPTAL VE İADE KOŞULLARI</h2>
                 <ul className="list-disc pl-5 space-y-2">
-                  <li>Standart rezervasyonlarda: Giriş tarihinden 72 saat öncesine kadar yapılan iptallerde ödeme tam iade edilir.</li>
-                  <li>72 saatten az kalan iptallerde 1 gecelik konaklama bedeli &apos;No-Show&apos; olarak tahsil edilir.</li>
-                  <li>Erken ayrılmalarda konaklanmayan günlerin iadesi yapılmaz.</li>
+                  <li>İptal, değişiklik ve iade koşulları rezervasyon kanalı, seçilen teklif, ödeme tipi, dönem ve konaklama tarihine göre değişebilir.</li>
+                  <li>Misafire uygulanacak güncel koşullar rezervasyon kesinleşmeden önce rezervasyon ekranında, teklif formunda veya yazılı teyit mesajında paylaşılır.</li>
+                  <li>Erken ayrılma, geç iptal ve rezervasyona gelmeme durumları için uygulanacak koşullar, onaylanan rezervasyon şartlarına göre değerlendirilir.</li>
                 </ul>
               </section>
 

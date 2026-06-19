@@ -16,6 +16,7 @@ const EN_ROUTES = [
   "/organizasyonlar",
   "/rezervasyon",
   "/iletisim",
+  "/lokasyon",
   "/sss",
   "/galeri",
   "/hikayemiz",

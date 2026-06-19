@@ -692,6 +692,31 @@
     font-size: 1.02rem;
   }
 
+  .page-hero-light {
+    background-color: #f7f1e7;
+    background-image: linear-gradient(180deg, #fbf7ed 0%, #f2ecdf 100%);
+    border-bottom: 1px solid rgba(61, 74, 59, 0.1);
+    color: var(--text);
+  }
+
+  .page-hero-light.grain::after {
+    mix-blend-mode: multiply;
+    opacity: 0.28;
+  }
+
+  .page-hero-light h1 {
+    color: var(--olive);
+    text-shadow: none;
+  }
+
+  .page-hero-light p {
+    color: var(--muted);
+  }
+
+  .page-hero-light .eyebrow {
+    color: var(--gold-text);
+  }
+
   /* ---------- Skip link (a11y) ---------- */
   .skip-link {
     position: fixed;
@@ -889,6 +914,57 @@
 
   .card:hover .card-link .arrow {
     transform: translateX(6px);
+  }
+
+  .rooms-catalog-section {
+    background-color: #f7f1e7;
+    background-image: linear-gradient(180deg, #f7f1e7 0%, #fbf7ee 52%, #f1eadc 100%);
+  }
+
+  .rooms-catalog-section .room-card {
+    background: rgba(255, 252, 246, 0.92);
+    border: 1px solid rgba(61, 74, 59, 0.11);
+    box-shadow: 0 18px 54px rgba(68, 53, 31, 0.08);
+  }
+
+  .rooms-catalog-section .room-card:hover {
+    box-shadow: 0 28px 70px rgba(68, 53, 31, 0.14);
+  }
+
+  .rooms-catalog-section .room-card .card-media {
+    aspect-ratio: 4 / 3;
+  }
+
+  .rooms-catalog-section .room-card .card-media::after,
+  .rooms-catalog-section .room-card:hover .card-media::after {
+    opacity: 0;
+  }
+
+  .rooms-catalog-section .room-card .card-body {
+    background-color: #fffaf2;
+    background-image: linear-gradient(180deg, rgba(255, 252, 246, 0.98), rgba(248, 242, 231, 0.98));
+  }
+
+  .rooms-catalog-section .room-card .card-body h3 {
+    color: var(--olive);
+  }
+
+  .rooms-catalog-section .room-card .card-body p {
+    color: #534b42;
+  }
+
+  .rooms-catalog-section .room-card .card-link {
+    color: var(--olive-deep);
+  }
+
+  @media (max-width: 640px) {
+    .page-hero-light {
+      padding: 132px 0 56px;
+    }
+
+    .rooms-catalog-section {
+      padding-top: 56px;
+    }
   }
 
   /* ---------- Feature boxes ---------- */

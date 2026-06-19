@@ -28,16 +28,16 @@ export function RoomsClient() {
 
   return (
     <>
-      <SiteHeader variant="overlay" />
-      <PageHero eyebrow={t.eyebrow} title={t.title} text={t.text} />
+      <SiteHeader variant="solid" />
+      <PageHero eyebrow={t.eyebrow} title={t.title} text={t.text} tone="light" />
 
-      <main className="section" id="icerik-odalar">
+      <main className="section rooms-catalog-section" id="icerik-odalar">
         <div className="container">
           <StaggerContainer delay={0.1}>
             <div className="card-grid">
               {fallbackRooms.map((room, index) => (
                 <FadeIn key={room.slug}>
-                  <Link href={`${locale === "en" ? "/en" : ""}/odalar/${room.slug}`} className="card">
+                  <Link href={`${locale === "en" ? "/en" : ""}/odalar/${room.slug}`} className="card room-card">
                     <div className="card-media">
                       <Image
                         src={room.images[0]}

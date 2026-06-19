@@ -55,7 +55,7 @@ const guideItems = [
     icon: <HeartPulse className="w-6 h-6 text-gold" />,
     title: "Flexibility & Cancellation",
     content:
-      "For direct reservations, free cancellation and date changes are available up to 48 hours before arrival.",
+      "Cancellation and date-change terms depend on the booking channel, selected offer, payment type and stay dates; current terms are shared in writing before confirmation.",
   },
 ];
 

@@ -592,12 +592,89 @@ describe("production readiness contracts", () => {
     const sunsetMode = read("src/components/sunset-mode.tsx");
 
     expect(sunsetMode).not.toContain("mix-blend-multiply");
-    expect(sunsetMode).toContain(".card .card-body h3");
-    expect(sunsetMode).toContain(".card .card-body p");
-    expect(sunsetMode).toContain(".card .card-body .meta");
-    expect(sunsetMode).toContain("#f4efe6");
-    expect(sunsetMode).toContain("#d7d1c7");
-    expect(sunsetMode).toContain("#e0bf7a");
+    expect(sunsetMode).not.toContain("--soft: #1a1a1a");
+    expect(sunsetMode).not.toContain("--white: #121212");
+    expect(sunsetMode).not.toContain("background-color: #121212");
+    expect(sunsetMode).not.toContain(".card, .section-alt, .feature-box");
+    expect(sunsetMode).toContain("--soft: #efe7d9");
+    expect(sunsetMode).toContain("--white: #fffaf2");
+    expect(sunsetMode).toContain("--ivory: #fbf6eb");
+    expect(sunsetMode).toContain("--gold: #8f611e");
+    expect(sunsetMode).toContain("background-color: #fbf6eb");
+    expect(sunsetMode).toContain('aria-hidden="true"');
+  });
+
+  it("keeps room browsing in a light product-inspection theme", () => {
+    const roomsClient = read("src/components/rooms-client.tsx");
+    const pageHero = read("src/components/page-hero.tsx");
+    const globals = read("src/app/globals.css");
+    const layout = read("src/app/layout.tsx");
+
+    expect(roomsClient).toContain('<SiteHeader variant="solid" />');
+    expect(roomsClient).toContain('tone="light"');
+    expect(roomsClient).toContain("rooms-catalog-section");
+    expect(roomsClient).toContain("room-card");
+    expect(roomsClient).toContain('id="icerik-odalar"');
+    expect(layout).toContain('<div id="icerik">{children}</div>');
+    expect(pageHero).toContain('tone?: "dark" | "light"');
+    expect(pageHero).toContain("page-hero-light");
+    expect(globals).toContain(".page-hero-light");
+    expect(globals).toContain("background-image: linear-gradient(180deg, #fbf7ed 0%, #f2ecdf 100%)");
+    expect(globals).toContain(".rooms-catalog-section");
+    expect(globals).toContain(".rooms-catalog-section .room-card .card-media");
+    expect(globals).toContain("aspect-ratio: 4 / 3");
+    expect(globals).toContain("#f7f1e7");
+    expect(globals).toContain("rgba(255, 252, 246, 0.92)");
+    expect(layout).toContain('{ media: "(prefers-color-scheme: dark)", color: "#fbf6eb" }');
+  });
+
+  it("keeps cancellation and route-time claims legally conservative", () => {
+    const trGuide = read("src/app/misafir-rehberi/page.tsx");
+    const enGuide = read("src/app/en/misafir-rehberi/page.tsx");
+    const llms = read("src/app/llms.txt/route.ts");
+    const contactPage = read("src/app/iletisim/page.tsx");
+    const enContactPage = read("src/app/en/iletisim/page.tsx");
+    const contactClient = read("src/components/contact-client.tsx");
+    const salesAgreement = read("src/app/mesafeli-satis-sozlesmesi/page.tsx");
+
+    for (const source of [trGuide, enGuide, llms, contactPage, enContactPage, contactClient, salesAgreement]) {
+      expect(source).not.toMatch(/48\s*(saat|hours)/i);
+      expect(source).not.toMatch(/72\s*(saat|hours)/i);
+      expect(source).not.toMatch(/ücretsiz iptal|free cancellation/i);
+      expect(source).not.toMatch(/55\s*(dk|dakika|min|minutes)/i);
+      expect(source).not.toMatch(/10[–-]15\s*(dk|dakika|min|minutes)/i);
+    }
+
+    expect(trGuide).toContain("rezervasyon kanalı, seçilen teklif, ödeme tipi");
+    expect(enGuide).toContain("booking channel, selected offer, payment type");
+    expect(contactClient).toContain("canlı yol tarifini");
+    expect(llms).toContain("canlı yol tarifi önerilir");
+  });
+
+  it("publishes a dedicated location route with schema, hreflang and inventory coverage", () => {
+    const trLocation = read("src/app/lokasyon/page.tsx");
+    const enLocation = read("src/app/en/lokasyon/page.tsx");
+    const locationContent = read("src/components/location-page-content.tsx");
+    const sitemap = read("src/app/sitemap.ts");
+    const footer = read("src/components/site-footer.tsx");
+    const languageSwitcher = read("src/components/language-switcher.tsx");
+    const publishReadiness = read("scripts/publish-readiness.mjs");
+    const publishRoutes = read("tests/e2e/publish-routes.spec.ts");
+
+    expect(trLocation).toContain('canonical: "/lokasyon"');
+    expect(enLocation).toContain('canonical: "/en/lokasyon"');
+    expect(locationContent).toContain('"@type": "LodgingBusiness"');
+    expect(locationContent).toContain('"@type": "GeoCoordinates"');
+    expect(locationContent).toContain('"@type": "BreadcrumbList"');
+    expect(locationContent).toContain("KOZBEYLI_COORDS");
+    expect(locationContent).toContain("MAPS_URL");
+    expect(sitemap).toContain("'/lokasyon'");
+    expect(footer).toContain('localizedHref("/lokasyon", englishPath)');
+    expect(languageSwitcher).toContain('"/lokasyon"');
+    expect(publishReadiness).toContain('"/lokasyon"');
+    expect(publishReadiness).toContain('"/en/lokasyon"');
+    expect(publishRoutes).toContain('"/lokasyon"');
+    expect(publishRoutes).toContain('"/en/lokasyon"');
   });
 
   it("keeps server env helpers out of client components", () => {

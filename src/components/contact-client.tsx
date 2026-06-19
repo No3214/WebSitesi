@@ -17,7 +17,7 @@ const FALLBACK = {
     whatsapp: "WhatsApp Destek",
     whatsappMessage: "Merhaba, web sitesinden ulaşıyorum.",
     addressLine: "Kozbeyli Köyü Küme Evler No:188, Foça / İzmir",
-    addressNote: "İzmir Adnan Menderes Havalimanı'na ~55 dk, Foça merkeze 15 dk.",
+    addressNote: "Güncel rota ve trafik bilgisi için canlı yol tarifini kullanabilirsiniz.",
     mapTitle: "Kozbeyli Konağı Konum — OpenStreetMap",
     formText:
       "Düğün, organizasyon ve grup konaklama talepleri için formu doldurun; aynı gün dönüş yapalım.",
@@ -26,7 +26,7 @@ const FALLBACK = {
     whatsapp: "WhatsApp Support",
     whatsappMessage: "Hello, I am reaching out from the website.",
     addressLine: "Kozbeyli Village Küme Evler No:188, Foça / İzmir",
-    addressNote: "~55 min to İzmir Adnan Menderes Airport, 15 min to Foça center.",
+    addressNote: "Use live directions for current route and traffic information.",
     mapTitle: "Kozbeyli Konağı Location — OpenStreetMap",
     formText:
       "Fill out the form for wedding, event and group stay requests; we will get back to you the same day.",

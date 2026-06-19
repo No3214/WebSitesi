@@ -19,6 +19,7 @@ const htmlRoutes = [
   "/galeri",
   "/sss",
   "/iletisim",
+  "/lokasyon",
   "/odeme",
   "/kvkk",
   "/gizlilik-politikasi",
@@ -38,6 +39,7 @@ const htmlRoutes = [
   "/en/galeri",
   "/en/sss",
   "/en/iletisim",
+  "/en/lokasyon",
 ];
 
 const assetRoutes = ["/robots.txt", "/sitemap.xml", "/llms.txt", "/manifest.webmanifest"];

@@ -11,6 +11,7 @@ describe("sitemap", () => {
 
     expect(urls).toContain(`${BASE_URL}/rezervasyon`);
     expect(urls).toContain(`${BASE_URL}/iletisim`);
+    expect(urls).toContain(`${BASE_URL}/lokasyon`);
   });
 
   it("ana sayfayi priority 1 ile listeler", () => {
@@ -31,10 +32,12 @@ describe("sitemap", () => {
       "/teklifler",
       "/menu",
       "/misafir-rehberi",
+      "/lokasyon",
       "/odeme",
       "/en",
       "/en/menu",
       "/en/misafir-rehberi",
+      "/en/lokasyon",
       "/en/organizasyonlar",
       "/en/teklifler",
     ].forEach((route) => {

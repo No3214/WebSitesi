@@ -50,6 +50,7 @@ const publicRoutes = [
   "/galeri",
   "/sss",
   "/iletisim",
+  "/lokasyon",
   "/odeme",
   "/kvkk",
   "/gizlilik-politikasi",
@@ -69,6 +70,7 @@ const publicRoutes = [
   "/en/galeri",
   "/en/sss",
   "/en/iletisim",
+  "/en/lokasyon",
 ];
 
 const requiredEnvExampleKeys = [

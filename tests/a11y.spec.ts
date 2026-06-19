@@ -34,7 +34,7 @@ test.describe("Axe a11y taraması", () => {
     await expect(page.locator(".card").first()).toBeVisible({ timeout: 15000 });
     await page.waitForFunction(() => {
       const card = document.querySelector(".card");
-      return card instanceof Element && getComputedStyle(card).backgroundColor.includes("26, 26, 26");
+      return card instanceof Element && getComputedStyle(card).backgroundColor.includes("255");
     });
 
     const results = await new AxeBuilder({ page })

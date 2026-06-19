@@ -8,15 +8,18 @@ type PageHeroProps = {
   eyebrow: string;
   title: string;
   text?: string;
+  tone?: "dark" | "light";
 };
 
 /**
  * İç sayfalar için ortak sinematik giriş bandı.
- * Koyu "ink" zemin + grain dokusu; ana sayfa hero'suyla aynı tasarım dili.
+ * Varsayılan koyu "ink" zemin ana sayfa hero'suyla aynı tasarım dilini korur.
+ * Ürün inceleme sayfalarında `light` tonu, oda fotoğraflarını daha doğal
+ * okutan açık taş/ivory arka plan sağlar.
  */
-export function PageHero({ eyebrow, title, text }: PageHeroProps) {
+export function PageHero({ eyebrow, title, text, tone = "dark" }: PageHeroProps) {
   return (
-    <section className="page-hero section-dark grain">
+    <section className={`page-hero ${tone === "light" ? "page-hero-light" : "section-dark"} grain`}>
       <div className="container" style={{ position: "relative", zIndex: 2 }}>
         <motion.span
           className="eyebrow"

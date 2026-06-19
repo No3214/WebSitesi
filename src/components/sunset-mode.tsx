@@ -47,16 +47,16 @@ export const SunsetMode = () => {
   return (
     <>
       {isSunset ? (
-        <div className="sunset-mode-overlay fixed inset-0 pointer-events-none z-[0] bg-[#1a0f00]/5" aria-hidden="true" />
+        <div className="sunset-mode-overlay fixed inset-0 pointer-events-none z-[0]" aria-hidden="true" />
       ) : null}
       
       {/* Visual Indicator/Toggle in Corner (Optional Premium Touch) */}
-      <div className="fixed top-24 right-8 z-[100] hidden lg:block">
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-full shadow-2xl flex items-center gap-2">
-           <div className={`p-1.5 rounded-full transition-colors ${!isSunset ? "bg-gold text-white" : "text-zinc-400"}`}>
+      <div className="fixed top-24 right-8 z-[100] hidden lg:block" aria-hidden="true">
+        <div className="sunset-mode-indicator">
+           <div className={`p-1.5 rounded-full transition-colors ${!isSunset ? "bg-gold text-white" : "text-stone-500"}`}>
              <Sun size={14} />
            </div>
-           <div className={`p-1.5 rounded-full transition-colors ${isSunset ? "bg-[#1a0f00] text-gold" : "text-zinc-600"}`}>
+           <div className={`p-1.5 rounded-full transition-colors ${isSunset ? "bg-[#fff5df] text-gold" : "text-stone-700"}`}>
              <Moon size={14} />
            </div>
         </div>
@@ -64,7 +64,21 @@ export const SunsetMode = () => {
 
       <style jsx global>{`
         .sunset-mode-overlay {
+          background:
+            linear-gradient(180deg, rgba(209, 154, 85, 0.035), rgba(255, 246, 225, 0.055));
           animation: sunsetOverlayIn 260ms ease-out both;
+        }
+        .sunset-mode-indicator {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          border-radius: 999px;
+          border: 1px solid rgba(61, 74, 59, 0.12);
+          background: rgba(255, 252, 246, 0.72);
+          padding: 0.5rem;
+          box-shadow: 0 18px 46px rgba(61, 48, 31, 0.12);
+          backdrop-filter: blur(14px) saturate(1.25);
+          -webkit-backdrop-filter: blur(14px) saturate(1.25);
         }
         @keyframes sunsetOverlayIn {
           from {
@@ -76,44 +90,23 @@ export const SunsetMode = () => {
         }
         ${isSunset ? `
           :root {
-            --soft: #1a1a1a;
-            --white: #121212;
-            --ivory: #c5a059;
-            --text: #e5e5e5;
-            --border: rgba(255,255,255,0.1);
-            /* a11y (T18): gece paletinde metin degiskenleri de acilmali —
-               koyu kartta koyu olive/muted 4.5:1 altinda kaliyordu */
-            --olive: #cfd8cc;
-            --olive-deep: #e3e8e0;
-            --gold: #c7a15f;
-            --gold-text: #d8b66f;
-            --muted: #b3afa6;
-            --stone-warm: #242424;
+            --soft: #efe7d9;
+            --white: #fffaf2;
+            --ivory: #fbf6eb;
+            --text: #211d18;
+            --border: rgba(82, 68, 48, 0.14);
+            --olive: #354632;
+            --olive-deep: #263322;
+            --gold: #8f611e;
+            --gold-text: #6d4611;
+            --muted: #5d554b;
+            --stone-warm: #e8ddca;
           }
-          .cookie-content p { color: #cfcdc8 !important; }
+          .cookie-content p { color: #5d554b !important; }
           body {
-            background-color: #121212;
-            color: #e5e5e5;
+            background-color: #fbf6eb;
+            color: #211d18;
           }
-          .card, .section-alt, .feature-box {
-            background-color: #1a1a1a !important;
-            border-color: rgba(255,255,255,0.05) !important;
-          }
-          .card .card-body h3,
-          .card .card-link {
-            color: #f4efe6 !important;
-          }
-          .card .card-body p {
-            color: #d7d1c7 !important;
-          }
-          .card .card-body .meta {
-            color: #e0bf7a !important;
-          }
-          .header {
-            background: rgba(18, 18, 18, 0.9) !important;
-            border-bottom-color: rgba(255,255,255,0.05) !important;
-          }
-          .nav-link { color: #e5e5e5 !important; }
         ` : ""}
       `}</style>
     </>
