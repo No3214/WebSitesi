@@ -30,6 +30,12 @@ type CommercialLaunchModule = {
       missingEnv: string[];
       missingEvidence: Array<{ path: string; ready: boolean; reason: string }>;
       configurationSource?: string;
+      requiredEnvCount: number;
+      configuredEnvCount: number;
+      missingEnvCount: number;
+      invalidEnvCount: number;
+      placeholderEnvCount: number;
+      fallbackApplied: boolean;
     }>;
   };
 };
@@ -111,6 +117,23 @@ describe("commercial launch audit", () => {
     const hmsGate = result.gateResults.find((gate) => gate.id === "hms_booking_engine");
     expect(hmsGate?.missingEnv).toEqual([]);
     expect(hmsGate?.configurationSource).toBe("code_fallback");
+    expect(hmsGate).toMatchObject({
+      requiredEnvCount: 1,
+      configuredEnvCount: 1,
+      missingEnvCount: 0,
+      invalidEnvCount: 0,
+      placeholderEnvCount: 0,
+      fallbackApplied: true,
+    });
+
+    const canonicalGate = result.gateResults.find((gate) => gate.id === "canonical_domain");
+    expect(canonicalGate).toMatchObject({
+      configurationSource: "missing",
+      requiredEnvCount: 1,
+      configuredEnvCount: 0,
+      missingEnvCount: 1,
+      fallbackApplied: false,
+    });
   });
 
   it("reaches 100/100 only when every required env group or official fallback and evidence file is ready", async () => {
@@ -128,6 +151,13 @@ describe("commercial launch audit", () => {
     expect(result.target).toBe(100);
     expect(result.decision).toBe("FULL COMMERCIAL GO");
     expect(result.gateResults.every((gate) => gate.ready)).toBe(true);
+    expect(result.gateResults.find((gate) => gate.id === "legal_dpa")?.configurationSource).toBe(
+      "not_applicable",
+    );
+    expect(result.gateResults.find((gate) => gate.id === "hms_booking_engine")).toMatchObject({
+      configurationSource: "env",
+      fallbackApplied: false,
+    });
   });
 
   it("accepts the official HMS fallback when booking UAT evidence is ready", async () => {
@@ -147,6 +177,7 @@ describe("commercial launch audit", () => {
     expect(hmsGate?.ready).toBe(true);
     expect(hmsGate?.missingEnv).toEqual([]);
     expect(hmsGate?.configurationSource).toBe("code_fallback");
+    expect(hmsGate?.fallbackApplied).toBe(true);
   });
 
   it("blocks an explicit invalid HMS env value even though the code fallback exists", async () => {
@@ -168,6 +199,13 @@ describe("commercial launch audit", () => {
       "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL (expected HTTPS live booking engine URL)",
     ]);
     expect(hmsGate?.missingEvidence).toEqual([]);
+    expect(hmsGate).toMatchObject({
+      configurationSource: "invalid",
+      configuredEnvCount: 1,
+      missingEnvCount: 0,
+      invalidEnvCount: 1,
+      fallbackApplied: false,
+    });
   });
 
   it("blocks a gate when its evidence is marked pending even if env is present", async () => {
@@ -275,5 +313,47 @@ describe("commercial launch audit", () => {
     expect(domainGate?.missingEnv).toEqual([
       "NEXT_PUBLIC_SITE_URL (expected https://kozbeylikonagi.com or https://www.kozbeylikonagi.com)",
     ]);
+    expect(domainGate).toMatchObject({
+      configurationSource: "invalid",
+      configuredEnvCount: 1,
+      missingEnvCount: 0,
+      invalidEnvCount: 1,
+      fallbackApplied: false,
+    });
+  });
+
+  it("classifies partial and placeholder env groups without exposing values", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const result = audit.evaluateCommercialLaunch({
+      env: {
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: "0x4AA-real-site-key",
+        GARANTI_POS_MODE: "replace_with_real_mode",
+      },
+      baseDir,
+    });
+
+    const abuseGate = result.gateResults.find((gate) => gate.id === "production_abuse_controls");
+    const garantiGate = result.gateResults.find((gate) => gate.id === "garanti_pos");
+    const serialized = JSON.stringify(result);
+
+    expect(abuseGate).toMatchObject({
+      ready: false,
+      configurationSource: "partial",
+      configuredEnvCount: 1,
+      missingEnvCount: 3,
+      invalidEnvCount: 0,
+      placeholderEnvCount: 0,
+    });
+    expect(garantiGate).toMatchObject({
+      ready: false,
+      configurationSource: "invalid",
+      configuredEnvCount: 0,
+      missingEnvCount: 4,
+      invalidEnvCount: 0,
+      placeholderEnvCount: 1,
+    });
+    expect(serialized).not.toContain("replace_with_real_mode");
+    expect(serialized).not.toContain("0x4AA-real-site-key");
   });
 });

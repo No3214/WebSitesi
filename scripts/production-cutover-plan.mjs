@@ -201,6 +201,15 @@ function buildGateStep(gate) {
     owner: catalog.owner,
     timing: catalog.timing,
     operationalGoal: catalog.objective,
+    envDiagnostics: {
+      source: gate.configurationSource || "unknown",
+      requiredCount: gate.requiredEnvCount || gate.env?.length || 0,
+      configuredCount: gate.configuredEnvCount || 0,
+      missingCount: gate.missingEnvCount || 0,
+      invalidCount: gate.invalidEnvCount || 0,
+      placeholderCount: gate.placeholderEnvCount || 0,
+      fallbackApplied: Boolean(gate.fallbackApplied),
+    },
     missingEnv: gate.missingEnv,
     missingEvidence: gate.missingEvidence,
     checklist: resolveGateChecklist(gate, catalog),
@@ -272,6 +281,9 @@ export function formatProductionCutoverPlan(plan) {
       lines.push(`  owner: ${step.owner}`);
       lines.push(`  timing: ${step.timing}`);
       lines.push(`  goal: ${step.operationalGoal}`);
+      lines.push(
+        `  env: ${step.envDiagnostics.source} (${step.envDiagnostics.configuredCount}/${step.envDiagnostics.requiredCount} configured, ${step.envDiagnostics.missingCount} missing, ${step.envDiagnostics.invalidCount} invalid, ${step.envDiagnostics.placeholderCount} placeholder, fallback=${step.envDiagnostics.fallbackApplied ? "yes" : "no"})`,
+      );
       if (step.missingEnv.length > 0) lines.push(`  missing env: ${step.missingEnv.join(", ")}`);
       if (step.missingEvidence.length > 0) {
         lines.push(

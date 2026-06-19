@@ -634,6 +634,7 @@ describe("production readiness contracts", () => {
   it("keeps the health endpoint safe for uptime monitors", () => {
     const healthRoute = read("src/app/api/health/route.ts");
     const productionReadiness = read("src/lib/production-readiness.ts");
+    const commercialAudit = read("scripts/commercial-launch-audit.mjs");
 
     expect(healthRoute).toContain('status: "ok"');
     expect(healthRoute).toContain('service: "kozbeyli-konagi"');
@@ -647,6 +648,11 @@ describe("production readiness contracts", () => {
     expect(productionReadiness).toContain("invalidCount");
     expect(productionReadiness).toContain("placeholderCount");
     expect(productionReadiness).toContain("partial");
+    expect(commercialAudit).toContain("configuredEnvCount");
+    expect(commercialAudit).toContain("invalidEnvCount");
+    expect(commercialAudit).toContain("placeholderEnvCount");
+    expect(commercialAudit).toContain("fallbackApplied");
+    expect(read("scripts/production-cutover-plan.mjs")).toContain("envDiagnostics");
     expect(healthRoute).toContain('"Cache-Control": "no-store, max-age=0"');
     expect(healthRoute).not.toContain("DATABASE_URI");
     expect(healthRoute).not.toContain("PAYLOAD_SECRET");

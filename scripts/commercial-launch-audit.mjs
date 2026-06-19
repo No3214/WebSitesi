@@ -137,22 +137,64 @@ function hasValidFallbackUrl(gate) {
   return Boolean(gate.fallbackUrl && /^https:\/\//.test(gate.fallbackUrl));
 }
 
-function envIssues(gate, env) {
-  return gate.env.flatMap((key) => {
+function envRequirementState(gate, env) {
+  const issues = [];
+  let explicitCount = 0;
+  let meaningfulCount = 0;
+  let invalidCount = 0;
+  let placeholderCount = 0;
+
+  for (const key of gate.env) {
     const value = env[key];
     if (!hasExplicitValue(value)) {
-      return hasValidFallbackUrl(gate) ? [] : [key];
+      if (!hasValidFallbackUrl(gate)) issues.push(key);
+      continue;
     }
 
-    if (!hasMeaningfulValue(value)) return [key];
+    explicitCount += 1;
+    if (!hasMeaningfulValue(value)) {
+      placeholderCount += 1;
+      issues.push(key);
+      continue;
+    }
+
+    meaningfulCount += 1;
 
     const expected = gate.expectedEnv?.[key];
     if (expected && !new RegExp(expected.pattern).test(value)) {
-      return [`${key} (expected ${expected.label})`];
+      invalidCount += 1;
+      issues.push(`${key} (expected ${expected.label})`);
     }
+  }
 
-    return [];
-  });
+  const fallbackApplied = gate.env.length > 0 && explicitCount === 0 && hasValidFallbackUrl(gate);
+  const missingEnvCount = fallbackApplied ? 0 : gate.env.length - explicitCount;
+  const configuredEnvCount = fallbackApplied ? gate.env.length : meaningfulCount;
+  const ready = issues.length === 0;
+
+  let configurationSource = "missing";
+  if (gate.env.length === 0) {
+    configurationSource = "not_applicable";
+  } else if (fallbackApplied) {
+    configurationSource = "code_fallback";
+  } else if (ready) {
+    configurationSource = "env";
+  } else if (invalidCount > 0 || placeholderCount > 0) {
+    configurationSource = "invalid";
+  } else if (meaningfulCount > 0) {
+    configurationSource = "partial";
+  }
+
+  return {
+    missingEnv: issues,
+    requiredEnvCount: gate.env.length,
+    configuredEnvCount,
+    missingEnvCount,
+    invalidEnvCount: invalidCount,
+    placeholderEnvCount: placeholderCount,
+    fallbackApplied,
+    configurationSource,
+  };
 }
 
 function evidenceState(relPath, baseDir) {
@@ -193,22 +235,17 @@ function evidenceState(relPath, baseDir) {
 
 export function evaluateCommercialLaunch({ env = loadEnvSnapshot(), baseDir = root } = {}) {
   const gateResults = commercialLaunchGates.map((gate) => {
-    const missingEnv = envIssues(gate, env);
-    const configuredByFallback =
-      missingEnv.length === 0 &&
-      hasValidFallbackUrl(gate) &&
-      gate.env.some((key) => !hasExplicitValue(env[key]));
+    const envState = envRequirementState(gate, env);
     const evidence = gate.evidence.map((file) => evidenceState(file, baseDir));
     const missingEvidence = evidence.filter((item) => !item.ready);
-    const ready = missingEnv.length === 0 && missingEvidence.length === 0;
+    const ready = envState.missingEnv.length === 0 && missingEvidence.length === 0;
 
     return {
       ...gate,
       ready,
       awardedPoints: ready ? gate.points : 0,
-      missingEnv,
+      ...envState,
       missingEvidence,
-      configurationSource: configuredByFallback ? "code_fallback" : gate.env.length > 0 ? "env" : "not_applicable",
     };
   });
 
@@ -235,6 +272,9 @@ export function formatCommercialLaunchReport(result) {
   for (const gate of result.gateResults) {
     const status = gate.ready ? "PASS" : "BLOCKED";
     lines.push(`${status} ${gate.id} (+${gate.awardedPoints}/${gate.points}) - ${gate.label}`);
+    lines.push(
+      `  env source: ${gate.configurationSource} (${gate.configuredEnvCount}/${gate.requiredEnvCount} configured, ${gate.missingEnvCount} missing, ${gate.invalidEnvCount} invalid, ${gate.placeholderEnvCount} placeholder, fallback=${gate.fallbackApplied ? "yes" : "no"})`,
+    );
     if (gate.missingEnv.length > 0) {
       lines.push(`  missing env: ${gate.missingEnv.join(", ")}`);
     }

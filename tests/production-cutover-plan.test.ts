@@ -49,6 +49,15 @@ type CutoverModule = {
       owner: string;
       timing: string;
       missingEnv: string[];
+      envDiagnostics: {
+        source: string;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+      };
       commands: string[];
       checklist: string[];
       kpiAndReviewLoop: string;
@@ -158,6 +167,13 @@ describe("production cutover plan", () => {
     const canonical = plan.gateSteps.find((step) => step.id === "canonical_domain");
     expect(canonical?.owner).toBe("Vercel/DNS operator");
     expect(canonical?.missingEnv).toContain("NEXT_PUBLIC_SITE_URL");
+    expect(canonical?.envDiagnostics).toMatchObject({
+      source: "missing",
+      requiredCount: 1,
+      configuredCount: 0,
+      missingCount: 1,
+      fallbackApplied: false,
+    });
     expect(canonical?.checklist).toContain(
       "Remove any HTTPS-to-HTTP first-hop redirect on kozbeylikonagi.com or www before marking the canonical gate ready.",
     );
@@ -175,6 +191,13 @@ describe("production cutover plan", () => {
 
     const hms = plan.gateSteps.find((step) => step.id === "hms_booking_engine");
     expect(hms?.missingEnv).toEqual([]);
+    expect(hms?.envDiagnostics).toMatchObject({
+      source: "code_fallback",
+      requiredCount: 1,
+      configuredCount: 1,
+      missingCount: 0,
+      fallbackApplied: true,
+    });
     expect(hms?.checklist).toContain(
       "Verify the public reservation CTA opens the approved HTTPS HMS engine in a new tab.",
     );
@@ -186,6 +209,8 @@ describe("production cutover plan", () => {
     const formatted = cutover.formatProductionCutoverPlan(plan);
     expect(formatted).toContain("Kozbeyli Konagi production cutover plan");
     expect(formatted).toContain("Vercel CLI install: npm i -g vercel");
+    expect(formatted).toContain("env: missing");
+    expect(formatted).toContain("fallback=yes");
     expect(formatted).toContain("Final verification commands:");
   });
 
@@ -232,6 +257,13 @@ describe("production cutover plan", () => {
     expect(hms?.missingEnv).toEqual([
       "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL (expected HTTPS live booking engine URL)",
     ]);
+    expect(hms?.envDiagnostics).toMatchObject({
+      source: "invalid",
+      configuredCount: 1,
+      missingCount: 0,
+      invalidCount: 1,
+      fallbackApplied: false,
+    });
     expect(hms?.checklist[0]).toBe(
       "Fix NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL in Vercel production so it is the approved HTTPS HMS URL, or remove the bad override to use the official code fallback.",
     );
