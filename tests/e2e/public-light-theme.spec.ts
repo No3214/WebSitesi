@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 const publicRoutes = [
   "/odalar",
+  "/odalar/standart-bahce-manzarali-oda",
   "/gastronomi",
   "/deneyimler",
   "/hikayemiz",
@@ -70,5 +71,22 @@ test.describe("Public light theme", () => {
       expect(luminance(colors.footerBackground), `${route} footer ${colors.footerBackground}`).toBeGreaterThan(0.78);
       expect(colors.scrollOverflow, `${route} mobile horizontal overflow`).toBeLessThanOrEqual(1);
     }
+  });
+
+  test("mobile navigation and room booking card stay on light stone surfaces", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    await page.goto("/gastronomi", { waitUntil: "domcontentloaded" });
+    await page.getByRole("button", { name: /menüyü aç|open menu/i }).click();
+    const menuBackground = await page.locator("#mobile-menu").evaluate((el) => getComputedStyle(el).backgroundColor);
+    const firstMenuLinkColor = await page.locator("#mobile-menu a").first().evaluate((el) => getComputedStyle(el).color);
+    expect(luminance(menuBackground), `mobile menu ${menuBackground}`).toBeGreaterThan(0.78);
+    expect(luminance(firstMenuLinkColor), `mobile menu link ${firstMenuLinkColor}`).toBeLessThan(0.16);
+
+    await page.goto("/odalar/standart-bahce-manzarali-oda", { waitUntil: "domcontentloaded" });
+    const cardBackground = await page.locator(".booking-card-premium").evaluate((el) => getComputedStyle(el).backgroundColor);
+    const cardTextColor = await page.locator(".booking-card-premium").evaluate((el) => getComputedStyle(el).color);
+    expect(luminance(cardBackground), `booking card ${cardBackground}`).toBeGreaterThan(0.78);
+    expect(luminance(cardTextColor), `booking card text ${cardTextColor}`).toBeLessThan(0.2);
   });
 });

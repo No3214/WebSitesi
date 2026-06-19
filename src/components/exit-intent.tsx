@@ -53,12 +53,12 @@ export const ExitIntent = () => {
         </button>
 
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-2/5 bg-zinc-900 p-8 flex flex-col justify-center items-center text-center text-white">
+          <div className="md:w-2/5 exit-intent-offer-panel p-8 flex flex-col justify-center items-center text-center">
             <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center mb-4">
               <Gift className="text-gold w-8 h-8" />
             </div>
             <h3 className="serif text-2xl mb-2">Direkt Rezervasyon</h3>
-            <p className="text-xs text-zinc-400">Web Sitemize Özel Ayrıcalıklar</p>
+            <p className="text-xs text-[var(--muted)]">Web Sitemize Özel Ayrıcalıklar</p>
           </div>
 
           <div className="md:w-3/5 p-8">
@@ -92,7 +92,7 @@ export const ExitIntent = () => {
           animation: exitIntentDialogIn 220ms ease-out both;
         }
         .btn-premium-solid {
-          background: #18181b;
+          background: var(--olive, #3d4a3b);
           color: white;
           padding: 12px 24px;
           border-radius: 8px;
@@ -103,6 +103,13 @@ export const ExitIntent = () => {
         .btn-premium-solid:hover {
           background: var(--gold, #b3925c);
           transform: translateY(-2px);
+        }
+        .exit-intent-offer-panel {
+          background:
+            radial-gradient(260px 180px at 80% 0%, rgba(179, 146, 92, 0.18), transparent 62%),
+            linear-gradient(180deg, #fbf7ed 0%, #f2ecdf 100%);
+          color: var(--olive, #3d4a3b);
+          border-right: 1px solid rgba(61, 74, 59, 0.1);
         }
         .text-gold {
           color: var(--gold, #b3925c);

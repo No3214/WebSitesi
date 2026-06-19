@@ -268,20 +268,22 @@ export function RoomDetailClient({ slug }: { slug: string }) {
         .booking-card-premium {
           background:
             radial-gradient(420px 200px at 90% -20%, rgba(179, 146, 92, 0.18), transparent 60%),
-            var(--ink, #14161a);
-          color: var(--ivory, #faf9f6);
+            linear-gradient(135deg, rgba(255, 252, 246, 0.98), rgba(241, 234, 220, 0.94)),
+            #f7f1e7;
+          color: var(--olive, #3d4a3b);
           padding: 40px;
           border-radius: 16px;
-          box-shadow: 0 40px 80px -20px rgba(0,0,0,0.3);
+          border: 1px solid rgba(61, 74, 59, 0.12);
+          box-shadow: 0 24px 70px rgba(68, 53, 31, 0.1);
         }
 
         .price-stack { margin-bottom: 24px; }
         .price-eyebrow { display: block; font-size: 0.7rem; color: var(--gold); margin-bottom: 4px; }
-        .price-main { font-size: 1.8rem; font-family: var(--serif); }
+        .price-main { font-size: 1.8rem; font-family: var(--serif); color: var(--olive, #3d4a3b); }
 
         .premium-cta {
-          background: var(--white);
-          color: var(--ink, #14161a);
+          background: var(--olive, #3d4a3b);
+          color: var(--white, #fffdf8);
           width: 100%;
           justify-content: center;
           font-weight: 700;

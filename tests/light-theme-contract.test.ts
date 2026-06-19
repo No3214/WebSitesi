@@ -84,4 +84,31 @@ describe("public light theme contract", () => {
     expect(combined).not.toContain("section section-dark");
     expect(combined).toContain("section section-alt");
   });
+
+  it("keeps public chrome and conversion surfaces out of the old black theme", () => {
+    const globals = read("src/app/globals.css");
+    const roomDetail = read("src/components/room-detail-client.tsx");
+    const exitIntent = read("src/components/exit-intent.tsx");
+    const errorBoundary = read("src/components/error-boundary.tsx");
+    const mobileMenuBlock = globals.slice(globals.indexOf(".mobile-menu {"), globals.indexOf("@keyframes mobileMenuIn"));
+    const bookingCardBlock = roomDetail.slice(roomDetail.indexOf(".booking-card-premium {"), roomDetail.indexOf(".price-stack"));
+
+    expect(mobileMenuBlock).toContain("linear-gradient(180deg, #fbf7ed 0%, #f2ecdf 100%)");
+    expect(mobileMenuBlock).not.toContain("var(--ink)");
+    expect(mobileMenuBlock).not.toContain("#14161a");
+    expect(globals).toContain(".mobile-menu a");
+    expect(globals).toContain("color: var(--olive)");
+
+    expect(bookingCardBlock).toContain("linear-gradient(135deg, rgba(255, 252, 246, 0.98), rgba(241, 234, 220, 0.94))");
+    expect(bookingCardBlock).not.toContain("var(--ink");
+    expect(bookingCardBlock).not.toContain("#14161a");
+    expect(roomDetail).toContain("color: var(--olive, #3d4a3b);");
+
+    expect(exitIntent).toContain("exit-intent-offer-panel");
+    expect(exitIntent).not.toContain("md:w-2/5 bg-zinc-900");
+    expect(exitIntent).not.toContain("background: #18181b");
+    expect(errorBoundary).not.toContain("bg-zinc-950");
+    expect(errorBoundary).not.toContain("border-zinc-800");
+    expect(errorBoundary).toContain("bg-[#fbf7ed]");
+  });
 });
