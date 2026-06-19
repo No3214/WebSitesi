@@ -12,15 +12,17 @@ const smokePages = [
   "/misafir-rehberi",
   "/hikayemiz",
   "/deneyim-tasarimcisi",
-  "/rezervasyon"
+  "/rezervasyon",
 ];
 
 test.describe("Site geneli smoke", () => {
   for (const path of smokePages) {
     test(`${path} sayfasi yuklenir ve baslik render olur`, async ({ page }) => {
       const cspErrors: string[] = [];
-      page.on("console", (m) => {
-        if (m.type() === "error" && /Content Security Policy/i.test(m.text())) cspErrors.push(m.text());
+      page.on("console", (message) => {
+        if (message.type() === "error" && /Content Security Policy/i.test(message.text())) {
+          cspErrors.push(message.text());
+        }
       });
 
       const response = await page.goto(path);
@@ -111,7 +113,16 @@ test.describe("Rezervasyon oda parametresi", () => {
   test("oda detay rezervasyon CTA'si HMS'e oda parametresiyle gider", async ({ page }) => {
     await page.goto("/odalar/standart-bahce-manzarali-oda");
 
-    await expect(page.getByRole("link", { name: "EN İYİ FİYATLA YERİNİZİ AYIRIN" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Müsaitliği Kontrol Et" })).toHaveAttribute(
+      "href",
+      `${HMS_BOOKING_URL}&room=standart-bahce-manzarali-oda`,
+    );
+  });
+
+  test("English room detail CTA keeps the room parameter", async ({ page }) => {
+    await page.goto("/en/odalar/standart-bahce-manzarali-oda");
+
+    await expect(page.getByRole("link", { name: "Check Availability" })).toHaveAttribute(
       "href",
       `${HMS_BOOKING_URL}&room=standart-bahce-manzarali-oda`,
     );
@@ -120,10 +131,10 @@ test.describe("Rezervasyon oda parametresi", () => {
 
 test.describe("API kontrati", () => {
   test("/api/local-pulse 200 doner ve generatedAt string icerir", async ({ request }) => {
-    const res = await request.get("/api/local-pulse");
+    const response = await request.get("/api/local-pulse");
 
-    expect(res.status()).toBe(200);
-    const j = await res.json();
-    expect(typeof j.generatedAt).toBe("string");
+    expect(response.status()).toBe(200);
+    const json = await response.json();
+    expect(typeof json.generatedAt).toBe("string");
   });
 });

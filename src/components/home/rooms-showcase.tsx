@@ -1,15 +1,19 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 import { rooms } from "@/data/rooms";
+import { localizeRooms } from "@/data/rooms-i18n";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
 export function RoomsShowcase({ locale, eyebrow }: Props) {
+  const localePrefix = locale === "en" ? "/en" : "";
+  const displayedRooms = localizeRooms(rooms, locale).slice(0, 6);
+
   return (
     <section className="section" id="konaklama" style={{ paddingTop: 0 }}>
       <div className="container">
@@ -20,15 +24,15 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
             text={
               locale === "tr"
                 ? "Her detayı özenle tasarlanmış, ruhu olan odalarımızda tarihin dokusunu hissedin."
-                : "Feel the texture of history in our soulfully designed rooms."
+                : "Feel the texture of history in rooms shaped for a calm, considered stay."
             }
           />
         </FadeIn>
         <StaggerContainer delay={0.15}>
           <div className="card-grid">
-            {rooms.slice(0, 6).map((room) => (
+            {displayedRooms.map((room) => (
               <FadeIn key={room.slug}>
-                <Link href={`/odalar/${room.slug}`} className="card">
+                <Link href={`${localePrefix}/odalar/${room.slug}`} className="card">
                   <div className="card-media">
                     <Image
                       src={room.images[0]}
@@ -46,7 +50,9 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
                     <p>{room.short}</p>
                     <span className="card-link">
                       {locale === "tr" ? "Odayı İncele" : "View Room"}
-                      <span className="arrow" aria-hidden>→</span>
+                      <span className="arrow" aria-hidden>
+                        →
+                      </span>
                     </span>
                   </div>
                 </Link>
@@ -56,7 +62,7 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
         </StaggerContainer>
         <FadeIn delay={0.2}>
           <div style={{ textAlign: "center", marginTop: 56 }}>
-            <Link href="/odalar" className="button secondary">
+            <Link href={`${localePrefix}/odalar`} className="button secondary">
               {locale === "tr" ? "Tüm Odaları Gör" : "View All Rooms"}
             </Link>
           </div>
