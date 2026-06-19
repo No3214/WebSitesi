@@ -60,7 +60,7 @@ export function SiteFooter() {
               {t?.description ||
                 (englishPath
                   ? "A refined Foça stay in Kozbeyli, where five-century village texture is reinterpreted with luxury and comfort."
-                  : "Foça Kozbeyli'de, beş asırlık köy dokusunun zarafet ve konforla yeniden yorumlandığı rafine bir durak.")}
+                  : "Foça'da, beş asırlık köy dokusunun zarafet ve konforla yeniden yorumlandığı rafine bir durak.")}
             </p>
             <div className="social-links">
               <a

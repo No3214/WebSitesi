@@ -25,6 +25,9 @@ evidence.
 
 ## Validation Commands
 
+- `npm run garanti:verify`
+- `npm run garanti:verify:json`
+- `npm run garanti:verify:strict` after credentials and proof are complete
 - `npm run launch:audit:json`
 - `npm run launch:audit:strict` after credentials and proof are complete
 

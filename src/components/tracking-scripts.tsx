@@ -8,6 +8,18 @@ import { publicEnv } from "@/lib/public-env";
 
 export function TrackingScripts() {
   const [consent, setConsent] = useState<ConsentState>(getDefaultConsent());
+  const directGoogleTagId =
+    publicEnv.NEXT_PUBLIC_GA4_MEASUREMENT_ID || publicEnv.NEXT_PUBLIC_GOOGLE_ADS_ID;
+  const shouldLoadDirectGoogleTag =
+    consent.analytics && !publicEnv.NEXT_PUBLIC_GTM_ID && Boolean(directGoogleTagId);
+  const directGoogleTagConfig = [
+    publicEnv.NEXT_PUBLIC_GA4_MEASUREMENT_ID
+      ? `gtag('config', ${JSON.stringify(publicEnv.NEXT_PUBLIC_GA4_MEASUREMENT_ID)}, { send_page_view: true });`
+      : "",
+    publicEnv.NEXT_PUBLIC_GOOGLE_ADS_ID
+      ? `gtag('config', ${JSON.stringify(publicEnv.NEXT_PUBLIC_GOOGLE_ADS_ID)});`
+      : "",
+  ].filter(Boolean).join("\n");
 
   useEffect(() => {
     const sync = () => {
@@ -48,6 +60,22 @@ export function TrackingScripts() {
               style={{ display: "none", visibility: "hidden" }}
             />
           </noscript>
+        </>
+      ) : null}
+
+      {shouldLoadDirectGoogleTag ? (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${directGoogleTagId}`}
+            strategy="afterInteractive"
+          />
+          <Script id="direct-google-tag" strategy="afterInteractive">
+            {`window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = window.gtag || gtag;
+            gtag('js', new Date());
+            ${directGoogleTagConfig}`}
+          </Script>
         </>
       ) : null}
 

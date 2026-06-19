@@ -1,7 +1,7 @@
 # Kozbeyli Konağı — Launch Readiness Denetimi
 
 Master denetim promptunun repo üzerinde çalıştırılmış halidir.
-Son revizyon: 2026-06-13.
+Son revizyon: 2026-06-19.
 Kural: kanıt yoksa "kanıt yok"; belirsizse "belirsiz". Kanıtlar dosya yoluyla verilir.
 
 ## 1. Executive Summary
@@ -59,6 +59,19 @@ handoff olarak gider ve public fallback kodda mevcuttur. Eksik kalan konu URL
 değil, canlı tarih/konuk/oda seçimi UAT kanıtı ve `docs/evidence/hms-booking-engine.md`
 dosyasının ready durumuna alınmasıdır.
 
+2026-06-19 Garanti POS readiness güncellemesi: `npm run garanti:verify` artık
+POS env grubu, `docs/evidence/garanti-pos.md` kanıtı, kart verisi toplamayan
+strict checkout API'si ve Garanti 3D Secure yönlendirme kararını ayrı bir kapı
+olarak denetler. Kaynak sözleşmeleri geçer; banka env/evidence gelene kadar
+strict POS ve ticari launch kapısı bilinçli olarak BLOCKED kalır.
+
+2026-06-19 analytics ID intake güncellemesi: GA4 `G-V3R66C3MEF`, Meta Pixel
+`1781546559309505` ve Google Ads `AW-800024713` public ID olarak ayrıldı.
+`274214371` site etiketi değildir. GTM adayları (`GTM-KCG6B4MJ`,
+`GTM-MSL2FLF5`) doğrulanana kadar hardcode edilmez; GTM yoksa consent-gated
+doğrudan Google tag fallback'i `NEXT_PUBLIC_GA4_MEASUREMENT_ID` ve
+`NEXT_PUBLIC_GOOGLE_ADS_ID` ile çalışır.
+
 2026-06-18 güvenlik güncellemesi: Tam ticari launch artık production Turnstile
 ve Upstash shared rate-limit/replay kanıtını da ister. Kod fallbackleri dev için
 korunur; `docs/evidence/production-abuse-controls.md` hazır olmadan strict
@@ -80,7 +93,7 @@ yayınlamaz.
 publish verification'dan önce çalışır; health, hero video, konum ve medya smoke
 lokal doğrulamada kalmaz.
 2026-06-14 release gate güncellemesi: `npm run release:verify` eklendi. Bu üst
-komut security audit, evidence scan, hero media audit, abuse/analytics/search
+komut security audit, evidence scan, hero media audit, abuse/analytics/search/Garanti
 readiness, `publish:verify`, `launch:smoke`, monkey/chaos stres testleri ve
 JSON commercial launch audit'i tek sırada çalıştırır; CI ayrıca bu release
 manifestini `--list` ile doğrular.
@@ -107,7 +120,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 | Strateji, persona, KPI | 7 | 7 | Marka konumlandırma ve misafir ilişkileri/growth mimarisi net; canlı KPI dashboard kanıtı yok |
 | Bilgi mimarisi | 8 | 8 | /teklifler, deneyim silosu, /galeri, /sss, /cerez-politikasi ve EN çekirdek rotalar mevcut |
 | UX/UI mobil rezervasyon | 9 | 8 | Playwright smoke + mobile prestige yeşil; gerçek cihaz testi yapılmadı |
-| Booking/HMS/POS | 12 | 5 | HMS yeni sekme handoff ve public fallback hazır; canlı HMS UAT kanıtı + Garanti POS bilgisi yok |
+| Booking/HMS/POS | 12 | 5 | HMS yeni sekme handoff ve public fallback hazır; checkout kart verisini strict reddediyor; canlı HMS UAT kanıtı + Garanti POS env/evidence yok |
 | Güvenlik | 11 | 9 | CSP/HSTS/XFO, fail-closed B2B availability, provider-specific webhook HMAC, CSRF ve fiyat tamper testleri yeşil; production Turnstile/Upstash/WAF/MFA kanıtı yok |
 | KVKK/çerez | 8 | 8 | Consent-gated scripts; KVKK/gizlilik/mesafeli satış/çerez politikası var; vendor DPA hukuk onayı yok |
 | Teknik SEO | 9 | 9 | sitemap/robots/canonical/schema/llms.txt + EN alternates/hreflang rotaları güncel |
@@ -171,7 +184,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 
 ### FAIL / KANIT YOK (çoğu dış bağımlılık)
 - HMS booking engine: resmi HMS handoff hazır; canlı tarih/konuk/oda seçimi UAT kanıtı YOK
-- Garanti Sanal POS: bankadan bilgiler gelmedi → init/callback akışı YAZILAMADI/test edilemedi
+- Garanti Sanal POS: kaynak sözleşmeleri `npm run garanti:verify` ile denetleniyor; bankadan bilgiler ve redacted sandbox kanıtı gelmedi → init/callback akışı YAZILAMADI/test edilemedi
 - purchase / booking_complete ölçümü: engine olmadan doğrulanamaz
 - Google Business Profile, Hotel Center / free booking links, Search Console, Apple Business Connect: kanıt yok (operasyonel kurulum)
 - WAF/CDN katmanı: kanıt yok (Vercel mi, önüne Cloudflare mi — karar belirsiz)
@@ -181,7 +194,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 
 ## 4. Kritik Blokajlar (yayına çıkma koşulları)
 1. HMS booking engine yeni sekme redirect/handoff UAT → master dokümandaki 15 vendor sorusu ve canlı tarih/konuk/oda seçimi kanıtı tamamlanmalı
-2. Garanti Sanal POS: Merchant/Terminal ID, 3D Store Key, test ortamı (`docs/odeme-karari.md` planı hazır)
+2. Garanti Sanal POS: Merchant/Terminal ID, 3D Store Key, test ortamı ve redacted UAT kanıtı (`npm run garanti:verify`, `docs/odeme-karari.md` planı hazır)
 3. Engine geldikten sonra: canlı test rezervasyonu + iptal/iade + GA4 purchase doğrulaması
 4. GTM/GA4 ID'lerinin prod env'e girilmesi + Consent Mode doğrulaması
 5. Search Console + GBP kurulumu ve doğrulaması

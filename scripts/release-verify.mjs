@@ -26,6 +26,10 @@ const gates = [
     label: "Search and local SEO readiness diagnosis",
   },
   {
+    script: "garanti:verify:json",
+    label: "Garanti POS readiness diagnosis",
+  },
+  {
     script: "publish:verify",
     label: "Full publish verification",
   },

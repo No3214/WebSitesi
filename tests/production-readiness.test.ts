@@ -16,6 +16,8 @@ const readyEnv = {
   GARANTI_PROVISION_USER: "provision",
   GARANTI_3D_STORE_KEY: "store-key",
   NEXT_PUBLIC_GTM_ID: "GTM-ABCDE",
+  NEXT_PUBLIC_GA4_MEASUREMENT_ID: "G-ABCDE",
+  NEXT_PUBLIC_GOOGLE_ADS_ID: "AW-800024713",
   NEXT_PUBLIC_META_PIXEL_ID: "123456789",
   GA4_MEASUREMENT_ID: "G-ABCDE",
   GA4_API_SECRET: "ga4-secret",
@@ -135,7 +137,7 @@ describe("runtime production readiness", () => {
     expect(analyticsCheck).toMatchObject({
       ready: false,
       configuredCount: 0,
-      missingCount: 4,
+      missingCount: 5,
       placeholderCount: 0,
       configurationSource: "missing",
     });

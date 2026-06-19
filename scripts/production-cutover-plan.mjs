@@ -99,7 +99,7 @@ const gateActionCatalog = {
     timing: "Before paid acquisition or revenue reporting",
     objective: "Enable production analytics and prove purchase/lead events end to end.",
     actions: [
-      "Create or confirm GTM, GA4 Measurement Protocol and Meta Pixel production IDs.",
+      "Create or confirm GTM or direct Google tag, GA4 Measurement Protocol, Google Ads and Meta Pixel production IDs.",
       "Add analytics env keys in Vercel production.",
       "Validate consent-gated pageview, lead and purchase events in debug tools.",
       "Keep proof redacted; do not commit API secrets or raw visitor data.",
@@ -107,6 +107,8 @@ const gateActionCatalog = {
     commands: [
       ...VERCEL_AUTH_COMMANDS,
       "vercel env add NEXT_PUBLIC_GTM_ID production",
+      "vercel env add NEXT_PUBLIC_GA4_MEASUREMENT_ID production",
+      "vercel env add NEXT_PUBLIC_GOOGLE_ADS_ID production",
       "vercel env add NEXT_PUBLIC_META_PIXEL_ID production",
       "vercel env add GA4_MEASUREMENT_ID production",
       "vercel env add GA4_API_SECRET production",

@@ -6,8 +6,8 @@ import type { NextConfig } from "next";
 // bootstrap snippets; external script hosts are GTM (gtm.js), Meta
 // (fbevents.js) and Cloudflare Turnstile (api.js).
 // connect-src: PostHog ingest (eu.i.posthog.com), GA4 collect beacons
-// (*.google-analytics.com incl. regional endpoints), GTM config fetches and
-// Meta Pixel beacons (connect.facebook.net / www.facebook.com/tr).
+// (*.google-analytics.com incl. regional endpoints), GTM/gtag config fetches,
+// Google Ads conversion beacons and Meta Pixel beacons.
 // img-src: data:/blob:/https: keeps tracking pixels and external images working.
 // frame-src stays intentionally narrow: OpenStreetMap for contact maps, GTM
 // noscript iframe, and Cloudflare Turnstile. HMS booking opens in a new tab, not
@@ -17,7 +17,7 @@ const csp = [
   "base-uri 'self'",
   "form-action 'self'",
   "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://challenges.cloudflare.com https://*.posthog.com https://app.hms.gen.tr",
-  "connect-src 'self' https://*.posthog.com https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://connect.facebook.net https://www.facebook.com https://challenges.cloudflare.com https://app.hms.gen.tr https://kozbeyli-konagi.hmshotel.net",
+  "connect-src 'self' https://*.posthog.com https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://connect.facebook.net https://www.facebook.com https://challenges.cloudflare.com https://app.hms.gen.tr https://kozbeyli-konagi.hmshotel.net",
   "img-src 'self' data: blob: https:",
   "media-src 'self' blob:",
   "frame-src 'self' https://www.openstreetmap.org https://www.googletagmanager.com https://challenges.cloudflare.com",

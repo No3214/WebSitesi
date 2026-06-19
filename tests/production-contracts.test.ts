@@ -81,6 +81,8 @@ describe("production readiness contracts", () => {
 
     expect(readinessScript).toContain('"IYZICO_WEBHOOK_SECRET"');
     expect(readinessScript).toContain('"GARANTI_3D_STORE_KEY"');
+    expect(readinessScript).toContain('"NEXT_PUBLIC_GA4_MEASUREMENT_ID"');
+    expect(readinessScript).toContain('"NEXT_PUBLIC_GOOGLE_ADS_ID"');
     expect(readinessScript).toContain('"test:monkey"');
     expect(readinessScript).toContain('"test:chaos"');
     expect(readinessScript).toContain('"test:stress"');
@@ -98,6 +100,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"search:verify"');
     expect(readinessScript).toContain('"search:verify:json"');
     expect(readinessScript).toContain('"search:verify:strict"');
+    expect(readinessScript).toContain('"garanti:verify"');
+    expect(readinessScript).toContain('"garanti:verify:json"');
+    expect(readinessScript).toContain('"garanti:verify:strict"');
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
@@ -160,6 +165,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["search:verify:strict"]).toBe(
       "node scripts/search-local-seo-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["garanti:verify"]).toBe("node scripts/garanti-pos-readiness.mjs");
+    expect(packageJson.scripts?.["garanti:verify:json"]).toBe(
+      "node scripts/garanti-pos-readiness.mjs --json",
+    );
+    expect(packageJson.scripts?.["garanti:verify:strict"]).toBe(
+      "node scripts/garanti-pos-readiness.mjs --strict",
+    );
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
     expect(packageJson.scripts?.["vercel:ops:json"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --json",
@@ -175,6 +187,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"tests/agentic-helper-safety.test.ts"');
     expect(readinessScript).toContain('"tests/abuse-controls-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/analytics-readiness.test.ts"');
+    expect(readinessScript).toContain('"tests/garanti-pos-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/search-local-seo-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"tests/production-readiness.test.ts"');
@@ -184,6 +197,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
     expect(readinessScript).toContain('"scripts/abuse-controls-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/analytics-readiness.mjs"');
+    expect(readinessScript).toContain('"scripts/garanti-pos-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/search-local-seo-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/hms-booking-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
@@ -201,6 +215,7 @@ describe("production readiness contracts", () => {
       "abuse:verify:json",
       "analytics:verify:json",
       "search:verify:json",
+      "garanti:verify:json",
       "publish:verify",
       "launch:smoke",
       "test:stress",
@@ -214,6 +229,7 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("Production abuse-control readiness diagnosis");
     expect(releaseScript).toContain("Analytics purchase readiness diagnosis");
     expect(releaseScript).toContain("Search and local SEO readiness diagnosis");
+    expect(releaseScript).toContain("Garanti POS readiness diagnosis");
     expect(releaseScript).toContain("process.env.ComSpec");
     expect(releaseScript).not.toContain("launch:audit:strict");
     expect(ciWorkflow).toContain("Release gate manifest");
@@ -321,12 +337,22 @@ describe("production readiness contracts", () => {
     expect(analyticsReadiness).toContain("NEXT_PUBLIC_GTM_ID must look like GTM-XXXX");
     expect(analyticsReadiness).toContain("NEXT_PUBLIC_META_PIXEL_ID must be the numeric Meta Pixel ID");
     expect(analyticsReadiness).toContain("GA4_MEASUREMENT_ID must look like G-XXXX");
+    expect(analyticsReadiness).toContain("NEXT_PUBLIC_GA4_MEASUREMENT_ID must look like G-XXXX");
+    expect(analyticsReadiness).toContain("NEXT_PUBLIC_GOOGLE_ADS_ID must look like AW-XXXXXXXXX");
+    expect(analyticsReadiness).toContain("direct_google_tag_fallback");
     expect(analyticsReadiness).toContain("meta_legacy_key_removed");
     expect(analyticsReadiness).toContain("process.exitCode");
     expect(analyticsReadiness).not.toContain("process.exit(strict");
     expect(layout).toContain("<TrackingScripts />");
     expect(trackingScripts).toContain("consent.analytics && publicEnv.NEXT_PUBLIC_GTM_ID");
+    expect(trackingScripts).toContain("shouldLoadDirectGoogleTag");
+    expect(trackingScripts).toContain("!publicEnv.NEXT_PUBLIC_GTM_ID");
+    expect(trackingScripts).toContain("NEXT_PUBLIC_GA4_MEASUREMENT_ID");
+    expect(trackingScripts).toContain("NEXT_PUBLIC_GOOGLE_ADS_ID");
+    expect(trackingScripts).toContain("direct-google-tag");
     expect(trackingScripts).toContain("consent.marketing && publicEnv.NEXT_PUBLIC_META_PIXEL_ID");
+    expect(gtm).toContain("window.gtag");
+    expect(gtm).toContain('window.gtag("event", event, params)');
     expect(trackingScripts).toContain("https://challenges.cloudflare.com/turnstile/v0/api.js");
     expect(gtm).toContain("trackViewItem");
     expect(gtm).toContain("trackBeginCheckout");
@@ -380,6 +406,54 @@ describe("production readiness contracts", () => {
     expect(evidence).toContain("Google Business Profile");
     expect(evidence).toContain("Hotel Center");
     expect(evidence).toContain("npm run search:verify");
+  });
+
+  it("keeps Garanti POS verification card-data-free and evidence-gated", () => {
+    const packageJson = JSON.parse(read("package.json")) as {
+      scripts?: Record<string, string>;
+    };
+    const garantiReadiness = read("scripts/garanti-pos-readiness.mjs");
+    const checkoutRoute = read("src/app/api/checkout/route.ts");
+    const wizardHook = read("src/components/payment-wizard/use-payment-wizard.ts");
+    const paymentStep = read("src/components/payment-wizard/steps/payment-step.tsx");
+    const wizardTypes = read("src/components/payment-wizard/types.ts");
+    const checkoutContract = read("tests/e2e/checkout-contract.spec.ts");
+    const evidence = read("docs/evidence/garanti-pos.md");
+    const paymentDecision = read("docs/odeme-karari.md");
+    const paymentUiSource = [wizardHook, paymentStep, wizardTypes].join("\n");
+
+    expect(packageJson.scripts?.["garanti:verify:strict"]).toBe(
+      "node scripts/garanti-pos-readiness.mjs --strict",
+    );
+    expect(garantiReadiness).toContain("GARANTI POS READINESS BLOCKED");
+    expect(garantiReadiness).toContain("garanti_pos");
+    expect(garantiReadiness).toContain("docs/evidence/garanti-pos.md");
+    expect(garantiReadiness).toContain("GARANTI_POS_MODE must be one of");
+    expect(garantiReadiness).toContain("checkout_route_card_data_rejected");
+    expect(garantiReadiness).toContain("wizard_collects_no_card_data");
+    expect(garantiReadiness).toContain("process.exitCode");
+    expect(garantiReadiness).not.toContain("process.exit(strict");
+    expect(checkoutRoute).toContain("}).strict();");
+    expect(checkoutRoute).toContain("forbiddenPaymentFields");
+    expect(checkoutRoute).toContain("checkout.card_data_rejected");
+    expect(checkoutRoute).toContain("validateSameOrigin");
+    expect(checkoutRoute).toContain("enforceRateLimit");
+    expect(checkoutRoute).toContain("calculateBookingQuote");
+    expect(checkoutRoute).toContain("Tahsilat bu route'ta YAPILMAZ");
+    expect(checkoutRoute).toContain("Garanti BBVA Sanal POS 3D Secure");
+    expect(checkoutRoute).not.toContain("cardNumber:");
+    expect(checkoutRoute).not.toContain("cvv:");
+    expect(paymentUiSource).toContain("Kart state'i YOK");
+    expect(paymentUiSource).toContain("Kart alanlari KASITLI olarak yok");
+    expect(paymentUiSource).toContain("We do not ask for card details here");
+    expect(paymentStep).not.toContain('type="password"');
+    expect(checkoutContract).toContain("Kart alanı gönderilirse 400 ile reddedilir");
+    expect(checkoutContract).toContain("cardNumber");
+    expect(evidence).toContain("npm run garanti:verify");
+    expect(evidence).toContain("Do not paste raw credentials, card numbers, customer PII");
+    expect(paymentDecision).toContain("kart bilgisi ASLA istemez");
+    expect(paymentDecision).toContain("Garanti BBVA Sanal POS'un 3D Secure");
+    expect(paymentDecision).toContain("SAQ-A");
   });
 
   it("keeps the HMS booking engine as a new-tab handoff instead of a cramped iframe", () => {
@@ -452,6 +526,9 @@ describe("production readiness contracts", () => {
     expect(nextConfig).toContain(
       '"frame-src \'self\' https://www.openstreetmap.org https://www.googletagmanager.com https://challenges.cloudflare.com"',
     );
+    expect(nextConfig).toContain("https://www.googleadservices.com");
+    expect(nextConfig).toContain("https://googleads.g.doubleclick.net");
+    expect(nextConfig).toContain("https://stats.g.doubleclick.net");
     expect(nextConfig).not.toContain("frame-src https: blob:");
     expect(nextConfig).not.toContain("allows the HMS booking engine iframe");
   });
@@ -647,6 +724,8 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("remove the bad override to use the official code fallback");
     expect(cutoverPlan).toContain("Run npm run hms:verify:strict");
     expect(cutoverPlan).toContain("Verify the public reservation CTA opens the approved HTTPS HMS engine");
+    expect(cutoverPlan).toContain("vercel env add NEXT_PUBLIC_GA4_MEASUREMENT_ID production");
+    expect(cutoverPlan).toContain("vercel env add NEXT_PUBLIC_GOOGLE_ADS_ID production");
     expect(cutoverPlan).toContain("npm run domain:verify:strict");
     expect(cutoverPlan).toContain("npm run hms:verify:strict");
     expect(cutoverPlan).toContain("npm run launch:audit:strict");
@@ -662,10 +741,12 @@ describe("production readiness contracts", () => {
       read("src/components/site-footer.tsx"),
     ].join("\n");
 
-    expect(homepageCopy).toContain("FOÇA, KOZBEYLİ");
+    expect(homepageCopy).toContain('"eyebrow": "FOÇA"');
     expect(homepageCopy).toContain("Foça kıyı rotalarına yakın");
     expect(homepageCopy).toContain("Foça sahil yürüyüşleri");
     expect(homepageCopy).toContain('"Foça"');
+    expect(homepageCopy).not.toContain("FOÇA, KOZBEYLİ");
+    expect(homepageCopy).not.toMatch(/Foça Kozbeyli['’]de/);
     expect(homepageCopy).not.toContain("Foça — Kozbeyli Köyü");
     expect(homepageCopy).not.toContain("Foça — Kozbeyli Village");
     expect(homepageCopy).not.toMatch(/ESKİ FOÇA|OLD FOÇA|Eski Foça|Old Foça|Yeni Foça|New Foça/);

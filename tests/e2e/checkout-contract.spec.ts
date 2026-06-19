@@ -53,6 +53,22 @@ test.describe("Checkout API kontratları", () => {
     expect(json.ok).toBe(false);
   });
 
+  test("Kart alanı gönderilirse 400 ile reddedilir; API bilinmeyen ödeme alanlarını yutmaz", async ({ request, baseURL }) => {
+    const res = await request.post(`${baseURL}/api/checkout`, {
+      headers: sameOriginHeaders(baseURL!, "10.20.0.21"),
+      data: {
+        ...validBody,
+        cardNumber: "4242 4242 4242 4242",
+        cvv: "123",
+        expiry: "12/30",
+      },
+    });
+
+    expect(res.status()).toBe(400);
+    const json = await res.json();
+    expect(json.ok).toBe(false);
+  });
+
   test("Fiyat oynaması 400 ile reddedilir (sunucu yeniden hesaplar)", async ({ request, baseURL }) => {
     const res = await request.post(`${baseURL}/api/checkout`, {
       headers: sameOriginHeaders(baseURL!, "10.20.0.3"),

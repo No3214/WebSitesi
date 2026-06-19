@@ -93,6 +93,8 @@ function writeEvidence(baseDir: string, status = "ready") {
 
 const readyEnv = {
   NEXT_PUBLIC_GTM_ID: "GTM-ABCDE1",
+  NEXT_PUBLIC_GA4_MEASUREMENT_ID: "G-ABCDE12345",
+  NEXT_PUBLIC_GOOGLE_ADS_ID: "AW-800024713",
   NEXT_PUBLIC_META_PIXEL_ID: "123456789012",
   GA4_MEASUREMENT_ID: "G-ABCDE12345",
   GA4_API_SECRET: "ga4-secret",
@@ -113,10 +115,11 @@ describe("analytics purchase readiness", () => {
     expect(result.env).toMatchObject({
       configuredCount: 0,
       missing: [
-        "NEXT_PUBLIC_GTM_ID",
         "NEXT_PUBLIC_META_PIXEL_ID",
+        "NEXT_PUBLIC_GOOGLE_ADS_ID",
         "GA4_MEASUREMENT_ID",
         "GA4_API_SECRET",
+        "NEXT_PUBLIC_GTM_ID or NEXT_PUBLIC_GA4_MEASUREMENT_ID",
       ],
       ready: false,
     });
@@ -159,6 +162,8 @@ describe("analytics purchase readiness", () => {
       env: {
         ...readyEnv,
         NEXT_PUBLIC_GTM_ID: "G-LOOKS-LIKE-GA",
+        NEXT_PUBLIC_GA4_MEASUREMENT_ID: "UA-ALSO-OLD",
+        NEXT_PUBLIC_GOOGLE_ADS_ID: "274214371",
         NEXT_PUBLIC_META_PIXEL_ID: "pixel-abc",
         GA4_MEASUREMENT_ID: "UA-OLD",
       },
@@ -170,6 +175,8 @@ describe("analytics purchase readiness", () => {
       "NEXT_PUBLIC_GTM_ID must look like GTM-XXXX",
       "NEXT_PUBLIC_META_PIXEL_ID must be the numeric Meta Pixel ID",
       "GA4_MEASUREMENT_ID must look like G-XXXX",
+      "NEXT_PUBLIC_GA4_MEASUREMENT_ID must look like G-XXXX",
+      "NEXT_PUBLIC_GOOGLE_ADS_ID must look like AW-XXXXXXXXX",
     ]);
     expect(result.sourceContracts.ready).toBe(false);
     expect(result.sourceContracts.checks.find((check) => check.id === "meta_legacy_key_removed")).toMatchObject({

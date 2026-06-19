@@ -68,11 +68,31 @@ export const commercialLaunchGates = [
     points: 3,
     label: "GTM/GA4/Meta production IDs and purchase validation evidence",
     env: [
-      "NEXT_PUBLIC_GTM_ID",
       "NEXT_PUBLIC_META_PIXEL_ID",
+      "NEXT_PUBLIC_GOOGLE_ADS_ID",
       "GA4_MEASUREMENT_ID",
       "GA4_API_SECRET",
     ],
+    envAnyOf: [
+      {
+        keys: ["NEXT_PUBLIC_GTM_ID", "NEXT_PUBLIC_GA4_MEASUREMENT_ID"],
+        label: "GTM container or direct public GA4 tag",
+      },
+    ],
+    expectedEnv: {
+      NEXT_PUBLIC_GTM_ID: {
+        pattern: "^GTM-[A-Z0-9]+$",
+        label: "GTM-XXXX",
+      },
+      NEXT_PUBLIC_GA4_MEASUREMENT_ID: {
+        pattern: "^G-[A-Z0-9]+$",
+        label: "G-XXXX",
+      },
+      NEXT_PUBLIC_GOOGLE_ADS_ID: {
+        pattern: "^AW-\\d{5,20}$",
+        label: "AW-XXXXXXXXX",
+      },
+    },
     evidence: ["docs/evidence/analytics-purchase.md"],
   },
   {
@@ -144,6 +164,7 @@ function envRequirementState(gate, env) {
   let meaningfulCount = 0;
   let invalidCount = 0;
   let placeholderCount = 0;
+  const requiredEnvCount = gate.env.length + (gate.envAnyOf?.length ?? 0);
 
   for (const key of gate.env) {
     const value = env[key];
@@ -168,9 +189,38 @@ function envRequirementState(gate, env) {
     }
   }
 
-  const fallbackApplied = gate.env.length > 0 && explicitCount === 0 && hasValidFallbackUrl(gate);
-  const missingEnvCount = fallbackApplied ? 0 : gate.env.length - explicitCount;
-  const configuredEnvCount = fallbackApplied ? gate.env.length : meaningfulCount;
+  for (const group of gate.envAnyOf ?? []) {
+    const states = group.keys.map((key) => {
+      const value = env[key];
+      const explicit = hasExplicitValue(value);
+      const meaningful = hasMeaningfulValue(value);
+      const expected = gate.expectedEnv?.[key];
+      const valid = meaningful && (!expected || new RegExp(expected.pattern).test(value));
+      return { key, explicit, meaningful, valid, expected };
+    });
+
+    const hasValidAlternative = states.some((state) => state.valid);
+    if (hasValidAlternative) {
+      explicitCount += 1;
+      meaningfulCount += 1;
+      continue;
+    }
+
+    const hasExplicitAlternative = states.some((state) => state.explicit);
+    if (hasExplicitAlternative) {
+      explicitCount += 1;
+      if (states.some((state) => state.meaningful)) meaningfulCount += 1;
+      const hasPlaceholder = states.some((state) => state.explicit && !state.meaningful);
+      if (hasPlaceholder) placeholderCount += 1;
+      else invalidCount += 1;
+    }
+
+    issues.push(`${group.keys.join(" or ")} (expected ${group.label})`);
+  }
+
+  const fallbackApplied = requiredEnvCount > 0 && explicitCount === 0 && hasValidFallbackUrl(gate);
+  const missingEnvCount = fallbackApplied ? 0 : requiredEnvCount - explicitCount;
+  const configuredEnvCount = fallbackApplied ? requiredEnvCount : meaningfulCount;
   const ready = issues.length === 0;
 
   let configurationSource = "missing";
@@ -188,7 +238,7 @@ function envRequirementState(gate, env) {
 
   return {
     missingEnv: issues,
-    requiredEnvCount: gate.env.length,
+    requiredEnvCount,
     configuredEnvCount,
     missingEnvCount,
     invalidEnvCount: invalidCount,

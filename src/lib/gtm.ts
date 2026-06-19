@@ -1,4 +1,5 @@
 import { CONSENT_STORAGE_KEY, getDefaultConsent, parseConsent } from "@/lib/consent";
+import { publicEnv } from "@/lib/public-env";
 
 // GA4 / GTM + Meta Pixel funnel yardımcıları.
 //
@@ -24,6 +25,7 @@ declare global {
   interface Window {
     dataLayer?: DataLayerEvent[];
     fbq?: (...args: unknown[]) => void;
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -37,6 +39,22 @@ export function pushEvent(event: string, params: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
   if (!hasOptionalConsent("analytics")) return;
   window.dataLayer = window.dataLayer || [];
+
+  const usesDirectGoogleTag =
+    !publicEnv.NEXT_PUBLIC_GTM_ID &&
+    Boolean(publicEnv.NEXT_PUBLIC_GA4_MEASUREMENT_ID || publicEnv.NEXT_PUBLIC_GOOGLE_ADS_ID);
+  if (usesDirectGoogleTag) {
+    window.dataLayer.push({ event, ...params });
+    if (typeof window.gtag !== "function") {
+      window.gtag = (...args: unknown[]) => {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: "gtag", args });
+      };
+    }
+    if (typeof window.gtag === "function") window.gtag("event", event, params);
+    return;
+  }
+
   window.dataLayer.push({ event, ...params });
 }
 

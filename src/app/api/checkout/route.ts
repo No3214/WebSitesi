@@ -7,6 +7,17 @@ import { calculateBookingQuote } from "@/lib/booking-pricing";
 import { errField, logEvent, maskIp } from "@/lib/logger";
 import { extractClientIp, enforceRateLimit, validateSameOrigin, safeText } from "@/lib/security";
 
+const forbiddenPaymentFields = [
+  "cardNumber",
+  "card_number",
+  "pan",
+  "cvv",
+  "cvc",
+  "expiry",
+  "expireMonth",
+  "expireYear",
+] as const;
+
 const checkoutSchema = z.object({
   bookingId: z.string(),
   checkIn: z.string(),
@@ -31,7 +42,7 @@ const checkoutSchema = z.object({
   }, z.boolean()),
   // Kart alanı YOK (Audit F13): tahsilat Garanti BBVA Sanal POS'un 3D Secure
   // sayfasında yapılacak — PAN bu API'ye asla gönderilmez.
-});
+}).strict();
 
 export async function POST(req: Request) {
   try {
@@ -56,6 +67,19 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
+    const receivedForbiddenPaymentFields = forbiddenPaymentFields.filter((field) =>
+      Object.prototype.hasOwnProperty.call(body, field),
+    );
+    if (receivedForbiddenPaymentFields.length > 0) {
+      logEvent("warn", "checkout.card_data_rejected", {
+        fieldCount: receivedForbiddenPaymentFields.length,
+      });
+      return NextResponse.json(
+        { ok: false, message: "Kart bilgileri bu sitede alınmaz. Lütfen güvenli ödeme adımı için ekibimizin yönlendirmesini bekleyin." },
+        { status: 400 },
+      );
+    }
+
     const parsed = checkoutSchema.safeParse(body);
 
     if (!parsed.success) {
@@ -104,7 +128,7 @@ export async function POST(req: Request) {
     }
 
     // 4. Tahsilat bu route'ta YAPILMAZ: ödeme, Garanti BBVA Sanal POS 3D Secure
-    // sayfasında ayrı bir adımda alınır (entegrasyon: memory/odeme-karari.md).
+    // sayfasında ayrı bir adımda alınır (entegrasyon: docs/odeme-karari.md).
     // Bu route yalnızca doğrulanmış ön-rezervasyon talebini CMS'e kaydeder.
 
     // 5. Database Integration: Save reservation directly into PostgreSQL/Payload CMS

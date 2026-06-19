@@ -7,10 +7,18 @@ import { evaluateCommercialLaunch, loadEnvSnapshot } from "./commercial-launch-a
 const root = process.cwd();
 
 const REQUIRED_ENV = [
-  "NEXT_PUBLIC_GTM_ID",
   "NEXT_PUBLIC_META_PIXEL_ID",
+  "NEXT_PUBLIC_GOOGLE_ADS_ID",
   "GA4_MEASUREMENT_ID",
   "GA4_API_SECRET",
+];
+
+const GOOGLE_TAG_ANY_OF = ["NEXT_PUBLIC_GTM_ID", "NEXT_PUBLIC_GA4_MEASUREMENT_ID"];
+
+const DOCUMENTED_PUBLIC_ENV = [
+  ...REQUIRED_ENV,
+  "NEXT_PUBLIC_GTM_ID",
+  "NEXT_PUBLIC_GA4_MEASUREMENT_ID",
 ];
 
 const CONTRACT_FILES = {
@@ -42,6 +50,28 @@ function envDiagnostics(env) {
   const missing = REQUIRED_ENV.filter((key) => !String(env[key] || "").trim());
   const placeholders = REQUIRED_ENV.filter((key) => String(env[key] || "").trim() && !hasMeaningfulValue(env[key]));
   const invalid = [];
+  let googleTagConfigured = 0;
+
+  const googleTagValues = GOOGLE_TAG_ANY_OF.map((key) => ({
+    key,
+    value: String(env[key] || "").trim(),
+  }));
+  const hasValidGoogleTag = googleTagValues.some(({ key, value }) => {
+    if (!hasMeaningfulValue(value)) return false;
+    if (key === "NEXT_PUBLIC_GTM_ID") return /^GTM-[A-Z0-9]+$/i.test(value);
+    return /^G-[A-Z0-9]+$/i.test(value);
+  });
+  const hasExplicitGoogleTag = googleTagValues.some(({ value }) => Boolean(value));
+  if (hasValidGoogleTag) {
+    googleTagConfigured = 1;
+  } else if (!hasExplicitGoogleTag) {
+    missing.push(GOOGLE_TAG_ANY_OF.join(" or "));
+  } else {
+    googleTagConfigured = googleTagValues.some(({ value }) => hasMeaningfulValue(value)) ? 1 : 0;
+    if (googleTagValues.some(({ value }) => value && !hasMeaningfulValue(value))) {
+      placeholders.push(GOOGLE_TAG_ANY_OF.join(" or "));
+    }
+  }
 
   const gtmId = String(env.NEXT_PUBLIC_GTM_ID || "").trim();
   if (hasMeaningfulValue(gtmId) && !/^GTM-[A-Z0-9]+$/i.test(gtmId)) {
@@ -58,9 +88,19 @@ function envDiagnostics(env) {
     invalid.push("GA4_MEASUREMENT_ID must look like G-XXXX");
   }
 
+  const publicMeasurementId = String(env.NEXT_PUBLIC_GA4_MEASUREMENT_ID || "").trim();
+  if (hasMeaningfulValue(publicMeasurementId) && !/^G-[A-Z0-9]+$/i.test(publicMeasurementId)) {
+    invalid.push("NEXT_PUBLIC_GA4_MEASUREMENT_ID must look like G-XXXX");
+  }
+
+  const googleAdsId = String(env.NEXT_PUBLIC_GOOGLE_ADS_ID || "").trim();
+  if (hasMeaningfulValue(googleAdsId) && !/^AW-\d{5,20}$/i.test(googleAdsId)) {
+    invalid.push("NEXT_PUBLIC_GOOGLE_ADS_ID must look like AW-XXXXXXXXX");
+  }
+
   return {
-    required: REQUIRED_ENV,
-    configuredCount: configured.length,
+    required: [...REQUIRED_ENV, GOOGLE_TAG_ANY_OF.join(" or ")],
+    configuredCount: configured.length + googleTagConfigured,
     missing,
     placeholders,
     invalid,
@@ -109,6 +149,21 @@ function sourceContracts(baseDir) {
         ? "PASS"
         : "FAIL",
       CONTRACT_FILES.trackingScripts,
+    ),
+    fileCheck(
+      "direct_google_tag_fallback",
+      "Direct Google tag fallback loads GA4/Google Ads only after analytics consent and only when GTM is absent",
+      trackingScripts.includes("shouldLoadDirectGoogleTag") &&
+        trackingScripts.includes("!publicEnv.NEXT_PUBLIC_GTM_ID") &&
+        trackingScripts.includes("NEXT_PUBLIC_GA4_MEASUREMENT_ID") &&
+        trackingScripts.includes("NEXT_PUBLIC_GOOGLE_ADS_ID") &&
+        trackingScripts.includes("https://www.googletagmanager.com/gtag/js") &&
+        trackingScripts.includes("direct-google-tag") &&
+        gtm.includes("window.gtag") &&
+        gtm.includes('window.gtag("event", event, params)')
+        ? "PASS"
+        : "FAIL",
+      "src/components/tracking-scripts.tsx + src/lib/gtm.ts",
     ),
     fileCheck(
       "meta_consent_gate",
@@ -187,6 +242,8 @@ function sourceContracts(baseDir) {
       "public_private_env_boundary",
       "Client-side public env exposes only public analytics IDs and never the GA4 API secret",
       publicEnv.includes("NEXT_PUBLIC_GTM_ID") &&
+        publicEnv.includes("NEXT_PUBLIC_GA4_MEASUREMENT_ID") &&
+        publicEnv.includes("NEXT_PUBLIC_GOOGLE_ADS_ID") &&
         publicEnv.includes("NEXT_PUBLIC_META_PIXEL_ID") &&
         !publicEnv.includes("GA4_API_SECRET") &&
         !combinedClientSource.includes("process.env.GA4_API_SECRET")
@@ -197,7 +254,7 @@ function sourceContracts(baseDir) {
     fileCheck(
       "env_example_documentation",
       "Example env documents every analytics purchase key",
-      REQUIRED_ENV.every((key) => new RegExp(`^${key}=`, "m").test(envExample)) ? "PASS" : "FAIL",
+      DOCUMENTED_PUBLIC_ENV.every((key) => new RegExp(`^${key}=`, "m").test(envExample)) ? "PASS" : "FAIL",
       CONTRACT_FILES.envExample,
     ),
     fileCheck(

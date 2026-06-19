@@ -25,7 +25,7 @@ this repository.
 | `docs/evidence/production-abuse-controls.md` | Production Turnstile lead-form proof plus Upstash shared rate-limit/replay backend proof. |
 | `docs/evidence/hms-booking-engine.md` | Approved HMS handoff URL, new-tab redirect decision, successful booking UAT, cancellation/refund note, stock sync note. |
 | `docs/evidence/garanti-pos.md` | Garanti Sanal POS test environment, successful 3DS sandbox payment, failed payment case, callback verification, refund/cancel note. |
-| `docs/evidence/analytics-purchase.md` | Production GTM, GA4, Meta IDs, consent mode validation, server-side purchase/booking_complete proof. |
+| `docs/evidence/analytics-purchase.md` | Production GTM or direct GA4/Google Ads tag, Meta ID, consent mode validation, server-side purchase/booking_complete proof. |
 | `docs/evidence/search-local-seo.md` | Search Console ownership, submitted sitemap, Google Business Profile, Hotel Center/free booking links, Apple Business Connect if used. |
 | `docs/evidence/legal-dpa.md` | Vendor DPA review, KVKK/yurtdisi aktarim approval, cookie/vendor inventory approval, cancellation/payment terms legal sign-off. |
 

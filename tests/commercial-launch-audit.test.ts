@@ -11,6 +11,7 @@ const tmpDirs: string[] = [];
 type CommercialLaunchGate = {
   id: string;
   env: string[];
+  envAnyOf?: Array<{ keys: string[]; label: string }>;
   evidence: string[];
 };
 
@@ -80,7 +81,10 @@ function writeEvidence(baseDir: string, relPath: string, status = "ready") {
 function makeReadyEnv(audit: CommercialLaunchModule) {
   return Object.fromEntries(
     audit.commercialLaunchGates.flatMap((gate) =>
-      gate.env.map((key) => [
+      [
+        ...gate.env,
+        ...(gate.envAnyOf ?? []).map((group) => group.keys[0]),
+      ].map((key) => [
         key,
         key === "GARANTI_POS_MODE"
           ? "production"
@@ -88,6 +92,12 @@ function makeReadyEnv(audit: CommercialLaunchModule) {
             ? "https://kozbeylikonagi.com"
             : key === "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"
               ? "https://kozbeyli-konagi.hmshotel.net/bv3/search"
+              : key === "NEXT_PUBLIC_GTM_ID"
+                ? "GTM-ABCDE1"
+                : key === "NEXT_PUBLIC_GA4_MEASUREMENT_ID" || key === "GA4_MEASUREMENT_ID"
+                  ? "G-ABCDE12345"
+                  : key === "NEXT_PUBLIC_GOOGLE_ADS_ID"
+                    ? "AW-800024713"
             : `live_${key}`,
       ]),
     ),

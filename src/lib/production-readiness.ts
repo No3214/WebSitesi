@@ -3,6 +3,7 @@ import { OFFICIAL_HMS_BOOKING_ENGINE_URL } from "@/lib/booking-engine-url";
 type RuntimeGate = {
   id: string;
   requiredEnv: string[];
+  requiredAnyEnv?: Array<{ keys: string[] }>;
   expected?: Record<string, RegExp>;
   fallbackUrl?: string;
 };
@@ -49,11 +50,19 @@ const runtimeGates: RuntimeGate[] = [
   {
     id: "analytics_purchase",
     requiredEnv: [
-      "NEXT_PUBLIC_GTM_ID",
       "NEXT_PUBLIC_META_PIXEL_ID",
+      "NEXT_PUBLIC_GOOGLE_ADS_ID",
       "GA4_MEASUREMENT_ID",
       "GA4_API_SECRET",
     ],
+    requiredAnyEnv: [
+      { keys: ["NEXT_PUBLIC_GTM_ID", "NEXT_PUBLIC_GA4_MEASUREMENT_ID"] },
+    ],
+    expected: {
+      NEXT_PUBLIC_GTM_ID: /^GTM-[A-Z0-9]+$/,
+      NEXT_PUBLIC_GA4_MEASUREMENT_ID: /^G-[A-Z0-9]+$/,
+      NEXT_PUBLIC_GOOGLE_ADS_ID: /^AW-\d{5,20}$/,
+    },
   },
   {
     id: "search_local_seo",
@@ -81,12 +90,45 @@ function evaluateGate(gate: RuntimeGate, env: NodeJS.ProcessEnv) {
     const expected = gate.expected?.[key];
     return expected ? !expected.test(env[key] || "") : false;
   }).length;
-  const missingCount = gate.requiredEnv.length - explicitValues.length;
-  const fallbackApplied = missingCount > 0 && explicitValues.length === 0 && hasValidFallback(gate);
+  let anyExplicitCount = 0;
+  let anyMeaningfulCount = 0;
+  let anyPlaceholderCount = 0;
+  let anyInvalidCount = 0;
+
+  for (const group of gate.requiredAnyEnv ?? []) {
+    const states = group.keys.map((key) => {
+      const explicit = hasExplicitValue(env[key]);
+      const meaningful = hasMeaningfulValue(env[key]);
+      const expected = gate.expected?.[key];
+      const valid = meaningful && (!expected || expected.test(env[key] || ""));
+      return { explicit, meaningful, valid };
+    });
+
+    if (states.some((state) => state.valid)) {
+      anyExplicitCount += 1;
+      anyMeaningfulCount += 1;
+      continue;
+    }
+
+    if (states.some((state) => state.explicit)) {
+      anyExplicitCount += 1;
+      if (states.some((state) => state.meaningful)) anyMeaningfulCount += 1;
+      if (states.some((state) => state.explicit && !state.meaningful)) anyPlaceholderCount += 1;
+      else anyInvalidCount += 1;
+    }
+  }
+
+  const requiredCount = gate.requiredEnv.length + (gate.requiredAnyEnv?.length ?? 0);
+  const totalExplicitCount = explicitValues.length + anyExplicitCount;
+  const totalMeaningfulCount = meaningfulValues.length + anyMeaningfulCount;
+  const totalPlaceholderCount = placeholderCount + anyPlaceholderCount;
+  const totalInvalidCount = invalidCount + anyInvalidCount;
+  const missingCount = requiredCount - totalExplicitCount;
+  const fallbackApplied = missingCount > 0 && totalExplicitCount === 0 && hasValidFallback(gate);
   const ready =
-    gate.requiredEnv.length === 0 ||
+    requiredCount === 0 ||
     fallbackApplied ||
-    (missingCount === 0 && placeholderCount === 0 && invalidCount === 0);
+    (missingCount === 0 && totalPlaceholderCount === 0 && totalInvalidCount === 0);
 
   let configurationSource: RuntimeConfigurationSource = "missing";
   if (gate.requiredEnv.length === 0) {
@@ -95,19 +137,19 @@ function evaluateGate(gate: RuntimeGate, env: NodeJS.ProcessEnv) {
     configurationSource = "code_fallback";
   } else if (ready) {
     configurationSource = "env";
-  } else if (invalidCount > 0 || placeholderCount > 0) {
+  } else if (totalInvalidCount > 0 || totalPlaceholderCount > 0) {
     configurationSource = "invalid";
-  } else if (meaningfulValues.length > 0) {
+  } else if (totalMeaningfulCount > 0) {
     configurationSource = "partial";
   }
 
   return {
     ready,
-    requiredCount: gate.requiredEnv.length,
-    configuredCount: fallbackApplied ? gate.requiredEnv.length : meaningfulValues.length,
+    requiredCount,
+    configuredCount: fallbackApplied ? requiredCount : totalMeaningfulCount,
     missingCount: fallbackApplied ? 0 : missingCount,
-    invalidCount,
-    placeholderCount,
+    invalidCount: totalInvalidCount,
+    placeholderCount: totalPlaceholderCount,
     fallbackApplied,
     configurationSource,
   };

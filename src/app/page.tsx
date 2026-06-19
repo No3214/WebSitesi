@@ -9,7 +9,7 @@ type HomeLocale = "tr" | "en";
 export const metadata: Metadata = {
   ...defaultMetadata,
   title: "Kozbeyli Konağı | Foça’nın En Prestijli Taş Butik Oteli & Restoranı",
-  description: "Foça Kozbeyli’de beş asırlık köy dokusu içinde 19. yüzyıl tescilli taş konak, Antakya & Ege mutfağı ve kişiselleştirilmiş hizmet.",
+  description: "Foça’da beş asırlık köy dokusu içinde 19. yüzyıl tescilli taş konak, Antakya & Ege mutfağı ve kişiselleştirilmiş hizmet.",
   alternates: {
     canonical: "/",
   }
