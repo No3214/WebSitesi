@@ -2,8 +2,17 @@ import { test, expect } from "@playwright/test";
 
 test.skip(!!process.env.PW_BASE_URL, "Stres/monkey testleri canli prod ortaminda kosulmaz");
 
+function seededRandom(seed = 20260619) {
+  let state = seed;
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 0xffffffff;
+  };
+}
+
 test('Extreme Monkey Test: Destructive Chaos', async ({ page, baseURL }) => {
   test.setTimeout(90000);
+  const random = seededRandom();
 
   const errors: string[] = [];
   page.on('console', msg => {
@@ -32,14 +41,14 @@ test('Extreme Monkey Test: Destructive Chaos', async ({ page, baseURL }) => {
   const interactions = 35; // Violent stress
   const urls = ['/', '/gastronomi', '/hikayemiz', '/odalar', '/organizasyonlar'];
   
-  console.log('--- STARTING DESTRUCTIVE CHAOS ---');
+  console.log('--- STARTING DESTRUCTIVE CHAOS seed=20260619 ---');
 
   for (let i = 0; i < interactions; i++) {
     // 1. Violent Navigation & Back/Forward
-    if (Math.random() > 0.9) {
-      const url = urls[Math.floor(Math.random() * urls.length)];
+    if (random() > 0.9) {
+      const url = urls[Math.floor(random() * urls.length)];
       await page.goto(`${base}${url}`);
-    } else if (Math.random() > 0.95) {
+    } else if (random() > 0.95) {
       await page.goBack();
     }
 
@@ -47,15 +56,15 @@ test('Extreme Monkey Test: Destructive Chaos', async ({ page, baseURL }) => {
     await page.mouse.wheel(0, i % 2 === 0 ? 8000 : -8000);
 
     // 3. Brutal Click Injection (Everywhere, not just interactive)
-    const x = Math.floor(Math.random() * 1280);
-    const y = Math.floor(Math.random() * 720);
+    const x = Math.floor(random() * 1280);
+    const y = Math.floor(random() * 720);
     await page.mouse.click(x, y);
 
     // 4. Force clicks on all circles (Map Stress)
     const circles = page.locator('circle');
     const cCount = await circles.count();
-    if (cCount > 0 && Math.random() > 0.7) {
-      await circles.nth(Math.floor(Math.random() * cCount)).click({ force: true, timeout: 500 }).catch(() => {});
+    if (cCount > 0 && random() > 0.7) {
+      await circles.nth(Math.floor(random() * cCount)).click({ force: true, timeout: 500 }).catch(() => {});
     }
 
     // 5. Verification: Critical failures check

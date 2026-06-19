@@ -760,6 +760,17 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("--output");
   });
 
+  it("keeps stress tests reproducible with seeded interaction plans", () => {
+    const monkeySpec = read("tests/monkey.spec.ts");
+    const chaosSpec = read("tests/destructive-chaos.spec.ts");
+
+    expect(monkeySpec).toContain("function seededRandom");
+    expect(monkeySpec).not.toContain("Math.random");
+    expect(chaosSpec).toContain("function seededRandom");
+    expect(chaosSpec).toContain("seed=20260619");
+    expect(chaosSpec).not.toContain("Math.random");
+  });
+
   it("keeps release verification producing the commercial cutover plan", () => {
     const releaseScript = read("scripts/release-verify.mjs");
     const publishReadiness = read("scripts/publish-readiness.mjs");
