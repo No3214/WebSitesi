@@ -26,15 +26,20 @@ const FALLBACK = {
 type ReservationClientProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialDict?: any;
-  initialLocale?: 'tr' | 'en';
+  initialLocale?: "tr" | "en";
   roomSlug?: string;
   roomTitle?: string;
 };
 
-export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug, roomTitle }: ReservationClientProps) {
+export function ReservationClient({
+  initialDict,
+  initialLocale = "tr",
+  roomSlug,
+  roomTitle,
+}: ReservationClientProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(initialDict ?? null);
-  const [locale, setLocale] = useState<'tr' | 'en'>(initialLocale);
+  const [locale, setLocale] = useState<"tr" | "en">(initialLocale);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -102,7 +107,7 @@ export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug,
         </div>
       ) : null}
 
-      <WeatherRibbon />
+      <WeatherRibbon locale={locale} />
 
       <HMSBookingEmbed locale={locale} roomSlug={roomSlug} roomLabel={roomTitle} />
 
