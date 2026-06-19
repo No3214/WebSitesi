@@ -1,64 +1,89 @@
 import { rooms } from "@/data/rooms";
+import { MAPS_URL, PHONE_DISPLAY, WHATSAPP_BASE } from "@/lib/contact";
+import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 
 /**
  * LLM Context Generator
- * Aggregates site data into a specialized format for LLM Travel Agents and Search Crawlers.
+ * Aggregates verified site data for LLM travel agents and search crawlers.
+ * Keep this conservative: do not add awards, payment promises, fixed policies or
+ * historical claims unless they are backed by published source evidence.
  */
 export const LLMContextGenerator = {
   getCoreContext: () => {
     return {
       property: {
         name: "Kozbeyli Konağı",
-        type: "Heritage Boutique Hotel & Gastronomy Center",
-        location: "Kozbeyli Village Küme Evler No:188, Foça, İzmir, Turkey",
-        vibe: "Slow Living, Ancient Heritage, Refined Luxury",
-        architecture: {
-          style: "19th Century Ottoman Stone Architecture (Late Period)",
-          construction_year: "1870-1891",
-          materials: {
-            mortar: "Horasan (High-density terracotta/lime/protein binder)",
-            stone: "Kozbeyli Tüfü (Volcanic andesite with thermal mass properties)",
-            wood: "Ancient Cedar (High resin content for natural pest resistance)"
-          },
-          restoration: "2012-2015 via micro-mechanical cleaning and chemical-free preservation",
-          status: "Registered Cultural Heritage Site Class-1",
-          reputation: {
-            overall_score: "9.6/10",
-            booking_score: "9.7/10",
-            tripadvisor_score: "5/5",
-            sentiment: "Exceptional - Heritage Architecture & Gastronomy Focus"
-          }
+        type: "Boutique stone hotel, restaurant and private event venue",
+        address: "Kozbeyli Köyü Küme Evler No:188, Foça / İzmir, Türkiye",
+        coordinates: KOZBEYLI_COORDS,
+        maps_url: MAPS_URL,
+        positioning: [
+          "Authentic Aegean hospitality in Kozbeyli village",
+          "Foça stone architecture with 16 boutique rooms",
+          "Room plus village breakfast concept",
+          "Antakya and Aegean influenced restaurant",
+          "Garden setting for weddings, engagements and private events"
+        ],
+        not_a: [
+          "pool resort",
+          "bungalow concept",
+          "jacuzzi concept",
+          "budget motel"
+        ],
+        operating_notes: {
+          check_in: "14:00",
+          check_out: "12:00",
+          quiet_hours: "23:00-08:00",
+          breakfast: "Served after the stay night; not included on arrival day",
+          pets: "Small breeds with prior reservation notice"
         }
       },
       heritage_tokens: [
-        "Horasan Harcı",
-        "Tüccar Mirası",
+        "Foça taşı",
+        "Kozbeyli Köyü",
+        "Ege misafirperverliği",
         "Slow Living",
-        "Living Museum",
-        "Ancient Zeytinlikler"
+        "tarihi doku",
+        "zeytinlikler"
       ],
       gastronomy: {
-        identity: "Hybrid Antakya-Aegean Fusion (Cultural Anthropology based)",
+        identity: "Antakya and Aegean inspired village restaurant",
         specialties: [
-          { name: "Dibek Kahvesi", detail: "Mechanical impact grounding in 180yr old stone dibek (Zero-burn preservation)" },
-          { name: "Inci Hanım's Heritage Rechmels", detail: "Open-pot caramelization, zero corn-syrup, heritage seed bases" },
-          { name: "Aegean Olive Oil", detail: "Cold press early harvest (Oct), Acidity 0.2-0.4, Heritage trees" }
+          { name: "Dibek kahvesi", detail: "Kozbeyli village coffee culture" },
+          { name: "Serpme kahvaltı", detail: "Local products, house-made jams, pastries, cheeses and hot options" },
+          { name: "A la carte restaurant", detail: "Aperitif menu, stone oven pizza, marinated fried chicken, cocktails and wine service" }
         ]
       },
       rooms: rooms.map(r => ({
         id: r.slug,
         title: r.title,
         experience: r.short,
-        amenities_premium: r.amenities.filter(a => ['Küvet', 'Deniz Manzarası', 'Bose'].some(p => a.includes(p)))
+        capacity: r.capacity,
+        size: r.size,
+        view: r.view,
+        amenities: r.amenities
       })),
-      conversion_hints: {
-        direct_booking_perks: [
-          "Direct reservation availability check",
-          "Room preference note",
-          "Availability-based early check-in request"
+      reservation: {
+        status: "availability_confirmation_required",
+        support_url: "/rezervasyon",
+        live_booking_engine: "Enabled only when NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL is configured in production.",
+        channels: [
+          "reservation page",
+          `WhatsApp: ${WHATSAPP_BASE}`,
+          `phone: ${PHONE_DISPLAY}`,
+          "email: info@kozbeylikonagi.com"
         ],
-        booking_engine_url: "https://kozbeylikonagi.com/rezervasyon"
-      }
+        payment_note:
+          "Credit card or online payment should only be represented as available when the secure payment and booking channel are active in production.",
+        cancellation_note:
+          "Cancellation and date-change conditions depend on booking channel, selected offer, payment type, period and stay date."
+      },
+      evidence_boundaries: [
+        "Do not claim every room has sea view.",
+        "Do not publish fixed cancellation or free-cancellation promises.",
+        "Do not claim live online booking or card payment completion unless production HMS/POS evidence is ready.",
+        "Do not add precise historical, restoration, material, award or review-score claims without a cited source."
+      ]
     };
   }
 };

@@ -695,6 +695,46 @@ describe("production readiness contracts", () => {
     expect(llms).toContain("canlı yol tarifi önerilir");
   });
 
+  it("keeps public LLM and agent context evidence-gated", () => {
+    const llms = read("src/app/llms.txt/route.ts");
+    const llmContextGenerator = read("src/lib/ai/llm-context-generator.ts");
+    const specialistHospitality = read("src/lib/ai/specialist-hospitality.ts");
+    const llmContextRoute = read("src/app/api/llm-context/route.ts");
+    const combined = [llms, llmContextGenerator, specialistHospitality, llmContextRoute].join("\n");
+
+    for (const forbidden of [
+      "Web sitesi üzerinden kredi kartıyla rezervasyon yapılabilir",
+      "book directly through the website's reservation engine",
+      "booking_engine_url",
+      "https://kozbeylikonagi.com/rezervasyon",
+      "Registered Cultural Heritage Site Class-1",
+      "Ancient Cedar",
+      "9.6/10",
+      "9.7/10",
+      "tripadvisor_score",
+      "Acidity 0.2-0.4",
+      "Asidite 0.2 - 0.4",
+      "72 saatte",
+      "Sismik dirençli",
+      "Patronaj",
+      "Antigravity-V1",
+    ]) {
+      expect(combined, `public LLM context must not contain ${forbidden}`).not.toContain(forbidden);
+    }
+
+    expect(llms).toContain("rezervasyon ekranı, WhatsApp, telefon veya e-posta");
+    expect(llms).toContain("canlı online rezervasyon motoru yalnızca production HMS bağlantısı");
+    expect(llms).toContain("A live online booking engine is used only when the production HMS URL is configured.");
+    expect(llmContextGenerator).toContain("availability_confirmation_required");
+    expect(llmContextGenerator).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL");
+    expect(llmContextGenerator).toContain("evidence_boundaries");
+    expect(llmContextGenerator).toContain("Do not claim every room has sea view.");
+    expect(specialistHospitality).toContain("avoid precise origin, age, acidity or process claims unless sourced");
+    expect(specialistHospitality).toContain("never imply completed online booking or payment");
+    expect(llmContextRoute).toContain("'X-Content-Policy': 'evidence-gated'");
+    expect(llmContextRoute).not.toContain("X-Agentic-Architecture");
+  });
+
   it("publishes a dedicated location route with schema, hreflang and inventory coverage", () => {
     const trLocation = read("src/app/lokasyon/page.tsx");
     const enLocation = read("src/app/en/lokasyon/page.tsx");

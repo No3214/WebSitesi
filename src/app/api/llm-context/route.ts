@@ -35,7 +35,7 @@ export async function GET(req: Request) {
     headers: {
       'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=59',
       'X-AI-Search-Ready': 'true',
-      'X-Agentic-Architecture': 'Antigravity-V1'
+      'X-Content-Policy': 'evidence-gated'
     }
   });
 }
