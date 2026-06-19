@@ -86,7 +86,7 @@ export async function processLeadSubmission(data: LeadData) {
 }
 
 export async function verifyTurnstileToken(token: string) {
-  const secretKey = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY;
+  const secretKey = process.env.TURNSTILE_SECRET_KEY;
   if (!secretKey) return true; // Fail open if no secret configured (for dev/demo)
 
   try {

@@ -20,6 +20,14 @@ Required before full commercial launch:
 Current status: pending. The code supports these controls, but live production
 environment values and validation proof have not been supplied yet.
 
+## Verification Commands
+
+- `npm run abuse:verify` — local diagnostic; should show source contracts as
+  passing and list only missing production env/evidence blockers before cutover.
+- `npm run abuse:verify:strict` — final production gate after Vercel env values
+  and redacted source-system evidence are ready.
+- `npm run launch:audit:strict` — full commercial launch score gate.
+
 ## Residual Risk
 
 Do not mark this file ready with local in-memory rate-limit behavior or test

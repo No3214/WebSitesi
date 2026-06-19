@@ -14,6 +14,10 @@ const gates = [
     label: "Opening hero media quality audit",
   },
   {
+    script: "abuse:verify:json",
+    label: "Production abuse-control readiness diagnosis",
+  },
+  {
     script: "publish:verify",
     label: "Full publish verification",
   },

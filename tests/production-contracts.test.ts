@@ -90,6 +90,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"media:hero"');
     expect(readinessScript).toContain('"media:hero:json"');
     expect(readinessScript).toContain('"media:hero:strict"');
+    expect(readinessScript).toContain('"abuse:verify"');
+    expect(readinessScript).toContain('"abuse:verify:json"');
+    expect(readinessScript).toContain('"abuse:verify:strict"');
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
@@ -131,6 +134,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["media:hero:strict"]).toBe(
       "node scripts/hero-media-audit.mjs --strict",
     );
+    expect(packageJson.scripts?.["abuse:verify"]).toBe("node scripts/abuse-controls-readiness.mjs");
+    expect(packageJson.scripts?.["abuse:verify:json"]).toBe(
+      "node scripts/abuse-controls-readiness.mjs --json",
+    );
+    expect(packageJson.scripts?.["abuse:verify:strict"]).toBe(
+      "node scripts/abuse-controls-readiness.mjs --strict",
+    );
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
     expect(packageJson.scripts?.["vercel:ops:json"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --json",
@@ -144,12 +154,14 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"src/app/api/health/route.ts"');
     expect(readinessScript).toContain('"src/lib/production-readiness.ts"');
     expect(readinessScript).toContain('"tests/agentic-helper-safety.test.ts"');
+    expect(readinessScript).toContain('"tests/abuse-controls-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"tests/production-readiness.test.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
     expect(readinessScript).toContain('"docs/vercel-operations.md"');
     expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
+    expect(readinessScript).toContain('"scripts/abuse-controls-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/hms-booking-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
@@ -163,6 +175,7 @@ describe("production readiness contracts", () => {
       "security:audit",
       "evidence:scan",
       "media:hero:json",
+      "abuse:verify:json",
       "publish:verify",
       "launch:smoke",
       "test:stress",
@@ -173,6 +186,7 @@ describe("production readiness contracts", () => {
 
     expect(releaseScript).toContain("--list");
     expect(releaseScript).toContain("Commercial evidence redaction scan");
+    expect(releaseScript).toContain("Production abuse-control readiness diagnosis");
     expect(releaseScript).toContain("process.env.ComSpec");
     expect(releaseScript).not.toContain("launch:audit:strict");
     expect(ciWorkflow).toContain("Release gate manifest");
@@ -228,6 +242,35 @@ describe("production readiness contracts", () => {
       );
       expect(evidenceFile).toContain("## Residual Risk");
     }
+  });
+
+  it("keeps production abuse-control verification source-bound and evidence-gated", () => {
+    const packageJson = JSON.parse(read("package.json")) as {
+      scripts?: Record<string, string>;
+    };
+    const abuseReadiness = read("scripts/abuse-controls-readiness.mjs");
+    const leadRoute = read("src/app/api/lead/route.ts");
+    const legacyLeadService = read("src/services/lead.ts");
+    const leadForm = read("src/components/lead-form.tsx");
+    const consentScripts = read("src/components/consent-gated-scripts.tsx");
+
+    expect(packageJson.scripts?.["abuse:verify:strict"]).toBe(
+      "node scripts/abuse-controls-readiness.mjs --strict",
+    );
+    expect(abuseReadiness).toContain("PRODUCTION ABUSE CONTROLS BLOCKED");
+    expect(abuseReadiness).toContain("production_abuse_controls");
+    expect(abuseReadiness).toContain("docs/evidence/production-abuse-controls.md");
+    expect(abuseReadiness).toContain("UPSTASH_REDIS_REST_URL must use HTTPS");
+    expect(abuseReadiness).toContain("legacy_env_name_removed");
+    expect(abuseReadiness).toContain("process.exitCode");
+    expect(abuseReadiness).not.toContain("process.exit(strict");
+    expect(leadRoute).toContain("env.TURNSTILE_SECRET_KEY");
+    expect(leadRoute).toContain("if (!token) return false");
+    expect(legacyLeadService).toContain("process.env.TURNSTILE_SECRET_KEY");
+    expect(legacyLeadService).not.toContain("process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY");
+    expect(leadForm).toContain("cf-turnstile");
+    expect(leadForm).toContain("NEXT_PUBLIC_TURNSTILE_SITE_KEY");
+    expect(consentScripts).toContain("https://challenges.cloudflare.com/turnstile/v0/api.js");
   });
 
   it("keeps the HMS booking engine as a new-tab handoff instead of a cramped iframe", () => {
