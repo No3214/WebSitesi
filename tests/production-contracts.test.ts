@@ -276,6 +276,9 @@ describe("production readiness contracts", () => {
     expect(domainScript).toContain("firstHopInsecure");
     expect(domainScript).toContain("redirects first hop to insecure HTTP");
     expect(domainScript).toContain("insecure first-hop redirect");
+    expect(domainScript).toContain("queryDnsOverHttps");
+    expect(domainScript).toContain("DNS_FALLBACK_ENDPOINTS");
+    expect(domainScript).toContain("dnsFallbackFetchImpl");
     expect(domainScript).toContain("process.exitCode");
     expect(domainScript).not.toContain("process.exit(strict");
     expect(domainScript).toContain("kozbeylikonagi.com");
@@ -304,6 +307,8 @@ describe("production readiness contracts", () => {
     expect(vercelOps).toContain("Kozbeyli Konagi Vercel operations readiness");
     expect(vercelOps).toContain("PASS_WITH_WARNINGS");
     expect(vercelOps).toContain("npm i -g vercel");
+    expect(vercelOps).toContain("APPDATA");
+    expect(vercelOps).toContain("vc.js");
     expect(vercelOps).toContain("vercel env pull, vercel deploy and vercel logs");
     expect(vercelOps).toContain("canonical-domain.md");
     expect(vercelOps).toContain("kozbeyli-konagi");

@@ -25,6 +25,12 @@ or static placeholder cannot pass as production-ready. Until both checks pass,
 the canonical domain is not considered production-ready even if the Vercel
 preview URL is healthy.
 
+The verifier also checks NS/MX records. If the local system DNS resolver is
+unavailable, it falls back to DNS-over-HTTPS and reports the source used for NS
+and MX results. DNS warnings do not make a stale web deployment ready; the
+health endpoint, current commit, secure redirect chain and hero video checks
+remain the launch blockers.
+
 As of 2026-06-19, `npm run domain:verify:json` reports these concrete blockers:
 
 - `https://kozbeylikonagi.com` first redirects to insecure HTTP before reaching

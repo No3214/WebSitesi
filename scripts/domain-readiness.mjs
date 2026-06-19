@@ -6,6 +6,10 @@ const DEFAULT_CANONICAL_ORIGINS = ["https://kozbeylikonagi.com", "https://www.ko
 const DEFAULT_PREVIEW_ORIGIN = "https://kozbeyli-konagi.vercel.app";
 const EXPECTED_SERVICE = "kozbeyli-konagi";
 const EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4";
+const DNS_FALLBACK_ENDPOINTS = [
+  "https://cloudflare-dns.com/dns-query",
+  "https://dns.google/resolve",
+];
 
 function normalizeOrigin(origin) {
   return origin.replace(/\/+$/, "");
@@ -130,6 +134,150 @@ function hasInsecureFirstHop(response) {
   return Boolean(response.redirect?.firstHopInsecure);
 }
 
+function stripTrailingDot(value) {
+  return String(value || "").replace(/\.+$/, "");
+}
+
+function parseDohAnswers(payload, recordType) {
+  const answers = Array.isArray(payload?.Answer) ? payload.Answer : [];
+  const records = answers
+    .map((answer) => stripTrailingDot(answer?.data))
+    .filter(Boolean);
+
+  if (recordType === "NS") {
+    return records.sort();
+  }
+
+  if (recordType === "MX") {
+    return records
+      .map((record) => {
+        const [preference, ...exchangeParts] = record.trim().split(/\s+/);
+        const preferenceNumber = Number(preference);
+        const exchange = stripTrailingDot(exchangeParts.join(" "));
+
+        if (!Number.isFinite(preferenceNumber) || !exchange) return null;
+
+        return {
+          exchange,
+          preference: preferenceNumber,
+        };
+      })
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+async function queryDnsOverHttps({
+  apexDomain,
+  recordType,
+  fetchImpl = fetch,
+  timeoutMs = 6000,
+}) {
+  const errors = [];
+
+  for (const endpoint of DNS_FALLBACK_ENDPOINTS) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const url = new URL(endpoint);
+      url.searchParams.set("name", apexDomain);
+      url.searchParams.set("type", recordType);
+
+      const response = await fetchImpl(url, {
+        headers: { accept: "application/dns-json" },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        errors.push(`${endpoint}: HTTP ${response.status}`);
+        continue;
+      }
+
+      const payload = await response.json();
+      const records = parseDohAnswers(payload, recordType);
+
+      return {
+        records,
+        source: endpoint,
+        error: "",
+      };
+    } catch (error) {
+      errors.push(`${endpoint}: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  return {
+    records: [],
+    source: "dns-over-https",
+    error: errors.join("; "),
+  };
+}
+
+async function resolveDnsRecord({
+  apexDomain,
+  recordType,
+  nativeLookup,
+  dnsFallbackFetchImpl,
+  dnsFallbackTimeoutMs,
+}) {
+  try {
+    const records = await nativeLookup(apexDomain);
+    if (Array.isArray(records) && records.length > 0) {
+      return {
+        records: recordType === "NS" ? records.sort() : records,
+        source: "system",
+        error: "",
+      };
+    }
+  } catch (error) {
+    if (!dnsFallbackFetchImpl) {
+      return {
+        records: [],
+        source: "system",
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+
+    const fallback = await queryDnsOverHttps({
+      apexDomain,
+      recordType,
+      fetchImpl: dnsFallbackFetchImpl,
+      timeoutMs: dnsFallbackTimeoutMs,
+    });
+
+    return {
+      records: fallback.records,
+      source: fallback.records.length > 0 ? fallback.source : "system+dns-over-https",
+      error: fallback.records.length > 0 ? "" : `${error instanceof Error ? error.message : String(error)}; ${fallback.error}`,
+    };
+  }
+
+  if (!dnsFallbackFetchImpl) {
+    return {
+      records: [],
+      source: "system",
+      error: "empty DNS response",
+    };
+  }
+
+  const fallback = await queryDnsOverHttps({
+    apexDomain,
+    recordType,
+    fetchImpl: dnsFallbackFetchImpl,
+    timeoutMs: dnsFallbackTimeoutMs,
+  });
+
+  return {
+    records: fallback.records,
+    source: fallback.records.length > 0 ? fallback.source : "system+dns-over-https",
+    error: fallback.records.length > 0 ? "" : fallback.error || "empty DNS response",
+  };
+}
+
 async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutMs = 10000 }) {
   const normalizedOrigin = normalizeOrigin(origin);
   const healthUrl = `${normalizedOrigin}/api/health`;
@@ -218,14 +366,28 @@ async function checkDns({
   apexDomain = "kozbeylikonagi.com",
   resolveNsImpl = resolveNs,
   resolveMxImpl = resolveMx,
+  dnsFallbackFetchImpl,
+  dnsFallbackTimeoutMs = 6000,
 } = {}) {
-  const [nsResult, mxResult] = await Promise.allSettled([
-    resolveNsImpl(apexDomain),
-    resolveMxImpl(apexDomain),
+  const [nsResult, mxResult] = await Promise.all([
+    resolveDnsRecord({
+      apexDomain,
+      recordType: "NS",
+      nativeLookup: resolveNsImpl,
+      dnsFallbackFetchImpl,
+      dnsFallbackTimeoutMs,
+    }),
+    resolveDnsRecord({
+      apexDomain,
+      recordType: "MX",
+      nativeLookup: resolveMxImpl,
+      dnsFallbackFetchImpl,
+      dnsFallbackTimeoutMs,
+    }),
   ]);
 
-  const ns = nsResult.status === "fulfilled" ? nsResult.value.sort() : [];
-  const mx = mxResult.status === "fulfilled" ? mxResult.value : [];
+  const ns = nsResult.records;
+  const mx = mxResult.records;
 
   return {
     apexDomain,
@@ -233,8 +395,10 @@ async function checkDns({
     mx,
     nsOk: ns.some((item) => item.includes("cloudflare.com")),
     mxOk: mx.some((item) => item.exchange === "mx.kozbeylikonagi.com"),
-    nsError: nsResult.status === "rejected" ? String(nsResult.reason?.message || nsResult.reason) : "",
-    mxError: mxResult.status === "rejected" ? String(mxResult.reason?.message || mxResult.reason) : "",
+    nsSource: nsResult.source,
+    mxSource: mxResult.source,
+    nsError: nsResult.error,
+    mxError: mxResult.error,
   };
 }
 
@@ -246,6 +410,8 @@ export async function evaluateDomainReadiness({
   timeoutMs = 10000,
   resolveNsImpl = resolveNs,
   resolveMxImpl = resolveMx,
+  dnsFallbackFetchImpl = fetch,
+  dnsFallbackTimeoutMs = 6000,
 } = {}) {
   const [preview, canonical, dns] = await Promise.all([
     checkOrigin({ origin: previewOrigin, expectedCommit, fetchImpl, timeoutMs }),
@@ -254,7 +420,7 @@ export async function evaluateDomainReadiness({
         checkOrigin({ origin, expectedCommit, fetchImpl, timeoutMs }),
       ),
     ),
-    checkDns({ resolveNsImpl, resolveMxImpl }),
+    checkDns({ resolveNsImpl, resolveMxImpl, dnsFallbackFetchImpl, dnsFallbackTimeoutMs }),
   ]);
 
   const canonicalReady = canonical.every((item) => item.ready);
@@ -316,9 +482,9 @@ export function formatDomainReadiness(result) {
 
   lines.push("");
   lines.push(`DNS: ${result.dnsReady ? "PASS" : "WARN"} ${result.dns.apexDomain}`);
-  lines.push(`  NS: ${result.dns.ns.join(", ") || result.dns.nsError || "n/a"}`);
+  lines.push(`  NS (${result.dns.nsSource || "unknown"}): ${result.dns.ns.join(", ") || result.dns.nsError || "n/a"}`);
   lines.push(
-    `  MX: ${
+    `  MX (${result.dns.mxSource || "unknown"}): ${
       result.dns.mx.map((item) => `${item.preference} ${item.exchange}`).join(", ") ||
       result.dns.mxError ||
       "n/a"

@@ -33,6 +33,12 @@ isteğini ilk hop'ta `http://www.kozbeylikonagi.com/...` adresine düşürüyor 
 `www` hostu hâlâ eski landing yüzeyini servis ediyor; bu nedenle canonical gate
 NO-GO kalır.
 
+2026-06-19 ek domain diagnostik güncellemesi: sistem DNS resolver'ı NS/MX için
+`ECONNREFUSED` verdiğinde verifier DNS-over-HTTPS fallback kullanır ve NS/MX
+kaynağını raporlar. Bu yalnızca teşhisi güçlendirir; eski landing, eksik
+`/api/health`, insecure first-hop veya hero video yokluğu varsa canonical gate
+yine NO-GO kalır.
+
 2026-06-19 HMS güncellemesi: Rezervasyon CTA'ları resmi HMS engine'e yeni sekme
 handoff olarak gider ve public fallback kodda mevcuttur. Eksik kalan konu URL
 değil, canlı tarih/konuk/oda seçimi UAT kanıtı ve `docs/evidence/hms-booking-engine.md`

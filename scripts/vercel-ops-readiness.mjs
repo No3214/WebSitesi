@@ -45,6 +45,58 @@ function exists(relPath) {
   return fs.existsSync(path.join(root, relPath));
 }
 
+function unique(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function getNpmGlobalPrefix() {
+  const npmBin = process.platform === "win32" ? "npm.cmd" : "npm";
+
+  try {
+    return execFileSync(npmBin, ["config", "get", "prefix"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      timeout: 10000,
+    }).trim();
+  } catch {
+    return process.platform === "win32" && process.env.APPDATA
+      ? path.join(process.env.APPDATA, "npm")
+      : "";
+  }
+}
+
+function getVercelCliCandidates() {
+  const npmPrefix = getNpmGlobalPrefix();
+  const candidates = ["vercel"];
+
+  if (process.platform === "win32") {
+    candidates.push("vercel.cmd");
+    if (npmPrefix) candidates.push(path.join(npmPrefix, "vercel.cmd"));
+    if (npmPrefix) candidates.push(path.join(npmPrefix, "node_modules", "vercel", "dist", "vc.js"));
+  } else if (npmPrefix) {
+    candidates.push(path.join(npmPrefix, "bin", "vercel"));
+    candidates.push(path.join(npmPrefix, "lib", "node_modules", "vercel", "dist", "vc.js"));
+  }
+
+  return unique(candidates);
+}
+
+function runVercelVersion(candidate) {
+  if (candidate.endsWith(`${path.sep}vc.js`) || candidate.endsWith("/vc.js")) {
+    return execFileSync(process.execPath, [candidate, "--version"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: 10000,
+    }).trim();
+  }
+
+  return execFileSync(candidate, ["--version"], {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+    timeout: 10000,
+  }).trim();
+}
+
 function checkProjectBinding() {
   if (!exists(".vercel/project.json")) {
     return {
@@ -92,25 +144,42 @@ function checkProjectBinding() {
 }
 
 function checkGlobalCli() {
+  const errors = [];
+
+  for (const candidate of getVercelCliCandidates()) {
+    try {
+      const version = runVercelVersion(candidate);
+
+      return {
+        id: "global_vercel_cli",
+        status: "pass",
+        detail: `Vercel CLI available via ${candidate}: ${version}.`,
+      };
+    } catch (error) {
+      errors.push(`${candidate}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
   try {
-    const version = execFileSync("vercel", ["--version"], {
+    const version = execFileSync("npx", ["--yes", "vercel", "--version"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
-      timeout: 10000,
+      timeout: 30000,
     }).trim();
 
     return {
       id: "global_vercel_cli",
       status: "pass",
-      detail: `Vercel CLI available: ${version}.`,
+      detail: `Vercel CLI available through npx fallback: ${version}.`,
     };
   } catch (error) {
+    errors.push(`npx --yes vercel --version: ${error instanceof Error ? error.message : String(error)}`);
     return {
       id: "global_vercel_cli",
       status: "warn",
       detail: "Global Vercel CLI is not available on PATH.",
       remediation: `${INSTALL_COMMAND} unlocks vercel env pull, vercel deploy and vercel logs.`,
-      error: error instanceof Error ? error.message : String(error),
+      error: errors.join("; "),
     };
   }
 }

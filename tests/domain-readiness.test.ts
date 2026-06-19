@@ -11,6 +11,7 @@ type DomainReadinessModule = {
     fetchImpl?: typeof fetch;
     resolveNsImpl?: () => Promise<string[]>;
     resolveMxImpl?: () => Promise<Array<{ exchange: string; preference: number }>>;
+    dnsFallbackFetchImpl?: typeof fetch;
   }) => Promise<{
     previewReady: boolean;
     canonicalReady: boolean;
@@ -18,6 +19,12 @@ type DomainReadinessModule = {
     decision: string;
     blockers: string[];
     warnings: string[];
+    dns: {
+      ns: string[];
+      mx: Array<{ exchange: string; preference: number }>;
+      nsSource: string;
+      mxSource: string;
+    };
     preview: {
       home: {
         hasOpeningHeroVideo: boolean;
@@ -213,6 +220,9 @@ describe("domain readiness", () => {
       resolveMxImpl: async () => {
         throw new Error("queryMx ECONNREFUSED kozbeylikonagi.com");
       },
+      dnsFallbackFetchImpl: async () => {
+        throw new Error("dns-over-https disabled in this test");
+      },
     });
 
     expect(result.decision).toBe("CANONICAL DOMAIN GO");
@@ -221,5 +231,50 @@ describe("domain readiness", () => {
     expect(result.warnings).toContain(
       "canonical domain MX record could not be verified as mx.kozbeylikonagi.com",
     );
+  });
+
+  it("falls back to DNS-over-HTTPS when the local resolver is unavailable", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://kozbeylikonagi.com"],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      fetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
+        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
+      },
+      resolveNsImpl: async () => {
+        throw new Error("queryNs ECONNREFUSED kozbeylikonagi.com");
+      },
+      resolveMxImpl: async () => {
+        throw new Error("queryMx ECONNREFUSED kozbeylikonagi.com");
+      },
+      dnsFallbackFetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        const recordType = new URL(href).searchParams.get("type");
+
+        if (recordType === "NS") {
+          return jsonResponse({
+            Answer: [
+              { data: "anastasia.ns.cloudflare.com." },
+              { data: "theo.ns.cloudflare.com." },
+            ],
+          });
+        }
+
+        return jsonResponse({
+          Answer: [{ data: "0 mx.kozbeylikonagi.com." }],
+        });
+      },
+    });
+
+    expect(result.decision).toBe("CANONICAL DOMAIN GO");
+    expect(result.dnsReady).toBe(true);
+    expect(result.dns.ns).toEqual(["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"]);
+    expect(result.dns.mx).toEqual([{ exchange: "mx.kozbeylikonagi.com", preference: 0 }]);
+    expect(result.dns.nsSource).toContain("dns");
+    expect(result.dns.mxSource).toContain("dns");
+    expect(result.warnings).toEqual([]);
   });
 });
