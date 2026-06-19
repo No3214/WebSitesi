@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Phone, MapPin, Calendar } from "lucide-react";
 import { getPhoneHref, MAPS_URL } from "@/lib/contact";
+import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
+import { publicEnv } from "@/lib/public-env";
 
 export const MobileActionBar = () => {
   const pathname = usePathname();
@@ -16,7 +17,7 @@ export const MobileActionBar = () => {
         booking: "Booking",
         phoneAria: "Call by phone",
         mapAria: "View on map",
-        bookingHref: "/en/rezervasyon",
+        bookingAria: "Booking - open official reservation screen",
       }
     : {
         phone: "ARA",
@@ -24,8 +25,9 @@ export const MobileActionBar = () => {
         booking: "REZERVASYON",
         phoneAria: "Telefonla ara",
         mapAria: "Haritada görüntüle",
-        bookingHref: "/rezervasyon",
+        bookingAria: "Rezervasyon - resmi rezervasyon ekranını aç",
       };
+  const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
 
   return (
     <div
@@ -55,13 +57,17 @@ export const MobileActionBar = () => {
           <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{labels.map}</span>
         </a>
 
-        <Link
-          href={labels.bookingHref}
+        <a
+          href={bookingHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-event="booking_engine_open"
+          aria-label={labels.bookingAria}
           className="bg-gold text-white px-6 py-3 rounded-full flex items-center gap-2 shadow-lg shadow-gold/20 active:scale-95 transition-transform"
         >
           <Calendar size={18} />
           <span className="text-xs font-bold uppercase tracking-wide">{labels.booking}</span>
-        </Link>
+        </a>
       </div>
     </div>
   );

@@ -9,6 +9,8 @@ import { usePathname } from "next/navigation";
 import { getDictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
 import { PageHero } from "@/components/page-hero";
+import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
+import { publicEnv } from "@/lib/public-env";
 
 type RoomsClientProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,6 +34,7 @@ export function RoomsClient({ initialDict, initialLocale = "tr" }: RoomsClientPr
   if (!dict) return <div className="loading-screen" />;
 
   const t = dict.Rooms;
+  const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
 
   return (
     <>
@@ -79,9 +82,15 @@ export function RoomsClient({ initialDict, initialLocale = "tr" }: RoomsClientPr
                   ? "Hangi odanın size uygun olduğundan emin değil misiniz? Misafir ilişkileri ekibimiz yardımcı olsun."
                   : "Not sure which room suits you best? Let our guest relations team help."}
               </p>
-              <Link href={locale === "en" ? "/en/rezervasyon" : "/rezervasyon"} className="button gold">
+              <a
+                href={bookingHref}
+                className="button gold"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-event="booking_engine_open"
+              >
                 {locale === "tr" ? "Müsaitlik Sorgula" : "Check Availability"}
-              </Link>
+              </a>
             </div>
           </FadeIn>
         </div>

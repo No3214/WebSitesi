@@ -58,6 +58,10 @@ test.describe("Rezervasyon HMS handoff", () => {
     await expect(headerBooking).toHaveAttribute("href", HMS_BOOKING_URL);
     await expect(headerBooking).toHaveAttribute("target", "_blank");
 
+    const heroBooking = page.locator(".hero").getByRole("link", { name: "Hemen Rezervasyon" });
+    await expect(heroBooking).toHaveAttribute("href", HMS_BOOKING_URL);
+    await expect(heroBooking).toHaveAttribute("target", "_blank");
+
     const bookingSection = page.locator("#rezervasyon");
     await expect(bookingSection.getByRole("heading", { name: "Rezervasyon", level: 2 })).toBeVisible();
     await expect(bookingSection.getByText("Rezervasyon Ekranı Ayrı Sekmede")).toHaveCount(0);
@@ -66,6 +70,17 @@ test.describe("Rezervasyon HMS handoff", () => {
       "href",
       HMS_BOOKING_URL,
     );
+  });
+
+  test("mobil alt rezervasyon aksiyonu resmi HMS ekranina gider", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const mobileBooking = page
+      .getByTestId("mobile-action-bar")
+      .getByRole("link", { name: /Rezervasyon/i });
+    await expect(mobileBooking).toHaveAttribute("href", HMS_BOOKING_URL);
+    await expect(mobileBooking).toHaveAttribute("target", "_blank");
   });
 
   test("resmi HMS rezervasyon linki gorunur", async ({ page }) => {
@@ -91,6 +106,15 @@ test.describe("Rezervasyon oda parametresi", () => {
       `${HMS_BOOKING_URL}&room=standart-bahce-manzarali-oda`,
     );
     await expect(page.getByRole("link", { name: /WhatsApp/i }).first()).toBeVisible({ timeout: 10000 });
+  });
+
+  test("oda detay rezervasyon CTA'si HMS'e oda parametresiyle gider", async ({ page }) => {
+    await page.goto("/odalar/standart-bahce-manzarali-oda");
+
+    await expect(page.getByRole("link", { name: "EN İYİ FİYATLA YERİNİZİ AYIRIN" })).toHaveAttribute(
+      "href",
+      `${HMS_BOOKING_URL}&room=standart-bahce-manzarali-oda`,
+    );
   });
 });
 

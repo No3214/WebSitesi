@@ -42,15 +42,17 @@ test.describe("Rezervasyon sayfasi", () => {
 });
 
 test.describe("EN public localization", () => {
-  test("EN ana sayfa ilk icerikte Ingilizce kalir ve CTA linkleri /en rotalarina gider", async ({ page }) => {
+  test("EN ana sayfa ilk icerikte Ingilizce kalir ve rezervasyon CTA'lari HMS'e gider", async ({ page }) => {
     await page.goto("/en");
 
     const main = page.locator("main");
     await expect(page.getByRole("heading", { name: "In the Heart of History An Elegant Aegean Escape" })).toBeVisible();
     await expect(main.getByText("Tarihin Kalbinde")).toHaveCount(0);
-    await expect(main.getByRole("link", { name: "Book Now" })).toHaveAttribute("href", "/en/rezervasyon");
+    await expect(main.getByRole("link", { name: "Book Now" })).toHaveAttribute("href", HMS_BOOKING_URL);
+    await expect(main.getByRole("link", { name: "Book Now" })).toHaveAttribute("target", "_blank");
     await expect(main.getByRole("link", { name: "Plan an Event" })).toHaveAttribute("href", "/en/organizasyonlar");
-    await expect(main.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("href", "/en/rezervasyon");
+    await expect(main.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("href", HMS_BOOKING_URL);
+    await expect(main.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("target", "_blank");
   });
 
   test("EN ana sayfa uppercase metinleri Ingilizce locale ile render eder", async ({ page }) => {
@@ -140,7 +142,8 @@ test.describe("EN public localization", () => {
 
     await expect(page.getByRole("heading", { name: "Before You Arrive" })).toBeVisible();
     await expect(page.getByText("What are the check-in / check-out times?")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("href", "/en/rezervasyon");
+    await expect(page.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("href", HMS_BOOKING_URL);
+    await expect(page.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("target", "_blank");
     await expect(page.getByText("Merak Ettikleriniz")).toHaveCount(0);
     await expect(page.getByText("Organizasyon rezervasyonu nasıl yapılır?")).toHaveCount(0);
   });
@@ -202,7 +205,8 @@ test.describe("Locale route precedence", () => {
 
     await page.goto("/odalar");
     await expect(page.getByRole("heading", { name: "Rafine Oda ve Süitler" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Müsaitlik Sorgula" })).toHaveAttribute("href", "/rezervasyon");
+    await expect(page.getByRole("link", { name: "Müsaitlik Sorgula" })).toHaveAttribute("href", HMS_BOOKING_URL);
+    await expect(page.getByRole("link", { name: "Müsaitlik Sorgula" })).toHaveAttribute("target", "_blank");
     await expect(page.locator("header.site-header").getByRole("link", { name: "Rezervasyon" })).toHaveAttribute("href", HMS_BOOKING_URL);
     await expect(page.locator("footer.footer").getByText("Tüm hakları saklıdır.")).toBeVisible();
     await expect(page.getByRole("dialog", { name: "Çerez tercihleri" })).toBeVisible();

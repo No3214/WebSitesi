@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
-
 import { FadeIn } from "@/components/animations";
+import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { getWhatsAppHref } from "@/lib/contact";
+import { publicEnv } from "@/lib/public-env";
 
 export function FinalCta({ locale }: { locale: "tr" | "en" }) {
-  const reservationHref = locale === "en" ? "/en/rezervasyon" : "/rezervasyon";
+  const reservationHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
   const whatsappHref = getWhatsAppHref(
     locale === "tr"
       ? "Merhaba, Kozbeyli Konağı'nda konaklama planlıyorum. Yardımcı olur musunuz?"
@@ -27,9 +27,15 @@ export function FinalCta({ locale }: { locale: "tr" | "en" }) {
               : "History, gastronomy and Aegean serenity in a single courtyard. Reserve today and become part of the story."}
           </p>
           <div className="hero-actions" style={{ marginTop: 0 }}>
-            <Link href={reservationHref} className="button gold">
+            <a
+              href={reservationHref}
+              className="button gold"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-event="booking_engine_open"
+            >
               {locale === "tr" ? "Rezervasyon Yap" : "Book Your Stay"}
-            </Link>
+            </a>
             <a
               href={whatsappHref}
               target="_blank"

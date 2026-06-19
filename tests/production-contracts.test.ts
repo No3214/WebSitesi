@@ -223,7 +223,22 @@ describe("production readiness contracts", () => {
     const bookingEmbed = read("src/components/hms-booking-embed.tsx");
     const bookingUrlHelper = read("src/lib/booking-engine-url.ts");
     const siteHeader = read("src/components/site-header.tsx");
+    const mobileActionBar = read("src/components/mobile-action-bar.tsx");
+    const homeHero = read("src/components/home/home-hero.tsx");
+    const finalCta = read("src/components/home/final-cta.tsx");
+    const roomsClient = read("src/components/rooms-client.tsx");
+    const roomDetail = read("src/components/room-detail-client.tsx");
+    const faqPageContent = read("src/components/faq-page-content.tsx");
     const envExample = read(".env.example");
+    const primaryBookingCtas = [
+      siteHeader,
+      mobileActionBar,
+      homeHero,
+      finalCta,
+      roomsClient,
+      roomDetail,
+      faqPageContent,
+    ];
 
     expect(bookingEmbed).toContain("getConfiguredBookingEngineHref");
     expect(bookingEmbed).toContain("bookingHref");
@@ -237,6 +252,18 @@ describe("production readiness contracts", () => {
     expect(siteHeader).toContain("getConfiguredBookingEngineHref");
     expect(siteHeader).toContain('target="_blank"');
     expect(siteHeader).toContain('data-event="booking_engine_open"');
+    for (const ctaSource of primaryBookingCtas) {
+      expect(ctaSource).toContain("getConfiguredBookingEngineHref");
+      expect(ctaSource).toContain('target="_blank"');
+      expect(ctaSource).toContain('rel="noopener noreferrer"');
+      expect(ctaSource).toContain('data-event="booking_engine_open"');
+    }
+    expect(mobileActionBar).not.toContain('bookingHref: "/rezervasyon"');
+    expect(mobileActionBar).not.toContain('bookingHref: "/en/rezervasyon"');
+    expect(homeHero).not.toContain('locale === "en" ? "/en/rezervasyon" : "/rezervasyon"');
+    expect(finalCta).not.toContain('locale === "en" ? "/en/rezervasyon" : "/rezervasyon"');
+    expect(roomsClient).not.toContain('href={locale === "en" ? "/en/rezervasyon" : "/rezervasyon"}');
+    expect(roomDetail).not.toContain('href={`/rezervasyon?oda=${slug}`}');
     expect(bookingUrlHelper).toContain("OFFICIAL_HMS_BOOKING_ENGINE_URL");
     expect(bookingUrlHelper).toContain("https://kozbeyli-konagi.hmshotel.net/");
     expect(bookingUrlHelper).toContain('url.protocol !== "https:"');

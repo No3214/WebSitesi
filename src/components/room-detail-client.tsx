@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { notFound, usePathname } from "next/navigation";
-import Link from "next/link";
 import { Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FadeIn } from "@/components/animations";
@@ -11,6 +10,8 @@ import { getDictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
 import { WeatherRibbon } from "@/components/weather-ribbon";
 import { rooms as fallbackRooms } from "@/data/rooms";
+import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
+import { publicEnv } from "@/lib/public-env";
 
 export function RoomDetailClient({ slug }: { slug: string }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,6 +19,9 @@ export function RoomDetailClient({ slug }: { slug: string }) {
   const [activeImg, setActiveImg] = useState(0);
   const room = fallbackRooms.find((item) => item.slug === slug);
   const pathname = usePathname();
+  const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL, {
+    roomSlug: slug,
+  });
 
   useEffect(() => {
     const locale = pathname === "/en" || Boolean(pathname?.startsWith("/en/")) ? "en" : "tr";
@@ -126,9 +130,15 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                     <span className="price-eyebrow">DİREKT REZERVASYON AVANTAJI</span>
                     <span className="price-main">Lütfen Tarih Seçiniz</span>
                   </div>
-                  <Link href={`/rezervasyon?oda=${slug}`} className="button premium-cta full">
+                  <a
+                    href={bookingHref}
+                    className="button premium-cta full"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-event="booking_engine_open"
+                  >
                     EN İYİ FİYATLA YERİNİZİ AYIRIN
-                  </Link>
+                  </a>
                 </div>
               </div>
             </FadeIn>

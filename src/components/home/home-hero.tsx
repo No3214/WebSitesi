@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Pause, Play } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
+import { publicEnv } from "@/lib/public-env";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
@@ -144,7 +146,7 @@ function HeroVideo({ locale }: Pick<Props, "locale">) {
 export function HomeHero({ locale, eyebrow }: Props) {
   const heroTitle = locale === "tr" ? "Tarihin Kalbinde" : "In the Heart of History";
   const heroAccent = locale === "tr" ? "Zarif Bir Ege Kaçamağı" : "An Elegant Aegean Escape";
-  const reservationHref = locale === "en" ? "/en/rezervasyon" : "/rezervasyon";
+  const reservationHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
   const eventsHref = locale === "en" ? "/en/organizasyonlar" : "/organizasyonlar";
 
   return (
@@ -193,9 +195,15 @@ export function HomeHero({ locale, eyebrow }: Props) {
         </p>
 
         <div className="hero-actions">
-          <Link href={reservationHref} className="button gold">
+          <a
+            href={reservationHref}
+            className="button gold"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-event="booking_engine_open"
+          >
             {locale === "tr" ? "Hemen Rezervasyon" : "Book Now"}
-          </Link>
+          </a>
           <Link href={eventsHref} className="button ghost-light">
             {locale === "tr" ? "Davet & Etkinlik Planla" : "Plan an Event"}
           </Link>
