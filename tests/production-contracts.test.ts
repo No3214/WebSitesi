@@ -500,6 +500,22 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("npm run launch:audit:strict");
   });
 
+  it("keeps homepage Foça positioning broad instead of only Eski or Yeni Foça", () => {
+    const homepageCopy = [
+      read("src/dictionaries/tr.json"),
+      read("src/dictionaries/en.json"),
+      read("src/components/home/home-hero.tsx"),
+      read("src/components/home/experiences-teaser.tsx"),
+      read("src/components/site-footer.tsx"),
+    ].join("\n");
+
+    expect(homepageCopy).toContain("FOÇA, KOZBEYLİ");
+    expect(homepageCopy).toContain("Foça kıyı rotalarına yakın");
+    expect(homepageCopy).toContain("Foça sahil yürüyüşleri");
+    expect(homepageCopy).not.toMatch(/ESKİ FOÇA|OLD FOÇA|Eski Foça|Old Foça|Yeni Foça|New Foça/);
+    expect(homepageCopy).not.toMatch(/Foça'ya 12 dakika|12 minutes from Foça/i);
+  });
+
   it("keeps homepage hero video available during the opening viewport", () => {
     const homeHero = read("src/components/home/home-hero.tsx");
     const globals = read("src/app/globals.css");

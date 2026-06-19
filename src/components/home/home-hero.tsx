@@ -190,8 +190,8 @@ export function HomeHero({ locale, eyebrow }: Props) {
 
         <p className="hero-text">
           {locale === "tr"
-            ? "Beş asırlık Kozbeyli köy dokusu içinde, Foça'ya 12 dakika; 19. yüzyıl tescilli taş konakta rafine bir sükunet."
-            : "Within Kozbeyli's five-century village texture, 12 minutes from Foça; refined serenity in a 19th-century registered stone mansion."}
+            ? "Beş asırlık Kozbeyli köy dokusu içinde, Foça kıyı rotalarına yakın; 19. yüzyıl tescilli taş konakta rafine bir sükunet."
+            : "Within Kozbeyli's five-century village texture, close to Foça's coastal routes; refined serenity in a 19th-century registered stone mansion."}
         </p>
 
         <div className="hero-actions">

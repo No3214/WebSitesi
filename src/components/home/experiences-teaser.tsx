@@ -24,8 +24,8 @@ const guides: Guide[] = [
     href: "/deneyimler/foca-gezi-rehberi",
     title: { tr: "Foça Gezi Rehberi", en: "Foça Travel Guide" },
     desc: {
-      tr: "Konaktan 12 dakika: Eski Foça sahil yürüyüşü, Siren Kayalıkları ve gün batımı noktaları.",
-      en: "Twelve minutes from the mansion: the Old Foça seafront walk, the Siren Rocks and sunset spots.",
+      tr: "Konaktan Foça sahil yürüyüşleri, Siren Kayalıkları ve gün batımı noktaları için özenle derlenmiş rota.",
+      en: "A curated route for Foça waterfront walks, the Siren Rocks and sunset spots from the mansion.",
     },
   },
   {
