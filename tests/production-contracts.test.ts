@@ -309,6 +309,10 @@ describe("production readiness contracts", () => {
     expect(vercelOps).toContain("npm i -g vercel");
     expect(vercelOps).toContain("APPDATA");
     expect(vercelOps).toContain("vc.js");
+    expect(vercelOps).toContain('"vercel_auth"');
+    expect(vercelOps).toContain('"whoami"');
+    expect(vercelOps).toContain("env, deploy and logs operations");
+    expect(vercelOps).toContain("Run vercel login");
     expect(vercelOps).toContain("vercel env pull, vercel deploy and vercel logs");
     expect(vercelOps).toContain("canonical-domain.md");
     expect(vercelOps).toContain("kozbeyli-konagi");
@@ -317,6 +321,7 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("KPI and review loop");
     expect(runbook).toContain("npm run vercel:ops:strict");
     expect(runbook).toContain("npm i -g vercel");
+    expect(runbook).toContain("vercel whoami");
     expect(runbook).toContain("Do not store secrets in this repository");
   });
 

@@ -14,8 +14,8 @@ npm run launch:cutover
 ```
 
 Expected local decision before final cutover is usually `PASS_WITH_WARNINGS`:
-the project link and repo contracts can pass while the global Vercel CLI or
-canonical domain evidence still needs action.
+the project link, authenticated Vercel CLI session and repo contracts can pass
+while canonical domain evidence still needs action.
 
 `launch:cutover` converts the current 100/100 commercial blockers into an
 operator checklist with owner, timing, missing env keys, redacted evidence files,
@@ -34,6 +34,8 @@ npm run vercel:ops:strict
 Strict mode fails on warnings. It should only pass when:
 
 - the global Vercel CLI is installed with `npm i -g vercel`;
+- `vercel whoami` confirms an authenticated operator session for env, deploy
+  and log operations;
 - `.vercel/project.json` points at `kozbeyli-konagi`;
 - domain/env scripts are present;
 - canonical domain evidence is marked `ready`.
@@ -77,6 +79,7 @@ Global Vercel CLI is required for reliable agentic operations:
 ```bash
 npm i -g vercel
 vercel login
+vercel whoami
 vercel env pull
 vercel deploy
 vercel logs

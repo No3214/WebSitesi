@@ -81,20 +81,32 @@ function getVercelCliCandidates() {
   return unique(candidates);
 }
 
-function runVercelVersion(candidate) {
+function runVercelCandidate(candidate, args, timeout = 10000) {
   if (candidate.endsWith(`${path.sep}vc.js`) || candidate.endsWith("/vc.js")) {
-    return execFileSync(process.execPath, [candidate, "--version"], {
+    return execFileSync(process.execPath, [candidate, ...args], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
-      timeout: 10000,
+      timeout,
     }).trim();
   }
 
-  return execFileSync(candidate, ["--version"], {
+  return execFileSync(candidate, args, {
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
-    timeout: 10000,
+    timeout,
   }).trim();
+}
+
+function runVercelVersion(candidate) {
+  return runVercelCandidate(candidate, ["--version"]);
+}
+
+function extractVercelUser(output) {
+  return output
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .find((line) => !line.toLowerCase().startsWith("vercel cli")) || "";
 }
 
 function checkProjectBinding() {
@@ -184,6 +196,37 @@ function checkGlobalCli() {
   }
 }
 
+function checkVercelAuth() {
+  const errors = [];
+
+  for (const candidate of getVercelCliCandidates()) {
+    try {
+      const output = runVercelCandidate(candidate, ["whoami"], 15000);
+      const user = extractVercelUser(output);
+
+      if (user) {
+        return {
+          id: "vercel_auth",
+          status: "pass",
+          detail: `Vercel CLI authenticated as ${user}.`,
+        };
+      }
+
+      errors.push(`${candidate}: empty whoami output`);
+    } catch (error) {
+      errors.push(`${candidate}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  return {
+    id: "vercel_auth",
+    status: "warn",
+    detail: "Vercel CLI is not authenticated for env, deploy and logs operations.",
+    remediation: "Run vercel login with the Vercel account/team that owns kozbeyli-konagi.",
+    error: errors.join("; "),
+  };
+}
+
 function checkPackageScripts() {
   const packageJson = readJson("package.json");
   const missing = REQUIRED_SCRIPTS.filter((script) => !packageJson.scripts?.[script]);
@@ -258,6 +301,7 @@ export function evaluateVercelOpsReadiness() {
   const checks = [
     checkProjectBinding(),
     checkGlobalCli(),
+    checkVercelAuth(),
     checkPackageScripts(),
     checkEnvExample(),
     checkCanonicalEvidence(),

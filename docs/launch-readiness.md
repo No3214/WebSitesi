@@ -39,6 +39,11 @@ kaynağını raporlar. Bu yalnızca teşhisi güçlendirir; eski landing, eksik
 `/api/health`, insecure first-hop veya hero video yokluğu varsa canonical gate
 yine NO-GO kalır.
 
+2026-06-19 Vercel operasyon güncellemesi: `npm run vercel:ops` artık global
+Vercel CLI varlığını Windows AppData fallback'iyle bulmanın yanında `vercel
+whoami` oturumunu da doğrular. Bu, `vercel env pull`, deploy ve logs işlemleri
+için giriş yapılmamış operatör durumunu canonical cutover öncesi görünür yapar.
+
 2026-06-19 HMS güncellemesi: Rezervasyon CTA'ları resmi HMS engine'e yeni sekme
 handoff olarak gider ve public fallback kodda mevcuttur. Eksik kalan konu URL
 değil, canlı tarih/konuk/oda seçimi UAT kanıtı ve `docs/evidence/hms-booking-engine.md`
