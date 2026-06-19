@@ -34,7 +34,6 @@ describe("production readiness contracts", () => {
   it("keeps Meta Pixel on the documented env key", () => {
     const trackedFiles = [
       "src/components/tracking-scripts.tsx",
-      "src/components/consent-gated-scripts.tsx",
       ".env.example",
       "README.md",
     ];
@@ -93,6 +92,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"abuse:verify"');
     expect(readinessScript).toContain('"abuse:verify:json"');
     expect(readinessScript).toContain('"abuse:verify:strict"');
+    expect(readinessScript).toContain('"analytics:verify"');
+    expect(readinessScript).toContain('"analytics:verify:json"');
+    expect(readinessScript).toContain('"analytics:verify:strict"');
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
@@ -141,6 +143,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["abuse:verify:strict"]).toBe(
       "node scripts/abuse-controls-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["analytics:verify"]).toBe("node scripts/analytics-readiness.mjs");
+    expect(packageJson.scripts?.["analytics:verify:json"]).toBe(
+      "node scripts/analytics-readiness.mjs --json",
+    );
+    expect(packageJson.scripts?.["analytics:verify:strict"]).toBe(
+      "node scripts/analytics-readiness.mjs --strict",
+    );
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
     expect(packageJson.scripts?.["vercel:ops:json"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --json",
@@ -155,6 +164,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"src/lib/production-readiness.ts"');
     expect(readinessScript).toContain('"tests/agentic-helper-safety.test.ts"');
     expect(readinessScript).toContain('"tests/abuse-controls-readiness.test.ts"');
+    expect(readinessScript).toContain('"tests/analytics-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"tests/production-readiness.test.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
@@ -162,6 +172,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
     expect(readinessScript).toContain('"scripts/abuse-controls-readiness.mjs"');
+    expect(readinessScript).toContain('"scripts/analytics-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/hms-booking-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
@@ -176,6 +187,7 @@ describe("production readiness contracts", () => {
       "evidence:scan",
       "media:hero:json",
       "abuse:verify:json",
+      "analytics:verify:json",
       "publish:verify",
       "launch:smoke",
       "test:stress",
@@ -187,6 +199,7 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("--list");
     expect(releaseScript).toContain("Commercial evidence redaction scan");
     expect(releaseScript).toContain("Production abuse-control readiness diagnosis");
+    expect(releaseScript).toContain("Analytics purchase readiness diagnosis");
     expect(releaseScript).toContain("process.env.ComSpec");
     expect(releaseScript).not.toContain("launch:audit:strict");
     expect(ciWorkflow).toContain("Release gate manifest");
@@ -252,7 +265,7 @@ describe("production readiness contracts", () => {
     const leadRoute = read("src/app/api/lead/route.ts");
     const legacyLeadService = read("src/services/lead.ts");
     const leadForm = read("src/components/lead-form.tsx");
-    const consentScripts = read("src/components/consent-gated-scripts.tsx");
+    const trackingScripts = read("src/components/tracking-scripts.tsx");
 
     expect(packageJson.scripts?.["abuse:verify:strict"]).toBe(
       "node scripts/abuse-controls-readiness.mjs --strict",
@@ -270,7 +283,45 @@ describe("production readiness contracts", () => {
     expect(legacyLeadService).not.toContain("process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY");
     expect(leadForm).toContain("cf-turnstile");
     expect(leadForm).toContain("NEXT_PUBLIC_TURNSTILE_SITE_KEY");
-    expect(consentScripts).toContain("https://challenges.cloudflare.com/turnstile/v0/api.js");
+    expect(trackingScripts).toContain("https://challenges.cloudflare.com/turnstile/v0/api.js");
+  });
+
+  it("keeps analytics purchase verification consent-bound and evidence-gated", () => {
+    const packageJson = JSON.parse(read("package.json")) as {
+      scripts?: Record<string, string>;
+    };
+    const analyticsReadiness = read("scripts/analytics-readiness.mjs");
+    const layout = read("src/app/layout.tsx");
+    const trackingScripts = read("src/components/tracking-scripts.tsx");
+    const gtm = read("src/lib/gtm.ts");
+    const ga4Server = read("src/lib/ga4-server.ts");
+    const hotelrunnerWebhook = read("src/app/api/webhook/hotelrunner/route.ts");
+    const publicEnv = read("src/lib/public-env.ts");
+
+    expect(packageJson.scripts?.["analytics:verify:strict"]).toBe(
+      "node scripts/analytics-readiness.mjs --strict",
+    );
+    expect(analyticsReadiness).toContain("ANALYTICS PURCHASE TRACKING BLOCKED");
+    expect(analyticsReadiness).toContain("analytics_purchase");
+    expect(analyticsReadiness).toContain("docs/evidence/analytics-purchase.md");
+    expect(analyticsReadiness).toContain("NEXT_PUBLIC_GTM_ID must look like GTM-XXXX");
+    expect(analyticsReadiness).toContain("NEXT_PUBLIC_META_PIXEL_ID must be the numeric Meta Pixel ID");
+    expect(analyticsReadiness).toContain("GA4_MEASUREMENT_ID must look like G-XXXX");
+    expect(analyticsReadiness).toContain("meta_legacy_key_removed");
+    expect(analyticsReadiness).toContain("process.exitCode");
+    expect(analyticsReadiness).not.toContain("process.exit(strict");
+    expect(layout).toContain("<TrackingScripts />");
+    expect(trackingScripts).toContain("consent.analytics && publicEnv.NEXT_PUBLIC_GTM_ID");
+    expect(trackingScripts).toContain("consent.marketing && publicEnv.NEXT_PUBLIC_META_PIXEL_ID");
+    expect(trackingScripts).toContain("https://challenges.cloudflare.com/turnstile/v0/api.js");
+    expect(gtm).toContain("trackViewItem");
+    expect(gtm).toContain("trackBeginCheckout");
+    expect(gtm).toContain("trackGenerateLead");
+    expect(ga4Server).toContain("sendGa4Purchase");
+    expect(ga4Server).toContain("https://www.google-analytics.com/mp/collect");
+    expect(hotelrunnerWebhook).toContain("sendGa4Purchase");
+    expect(hotelrunnerWebhook).toContain("if (!isCancelled)");
+    expect(publicEnv).not.toContain("GA4_API_SECRET");
   });
 
   it("keeps the HMS booking engine as a new-tab handoff instead of a cramped iframe", () => {
@@ -549,12 +600,16 @@ describe("production readiness contracts", () => {
       read("src/dictionaries/en.json"),
       read("src/components/home/home-hero.tsx"),
       read("src/components/home/experiences-teaser.tsx"),
+      read("src/components/home/marquee-band.tsx"),
       read("src/components/site-footer.tsx"),
     ].join("\n");
 
     expect(homepageCopy).toContain("FOÇA, KOZBEYLİ");
     expect(homepageCopy).toContain("Foça kıyı rotalarına yakın");
     expect(homepageCopy).toContain("Foça sahil yürüyüşleri");
+    expect(homepageCopy).toContain('"Foça"');
+    expect(homepageCopy).not.toContain("Foça — Kozbeyli Köyü");
+    expect(homepageCopy).not.toContain("Foça — Kozbeyli Village");
     expect(homepageCopy).not.toMatch(/ESKİ FOÇA|OLD FOÇA|Eski Foça|Old Foça|Yeni Foça|New Foça/);
     expect(homepageCopy).not.toMatch(/Foça'ya 12 dakika|12 minutes from Foça/i);
   });

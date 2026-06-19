@@ -1,8 +1,8 @@
 "use client";
 
 const marqueeItems = {
-  tr: ["Beş Asırlık Köy Dokusu", "180 Yıllık Dibek Ritüeli", "Ege & Antakya Mutfağı", "Foça — Kozbeyli Köyü", "Slow Living", "Butik Misafirperverlik"],
-  en: ["Five-Century Village Texture", "180-Year Dibek Ritual", "Aegean & Antakya Cuisine", "Foça — Kozbeyli Village", "Slow Living", "Boutique Hospitality"],
+  tr: ["Beş Asırlık Köy Dokusu", "180 Yıllık Dibek Ritüeli", "Ege & Antakya Mutfağı", "Foça", "Slow Living", "Butik Misafirperverlik"],
+  en: ["Five-Century Village Texture", "180-Year Dibek Ritual", "Aegean & Antakya Cuisine", "Foça", "Slow Living", "Boutique Hospitality"],
 };
 
 export function MarqueeBand({ locale }: { locale: "tr" | "en" }) {

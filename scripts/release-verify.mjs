@@ -18,6 +18,10 @@ const gates = [
     label: "Production abuse-control readiness diagnosis",
   },
   {
+    script: "analytics:verify:json",
+    label: "Analytics purchase readiness diagnosis",
+  },
+  {
     script: "publish:verify",
     label: "Full publish verification",
   },

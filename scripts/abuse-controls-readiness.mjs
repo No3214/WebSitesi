@@ -16,7 +16,7 @@ const REQUIRED_ENV = [
 const CONTRACT_FILES = {
   leadRoute: "src/app/api/lead/route.ts",
   leadForm: "src/components/lead-form.tsx",
-  consentScripts: "src/components/consent-gated-scripts.tsx",
+  trackingScripts: "src/components/tracking-scripts.tsx",
   rateLimit: "src/lib/rate-limit.ts",
   productionReadiness: "src/lib/production-readiness.ts",
   publicEnv: "src/lib/public-env.ts",
@@ -71,7 +71,7 @@ function fileCheck(id, label, status, detail = "") {
 function sourceContracts(baseDir) {
   const leadRoute = read(baseDir, CONTRACT_FILES.leadRoute);
   const leadForm = read(baseDir, CONTRACT_FILES.leadForm);
-  const consentScripts = read(baseDir, CONTRACT_FILES.consentScripts);
+  const trackingScripts = read(baseDir, CONTRACT_FILES.trackingScripts);
   const rateLimit = read(baseDir, CONTRACT_FILES.rateLimit);
   const productionReadiness = read(baseDir, CONTRACT_FILES.productionReadiness);
   const publicEnv = read(baseDir, CONTRACT_FILES.publicEnv);
@@ -130,11 +130,11 @@ function sourceContracts(baseDir) {
     fileCheck(
       "turnstile_script_loader",
       "Turnstile browser script is loaded from Cloudflare when configured",
-      consentScripts.includes("https://challenges.cloudflare.com/turnstile/v0/api.js") &&
-        consentScripts.includes("publicEnv.NEXT_PUBLIC_TURNSTILE_SITE_KEY")
+      trackingScripts.includes("https://challenges.cloudflare.com/turnstile/v0/api.js") &&
+        trackingScripts.includes("publicEnv.NEXT_PUBLIC_TURNSTILE_SITE_KEY")
         ? "PASS"
         : "FAIL",
-      CONTRACT_FILES.consentScripts,
+      CONTRACT_FILES.trackingScripts,
     ),
     fileCheck(
       "upstash_rate_limit_backend",

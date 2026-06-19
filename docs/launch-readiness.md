@@ -138,7 +138,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 
 ### PASS (kanıtlı)
 - TLS/HSTS/CSP/XFO: `next.config.ts` (HSTS preload, CSP'de GTM/Meta/Turnstile/PostHog + HMS frame-src kontrollü)
-- Çerez rızası: zorunlu olmayan scriptler rıza öncesi YÜKLENMİYOR — `src/components/tracking-scripts.tsx` (`consent.analytics && GTM_ID` koşulu), `cookie-consent.tsx`, `consent-gated-scripts.tsx`
+- Çerez rızası: zorunlu olmayan GTM/Meta scriptleri rıza öncesi YÜKLENMİYOR — `src/components/tracking-scripts.tsx` (`consent.analytics && GTM_ID`, `consent.marketing && META_PIXEL_ID` koşulları), `cookie-consent.tsx`. Turnstile bot koruma scripti yalnızca public site key tanımlıysa aynı dosyadan yüklenir.
 - PII: loglarda maskeleme (hash değil) — `src/lib/logger.ts` (maskIp/maskText); kart verisi sitede hiç yok (`payment-wizard` kart alanları söküldü, Garanti 3DS planı: `docs/odeme-karari.md`)
 - Rate limit + replay: `src/lib/rate-limit.ts` (Upstash opsiyonlu); webhook'larda ES256+HMAC imza doğrulama (`tests/security.spec.ts` ile kanıtlı)
 - Admin koruması: `/admin/growth` Payload oturum guard'ı + noindex — `src/app/admin/growth/page.tsx`

@@ -27,6 +27,10 @@ export function TrackingScripts() {
 
   return (
     <>
+      {publicEnv.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? (
+        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+      ) : null}
+
       {consent.analytics && publicEnv.NEXT_PUBLIC_GTM_ID ? (
         <>
           <Script id="gtm-loader" strategy="afterInteractive">
