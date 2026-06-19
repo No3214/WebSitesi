@@ -75,6 +75,7 @@ test.describe("EN public localization", () => {
     await expect(footer.getByText("All rights reserved.")).toBeVisible();
     await expect(footer.getByText("Stone · Olive · Morning Sun")).toBeVisible();
     await expect(footer.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cerez-politikasi");
+    await expect(footer.getByRole("button", { name: "Cookie Preferences" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Open contact options" })).toBeVisible();
     await expect(page.getByRole("dialog", { name: "Cookie preferences" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Reject" })).toBeVisible();

@@ -1,5 +1,7 @@
 export const CONSENT_STORAGE_KEY = "cookie_consent_v2";
 export const CONSENT_VERSION = "2026-03";
+export const CONSENT_UPDATED_EVENT = "consent:updated";
+export const CONSENT_OPEN_EVENT = "consent:open";
 
 export type ConsentState = {
   version: string;
@@ -47,6 +49,10 @@ export function saveConsent(nextConsent: Omit<ConsentState, "updatedAt" | "neces
   };
 
   localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(value));
-  window.dispatchEvent(new CustomEvent("consent:updated", { detail: value }));
+  window.dispatchEvent(new CustomEvent(CONSENT_UPDATED_EVENT, { detail: value }));
   return value;
+}
+
+export function openConsentPreferences() {
+  window.dispatchEvent(new CustomEvent(CONSENT_OPEN_EVENT));
 }

@@ -61,12 +61,17 @@ describe("production readiness contracts", () => {
 
   it("keeps cookie banner policy copy readable in Turkish and English", () => {
     const cookieConsent = read("src/components/cookie-consent.tsx");
+    const footer = read("src/components/site-footer.tsx");
 
     expect(cookieConsent).toContain('policy: "Çerez Politikamızı"');
     expect(cookieConsent).toContain('suffix: " inceleyebilirsiniz."');
     expect(cookieConsent).toContain('policy: "Cookie Policy"');
     expect(cookieConsent).toContain('suffix: "."');
     expect(cookieConsent).not.toContain("Politikamızıinceleyebilirsiniz");
+    expect(cookieConsent).toContain("CONSENT_OPEN_EVENT");
+    expect(footer).toContain("CookiePreferencesButton");
+    expect(footer).toContain("Cookie Preferences");
+    expect(footer).toContain("Çerez Tercihleri");
   });
 
   it("keeps publish readiness aware of payment and stress gates", () => {
@@ -503,6 +508,27 @@ describe("production readiness contracts", () => {
     expect(gastronomyEditorial).not.toContain('preload="metadata"');
   });
 
+  it("keeps the homepage gastronomy editorial copy inside a safe text column", () => {
+    const gastronomyEditorial = read("src/components/home/gastronomy-editorial.tsx");
+    const globals = read("src/app/globals.css");
+
+    expect(gastronomyEditorial).toContain("gastronomy-editorial-section");
+    expect(globals).toContain(".gastronomy-editorial-section > .container");
+    expect(globals).toContain('grid-template-areas: "copy media"');
+    expect(globals).not.toContain(".editorial.reverse {\n    direction: rtl;");
+  });
+
+  it("keeps the full gallery from blocking first load on image optimizer work", () => {
+    const galleryPage = read("src/app/galeri/page.tsx");
+    const globals = read("src/app/globals.css");
+
+    expect(galleryPage).not.toContain('from "next/image"');
+    expect(galleryPage).toContain("<img");
+    expect(galleryPage).toContain('loading={i === 0 ? "eager" : "lazy"}');
+    expect(galleryPage).toContain('decoding="async"');
+    expect(globals).toContain(".gallery-grid-item img {\n    width: 100%;\n    height: 100%;\n    display: block;");
+  });
+
   it("keeps first-visit hero rendering from waiting on late webfont swaps", () => {
     const layout = read("src/app/layout.tsx");
 
@@ -606,10 +632,17 @@ describe("production readiness contracts", () => {
 
   it("keeps room browsing in a light product-inspection theme", () => {
     const roomsClient = read("src/components/rooms-client.tsx");
+    const roomsPage = read("src/app/odalar/page.tsx");
+    const enRoomsPage = read("src/app/en/odalar/page.tsx");
     const pageHero = read("src/components/page-hero.tsx");
     const globals = read("src/app/globals.css");
     const layout = read("src/app/layout.tsx");
 
+    expect(roomsPage).toContain('await getDictionary("tr")');
+    expect(roomsPage).toContain('initialLocale="tr"');
+    expect(enRoomsPage).toContain('await getDictionary("en")');
+    expect(enRoomsPage).toContain('initialLocale="en"');
+    expect(roomsClient).toContain("initialDict");
     expect(roomsClient).toContain('<SiteHeader variant="solid" />');
     expect(roomsClient).toContain('tone="light"');
     expect(roomsClient).toContain("rooms-catalog-section");

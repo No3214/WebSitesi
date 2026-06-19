@@ -6,8 +6,9 @@ import { usePathname } from "next/navigation";
 import { Cookie } from "lucide-react";
 
 import {
+  CONSENT_OPEN_EVENT,
   CONSENT_STORAGE_KEY,
-  // getDefaultConsent,
+  getDefaultConsent,
   parseConsent,
   saveConsent,
   type ConsentState,
@@ -98,6 +99,18 @@ export function CookieConsent() {
     }
 
     setDraft({ analytics: current.analytics, marketing: current.marketing });
+  }, []);
+
+  useEffect(() => {
+    const openPreferences = () => {
+      const current = parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY)) || getDefaultConsent();
+      setDraft({ analytics: current.analytics, marketing: current.marketing });
+      setIsExpanded(true);
+      setIsVisible(true);
+    };
+
+    window.addEventListener(CONSENT_OPEN_EVENT, openPreferences);
+    return () => window.removeEventListener(CONSENT_OPEN_EVENT, openPreferences);
   }, []);
 
   const summaryText = useMemo(() => {

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { RoomsClient } from "@/components/rooms-client";
+import { getDictionary } from "@/lib/dictionary";
 
 export const metadata: Metadata = {
   title: "Lüks Taş Odalar & Konaklama",
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
   keywords: ["kozbeyli taş odalar", "foça butik otel", "tarihi mimari konaklama", "izole butik tatil", "foça lüks konaklama", "izmir butik otel odaları", "restore edilmiş konak", "sessiz doğa tatili"],
 };
 
-export default function RoomsPage() {
-  return <RoomsClient />;
+export default async function RoomsPage() {
+  const dict = await getDictionary("tr");
+  return <RoomsClient initialDict={dict} initialLocale="tr" />;
 }

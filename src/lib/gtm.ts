@@ -1,11 +1,13 @@
+import { CONSENT_STORAGE_KEY, getDefaultConsent, parseConsent } from "@/lib/consent";
+
 // GA4 / GTM + Meta Pixel funnel yardımcıları.
 //
 // Rıza modeli (tracking-scripts.tsx):
-// - GTM yalnızca consent.analytics ile yüklenir. dataLayer push'ları GTM
-//   yüklenmemişse tarayıcı belleğindeki kuyrukta bekler; rıza hiç gelmezse
-//   GTM yüklenmez ve kuyruk sekmeyle birlikte yok olur — veri SIZMAZ.
-// - Meta Pixel yalnızca consent.marketing ile yüklenir. window.fbq rıza
-//   yoksa tanımsızdır; fbqTrack bu durumda sessizce no-op olur.
+// - GTM yalnızca consent.analytics ile yüklenir ve event helper'ı her çağrıda
+//   güncel analytics rızasını tekrar okur. Rıza geri çekildiyse dataLayer'a
+//   yeni event yazılmaz.
+// - Meta Pixel yalnızca consent.marketing ile yüklenir ve fbqTrack her çağrıda
+//   güncel marketing rızasını tekrar okur. Rıza geri çekildiyse no-op olur.
 //
 // Her huni adımı GA4 ve Meta'nın standart event karşılığıyla İKİLİ basılır:
 //   view_item        ↔ ViewContent
@@ -25,8 +27,15 @@ declare global {
   }
 }
 
+function hasOptionalConsent(category: "analytics" | "marketing") {
+  if (typeof window === "undefined") return false;
+  const consent = parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY)) || getDefaultConsent();
+  return consent[category];
+}
+
 export function pushEvent(event: string, params: Record<string, unknown> = {}) {
   if (typeof window === "undefined") return;
+  if (!hasOptionalConsent("analytics")) return;
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event, ...params });
 }
@@ -34,6 +43,7 @@ export function pushEvent(event: string, params: Record<string, unknown> = {}) {
 /** Meta Pixel standart eventi — pixel rızayla yüklenmemişse no-op. */
 export function fbqTrack(event: string, params: Record<string, unknown> = {}) {
   if (typeof window === "undefined" || typeof window.fbq !== "function") return;
+  if (!hasOptionalConsent("marketing")) return;
   window.fbq("track", event, params);
 }
 

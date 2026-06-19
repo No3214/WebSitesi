@@ -7,6 +7,7 @@ import { getDictionary } from "@/lib/dictionary";
 import { getPhoneHref, MAPS_URL, PHONE_DISPLAY } from "@/lib/contact";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
 import { LogoMark } from "./logo-mark";
+import { CookiePreferencesButton } from "./cookie-preferences-button";
 
 function isEnPath(pathname: string): boolean {
   return pathname === "/en" || pathname.startsWith("/en/");
@@ -106,6 +107,9 @@ export function SiteFooter() {
                   <Link href={link.href}>{link.label}</Link>
                 </li>
               ))}
+              <li>
+                <CookiePreferencesButton label={englishPath ? "Cookie Preferences" : "Çerez Tercihleri"} />
+              </li>
             </ul>
           </div>
 

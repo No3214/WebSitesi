@@ -53,6 +53,23 @@ describe("consent-gated analytics RUM contracts", () => {
     expect(layout).toContain("<WebVitalsReporter />");
   });
 
+  it("lets guests reopen and change optional cookie consent after the first choice", () => {
+    const consent = read("src/lib/consent.ts");
+    const cookieConsent = read("src/components/cookie-consent.tsx");
+    const footer = read("src/components/site-footer.tsx");
+    const cookiePolicy = read("src/app/cerez-politikasi/page.tsx");
+
+    expect(consent).toContain('CONSENT_OPEN_EVENT = "consent:open"');
+    expect(consent).toContain("openConsentPreferences");
+    expect(cookieConsent).toContain("window.addEventListener(CONSENT_OPEN_EVENT");
+    expect(cookieConsent).toContain("setIsExpanded(true)");
+    expect(footer).toContain("CookiePreferencesButton");
+    expect(footer).toContain("Çerez Tercihleri");
+    expect(footer).toContain("Cookie Preferences");
+    expect(cookiePolicy).toContain("Çerez Tercihlerini Aç");
+    expect(cookiePolicy).not.toContain("kaydı silerek bandı yeniden görüntüleyebilir");
+  });
+
   it("keeps PostHog limited to manual, privacy-minimized analytics", () => {
     const analyticsProvider = read("src/components/analytics-provider.tsx");
 
@@ -71,5 +88,16 @@ describe("consent-gated analytics RUM contracts", () => {
     expect(analyticsProvider).toContain("$fbclid");
     expect(analyticsProvider).not.toContain("window.location.href");
     expect(analyticsProvider).not.toContain("document.referrer");
+  });
+
+  it("keeps GTM and Meta event helpers fail-closed after consent withdrawal", () => {
+    const gtm = read("src/lib/gtm.ts");
+
+    expect(gtm).toContain("hasOptionalConsent");
+    expect(gtm).toContain('hasOptionalConsent("analytics")');
+    expect(gtm).toContain('hasOptionalConsent("marketing")');
+    expect(gtm).toContain("parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY))");
+    expect(gtm).toContain("if (!hasOptionalConsent(\"analytics\")) return;");
+    expect(gtm).toContain("if (!hasOptionalConsent(\"marketing\")) return;");
   });
 });

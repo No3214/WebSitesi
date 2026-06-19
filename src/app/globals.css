@@ -1031,12 +1031,13 @@
   .editorial {
     display: grid;
     grid-template-columns: 1.05fr 0.95fr;
+    grid-template-areas: "media copy";
     gap: clamp(32px, 6vw, 80px);
     align-items: center;
   }
 
   .editorial.reverse {
-    direction: rtl;
+    grid-template-areas: "copy media";
   }
 
   .editorial.reverse > * {
@@ -1044,6 +1045,7 @@
   }
 
   .editorial-media {
+    grid-area: media;
     position: relative;
     aspect-ratio: 4 / 3;
     overflow: hidden;
@@ -1069,6 +1071,11 @@
     font-size: var(--fs-h3);
     color: var(--olive);
     margin: 0 0 18px;
+  }
+
+  .editorial-copy {
+    grid-area: copy;
+    min-width: 0;
   }
 
   .editorial-copy p {
@@ -1179,6 +1186,9 @@
   }
 
   .gallery-grid-item img {
+    width: 100%;
+    height: 100%;
+    display: block;
     object-fit: cover;
     transition: transform 1s var(--ease-lux);
   }
@@ -1740,6 +1750,36 @@
     opacity: 1;
   }
 
+  .footer-link-button {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .footer-link-button svg {
+    color: var(--gold);
+    flex: none;
+  }
+
+  .footer-link-button:hover {
+    color: var(--gold);
+    opacity: 1;
+  }
+
+  .footer-link-button:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
   .footer-info p {
     max-width: 320px;
     line-height: 1.7;
@@ -1776,6 +1816,9 @@
     .editorial,
     .editorial.reverse {
       grid-template-columns: 1fr;
+      grid-template-areas:
+        "media"
+        "copy";
       direction: ltr;
     }
 
@@ -1844,6 +1887,14 @@
   margin-inline: auto;
 }
 
+/* The homepage gastronomy split is a brand-critical editorial layout. Keep its
+   text inside the same safe column even if Tailwind's `.container` utility wins
+   elsewhere in the cascade. */
+.gastronomy-editorial-section > .container {
+  width: min(1280px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
 .site-header .brand-logo {
   min-width: 0;
 }
@@ -1862,6 +1913,10 @@
   .site-header .container.header-inner {
     width: calc(100% - 32px);
     gap: 12px;
+  }
+
+  .gastronomy-editorial-section > .container {
+    width: calc(100% - 40px);
   }
 
   .site-header .brand-logo {

@@ -61,7 +61,7 @@ function LazyEditorialVideo({ src, poster, label }: LazyEditorialVideoProps) {
 
 export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
   return (
-    <section className="section section-alt" id="gastronomi">
+    <section className="section section-alt gastronomy-editorial-section" id="gastronomi">
       <div className="container">
         <FadeIn>
           <SectionTitle

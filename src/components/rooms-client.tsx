@@ -10,17 +10,24 @@ import { getDictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
 import { PageHero } from "@/components/page-hero";
 
-export function RoomsClient() {
+type RoomsClientProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(null);
-  const [locale, setLocale] = useState<"tr" | "en">("tr");
+  initialDict?: any;
+  initialLocale?: "tr" | "en";
+};
+
+export function RoomsClient({ initialDict, initialLocale = "tr" }: RoomsClientProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [dict, setDict] = useState<any>(initialDict ?? null);
+  const [locale, setLocale] = useState<"tr" | "en">(initialLocale);
   const pathname = usePathname();
 
   useEffect(() => {
     const current = pathname === "/en" || Boolean(pathname?.startsWith("/en/")) ? "en" : "tr";
     setLocale(current);
+    if (current === initialLocale && initialDict) return;
     getDictionary(current).then(setDict);
-  }, [pathname]);
+  }, [initialDict, initialLocale, pathname]);
 
   if (!dict) return <div className="loading-screen" />;
 

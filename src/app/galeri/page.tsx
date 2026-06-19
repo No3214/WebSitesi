@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-img-element -- The full gallery serves approved public assets directly to avoid image optimizer contention during heavy parallel release checks. */
 import { Metadata } from "next";
-import Image from "next/image";
 
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
@@ -49,13 +49,13 @@ export default function GalleryPage() {
               <div className="gallery-grid">
                 {galleryExtended.map((shot, i) => (
                   <figure key={shot.src} className="gallery-grid-item" style={{ margin: 0 }}>
-                    <Image
+                    <img
                       src={shot.src}
                       alt={shot.caption.tr}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover"
-                      loading={i < 3 ? "eager" : "lazy"}
+                      loading={i === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                      fetchPriority={i === 0 ? "high" : "auto"}
                     />
                     <figcaption>{shot.caption.tr}</figcaption>
                   </figure>

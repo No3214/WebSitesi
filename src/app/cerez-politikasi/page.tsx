@@ -2,6 +2,7 @@ import { Metadata } from "next";
 
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
+import { CookiePreferencesButton } from "@/components/cookie-preferences-button";
 
 export const metadata: Metadata = {
   title: "Çerez Politikası",
@@ -101,11 +102,14 @@ export default function CookiePolicyPage() {
                 <h2 className="text-zinc-900 font-bold mb-4">4. TERCİHLERİNİZİ YÖNETME</h2>
                 <p>
                   Çerez tercihlerinizi sitede ilk ziyaretinizde görünen çerez bandı üzerinden
-                  belirleyebilirsiniz. Daha sonra fikriniz değişirse tarayıcınızın site verileri
-                  bölümünden kaydı silerek bandı yeniden görüntüleyebilir veya tarayıcı
-                  ayarlarınızdan çerezleri toplu olarak yönetebilirsiniz. Zorunlu olmayan
-                  çerezleri reddetmeniz, sitenin temel işlevlerini etkilemez.
+                  belirleyebilirsiniz. Daha sonra fikriniz değişirse bu sayfadaki veya site
+                  alt bilgisindeki tercih kontrolüyle rızanızı güncelleyebilirsiniz. Tarayıcı
+                  ayarlarınızdan çerezleri toplu olarak yönetmeniz de mümkündür. Zorunlu
+                  olmayan çerezleri reddetmeniz, sitenin temel işlevlerini etkilemez.
                 </p>
+                <div className="mt-5">
+                  <CookiePreferencesButton label="Çerez Tercihlerini Aç" className="button secondary sm" />
+                </div>
               </section>
 
               <section>
