@@ -9,7 +9,7 @@ export function MarqueeBand({ locale }: { locale: "tr" | "en" }) {
   const marquee = marqueeItems[locale];
 
   return (
-    <div className="section-dark" aria-hidden>
+    <div className="marquee-band" aria-hidden>
       <div className="marquee">
         <div className="marquee-track">
           {[...marquee, ...marquee].map((item, i) => (

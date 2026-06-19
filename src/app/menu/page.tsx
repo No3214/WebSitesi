@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 export default function MenuPage() {
   return (
     <>
-      <SiteHeader variant="overlay" />
+      <SiteHeader variant="solid" />
       <PageHero
         eyebrow="GASTRONOMİ"
         title="Doğadan Tabağa Ege Lezzetleri"

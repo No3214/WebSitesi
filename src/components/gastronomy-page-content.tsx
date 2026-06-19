@@ -94,12 +94,12 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: "var(--ink)" }}>
+    <main className="min-h-screen gastronomy-story-page" style={{ background: "var(--ivory)" }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantJsonLd) }}
       />
-      <SiteHeader variant="overlay" />
+      <SiteHeader variant="solid" />
 
       <StoryHero title={copy.heroTitle} subtitle={copy.heroSubtitle} />
 
@@ -115,7 +115,7 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
       <section style={{ padding: "72px 24px", maxWidth: 1080, margin: "0 auto" }}>
         <h2
           style={{
-            color: "#f5f1e8",
+            color: "var(--olive)",
             fontSize: "1.8rem",
             textAlign: "center",
             marginBottom: 12,
@@ -124,7 +124,7 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
         >
           {copy.liveTitle}
         </h2>
-        <p style={{ color: "rgba(245,241,232,0.7)", textAlign: "center", marginBottom: 40 }}>
+        <p style={{ color: "var(--muted)", textAlign: "center", marginBottom: 40 }}>
           {copy.liveText}
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 28 }}>
@@ -146,7 +146,7 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
               </video>
               <figcaption
                 style={{
-                  color: "rgba(245,241,232,0.6)",
+                  color: "var(--muted)",
                   fontSize: "0.9rem",
                   marginTop: 10,
                   textAlign: "center",

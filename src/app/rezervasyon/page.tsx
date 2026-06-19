@@ -83,7 +83,7 @@ export async function ReservationPageContent({
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <SiteHeader variant="overlay" />
+      <SiteHeader variant="solid" />
       <PageHero
         eyebrow={copy.eyebrow}
         title={copy.title}

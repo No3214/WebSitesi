@@ -1238,8 +1238,8 @@
   }
 
   .testimonial {
-    background: rgba(250, 249, 246, 0.04);
-    border: 1px solid var(--border-dark);
+    background: rgba(255, 252, 246, 0.92);
+    border: 1px solid rgba(61, 74, 59, 0.12);
     padding: 36px 30px;
     display: flex;
     flex-direction: column;
@@ -1253,7 +1253,7 @@
   .testimonial:hover {
     transform: translateY(-6px);
     border-color: rgba(179, 146, 92, 0.5);
-    background: rgba(250, 249, 246, 0.07);
+    background: var(--white);
   }
 
   .testimonial .stars {
@@ -1267,7 +1267,7 @@
     font-family: var(--serif);
     font-size: 1.12rem;
     line-height: 1.7;
-    color: var(--ivory);
+    color: var(--olive);
     font-style: italic;
     flex: 1;
   }
@@ -1276,7 +1276,7 @@
     font-size: 0.72rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--gold-text);
     font-weight: 700;
   }
 
@@ -1408,23 +1408,28 @@
 
   .cta-banner h2 {
     font-size: clamp(2.2rem, 5vw, 4rem);
-    color: var(--ivory);
+    color: var(--olive);
     margin: 0 0 18px;
     text-wrap: balance;
   }
 
   .cta-banner p {
-    color: rgba(250, 249, 246, 0.75);
+    color: var(--muted);
     max-width: 560px;
     margin: 0 auto 36px;
     line-height: 1.8;
   }
 
   /* ---------- Marquee ---------- */
+  .marquee-band {
+    background-color: #f7f1e7;
+    background-image: linear-gradient(180deg, rgba(251, 247, 237, 0.96), rgba(242, 236, 223, 0.96));
+  }
+
   .marquee {
     overflow: hidden;
     white-space: nowrap;
-    border-block: 1px solid var(--border-dark);
+    border-block: 1px solid rgba(61, 74, 59, 0.12);
     padding: 18px 0;
     mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   }
@@ -1445,7 +1450,7 @@
     font-size: 1rem;
     letter-spacing: 0.28em;
     text-transform: uppercase;
-    color: rgba(250, 249, 246, 0.55);
+    color: rgba(61, 74, 59, 0.72);
     display: inline-flex;
     align-items: center;
     gap: 56px;

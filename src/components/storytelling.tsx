@@ -4,8 +4,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-const EASE_LUX = [0.16, 1, 0.3, 1] as const;
-
 function useDesktopHorizontalMotion() {
   const [enabled, setEnabled] = useState(false);
 
@@ -30,7 +28,7 @@ interface StorySegmentProps {
 
 /**
  * Scroll'a bağlı editoryal hikaye bloğu — marka dili:
- * Playfair serif başlık, gold ayraç, ivory metin, çerçeveli görsel.
+ * Playfair serif başlık, gold ayraç, açık taş zemin ve çerçeveli görsel.
  */
 export const StorySegment = ({ title, content, image, side = "left" }: StorySegmentProps) => {
   const ref = useRef(null);
@@ -66,7 +64,7 @@ export const StorySegment = ({ title, content, image, side = "left" }: StorySegm
           className="serif"
           style={{
             fontSize: "clamp(1.9rem, 3.4vw, 2.9rem)",
-            color: "var(--ivory)",
+            color: "var(--olive)",
             lineHeight: 1.15,
             margin: "0 0 20px",
             textWrap: "balance",
@@ -85,7 +83,7 @@ export const StorySegment = ({ title, content, image, side = "left" }: StorySegm
         />
         <p
           style={{
-            color: "rgba(250, 249, 246, 0.72)",
+            color: "var(--muted)",
             fontSize: "1.08rem",
             lineHeight: 1.9,
             margin: 0,
@@ -111,7 +109,7 @@ export const StorySegment = ({ title, content, image, side = "left" }: StorySegm
             style={{
               position: "absolute",
               inset: 14,
-              border: "1px solid rgba(250, 249, 246, 0.3)",
+              border: "1px solid rgba(61, 74, 59, 0.28)",
               pointerEvents: "none",
             }}
           />
@@ -122,7 +120,7 @@ export const StorySegment = ({ title, content, image, side = "left" }: StorySegm
 };
 
 /**
- * Hikaye sayfaları için sinematik giriş — ink zemin, gold ışıma, serif başlık.
+ * Hikaye sayfaları için açık editoryal giriş — taş/ivory zemin, gold vurgu, serif başlık.
  */
 export const StoryHero = ({ title, subtitle }: { title: string; subtitle: string }) => {
   return (
@@ -139,40 +137,31 @@ export const StoryHero = ({ title, subtitle }: { title: string; subtitle: string
         position: "relative",
         overflow: "hidden",
         background:
-          "radial-gradient(1100px 480px at 75% -10%, rgba(179, 146, 92, 0.16), transparent 60%), radial-gradient(800px 400px at 10% 110%, rgba(46, 93, 107, 0.16), transparent 55%), var(--ink)",
+          "radial-gradient(1100px 480px at 75% -10%, rgba(179, 146, 92, 0.16), transparent 60%), radial-gradient(800px 400px at 10% 110%, rgba(61, 74, 59, 0.08), transparent 55%), linear-gradient(180deg, #fbf7ed 0%, #f2ecdf 100%)",
       }}
     >
-      <motion.span
-        initial={{ opacity: 0, y: -14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: EASE_LUX }}
+      <span
         className="eyebrow"
-        style={{ position: "relative", zIndex: 2 }}
+        style={{ position: "relative", zIndex: 2, color: "var(--gold-text)" }}
       >
         {subtitle}
-      </motion.span>
-      <span style={{ display: "block", overflow: "hidden", position: "relative", zIndex: 2 }}>
-        <motion.h1
-          initial={{ y: "108%" }}
-          animate={{ y: 0 }}
-          transition={{ duration: 1, delay: 0.1, ease: EASE_LUX }}
-          className="serif"
-          style={{
-            fontSize: "clamp(2.8rem, 7vw, 5.6rem)",
-            color: "var(--ivory)",
-            margin: 0,
-            lineHeight: 1.08,
-            textWrap: "balance",
-          }}
-        >
-          {title}
-        </motion.h1>
       </span>
-      <motion.div
+      <h1
+        className="serif"
+        style={{
+          position: "relative",
+          zIndex: 2,
+          fontSize: "clamp(2.8rem, 7vw, 5.6rem)",
+          color: "var(--olive)",
+          margin: 0,
+          lineHeight: 1.08,
+          textWrap: "balance",
+        }}
+      >
+        {title}
+      </h1>
+      <div
         aria-hidden
-        initial={{ scaleY: 0 }}
-        animate={{ scaleY: 1 }}
-        transition={{ duration: 0.9, delay: 0.6, ease: EASE_LUX }}
         style={{
           width: 1,
           height: 64,

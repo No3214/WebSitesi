@@ -62,7 +62,7 @@ const guideItems = [
 export default function EnglishGuestGuidePage() {
   return (
     <>
-      <SiteHeader variant="overlay" />
+      <SiteHeader variant="solid" />
       <main className="guest-guide-page">
         <PageHero
           eyebrow="GUEST STANDARDS"
@@ -92,17 +92,17 @@ export default function EnglishGuestGuidePage() {
           </div>
         </section>
 
-        <section className="section section-dark grain py-20 overflow-hidden">
+        <section className="section section-alt py-20 overflow-hidden">
           <div className="container relative text-center" style={{ zIndex: 2 }}>
             <FadeIn>
-              <h2 className="serif text-3xl md:text-5xl mb-8">Need a Specific Answer?</h2>
-              <p className="mb-10 max-w-xl mx-auto" style={{ color: "rgba(250,249,246,0.7)" }}>
+              <h2 className="serif text-3xl md:text-5xl mb-8" style={{ color: "var(--olive)" }}>Need a Specific Answer?</h2>
+              <p className="mb-10 max-w-xl mx-auto" style={{ color: "var(--muted)" }}>
                 The Kozbeyli Konağı guest relations team can help you refine arrival,
                 dining and local experience details before your stay.
               </p>
               <a
                 href={getWhatsAppHref("Hello, I am reading the guest guide and have a question.")}
-                className="button ghost-light"
+                className="button secondary"
                 data-event="whatsapp_click"
               >
                 ASK VIA WHATSAPP

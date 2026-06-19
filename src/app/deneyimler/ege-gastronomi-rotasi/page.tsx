@@ -72,7 +72,7 @@ export default function EgeGastronomiRotasiPage() {
           </div>
         </section>
 
-        <section className="section section-dark">
+        <section className="section section-alt">
           <div className="container" style={{ maxWidth: 880 }}>
             <FadeIn>
               <SectionTitle
@@ -105,7 +105,7 @@ export default function EgeGastronomiRotasiPage() {
           </div>
         </section>
 
-        <section className="section section-dark">
+        <section className="section section-alt">
           <div className="container" style={{ maxWidth: 880 }}>
             <FadeIn>
               <SectionTitle

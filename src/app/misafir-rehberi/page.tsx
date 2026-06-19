@@ -73,7 +73,7 @@ const guideItems = [
 export default function GuestGuidePage() {
   return (
     <>
-      <SiteHeader variant="overlay" />
+      <SiteHeader variant="solid" />
       <main className="guest-guide-page">
         <PageHero
           eyebrow="SERVİS STANDARTLARIMIZ"
@@ -104,16 +104,16 @@ export default function GuestGuidePage() {
         </section>
         
         {/* LOCAL TIPS BANNER */}
-        <section className="section section-dark grain py-20 overflow-hidden">
+        <section className="section section-alt py-20 overflow-hidden">
           <div className="container relative text-center" style={{ zIndex: 2 }}>
             <FadeIn>
-               <h2 className="serif text-3xl md:text-5xl mb-8">Henüz Cevap Almadınız mı?</h2>
-               <p className="mb-10 max-w-xl mx-auto" style={{ color: "rgba(250,249,246,0.7)" }}>
+               <h2 className="serif text-3xl md:text-5xl mb-8" style={{ color: "var(--olive)" }}>Henüz Cevap Almadınız mı?</h2>
+               <p className="mb-10 max-w-xl mx-auto" style={{ color: "var(--muted)" }}>
                  Kozbeyli Konağı ekibi WhatsApp üzerinden sorularınızı yanıtlar.
                </p>
                <a
                  href={getWhatsAppHref("Merhaba, misafir rehberinden ulaşıyorum.")}
-                 className="button ghost-light"
+                 className="button secondary"
                  data-event="whatsapp_click"
                >
                  WHATSAPP İLE SORUN

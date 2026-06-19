@@ -307,7 +307,7 @@ const englishMenuSections: MenuSection[] = [
 export default function EnglishMenuPage() {
   return (
     <>
-      <SiteHeader variant="overlay" />
+      <SiteHeader variant="solid" />
       <PageHero
         eyebrow="DINING"
         title="A Curated Aegean and Antakya Table"

@@ -103,14 +103,22 @@ export const HeritageArchive = ({ locale = "tr" }: { locale?: Locale }) => {
   const copy = archiveCopy[locale];
 
   return (
-    <div className="py-24 bg-zinc-950 rounded-[40px] border border-zinc-900 p-12 overflow-hidden relative group">
+    <div
+      className="py-24 rounded-[40px] border p-12 overflow-hidden relative group"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(255, 252, 246, 0.98), rgba(241, 234, 220, 0.94))",
+        borderColor: "rgba(61, 74, 59, 0.12)",
+        boxShadow: "0 24px 70px rgba(68, 53, 31, 0.1)",
+      }}
+    >
       <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
-        <div className="serif text-[120px] text-gold uppercase tracking-tighter">{copy.watermark}</div>
+        <div className="serif text-[120px] text-[var(--olive)] uppercase tracking-tighter">{copy.watermark}</div>
       </div>
 
       <div className="relative z-10 mb-16">
-        <h3 className="serif text-4xl text-gold italic mb-4">{copy.title}</h3>
-        <p className="text-zinc-500 max-w-2xl text-sm leading-relaxed">
+        <h3 className="serif text-4xl text-[var(--olive)] italic mb-4">{copy.title}</h3>
+        <p className="text-[var(--muted)] max-w-2xl text-sm leading-relaxed">
           {copy.text}
         </p>
       </div>
@@ -125,7 +133,7 @@ export const HeritageArchive = ({ locale = "tr" }: { locale?: Locale }) => {
             transition={{ delay: i * 0.2 }}
             className="flex flex-col gap-6"
           >
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-1000 border border-zinc-800">
+            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden transition-all duration-1000 border border-[rgba(61,74,59,0.14)]">
               <Image src={item.image} alt={item.title} fill className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[2000ms]" />
               <div className="absolute inset-x-4 bottom-4 bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-white/5">
                 <div className="grid grid-cols-2 gap-2">
@@ -138,8 +146,8 @@ export const HeritageArchive = ({ locale = "tr" }: { locale?: Locale }) => {
               </div>
             </div>
             <div>
-              <h4 className="text-white font-serif text-xl mb-3">{item.title}</h4>
-              <p className="text-zinc-500 text-sm leading-relaxed">{item.description}</p>
+              <h4 className="text-[var(--olive)] font-serif text-xl mb-3">{item.title}</h4>
+              <p className="text-[var(--muted)] text-sm leading-relaxed">{item.description}</p>
             </div>
           </motion.div>
         ))}

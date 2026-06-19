@@ -96,7 +96,7 @@ export function LocationPageContent({ locale }: { locale: LocationLocale }) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <SiteHeader variant="overlay" />
+      <SiteHeader variant="solid" />
       <PageHero eyebrow={t.eyebrow} title={t.title} text={t.text} />
       <main className="section location-page" id="icerik-lokasyon" style={{ paddingTop: 56 }}>
         <div className="container" style={{ maxWidth: 1120 }}>

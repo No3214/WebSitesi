@@ -32,7 +32,7 @@ const testimonials = [
 
 export function TestimonialsSection({ locale }: { locale: "tr" | "en" }) {
   return (
-    <section className="section section-dark grain" id="misafir-sesleri">
+    <section className="section section-alt grain" id="misafir-sesleri">
       <div className="container">
         <FadeIn>
           <SectionTitle

@@ -74,8 +74,8 @@ export function HistoryClient({ locale = "tr" }: { locale?: Locale }) {
   const copy = historyCopy[locale];
 
   return (
-    <main className="min-h-screen" style={{ background: "var(--ink)" }}>
-      <SiteHeader variant="overlay" />
+    <main className="min-h-screen history-story-page" style={{ background: "var(--ivory)" }}>
+      <SiteHeader variant="solid" />
 
       <div className="relative">
         <StoryHero 
@@ -90,10 +90,10 @@ export function HistoryClient({ locale = "tr" }: { locale?: Locale }) {
 
       <section className="py-12 px-6 max-w-7xl mx-auto">
         <div className="mb-10 text-center">
-          <h3 className="text-ivory font-serif text-3xl md:text-4xl mb-3">
+          <h3 className="text-[var(--olive)] font-serif text-3xl md:text-4xl mb-3">
             {copy.sunsetTitle}
           </h3>
-          <p className="text-zinc-500 text-sm max-w-2xl mx-auto">
+          <p className="text-[var(--muted)] text-sm max-w-2xl mx-auto">
             {copy.sunsetText}
           </p>
         </div>
@@ -108,7 +108,7 @@ export function HistoryClient({ locale = "tr" }: { locale?: Locale }) {
           >
             <source src="/videos/sunset.mp4" type="video/mp4" />
           </video>
-          <figcaption className="text-zinc-500 text-xs text-center mt-4">
+          <figcaption className="text-[var(--muted)] text-xs text-center mt-4">
             {copy.sunsetCaption}
           </figcaption>
         </figure>

@@ -247,7 +247,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
 
   return (
     <>
-      <SiteHeader variant="overlay" />
+      <SiteHeader variant="solid" />
       <PageHero
         eyebrow={t.hero.eyebrow}
         title={t.hero.title}

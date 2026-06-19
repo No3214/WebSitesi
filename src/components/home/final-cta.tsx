@@ -14,7 +14,7 @@ export function FinalCta({ locale }: { locale: "tr" | "en" }) {
   );
 
   return (
-    <section className="cta-banner section-dark grain">
+    <section className="cta-banner section-alt grain">
       <div className="container" style={{ position: "relative", zIndex: 2 }}>
         <FadeIn>
           <span className="eyebrow">{locale === "tr" ? "KOZBEYLİ SİZİ BEKLİYOR" : "KOZBEYLİ AWAITS"}</span>
@@ -40,7 +40,7 @@ export function FinalCta({ locale }: { locale: "tr" | "en" }) {
               href={whatsappHref}
               target="_blank"
               rel="noreferrer"
-              className="button ghost-light"
+              className="button secondary"
               data-event="whatsapp_click"
             >
               {locale === "tr" ? "WhatsApp Destek" : "WhatsApp Support"}
