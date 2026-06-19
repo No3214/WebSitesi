@@ -4,6 +4,9 @@ import { evaluateCommercialLaunch } from "./commercial-launch-audit.mjs";
 import { evaluateVercelOpsReadiness } from "./vercel-ops-readiness.mjs";
 
 const VERCEL_INSTALL_COMMAND = "npm i -g vercel";
+const VERCEL_LOGIN_COMMAND = "vercel login";
+const VERCEL_AUTH_CHECK_COMMAND = "vercel whoami";
+const VERCEL_AUTH_COMMANDS = [VERCEL_INSTALL_COMMAND, VERCEL_LOGIN_COMMAND, VERCEL_AUTH_CHECK_COMMAND];
 
 const gateActionCatalog = {
   canonical_domain: {
@@ -19,8 +22,7 @@ const gateActionCatalog = {
       "Run npm run domain:verify:strict and npm run launch:smoke:live before marking evidence ready.",
     ],
     commands: [
-      VERCEL_INSTALL_COMMAND,
-      "vercel login",
+      ...VERCEL_AUTH_COMMANDS,
       "vercel env pull",
       "vercel env add NEXT_PUBLIC_SITE_URL production",
       "npm run domain:verify:strict",
@@ -40,7 +42,7 @@ const gateActionCatalog = {
       "Submit a real lead-form UAT and verify blocked/allowed behavior without logging secrets.",
     ],
     commands: [
-      VERCEL_INSTALL_COMMAND,
+      ...VERCEL_AUTH_COMMANDS,
       "vercel env add NEXT_PUBLIC_TURNSTILE_SITE_KEY production",
       "vercel env add TURNSTILE_SECRET_KEY production",
       "vercel env add UPSTASH_REDIS_REST_URL production",
@@ -79,7 +81,7 @@ const gateActionCatalog = {
       "Store only redacted evidence references in the repository.",
     ],
     commands: [
-      VERCEL_INSTALL_COMMAND,
+      ...VERCEL_AUTH_COMMANDS,
       "vercel env add GARANTI_POS_MODE production",
       "vercel env add GARANTI_MERCHANT_ID production",
       "vercel env add GARANTI_TERMINAL_ID production",
@@ -101,7 +103,7 @@ const gateActionCatalog = {
       "Keep proof redacted; do not commit API secrets or raw visitor data.",
     ],
     commands: [
-      VERCEL_INSTALL_COMMAND,
+      ...VERCEL_AUTH_COMMANDS,
       "vercel env add NEXT_PUBLIC_GTM_ID production",
       "vercel env add NEXT_PUBLIC_META_PIXEL_ID production",
       "vercel env add GA4_MEASUREMENT_ID production",
@@ -122,7 +124,7 @@ const gateActionCatalog = {
       "Record external console/listing references in evidence.",
     ],
     commands: [
-      VERCEL_INSTALL_COMMAND,
+      ...VERCEL_AUTH_COMMANDS,
       "vercel env add GOOGLE_SITE_VERIFICATION production",
       "npm run domain:verify:strict",
       "npm run launch:audit",
@@ -175,7 +177,7 @@ function resolveGateCommands(gate, catalog) {
   }
 
   return [
-    VERCEL_INSTALL_COMMAND,
+    ...VERCEL_AUTH_COMMANDS,
     "vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production",
     ...catalog.commands.filter((command) => command !== VERCEL_INSTALL_COMMAND),
   ];

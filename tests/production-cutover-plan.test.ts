@@ -163,7 +163,15 @@ describe("production cutover plan", () => {
     );
     expect(canonical?.commands).toContain("npm run domain:verify:strict");
     expect(canonical?.commands).toContain("npm run launch:smoke:live");
+    expect(canonical?.commands).toEqual(
+      expect.arrayContaining(["npm i -g vercel", "vercel login", "vercel whoami"]),
+    );
     expect(canonical?.kpiAndReviewLoop).toContain("/api/health");
+
+    const abuseControls = plan.gateSteps.find((step) => step.id === "production_abuse_controls");
+    expect(abuseControls?.commands).toEqual(
+      expect.arrayContaining(["vercel login", "vercel whoami", "vercel env add TURNSTILE_SECRET_KEY production"]),
+    );
 
     const hms = plan.gateSteps.find((step) => step.id === "hms_booking_engine");
     expect(hms?.missingEnv).toEqual([]);
@@ -227,6 +235,7 @@ describe("production cutover plan", () => {
     expect(hms?.checklist[0]).toBe(
       "Fix NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL in Vercel production so it is the approved HTTPS HMS URL, or remove the bad override to use the official code fallback.",
     );
+    expect(hms?.commands).toEqual(expect.arrayContaining(["vercel login", "vercel whoami"]));
     expect(hms?.commands).toContain("vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production");
   });
 

@@ -149,7 +149,8 @@ Aşağıdakiler tamamlanmadan "tam ticari yayın" yok:
 
 ## Dış Blokajlar
 
-- Vercel domain/env/log kontrolü için Vercel CLI oturumunun (`vercel login`)
+- Vercel domain/env/log kontrolü için Vercel CLI oturumunun (`vercel login`,
+  `vercel whoami`)
   aktif olması veya panel erişimi gerekir.
 - Google Business Profile, Hotel Center, Search Console doğrulamaları operasyonel
   hesap erişimi gerektirir.

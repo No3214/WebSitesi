@@ -291,6 +291,7 @@ describe("production readiness contracts", () => {
       scripts?: Record<string, string>;
     };
     const vercelOps = read("scripts/vercel-ops-readiness.mjs");
+    const cutover = read("scripts/production-cutover-plan.mjs");
     const runbook = read("docs/vercel-operations.md");
 
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
@@ -305,6 +306,8 @@ describe("production readiness contracts", () => {
       "node scripts/vercel-ops-readiness.mjs --strict",
     );
     expect(vercelOps).toContain("Kozbeyli Konagi Vercel operations readiness");
+    expect(cutover).toContain("VERCEL_AUTH_COMMANDS");
+    expect(cutover).toContain("vercel whoami");
     expect(vercelOps).toContain("PASS_WITH_WARNINGS");
     expect(vercelOps).toContain("npm i -g vercel");
     expect(vercelOps).toContain("APPDATA");
