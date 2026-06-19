@@ -19,6 +19,17 @@ export function extractClientIp(headers: Headers) {
   );
 }
 
+export function sanitizeJsonLd(data: unknown): string {
+  // Prevent XSS attacks when injecting JSON-LD into <script> tags
+  // Escapes <, >, &, ', and " inside JSON.stringify output.
+  // Using unicode escapes keeps it valid JSON.
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/'/g, "\\u0027");
+}
+
 export function safeText(value: string, maxLength: number) {
   return value
     .replace(/[<>]/g, "")
