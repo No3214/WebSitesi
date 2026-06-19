@@ -29,6 +29,7 @@ type CommercialLaunchModule = {
       ready: boolean;
       missingEnv: string[];
       missingEvidence: Array<{ path: string; ready: boolean; reason: string }>;
+      configurationSource?: string;
     }>;
   };
 };
@@ -106,9 +107,13 @@ describe("commercial launch audit", () => {
     expect(result.gateResults.every((gate) => !gate.ready)).toBe(true);
     expect(result.gateResults.some((gate) => gate.missingEnv.length > 0)).toBe(true);
     expect(result.gateResults.every((gate) => gate.missingEvidence.length > 0)).toBe(true);
+
+    const hmsGate = result.gateResults.find((gate) => gate.id === "hms_booking_engine");
+    expect(hmsGate?.missingEnv).toEqual([]);
+    expect(hmsGate?.configurationSource).toBe("code_fallback");
   });
 
-  it("reaches 100/100 only when every env key and evidence file is ready", async () => {
+  it("reaches 100/100 only when every required env group or official fallback and evidence file is ready", async () => {
     const audit = await loadAuditModule();
     const baseDir = makeTmpDir();
     const env = makeReadyEnv(audit);
@@ -123,6 +128,46 @@ describe("commercial launch audit", () => {
     expect(result.target).toBe(100);
     expect(result.decision).toBe("FULL COMMERCIAL GO");
     expect(result.gateResults.every((gate) => gate.ready)).toBe(true);
+  });
+
+  it("accepts the official HMS fallback when booking UAT evidence is ready", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+    delete env.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL;
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const result = audit.evaluateCommercialLaunch({ env, baseDir });
+    const hmsGate = result.gateResults.find((gate) => gate.id === "hms_booking_engine");
+
+    expect(result.score).toBe(100);
+    expect(hmsGate?.ready).toBe(true);
+    expect(hmsGate?.missingEnv).toEqual([]);
+    expect(hmsGate?.configurationSource).toBe("code_fallback");
+  });
+
+  it("blocks an explicit invalid HMS env value even though the code fallback exists", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+    env.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL = "http://kozbeyli-invalid.invalid/search";
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const result = audit.evaluateCommercialLaunch({ env, baseDir });
+    const hmsGate = result.gateResults.find((gate) => gate.id === "hms_booking_engine");
+
+    expect(result.score).toBe(96);
+    expect(hmsGate?.ready).toBe(false);
+    expect(hmsGate?.missingEnv).toEqual([
+      "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL (expected HTTPS live booking engine URL)",
+    ]);
+    expect(hmsGate?.missingEvidence).toEqual([]);
   });
 
   it("blocks a gate when its evidence is marked pending even if env is present", async () => {

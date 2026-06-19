@@ -37,5 +37,8 @@ export function getConfiguredBookingEngineHref(
   rawUrl: string,
   options: BookingEngineHrefOptions = {},
 ) {
-  return getBookingEngineHref(rawUrl.trim() ? rawUrl : OFFICIAL_HMS_BOOKING_ENGINE_URL, options);
+  return (
+    getBookingEngineHref(rawUrl, options) ||
+    getBookingEngineHref(OFFICIAL_HMS_BOOKING_ENGINE_URL, options)
+  );
 }

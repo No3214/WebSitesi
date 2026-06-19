@@ -6,6 +6,8 @@ import { scanEvidenceSource } from "./evidence-redaction-scan.mjs";
 
 const root = process.cwd();
 const BASE_COMMERCIAL_SCORE = 82;
+const OFFICIAL_HMS_BOOKING_ENGINE_URL =
+  "https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine";
 
 export const commercialLaunchGates = [
   {
@@ -38,6 +40,7 @@ export const commercialLaunchGates = [
     points: 4,
     label: "HMS booking engine live URL and booking UAT evidence",
     env: ["NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"],
+    fallbackUrl: OFFICIAL_HMS_BOOKING_ENGINE_URL,
     expectedEnv: {
       NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: {
         pattern: "^https://",
@@ -126,9 +129,21 @@ function hasMeaningfulValue(value) {
   return Boolean(value && value.trim() && !placeholderPattern.test(value));
 }
 
+function hasExplicitValue(value) {
+  return Boolean(value && value.trim());
+}
+
+function hasValidFallbackUrl(gate) {
+  return Boolean(gate.fallbackUrl && /^https:\/\//.test(gate.fallbackUrl));
+}
+
 function envIssues(gate, env) {
   return gate.env.flatMap((key) => {
     const value = env[key];
+    if (!hasExplicitValue(value)) {
+      return hasValidFallbackUrl(gate) ? [] : [key];
+    }
+
     if (!hasMeaningfulValue(value)) return [key];
 
     const expected = gate.expectedEnv?.[key];
@@ -179,6 +194,10 @@ function evidenceState(relPath, baseDir) {
 export function evaluateCommercialLaunch({ env = loadEnvSnapshot(), baseDir = root } = {}) {
   const gateResults = commercialLaunchGates.map((gate) => {
     const missingEnv = envIssues(gate, env);
+    const configuredByFallback =
+      missingEnv.length === 0 &&
+      hasValidFallbackUrl(gate) &&
+      gate.env.some((key) => !hasExplicitValue(env[key]));
     const evidence = gate.evidence.map((file) => evidenceState(file, baseDir));
     const missingEvidence = evidence.filter((item) => !item.ready);
     const ready = missingEnv.length === 0 && missingEvidence.length === 0;
@@ -189,6 +208,7 @@ export function evaluateCommercialLaunch({ env = loadEnvSnapshot(), baseDir = ro
       awardedPoints: ready ? gate.points : 0,
       missingEnv,
       missingEvidence,
+      configurationSource: configuredByFallback ? "code_fallback" : gate.env.length > 0 ? "env" : "not_applicable",
     };
   });
 

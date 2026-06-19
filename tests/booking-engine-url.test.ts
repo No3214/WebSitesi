@@ -39,5 +39,9 @@ describe("booking-engine-url", () => {
   it("uses the official HMS engine as the public fallback", () => {
     expect(getConfiguredBookingEngineHref("")).toBe(OFFICIAL_HMS_BOOKING_ENGINE_URL);
     expect(getConfiguredBookingEngineHref("   ")).toBe(OFFICIAL_HMS_BOOKING_ENGINE_URL);
+    expect(getConfiguredBookingEngineHref("not a url")).toBe(OFFICIAL_HMS_BOOKING_ENGINE_URL);
+    expect(getConfiguredBookingEngineHref("http://hotel.example.com/search")).toBe(
+      OFFICIAL_HMS_BOOKING_ENGINE_URL,
+    );
   });
 });

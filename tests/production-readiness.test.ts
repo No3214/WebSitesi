@@ -36,6 +36,14 @@ describe("runtime production readiness", () => {
     expect(result.status).toBe("blocked");
     expect(result.blockedGates).toContain("canonical_domain");
     expect(result.blockedGates).toContain("production_abuse_controls");
+    expect(result.blockedGates).not.toContain("hms_booking_engine");
+
+    const hmsCheck = result.checks.find((check) => check.id === "hms_booking_engine");
+    expect(hmsCheck).toMatchObject({
+      ready: true,
+      configuredCount: 1,
+      configurationSource: "code_fallback",
+    });
 
     const serialized = JSON.stringify(result);
     for (const forbidden of [
@@ -64,5 +72,22 @@ describe("runtime production readiness", () => {
       "analytics_purchase",
       "search_local_seo",
     ]);
+  });
+
+  it("blocks HMS when an explicit booking engine env value is invalid", () => {
+    const result = getRuntimeReadiness({
+      ...readyEnv,
+      NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: "http://kozbeyli-invalid.invalid/search",
+    } as NodeJS.ProcessEnv);
+
+    const hmsCheck = result.checks.find((check) => check.id === "hms_booking_engine");
+
+    expect(result.ready).toBe(false);
+    expect(result.blockedGates).toContain("hms_booking_engine");
+    expect(hmsCheck).toMatchObject({
+      ready: false,
+      configuredCount: 1,
+      configurationSource: "missing",
+    });
   });
 });

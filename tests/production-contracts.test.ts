@@ -186,6 +186,8 @@ describe("production readiness contracts", () => {
     );
     expect(auditScript).toContain("--json");
     expect(auditScript).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL");
+    expect(auditScript).toContain("OFFICIAL_HMS_BOOKING_ENGINE_URL");
+    expect(auditScript).toContain("code_fallback");
     expect(auditScript).toContain("^https://");
     expect(auditScript).toContain("source_refs");
     expect(auditScript).toContain("missing source refs");
@@ -619,6 +621,8 @@ describe("production readiness contracts", () => {
     expect(productionReadiness).toContain("canonical_domain");
     expect(productionReadiness).toContain("production_abuse_controls");
     expect(productionReadiness).toContain("hms_booking_engine");
+    expect(productionReadiness).toContain("OFFICIAL_HMS_BOOKING_ENGINE_URL");
+    expect(productionReadiness).toContain("code_fallback");
     expect(healthRoute).toContain('"Cache-Control": "no-store, max-age=0"');
     expect(healthRoute).not.toContain("DATABASE_URI");
     expect(healthRoute).not.toContain("PAYLOAD_SECRET");
