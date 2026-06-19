@@ -9,45 +9,63 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  stage:
-    name: Diagnostic · ${{ matrix.stage }}
+  checkout-only:
+    name: Probe · checkout
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        stage:
-          - release-manifest
-          - security-audit
-          - lint
-          - typecheck
-          - unit
-          - build
-    env:
-      CI: "true"
-      NEXT_TELEMETRY_DISABLED: "1"
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+      - run: test -f package.json
 
-      - name: Setup Node 24
-        uses: actions/setup-node@v6
+  setup-no-cache:
+    name: Probe · setup-node-no-cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: node --version && npm --version
+
+  setup-cache:
+    name: Probe · setup-node-cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
+      - run: node --version && npm --version
 
-      - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+  npm-ci:
+    name: Probe · npm-ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm ci --no-audit --no-fund
 
-      - name: Run selected stage
-        shell: bash
-        run: |
-          case "${{ matrix.stage }}" in
-            release-manifest) node scripts/release-verify.mjs --list ;;
-            security-audit) npm run security:audit ;;
-            lint) npm run lint ;;
-            typecheck) npm run typecheck ;;
-            unit) npm run test:unit ;;
-            build) npm run build ;;
-            *) echo "Unknown stage" >&2; exit 2 ;;
-          esac
+  npm-ci-ignore-scripts:
+    name: Probe · npm-ci-ignore-scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+
+  npm-install-ignore-scripts:
+    name: Probe · npm-install-ignore-scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm install --ignore-scripts --no-audit --no-fund
