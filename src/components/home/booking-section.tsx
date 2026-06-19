@@ -1,8 +1,8 @@
 "use client";
 
 import { FadeIn } from "@/components/animations";
-import { SectionTitle } from "@/components/section-title";
 import { HMSBookingEmbed } from "@/components/hms-booking-embed";
+import { SectionTitle } from "@/components/section-title";
 import { WeatherRibbon } from "@/components/weather-ribbon";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
@@ -21,7 +21,7 @@ export function BookingSection({ locale, eyebrow }: Props) {
                 : "Dates, guests and room selection open in the official HMS booking screen; our team remains available by WhatsApp and phone."
             }
           />
-          <WeatherRibbon />
+          <WeatherRibbon locale={locale} />
           <HMSBookingEmbed locale={locale} />
         </FadeIn>
       </div>
