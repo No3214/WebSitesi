@@ -4,11 +4,20 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 concurrency:
   group: pr-stage-diagnostics-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  runner-only:
+    name: Probe · runner-only
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "runner available"
+
   checkout-only:
     name: Probe · checkout
     runs-on: ubuntu-latest
