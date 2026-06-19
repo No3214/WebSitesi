@@ -74,18 +74,32 @@ function getVercelCliCandidates() {
   if (process.platform === "win32") {
     candidates.push("vercel.cmd");
     if (npmPrefix) candidates.push(path.join(npmPrefix, "vercel.cmd"));
-    if (npmPrefix) candidates.push(path.join(npmPrefix, "node_modules", "vercel", "dist", "vc.js"));
   } else if (npmPrefix) {
     candidates.push(path.join(npmPrefix, "bin", "vercel"));
-    candidates.push(path.join(npmPrefix, "lib", "node_modules", "vercel", "dist", "vc.js"));
   }
 
   return unique(candidates);
 }
 
+function resolveVercelCmdTarget(candidate) {
+  if (!(process.platform === "win32" && candidate.toLowerCase().endsWith(".cmd"))) return "";
+
+  const scriptPath = path.join(path.dirname(candidate), "node_modules", "vercel", "dist", "vc.js");
+  return fs.existsSync(scriptPath) ? scriptPath : "";
+}
+
 function runVercelCandidate(candidate, args, timeout = 10000) {
-  if (candidate.endsWith(`${path.sep}vc.js`) || candidate.endsWith("/vc.js")) {
-    return execFileSync(process.execPath, [candidate, ...args], {
+  const cmdTarget = resolveVercelCmdTarget(candidate);
+  if (cmdTarget) {
+    return execFileSync(process.execPath, [cmdTarget, ...args], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout,
+    }).trim();
+  }
+
+  if (process.platform === "win32" && candidate.toLowerCase().endsWith(".cmd")) {
+    return execFileSync("cmd.exe", ["/d", "/c", `""${candidate}" ${args.join(" ")}"`], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
       timeout,
@@ -183,8 +197,9 @@ function checkGlobalCli() {
 
     return {
       id: "global_vercel_cli",
-      status: "pass",
-      detail: `Vercel CLI available through npx fallback: ${version}.`,
+      status: "warn",
+      detail: `Only npx Vercel fallback is available (${version}); persistent global CLI is not installed on PATH.`,
+      remediation: `${INSTALL_COMMAND} is required for reliable vercel env pull, vercel deploy and vercel logs operations.`,
     };
   } catch (error) {
     errors.push(`npx --yes vercel --version: ${error instanceof Error ? error.message : String(error)}`);
@@ -192,7 +207,7 @@ function checkGlobalCli() {
       id: "global_vercel_cli",
       status: "warn",
       detail: "Global Vercel CLI is not available on PATH.",
-      remediation: `${INSTALL_COMMAND} unlocks vercel env pull, vercel deploy and vercel logs.`,
+      remediation: `${INSTALL_COMMAND} is required for vercel env pull, vercel deploy and vercel logs.`,
       error: errors.join("; "),
     };
   }

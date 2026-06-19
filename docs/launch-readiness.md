@@ -39,10 +39,11 @@ kaynağını raporlar. Bu yalnızca teşhisi güçlendirir; eski landing, eksik
 `/api/health`, insecure first-hop veya hero video yokluğu varsa canonical gate
 yine NO-GO kalır.
 
-2026-06-19 Vercel operasyon güncellemesi: `npm run vercel:ops` artık global
-Vercel CLI varlığını Windows AppData fallback'iyle bulmanın yanında `vercel
-whoami` oturumunu da doğrular. Bu, `vercel env pull`, deploy ve logs işlemleri
-için giriş yapılmamış operatör durumunu canonical cutover öncesi görünür yapar.
+2026-06-19 Vercel operasyon güncellemesi: `npm run vercel:ops` artık tek
+seferlik `npx vercel` veya AppData içindeki doğrudan paket dosyasını global CLI
+kurulumu saymaz. Kalıcı `vercel`/`vercel.cmd` kurulumu ve `vercel whoami`
+oturumu, `vercel env pull`, deploy ve logs işlemleri için canonical cutover
+öncesi görünür bir koşuldur.
 
 2026-06-19 health diagnostik güncellemesi: `/api/health` runtime readiness
 çıktısı secret veya env key adı yayınlamadan `missing`, `partial`, `invalid`,

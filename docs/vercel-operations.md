@@ -34,6 +34,8 @@ npm run vercel:ops:strict
 Strict mode fails on warnings. It should only pass when:
 
 - the global Vercel CLI is installed with `npm i -g vercel`;
+- one-off `npx vercel` execution is not treated as an installed, persistent
+  operator CLI;
 - `vercel whoami` confirms an authenticated operator session for env, deploy
   and log operations;
 - `.vercel/project.json` points at `kozbeyli-konagi`;

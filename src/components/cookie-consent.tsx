@@ -140,7 +140,7 @@ export function CookieConsent() {
                 {copy.description} <Link href="/cerez-politikasi">{copy.policy}</Link>
                 {copy.suffix}
               </p>
-              <p style={{ marginTop: 8, opacity: 0.8 }}>{summaryText}</p>
+              <p style={{ marginTop: 8 }}>{summaryText}</p>
             </div>
           </div>
 

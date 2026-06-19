@@ -67,6 +67,7 @@ describe("production readiness contracts", () => {
     expect(cookieConsent).toContain('policy: "Cookie Policy"');
     expect(cookieConsent).toContain('suffix: "."');
     expect(cookieConsent).not.toContain("Politikamızıinceleyebilirsiniz");
+    expect(cookieConsent).not.toContain("opacity: 0.8");
     expect(cookieConsent).toContain("CONSENT_OPEN_EVENT");
     expect(footer).toContain("CookiePreferencesButton");
     expect(footer).toContain("Cookie Preferences");
@@ -590,12 +591,15 @@ describe("production readiness contracts", () => {
     expect(vercelOps).toContain("PASS_WITH_WARNINGS");
     expect(vercelOps).toContain("npm i -g vercel");
     expect(vercelOps).toContain("APPDATA");
-    expect(vercelOps).toContain("vc.js");
+    expect(vercelOps).toContain("Only npx Vercel fallback is available");
+    expect(vercelOps).toContain("persistent global CLI is not installed on PATH");
+    expect(vercelOps).toContain("resolveVercelCmdTarget");
+    expect(vercelOps).not.toContain("candidates.push(path.join(npmPrefix, \"node_modules\", \"vercel\", \"dist\", \"vc.js\"");
     expect(vercelOps).toContain('"vercel_auth"');
     expect(vercelOps).toContain('"whoami"');
     expect(vercelOps).toContain("env, deploy and logs operations");
     expect(vercelOps).toContain("Run vercel login");
-    expect(vercelOps).toContain("vercel env pull, vercel deploy and vercel logs");
+    expect(vercelOps).toContain("is required for vercel env pull, vercel deploy and vercel logs");
     expect(vercelOps).toContain("canonical-domain.md");
     expect(vercelOps).toContain("kozbeyli-konagi");
     expect(runbook).toContain("npm run vercel:ops");
