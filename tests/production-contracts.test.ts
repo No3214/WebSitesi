@@ -754,6 +754,10 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("dist\", \"vc.js");
     expect(launchSmokeScript).toContain(".next/BUILD_ID");
     expect(launchSmokeScript).toContain("node_modules/@playwright/test/cli.js");
+    expect(launchSmokeScript).toContain("test-results\", \"launch-smoke");
+    expect(launchSmokeScript).toContain("makeRunScopedOutputDir");
+    expect(launchSmokeScript).toContain("process.pid");
+    expect(launchSmokeScript).toContain("--output");
   });
 
   it("keeps release verification producing the commercial cutover plan", () => {

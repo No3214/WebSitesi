@@ -14,6 +14,7 @@ const playwrightSpecs = [
 const isWindows = process.platform === "win32";
 const nodeBin = process.execPath;
 const playwrightCli = "node_modules/@playwright/test/cli.js";
+const launchSmokeOutputRoot = path.join("test-results", "launch-smoke");
 
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
@@ -85,6 +86,11 @@ function printSpecList() {
   console.log(playwrightSpecs.join("\n"));
 }
 
+function makeRunScopedOutputDir() {
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+  return path.join(launchSmokeOutputRoot, `${stamp}-${process.pid}`);
+}
+
 function main() {
   if (process.argv.includes("--list")) {
     printSpecList();
@@ -109,7 +115,15 @@ function main() {
     process.exit(1);
   }
 
-  const smoke = run(nodeBin, [playwrightCli, "test", ...playwrightSpecs, "--reporter=line"]);
+  const outputDir = makeRunScopedOutputDir();
+  const smoke = run(nodeBin, [
+    playwrightCli,
+    "test",
+    ...playwrightSpecs,
+    "--reporter=line",
+    "--output",
+    outputDir,
+  ]);
   process.exit(smoke.status ?? 1);
 }
 
