@@ -41,6 +41,21 @@ jobs:
       - name: Runtime dependency audit
         run: npm run security:audit
 
+      - name: Evidence redaction scan
+        run: npm run evidence:scan
+
+      - name: Hero media audit
+        run: npm run media:hero:json
+
+      - name: Commercial readiness diagnostics
+        run: |
+          npm run abuse:verify:json
+          npm run analytics:verify:json
+          npm run search:verify:json
+          npm run garanti:verify:json
+          npm run hms:verify:json
+          npm run domain:verify:json
+
       - name: Lint
         run: npm run lint
 
@@ -64,6 +79,14 @@ jobs:
 
       - name: Publish target score
         run: npm run publish:target
+
+      - name: Stress tests
+        run: npm run test:stress
+
+      - name: Commercial launch audit and cutover plan
+        run: |
+          npm run launch:audit:json
+          npm run launch:cutover:json
 
       - name: Upload Playwright report (on failure)
         if: failure()

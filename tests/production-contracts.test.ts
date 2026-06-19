@@ -298,6 +298,26 @@ describe("production readiness contracts", () => {
     expect(releaseScript).not.toContain("launch:audit:strict");
     expect(ciWorkflow).toContain("Release gate manifest");
     expect(ciWorkflow).toContain("node scripts/release-verify.mjs --list");
+    expect(ciWorkflow).toContain("Evidence redaction scan");
+    expect(ciWorkflow).toContain("npm run evidence:scan");
+    expect(ciWorkflow).toContain("Hero media audit");
+    expect(ciWorkflow).toContain("npm run media:hero:json");
+    expect(ciWorkflow).toContain("Commercial readiness diagnostics");
+    for (const diagnostic of [
+      "abuse:verify:json",
+      "analytics:verify:json",
+      "search:verify:json",
+      "garanti:verify:json",
+      "hms:verify:json",
+      "domain:verify:json",
+    ]) {
+      expect(ciWorkflow).toContain(`npm run ${diagnostic}`);
+    }
+    expect(ciWorkflow).toContain("Stress tests");
+    expect(ciWorkflow).toContain("npm run test:stress");
+    expect(ciWorkflow).toContain("Commercial launch audit and cutover plan");
+    expect(ciWorkflow).toContain("npm run launch:audit:json");
+    expect(ciWorkflow).toContain("npm run launch:cutover:json");
   });
 
   it("keeps the commercial launch audit executable and evidence-based", () => {
