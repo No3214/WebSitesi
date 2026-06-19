@@ -119,6 +119,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"vercel:env"');
     expect(readinessScript).toContain('"vercel:env:json"');
     expect(readinessScript).toContain('"vercel:env:strict"');
+    expect(readinessScript).toContain('"github:ci"');
+    expect(readinessScript).toContain('"github:ci:json"');
+    expect(readinessScript).toContain('"github:ci:strict"');
     expect(readinessScript).toContain('"launch:smoke"');
     expect(readinessScript).toContain('"launch:smoke:live"');
     expect(readinessScript).toContain('"release:verify"');
@@ -190,6 +193,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["vercel:env:strict"]).toBe(
       "node scripts/vercel-env-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["github:ci"]).toBe("node scripts/github-ci-readiness.mjs");
+    expect(packageJson.scripts?.["github:ci:json"]).toBe(
+      "node scripts/github-ci-readiness.mjs --json",
+    );
+    expect(packageJson.scripts?.["github:ci:strict"]).toBe(
+      "node scripts/github-ci-readiness.mjs --strict",
+    );
     expect(packageJson.scripts?.prebuild).toBe("node scripts/clean-next-build.mjs");
     expect(packageJson.scripts?.["release:verify"]).toBe("node scripts/release-verify.mjs");
     expect(readinessScript).toContain('"scripts/clean-next-build.mjs"');
@@ -203,6 +213,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"tests/production-readiness.test.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
+    expect(readinessScript).toContain('"docs/github-actions-readiness.md"');
     expect(readinessScript).toContain('"docs/vercel-operations.md"');
     expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
@@ -213,6 +224,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/hms-booking-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-env-readiness.mjs"');
+    expect(readinessScript).toContain('"scripts/github-ci-readiness.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
   });
 
@@ -229,6 +241,7 @@ describe("production readiness contracts", () => {
       "search:verify:json",
       "garanti:verify:json",
       "vercel:env:json",
+      "github:ci:json",
       "publish:verify",
       "launch:smoke",
       "test:stress",
@@ -244,6 +257,7 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("Search and local SEO readiness diagnosis");
     expect(releaseScript).toContain("Garanti POS readiness diagnosis");
     expect(releaseScript).toContain("Vercel production env inventory diagnosis");
+    expect(releaseScript).toContain("GitHub Actions CI readiness diagnosis");
     expect(releaseScript).toContain("process.env.ComSpec");
     expect(releaseScript).not.toContain("launch:audit:strict");
     expect(ciWorkflow).toContain("Release gate manifest");

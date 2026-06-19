@@ -34,6 +34,10 @@ const gates = [
     label: "Vercel production env inventory diagnosis",
   },
   {
+    script: "github:ci:json",
+    label: "GitHub Actions CI readiness diagnosis",
+  },
+  {
     script: "publish:verify",
     label: "Full publish verification",
   },

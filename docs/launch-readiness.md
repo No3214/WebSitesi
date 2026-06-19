@@ -51,6 +51,11 @@ ticari launch gate'leriyle karşılaştırır. Değer yazdırmaz; `.env.local`
 hazırlığı ile gerçek Vercel Production ayarları karıştırılmadan eksik env
 blokları makine-okunur hale gelir.
 
+2026-06-19 GitHub CI diagnostik güncellemesi: `npm run github:ci` artık son
+GitHub Actions run/job/check-run annotation durumunu salt-okunur şekilde raporlar.
+Mevcut kırmızı CI koddan değil, GitHub hesap ödeme/spending-limit blokajından
+kaynaklanır; ayrıntılı runbook `docs/github-actions-readiness.md` dosyasındadır.
+
 2026-06-19 health diagnostik güncellemesi: `/api/health` runtime readiness
 çıktısı secret veya env key adı yayınlamadan `missing`, `partial`, `invalid`,
 `code_fallback` ve `fallbackApplied` sinyallerini verir. Böylece uptime/ops
