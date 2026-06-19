@@ -1,3 +1,4 @@
+import { sanitizeJsonLd } from "@/lib/security";
 import { Metadata } from "next";
 import Image from "next/image";
 
@@ -33,7 +34,7 @@ export default function GalleryPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGalleryJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(imageGalleryJsonLd) }}
       />
       <SiteHeader />
       <main>
