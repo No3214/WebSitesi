@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { PaymentWizard } from "./payment-wizard";
 import { HMSFullScriptEmbed } from "./hms-full-script-embed";
 
-import { getBookingEngineHref } from "@/lib/booking-engine-url";
+import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { getWhatsAppHref } from "@/lib/contact";
 import { trackBeginCheckout } from "@/lib/gtm";
 import { publicEnv } from "@/lib/public-env";
@@ -24,7 +24,7 @@ type HMSBookingEmbedProps = {
 export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBookingEmbedProps) {
   const bookingUrl = publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL;
   const scriptUrl = publicEnv.NEXT_PUBLIC_HMS_SCRIPT_URL;
-  const bookingHref = getBookingEngineHref(bookingUrl, { roomSlug });
+  const bookingHref = getConfiguredBookingEngineHref(bookingUrl, { roomSlug });
 
   // GA4 begin_checkout: rezervasyon arayüzü (engine veya talep sihirbazı)
   // misafirin önüne geldiği anda huni başlangıcı sayılır.
@@ -68,16 +68,16 @@ export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBooki
   return (
     <div className="embed-box booking-engine-handoff">
       <div>
-        <p className="eyebrow">
-          {locale === "tr" ? "RESMİ REZERVASYON" : "OFFICIAL BOOKING"}
+        <p className="eyebrow booking-handoff-eyebrow">
+          {locale === "tr" ? "REZERVASYON" : "BOOKING"}
         </p>
         <h3 className="serif" style={{ fontSize: "clamp(1.7rem, 4vw, 2.4rem)", marginBottom: 12 }}>
-          {locale === "tr" ? "Rezervasyon Ekranı Ayrı Sekmede" : "Booking Opens in a New Tab"}
+          {locale === "tr" ? "Rezervasyon" : "Booking"}
         </h3>
         <p className="muted" style={{ maxWidth: 620, lineHeight: 1.7 }}>
           {locale === "tr"
-            ? "Canlı müsaitlik, tarih ve oda seçimi resmi rezervasyon ekranında tamamlanır. Bu sayfa oda detayları ve hızlı destek için açık kalır."
-            : "Live availability, dates and room selection are completed on the official booking screen while this page remains available for room details and support."}
+            ? "Tarih, kişi sayısı ve oda seçimi resmi HMS rezervasyon ekranında yeni sekmede açılır. Bu sayfa oda detayları ve WhatsApp destek için açık kalır."
+            : "Dates, guest count and room selection open in the official HMS booking screen in a new tab. This page remains available for room details and WhatsApp support."}
         </p>
       </div>
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "24px" }}>
@@ -88,7 +88,7 @@ export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBooki
           rel="noopener noreferrer"
           data-event="booking_engine_open"
         >
-          {locale === "tr" ? "Rezervasyonu Ayrı Sekmede Aç" : "Open Booking in New Tab"}
+          {locale === "tr" ? "Rezervasyon" : "Booking"}
         </a>
         <a
           className="button secondary"

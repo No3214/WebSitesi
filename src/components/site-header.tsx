@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
+import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
+import { publicEnv } from "@/lib/public-env";
 import { LanguageSwitcher } from "./language-switcher";
 import { LogoMark } from "./logo-mark";
 
@@ -44,19 +46,18 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
   const pathname = usePathname();
   const englishPath = isEnPath(pathname || "/");
   const [links, setLinks] = useState<NavLink[]>(englishPath ? EN_LINKS : DEFAULT_LINKS);
-  const [bookingLabel, setBookingLabel] = useState(englishPath ? "Booking" : "Rezervasyon");
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const bookingLabel = englishPath ? "Booking" : "Rezervasyon";
+  const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
 
   useEffect(() => {
     const locale = englishPath ? "en" : "tr";
     if (locale === "tr") {
       setLinks(DEFAULT_LINKS);
-      setBookingLabel("Rezervasyon");
       return;
     }
     setLinks(EN_LINKS);
-    setBookingLabel("Booking");
     getDictionary(locale).then((dict) => {
       const nav = (dict?.Navigation ?? {}) as Record<string, string>;
       setLinks([
@@ -67,7 +68,6 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
         { href: "/deneyimler", label: nav.experiences || "Experiences" },
         { href: "/iletisim", label: "Contact" },
       ]);
-      setBookingLabel(nav.booking || "Book Now");
     });
   }, [englishPath]);
 
@@ -132,9 +132,20 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
 
           <div className="header-actions">
             <LanguageSwitcher />
-            <Link className="button gold sm" href={localizedHref("/rezervasyon", englishPath)}>
+            <a
+              className="button gold sm"
+              href={bookingHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-event="booking_engine_open"
+              aria-label={
+                englishPath
+                  ? "Booking - open official reservation screen"
+                  : "Rezervasyon - resmi rezervasyon ekranını aç"
+              }
+            >
               {bookingLabel}
-            </Link>
+            </a>
             <button
               type="button"
               className={`menu-toggle ${menuOpen ? "open" : ""}`}
@@ -171,14 +182,17 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
               </div>
             ))}
             <div className="mobile-menu-cta">
-              <Link
-                href={localizedHref("/rezervasyon", englishPath)}
+              <a
+                href={bookingHref}
                 className="button gold"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-event="booking_engine_open"
                 style={{ width: "100%", borderBottom: "none", fontSize: "0.85rem" }}
                 onClick={() => setMenuOpen(false)}
               >
                 {bookingLabel}
-              </Link>
+              </a>
             </div>
           </nav>
         </div>

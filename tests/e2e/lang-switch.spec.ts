@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+const HMS_BOOKING_URL =
+  "https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine";
+
 // T17: LanguageSwitcher /en rota geçişi.
 // Switcher header'da (`.lang-switcher` grubu) "TR" ve "EN" metinli iki link
 // render eder — href navigasyonu hydration yarışlarından bağımsız kalır.
@@ -48,7 +51,7 @@ test.describe("Dil degistirici", () => {
     );
     await expect(page.locator("header.site-header").getByRole("link", { name: "Booking" })).toHaveAttribute(
       "href",
-      "/en/rezervasyon"
+      HMS_BOOKING_URL
     );
   });
 });

@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+const HMS_BOOKING_URL =
+  "https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine";
+
 // Güncellendi (2026-06-10): tasarım sistemi 2.0 sonrası gerçek selector'lar —
 // header `.site-header`, footer `.footer`, başlıklar PageHero'dan gelir.
 
@@ -10,6 +13,10 @@ test.describe("Rezervasyon sayfasi", () => {
     await expect(page.getByRole("heading", { name: "Yerinizi Ayırtın" }).first()).toBeVisible();
     await expect(page.locator("header.site-header")).toBeVisible();
     await expect(page.locator("footer.footer")).toBeVisible();
+    await expect(page.locator("main").getByRole("link", { name: "Rezervasyon" })).toHaveAttribute(
+      "href",
+      HMS_BOOKING_URL,
+    );
   });
 
   test("EN rezervasyon sayfasi Ingilizce kalir ve destek linkleri /en rotalarina gider", async ({ page }) => {
@@ -19,9 +26,14 @@ test.describe("Rezervasyon sayfasi", () => {
     await expect(page.getByRole("heading", { name: "Reserve Your Stay" })).toBeVisible();
     await expect(main.getByText("Your choice:")).toBeVisible();
     await expect(main.getByText("Seçiminiz:")).toHaveCount(0);
-    await expect(main.getByRole("heading", { name: "Dates and Guests" })).toBeVisible();
-    await expect(main.getByText("Check-in Date")).toBeVisible();
-    await expect(main.getByRole("button", { name: "List Rooms" })).toBeVisible();
+    await expect(main.getByRole("heading", { name: "Booking" })).toBeVisible();
+    await expect(main.getByRole("link", { name: "Booking" })).toHaveAttribute(
+      "href",
+      `${HMS_BOOKING_URL}&room=standart-deniz-manzarali-oda`,
+    );
+    await expect(main.getByRole("heading", { name: "Dates and Guests" })).toHaveCount(0);
+    await expect(main.getByText("Check-in Date")).toHaveCount(0);
+    await expect(main.getByRole("button", { name: "List Rooms" })).toHaveCount(0);
     await expect(main.getByText("Tarih ve Konuk Seçimi")).toHaveCount(0);
     await expect(main.getByRole("link", { name: "Explore Rooms" })).toHaveAttribute("href", "/en/odalar");
     await expect(main.getByRole("link", { name: "Guest Guide" })).toHaveAttribute("href", "/en/misafir-rehberi");
@@ -191,10 +203,7 @@ test.describe("Locale route precedence", () => {
     await page.goto("/odalar");
     await expect(page.getByRole("heading", { name: "Rafine Oda ve Süitler" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Müsaitlik Sorgula" })).toHaveAttribute("href", "/rezervasyon");
-    await expect(page.locator("header.site-header").getByRole("link", { name: "Rezervasyon" })).toHaveAttribute(
-      "href",
-      "/rezervasyon",
-    );
+    await expect(page.locator("header.site-header").getByRole("link", { name: "Rezervasyon" })).toHaveAttribute("href", HMS_BOOKING_URL);
     await expect(page.locator("footer.footer").getByText("Tüm hakları saklıdır.")).toBeVisible();
     await expect(page.getByRole("dialog", { name: "Çerez tercihleri" })).toBeVisible();
     await expect(page.getByText("Refined Rooms & Suites")).toHaveCount(0);

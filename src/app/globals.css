@@ -765,6 +765,10 @@
     opacity: 0.6;
   }
 
+  .booking-handoff-eyebrow {
+    color: var(--gold-text);
+  }
+
   .section-title h2 {
     font-size: var(--fs-h2);
     color: var(--olive);

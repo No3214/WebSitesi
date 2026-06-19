@@ -57,7 +57,7 @@ async function waitForSunsetPalette(page: Page) {
 test.describe("Sunset light theme", () => {
   test("rooms page stays warm and light when sunset mode is active", async ({ page }) => {
     await forceSunsetMode(page);
-    await page.goto("/odalar", { waitUntil: "load" });
+    await page.goto("/odalar", { waitUntil: "domcontentloaded" });
 
     await expect(page.locator(".page-hero h1")).toBeVisible({ timeout: 15000 });
     await expect(page.locator(".room-card").first()).toBeVisible();
@@ -79,7 +79,7 @@ test.describe("Sunset light theme", () => {
   test("mobile rooms page keeps the light theme without horizontal overflow", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await forceSunsetMode(page);
-    await page.goto("/odalar", { waitUntil: "load" });
+    await page.goto("/odalar", { waitUntil: "domcontentloaded" });
 
     await expect(page.locator(".page-hero h1")).toBeVisible({ timeout: 15000 });
     await expect(page.locator(".room-card").first()).toBeVisible();
@@ -103,7 +103,7 @@ test.describe("Sunset light theme", () => {
 
   test("english rooms page and room detail keep sunset palette stable", async ({ page }) => {
     await forceSunsetMode(page);
-    await page.goto("/en/odalar", { waitUntil: "load" });
+    await page.goto("/en/odalar", { waitUntil: "domcontentloaded" });
     await expect(page.locator(".room-card").first()).toBeVisible({ timeout: 15000 });
     await waitForSunsetPalette(page);
 
@@ -111,7 +111,7 @@ test.describe("Sunset light theme", () => {
     expect(luminance(colors.bodyBackground), colors.bodyBackground).toBeGreaterThan(0.82);
     expect(luminance(colors.cardBodyBackground), colors.cardBodyBackground).toBeGreaterThan(0.82);
 
-    await page.goto("/odalar/standart-bahce-manzarali-oda", { waitUntil: "load" });
+    await page.goto("/odalar/standart-bahce-manzarali-oda", { waitUntil: "domcontentloaded" });
     await expect(page.locator("h1").first()).toBeVisible({ timeout: 15000 });
     await waitForSunsetPalette(page);
 

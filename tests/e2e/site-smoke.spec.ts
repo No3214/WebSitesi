@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+const HMS_BOOKING_URL =
+  "https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine";
+
 const smokePages = [
   "/",
   "/odalar",
@@ -47,10 +50,14 @@ test.describe("Oda detay sayfasi", () => {
   });
 });
 
-test.describe("Rezervasyon fallback", () => {
-  test("HMS URL tanimli degilken WhatsApp linki gorunur", async ({ page }) => {
+test.describe("Rezervasyon HMS handoff", () => {
+  test("resmi HMS rezervasyon linki gorunur", async ({ page }) => {
     await page.goto("/rezervasyon");
 
+    await expect(page.locator("main").getByRole("link", { name: "Rezervasyon" })).toHaveAttribute(
+      "href",
+      HMS_BOOKING_URL,
+    );
     await expect(page.getByRole("link", { name: /WhatsApp/i }).first()).toBeVisible({ timeout: 10000 });
   });
 });
@@ -62,6 +69,10 @@ test.describe("Rezervasyon oda parametresi", () => {
     expect(response, "rezervasyon oda parametresi icin response alinamadi").toBeTruthy();
     expect(response?.status(), "rezervasyon oda parametresi HTTP hata kodu dondurdu").toBeLessThan(400);
     await expect(page.locator("h1, h2").first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("main").getByRole("link", { name: "Rezervasyon" })).toHaveAttribute(
+      "href",
+      `${HMS_BOOKING_URL}&room=standart-bahce-manzarali-oda`,
+    );
     await expect(page.getByRole("link", { name: /WhatsApp/i }).first()).toBeVisible({ timeout: 10000 });
   });
 });

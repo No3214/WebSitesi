@@ -219,17 +219,27 @@ describe("production readiness contracts", () => {
   it("keeps the HMS booking engine as a new-tab handoff instead of a cramped iframe", () => {
     const bookingEmbed = read("src/components/hms-booking-embed.tsx");
     const bookingUrlHelper = read("src/lib/booking-engine-url.ts");
+    const siteHeader = read("src/components/site-header.tsx");
+    const envExample = read(".env.example");
 
-    expect(bookingEmbed).toContain("getBookingEngineHref");
+    expect(bookingEmbed).toContain("getConfiguredBookingEngineHref");
     expect(bookingEmbed).toContain("bookingHref");
     expect(bookingEmbed).toContain('target="_blank"');
     expect(bookingEmbed).toContain('rel="noopener noreferrer"');
-    expect(bookingEmbed).toContain("Rezervasyonu Ayrı Sekmede Aç");
-    expect(bookingEmbed).toContain("Open Booking in New Tab");
+    expect(bookingEmbed).toContain("Rezervasyon");
+    expect(bookingEmbed).not.toContain("Rezervasyon Ekranı Ayrı Sekmede");
+    expect(bookingEmbed).not.toContain("Rezervasyonu Ayrı Sekmede Aç");
+    expect(bookingEmbed).toContain("Booking");
     expect(bookingEmbed).not.toContain("<iframe");
+    expect(siteHeader).toContain("getConfiguredBookingEngineHref");
+    expect(siteHeader).toContain('target="_blank"');
+    expect(siteHeader).toContain('data-event="booking_engine_open"');
+    expect(bookingUrlHelper).toContain("OFFICIAL_HMS_BOOKING_ENGINE_URL");
+    expect(bookingUrlHelper).toContain("https://kozbeyli-konagi.hmshotel.net/");
     expect(bookingUrlHelper).toContain('url.protocol !== "https:"');
     expect(bookingUrlHelper).toContain('utm_source", "website"');
     expect(bookingUrlHelper).toContain('utm_medium", "booking_engine"');
+    expect(envExample).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL=https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine");
   });
 
   it("keeps the CSP frame surface narrow after moving booking to new-tab handoff", () => {
@@ -680,8 +690,9 @@ describe("production readiness contracts", () => {
     const enContactPage = read("src/app/en/iletisim/page.tsx");
     const contactClient = read("src/components/contact-client.tsx");
     const salesAgreement = read("src/app/mesafeli-satis-sozlesmesi/page.tsx");
+    const dictionary = read("src/lib/dictionary.ts");
 
-    for (const source of [trGuide, enGuide, llms, contactPage, enContactPage, contactClient, salesAgreement]) {
+    for (const source of [trGuide, enGuide, llms, contactPage, enContactPage, contactClient, salesAgreement, dictionary]) {
       expect(source).not.toMatch(/48\s*(saat|hours)/i);
       expect(source).not.toMatch(/72\s*(saat|hours)/i);
       expect(source).not.toMatch(/ücretsiz iptal|free cancellation/i);
@@ -691,6 +702,10 @@ describe("production readiness contracts", () => {
 
     expect(trGuide).toContain("rezervasyon kanalı, seçilen teklif, ödeme tipi");
     expect(enGuide).toContain("booking channel, selected offer, payment type");
+    expect(dictionary).not.toContain("Esnek İptal");
+    expect(dictionary).not.toContain("Flexible Cancellation");
+    expect(dictionary).toContain("Koşullar Yazılı Teyit");
+    expect(dictionary).toContain("Terms Confirmed in Writing");
     expect(contactClient).toContain("canlı yol tarifini");
     expect(llms).toContain("canlı yol tarifi önerilir");
   });

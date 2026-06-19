@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { getWhatsAppHref } from "@/lib/contact";
 import { publicEnv } from "@/lib/public-env";
+import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 
 /**
  * HMS "iFrame [TAM]" script yontemi.
@@ -18,8 +19,6 @@ type Props = {
   /** Override; verilmezse env NEXT_PUBLIC_HMS_SCRIPT_URL kullanilir */
   scriptUrl?: string;
 };
-
-const FALLBACK_BOOKING = "https://kozbeyli-konagi.hmshotel.net/";
 
 export function HMSFullScriptEmbed({ locale = "tr", scriptUrl }: Props) {
   const url = scriptUrl || publicEnv.NEXT_PUBLIC_HMS_SCRIPT_URL;
@@ -48,7 +47,7 @@ export function HMSFullScriptEmbed({ locale = "tr", scriptUrl }: Props) {
     };
   }, [url]);
 
-  const bookingHref = publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL || FALLBACK_BOOKING;
+  const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
   const whatsappHref = getWhatsAppHref(
     locale === "tr"
       ? "Merhaba, web sitesinden geldim. Musaitlik ogrenmek istiyorum."

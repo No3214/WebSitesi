@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { getBookingEngineHref } from "@/lib/booking-engine-url";
+import {
+  OFFICIAL_HMS_BOOKING_ENGINE_URL,
+  getBookingEngineHref,
+  getConfiguredBookingEngineHref,
+} from "@/lib/booking-engine-url";
 
 describe("booking-engine-url", () => {
   it("rejects empty, invalid and non-https booking engine urls", () => {
@@ -30,5 +34,10 @@ describe("booking-engine-url", () => {
     expect(
       getBookingEngineHref("https://hotel.example.com/bv3/search?utm_source=google&utm_medium=cpc"),
     ).toBe("https://hotel.example.com/bv3/search?utm_source=google&utm_medium=cpc");
+  });
+
+  it("uses the official HMS engine as the public fallback", () => {
+    expect(getConfiguredBookingEngineHref("")).toBe(OFFICIAL_HMS_BOOKING_ENGINE_URL);
+    expect(getConfiguredBookingEngineHref("   ")).toBe(OFFICIAL_HMS_BOOKING_ENGINE_URL);
   });
 });
