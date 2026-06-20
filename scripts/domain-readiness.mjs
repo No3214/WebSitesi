@@ -17,10 +17,10 @@ const VERCEL_TARGET_RECORDS = [
   },
   {
     group: "canonical",
-    type: "CNAME",
+    type: "A",
     host: "www.kozbeylikonagi.com",
-    value: "cname.vercel-dns-0.com",
-    purpose: "WWW subdomain should alias to Vercel production.",
+    value: "76.76.21.21",
+    purpose: "WWW domain should point to the Vercel production target shown by vercel domains inspect.",
   },
   {
     group: "brand",
@@ -31,10 +31,10 @@ const VERCEL_TARGET_RECORDS = [
   },
   {
     group: "brand",
-    type: "CNAME",
+    type: "A",
     host: "www.kozbeylikonagi.com.tr",
-    value: "cname.vercel-dns-0.com",
-    purpose: "Brand WWW subdomain should serve or securely redirect to the current Vercel app.",
+    value: "76.76.21.21",
+    purpose: "Brand WWW domain should serve or securely redirect through the Vercel production target.",
   },
 ];
 const LEGACY_HOST_SIGNATURES = [

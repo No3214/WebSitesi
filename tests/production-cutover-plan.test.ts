@@ -205,7 +205,7 @@ describe("production cutover plan", () => {
       "Registrar ownership is not the same as live DNS authority. If nameservers are Cloudflare, edit Cloudflare DNS records; Isimtescil DNS-zone records will not affect traffic until nameservers move to Isimtescil/Natro.",
     );
     expect(canonical?.diagnostics).toContain(
-      "Vercel currently expects apex A records to 76.76.21.21 and www CNAME records to cname.vercel-dns-0.com for this cutover.",
+      "Vercel domains inspect currently expects A records to 76.76.21.21 for the apex and www hosts in this project; re-run vercel domains inspect before editing DNS because Vercel can return project-specific values.",
     );
     expect(canonical?.diagnostics).toContain(
       "The active Turkish ccTLD brand origins are part of the public launch gate; they must serve the current app or securely redirect to the chosen canonical app without stale menu/legacy content.",
@@ -217,7 +217,7 @@ describe("production cutover plan", () => {
       "Confirm active nameservers before editing DNS; make changes at the authoritative DNS provider, not just the registrar panel.",
     );
     expect(canonical?.checklist).toContain(
-      "If choosing Isimtescil DNS instead of Cloudflare, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding Vercel A/CNAME records.",
+      "If choosing Isimtescil DNS instead of Cloudflare, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding the Vercel A/CNAME records shown by vercel domains inspect.",
     );
     expect(canonical?.commands).toContain("npm run domain:verify");
     expect(canonical?.commands).toContain("npm run domain:verify:strict");

@@ -187,9 +187,9 @@ describe("domain readiness", () => {
       }),
       expect.objectContaining({
         group: "canonical",
-        type: "CNAME",
+        type: "A",
         host: "www.kozbeylikonagi.com",
-        value: "cname.vercel-dns-0.com",
+        value: "76.76.21.21",
       }),
       expect.objectContaining({
         group: "brand",
@@ -199,9 +199,9 @@ describe("domain readiness", () => {
       }),
       expect.objectContaining({
         group: "brand",
-        type: "CNAME",
+        type: "A",
         host: "www.kozbeylikonagi.com.tr",
-        value: "cname.vercel-dns-0.com",
+        value: "76.76.21.21",
       }),
     ]);
     expect(result.blockers).toContain(
@@ -389,7 +389,7 @@ describe("domain readiness", () => {
     expect(result.warnings).toEqual(
       expect.arrayContaining([
         "A kozbeylikonagi.com does not match Vercel target 76.76.21.21; actual: 203.0.113.10",
-        "CNAME www.kozbeylikonagi.com does not match Vercel target cname.vercel-dns-0.com; actual: old-host.example.com",
+        "A www.kozbeylikonagi.com does not match Vercel target 76.76.21.21; actual: 203.0.113.10",
       ]),
     );
     expect(result.dns.webRecordChecks.find((record) => record.host === "kozbeylikonagi.com")).toMatchObject({

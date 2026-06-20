@@ -18,7 +18,7 @@ const gateActionCatalog = {
       "If domain:verify reports legacy Joomla/Seagull template or legacy HotelRunner hosted landing surface, the canonical domain is still routed to the old host even if Vercel shows an alias.",
       "Treat NS/MX DNS PASS separately from web serving readiness; mail/nameserver success does not clear a legacy host surface.",
       "Registrar ownership is not the same as live DNS authority. If nameservers are Cloudflare, edit Cloudflare DNS records; Isimtescil DNS-zone records will not affect traffic until nameservers move to Isimtescil/Natro.",
-      "Vercel currently expects apex A records to 76.76.21.21 and www CNAME records to cname.vercel-dns-0.com for this cutover.",
+      "Vercel domains inspect currently expects A records to 76.76.21.21 for the apex and www hosts in this project; re-run vercel domains inspect before editing DNS because Vercel can return project-specific values.",
       "The active Turkish ccTLD brand origins are part of the public launch gate; they must serve the current app or securely redirect to the chosen canonical app without stale menu/legacy content.",
     ],
     actions: [
@@ -27,7 +27,7 @@ const gateActionCatalog = {
       "Set NEXT_PUBLIC_SITE_URL to the chosen canonical HTTPS origin in Vercel production env.",
       "Confirm active nameservers before editing DNS; make changes at the authoritative DNS provider, not just the registrar panel.",
       "Correct Cloudflare DNS so canonical and brand domains resolve to the Vercel production deployment, not the old landing host.",
-      "If choosing Isimtescil DNS instead of Cloudflare, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding Vercel A/CNAME records.",
+        "If choosing Isimtescil DNS instead of Cloudflare, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding the Vercel A/CNAME records shown by vercel domains inspect.",
       "Remove old Joomla/Seagull and HotelRunner hosted landing routing from the canonical web origin.",
       "Remove any HTTPS-to-HTTP first-hop redirect on canonical or brand origins before marking the domain gate ready.",
       "Run npm run domain:verify:strict and npm run launch:smoke:live before marking evidence ready.",
