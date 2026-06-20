@@ -10,6 +10,8 @@ type DomainReadinessModule = {
     previewOrigin?: string;
     expectedCommit?: string;
     fetchImpl?: typeof fetch;
+    resolve4Impl?: (host: string) => Promise<string[]>;
+    resolveCnameImpl?: (host: string) => Promise<string[]>;
     resolveNsImpl?: () => Promise<string[]>;
     resolveMxImpl?: () => Promise<Array<{ exchange: string; preference: number }>>;
     dnsFallbackFetchImpl?: typeof fetch;
@@ -38,6 +40,15 @@ type DomainReadinessModule = {
         host: string;
         value: string;
         purpose: string;
+      }>;
+      webRecordsOk: boolean;
+      webRecordChecks: Array<{
+        type: string;
+        host: string;
+        expectedValue: string;
+        actualValues: string[];
+        ready: boolean;
+        remediation: string;
       }>;
     };
     preview: {
@@ -131,6 +142,13 @@ const healthyBody = {
   deployment: { commit: "abc123def456" },
 };
 
+function vercelWebRecordResolvers() {
+  return {
+    resolve4Impl: async () => ["76.76.21.21"],
+    resolveCnameImpl: async () => ["cname.vercel-dns-0.com"],
+  };
+}
+
 describe("domain readiness", () => {
   it("returns NO-GO when canonical domains do not serve the app health endpoint", async () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
@@ -139,6 +157,7 @@ describe("domain readiness", () => {
       brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
+      ...vercelWebRecordResolvers(),
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.includes("kozbeyli-konagi.vercel.app/api/health")) return jsonResponse(healthyBody);
@@ -200,6 +219,7 @@ describe("domain readiness", () => {
       brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
+      ...vercelWebRecordResolvers(),
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.includes("kozbeyli-konagi.vercel.app/api/health")) return jsonResponse(healthyBody);
@@ -230,6 +250,7 @@ describe("domain readiness", () => {
       brandOrigins: ["https://www.kozbeylikonagi.com.tr"],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
+      ...vercelWebRecordResolvers(),
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.includes("kozbeylikonagi.com.tr")) return legacyHostResponse();
@@ -257,6 +278,7 @@ describe("domain readiness", () => {
       brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
+      ...vercelWebRecordResolvers(),
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
@@ -282,6 +304,7 @@ describe("domain readiness", () => {
       brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
+      ...vercelWebRecordResolvers(),
       fetchImpl: async (url: string | URL | Request, init?: RequestInit) => {
         const href = String(url);
         const redirectMode = init?.redirect;
@@ -322,6 +345,7 @@ describe("domain readiness", () => {
       brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def4567890",
+      ...vercelWebRecordResolvers(),
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
@@ -334,9 +358,45 @@ describe("domain readiness", () => {
     expect(result.previewReady).toBe(true);
     expect(result.canonicalReady).toBe(true);
     expect(result.dnsReady).toBe(true);
+    expect(result.dns.webRecordsOk).toBe(true);
     expect(result.decision).toBe("CANONICAL DOMAIN GO");
     expect(result.preview.home.hasOpeningHeroVideo).toBe(true);
     expect(result.blockers).toEqual([]);
+  });
+
+  it("warns when web DNS records do not match Vercel targets without overriding verified web readiness", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://kozbeylikonagi.com"],
+      brandOrigins: [],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      resolve4Impl: async () => ["203.0.113.10"],
+      resolveCnameImpl: async () => ["old-host.example.com"],
+      fetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
+        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
+      },
+      resolveNsImpl: async () => ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
+      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
+    });
+
+    expect(result.decision).toBe("CANONICAL DOMAIN GO");
+    expect(result.dnsReady).toBe(false);
+    expect(result.dns.webRecordsOk).toBe(false);
+    expect(result.blockers).toEqual([]);
+    expect(result.warnings).toEqual(
+      expect.arrayContaining([
+        "A kozbeylikonagi.com does not match Vercel target 76.76.21.21; actual: 203.0.113.10",
+        "CNAME www.kozbeylikonagi.com does not match Vercel target cname.vercel-dns-0.com; actual: old-host.example.com",
+      ]),
+    );
+    expect(result.dns.webRecordChecks.find((record) => record.host === "kozbeylikonagi.com")).toMatchObject({
+      ready: false,
+      expectedValue: "76.76.21.21",
+      actualValues: ["203.0.113.10"],
+    });
   });
 
   it("keeps DNS lookup failures as warnings instead of blocking a verified web deployment", async () => {
@@ -346,6 +406,7 @@ describe("domain readiness", () => {
       brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
+      ...vercelWebRecordResolvers(),
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
@@ -377,6 +438,7 @@ describe("domain readiness", () => {
       brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
+      ...vercelWebRecordResolvers(),
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
@@ -424,6 +486,7 @@ describe("domain readiness", () => {
       brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
+      ...vercelWebRecordResolvers(),
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.endsWith("/api/health")) return jsonResponse(healthyBody);

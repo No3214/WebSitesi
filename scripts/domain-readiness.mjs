@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { resolveMx, resolveNs } from "node:dns/promises";
+import { resolve4, resolveCname, resolveMx, resolveNs } from "node:dns/promises";
 import { pathToFileURL } from "node:url";
 
 const DEFAULT_CANONICAL_ORIGINS = ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"];
@@ -281,6 +281,10 @@ function parseDohAnswers(payload, recordType) {
       .filter(Boolean);
   }
 
+  if (recordType === "A" || recordType === "CNAME") {
+    return records.sort();
+  }
+
   return [];
 }
 
@@ -394,6 +398,79 @@ async function resolveDnsRecord({
   };
 }
 
+function normalizeDnsValues(values) {
+  return values.map((item) => stripTrailingDot(item).toLowerCase()).sort();
+}
+
+function webRecordMatches(record, actualValues) {
+  const expected = stripTrailingDot(record.value).toLowerCase();
+  const actual = normalizeDnsValues(actualValues);
+
+  if (record.type === "A") {
+    return actual.includes(expected);
+  }
+
+  if (record.type === "CNAME") {
+    return actual.includes(expected);
+  }
+
+  return false;
+}
+
+async function checkWebTargetRecord({
+  record,
+  resolve4Impl,
+  resolveCnameImpl,
+  dnsFallbackFetchImpl,
+  dnsFallbackTimeoutMs,
+}) {
+  const nativeLookup = record.type === "A" ? resolve4Impl : resolveCnameImpl;
+  const result = await resolveDnsRecord({
+    apexDomain: record.host,
+    recordType: record.type,
+    nativeLookup,
+    dnsFallbackFetchImpl,
+    dnsFallbackTimeoutMs,
+  });
+  const actualValues = normalizeDnsValues(result.records);
+  const expectedValue = stripTrailingDot(record.value).toLowerCase();
+  const ready = webRecordMatches(record, result.records);
+
+  return {
+    group: record.group,
+    type: record.type,
+    host: record.host,
+    expectedValue,
+    actualValues,
+    source: result.source,
+    error: result.error,
+    ready,
+    purpose: record.purpose,
+    remediation: ready
+      ? ""
+      : `Set ${record.type} ${record.host} to ${record.value} at the active DNS authority, or use an explicit redirect after proving the web origin serves the current app.`,
+  };
+}
+
+async function checkWebTargetRecords({
+  resolve4Impl = resolve4,
+  resolveCnameImpl = resolveCname,
+  dnsFallbackFetchImpl,
+  dnsFallbackTimeoutMs = 6000,
+} = {}) {
+  return Promise.all(
+    VERCEL_TARGET_RECORDS.map((record) =>
+      checkWebTargetRecord({
+        record,
+        resolve4Impl,
+        resolveCnameImpl,
+        dnsFallbackFetchImpl,
+        dnsFallbackTimeoutMs,
+      }),
+    ),
+  );
+}
+
 async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutMs = 10000 }) {
   const normalizedOrigin = normalizeOrigin(origin);
   const healthUrl = `${normalizedOrigin}/api/health`;
@@ -498,6 +575,8 @@ function originBlockers(item) {
 
 async function checkDns({
   apexDomain = "kozbeylikonagi.com",
+  resolve4Impl = resolve4,
+  resolveCnameImpl = resolveCname,
   resolveNsImpl = resolveNs,
   resolveMxImpl = resolveMx,
   dnsFallbackFetchImpl,
@@ -519,10 +598,17 @@ async function checkDns({
       dnsFallbackTimeoutMs,
     }),
   ]);
+  const webRecordChecks = await checkWebTargetRecords({
+    resolve4Impl,
+    resolveCnameImpl,
+    dnsFallbackFetchImpl,
+    dnsFallbackTimeoutMs,
+  });
 
   const ns = nsResult.records;
   const mx = mxResult.records;
   const authority = classifyDnsAuthority(ns);
+  const webRecordsOk = webRecordChecks.every((item) => item.ready);
 
   return {
     apexDomain,
@@ -534,6 +620,8 @@ async function checkDns({
     isimtescilCaution:
       "If the domain is registered at Isimtescil but nameservers stay on Cloudflare, Isimtescil DNS-zone records will not control live web traffic. To use Isimtescil DNS, change nameservers first and preserve MX/TXT/SPF/DKIM/DMARC records.",
     vercelTargetRecords: VERCEL_TARGET_RECORDS,
+    webRecordChecks,
+    webRecordsOk,
     nsOk: ns.some((item) => item.includes("cloudflare.com")),
     mxOk: mx.some((item) => item.exchange === "mx.kozbeylikonagi.com"),
     nsSource: nsResult.source,
@@ -550,6 +638,8 @@ export async function evaluateDomainReadiness({
   expectedCommit = getExpectedCommit(),
   fetchImpl = fetch,
   timeoutMs = 10000,
+  resolve4Impl = resolve4,
+  resolveCnameImpl = resolveCname,
   resolveNsImpl = resolveNs,
   resolveMxImpl = resolveMx,
   dnsFallbackFetchImpl = fetch,
@@ -567,7 +657,14 @@ export async function evaluateDomainReadiness({
         checkOrigin({ origin, expectedCommit, fetchImpl, timeoutMs }),
       ),
     ),
-    checkDns({ resolveNsImpl, resolveMxImpl, dnsFallbackFetchImpl, dnsFallbackTimeoutMs }),
+    checkDns({
+      resolve4Impl,
+      resolveCnameImpl,
+      resolveNsImpl,
+      resolveMxImpl,
+      dnsFallbackFetchImpl,
+      dnsFallbackTimeoutMs,
+    }),
   ]);
 
   const canonicalReady = canonical.every((item) => item.ready);
@@ -576,6 +673,13 @@ export async function evaluateDomainReadiness({
   const warnings = [
     ...(dns.nsOk ? [] : ["canonical domain nameservers could not be verified as Cloudflare"]),
     ...(dns.mxOk ? [] : ["canonical domain MX record could not be verified as mx.kozbeylikonagi.com"]),
+    ...dns.webRecordChecks
+      .filter((item) => !item.ready)
+      .map((item) =>
+        `${item.type} ${item.host} does not match Vercel target ${item.expectedValue}; actual: ${
+          item.actualValues.join(", ") || item.error || "n/a"
+        }`,
+      ),
   ];
   const blockers = [
     ...canonical.flatMap(originBlockers),
@@ -590,7 +694,7 @@ export async function evaluateDomainReadiness({
     canonicalReady,
     brandReady,
     previewReady,
-    dnsReady: dns.nsOk && dns.mxOk,
+    dnsReady: dns.nsOk && dns.mxOk && dns.webRecordsOk,
     preview,
     canonical,
     brand,
@@ -683,6 +787,15 @@ export function formatDomainReadiness(result) {
   lines.push("  Vercel target records:");
   for (const record of result.dns.vercelTargetRecords) {
     lines.push(`  - [${record.group}] ${record.type} ${record.host} ${record.value} (${record.purpose})`);
+  }
+  lines.push("  Live web records:");
+  for (const record of result.dns.webRecordChecks) {
+    lines.push(
+      `  - ${record.ready ? "PASS" : "WARN"} [${record.group}] ${record.type} ${record.host} expected=${record.expectedValue} actual=${
+        record.actualValues.join(", ") || record.error || "n/a"
+      } source=${record.source}`,
+    );
+    if (!record.ready) lines.push(`    remediation: ${record.remediation}`);
   }
 
   if (result.warnings.length > 0) {
