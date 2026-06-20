@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { X, Gift, ArrowRight } from "lucide-react";
 
+import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
 
 export const ExitIntent = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [hasShown, setHasShown] = useState(false);
 
-  const target = publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL || "/rezervasyon";
+  const target = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
 
   useEffect(() => {
     if (hasShown) return;
@@ -44,9 +45,15 @@ export const ExitIntent = () => {
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-[rgba(61,74,59,0.38)] backdrop-blur-sm exit-intent-backdrop">
-      <div className="relative w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl exit-intent-dialog">
+      <div
+        className="relative w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl exit-intent-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Direkt rezervasyon teklifi"
+      >
         <button
           onClick={() => setIsVisible(false)}
+          aria-label="Rezervasyon teklifini kapat"
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-zinc-100 transition-colors"
         >
           <X size={20} className="text-zinc-400" />
@@ -75,6 +82,8 @@ export const ExitIntent = () => {
 
             <a
               href={target}
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-premium-solid w-full flex items-center justify-center gap-2 group"
             >
               REZERVASYON YAP

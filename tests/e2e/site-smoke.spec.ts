@@ -94,6 +94,23 @@ test.describe("Rezervasyon HMS handoff", () => {
     await expect(page.getByText("Kart bilgisi bu sitede saklanmaz").first()).toBeVisible();
     await expect(page.getByRole("link", { name: /WhatsApp/i }).first()).toBeVisible({ timeout: 10000 });
   });
+
+  test("exit-intent rezervasyon aksiyonu resmi HMS ekranina gider", async ({ page }) => {
+    await page.addInitScript(() => window.sessionStorage.clear());
+    await page.goto("/");
+    await page.waitForTimeout(500);
+
+    await page.mouse.move(300, 300);
+    await page.mouse.move(300, -10);
+
+    const exitIntentDialog = page.getByRole("dialog", { name: "Direkt rezervasyon teklifi" });
+    await expect(exitIntentDialog).toBeVisible();
+
+    const exitIntentBooking = exitIntentDialog.getByRole("link", { name: "REZERVASYON YAP", exact: true });
+    await expect(exitIntentBooking).toBeVisible();
+    await expect(exitIntentBooking).toHaveAttribute("href", HMS_BOOKING_URL);
+    await expect(exitIntentBooking).toHaveAttribute("target", "_blank");
+  });
 });
 
 test.describe("Rezervasyon oda parametresi", () => {

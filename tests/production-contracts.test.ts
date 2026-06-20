@@ -912,6 +912,11 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("npm run domain:verify:strict");
     expect(cutoverPlan).toContain("npm run hms:verify:strict");
     expect(cutoverPlan).toContain("npm run launch:audit:strict");
+
+    const exitIntent = read("src/components/exit-intent.tsx");
+    expect(exitIntent).toContain("getConfiguredBookingEngineHref");
+    expect(exitIntent).toContain('target="_blank"');
+    expect(exitIntent).not.toContain('|| "/rezervasyon"');
   });
 
   it("keeps homepage Foça positioning broad instead of only Eski or Yeni Foça", () => {
