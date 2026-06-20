@@ -39,6 +39,17 @@ type DomainReadinessModule = {
           label: string;
           action: string;
         };
+        cutover: {
+          records: Array<{
+            group: string;
+            type: string;
+            host: string;
+            value: string;
+            purpose: string;
+          }>;
+          checklist: string[];
+          cloudflareProxyNote: string;
+        };
       }>;
       zonesOk: boolean;
       nsSource: string;
@@ -199,6 +210,15 @@ describe("domain readiness", () => {
           nsOk: true,
           mxOk: true,
           authority: expect.objectContaining({ provider: "cloudflare" }),
+          cutover: expect.objectContaining({
+            cloudflareProxyNote: expect.stringContaining("Cloudflare proxy"),
+            checklist: expect.arrayContaining([
+              "Set A kozbeylikonagi.com to 76.76.21.21.",
+              "Set A www.kozbeylikonagi.com to 76.76.21.21.",
+              expect.stringContaining("DNS only"),
+              expect.stringContaining("Preserve MX mx.kozbeylikonagi.com"),
+            ]),
+          }),
         }),
         expect.objectContaining({
           group: "brand",
@@ -207,6 +227,13 @@ describe("domain readiness", () => {
           nsOk: true,
           mxOk: true,
           authority: expect.objectContaining({ provider: "cloudflare" }),
+          cutover: expect.objectContaining({
+            checklist: expect.arrayContaining([
+              "Set A kozbeylikonagi.com.tr to 76.76.21.21.",
+              "Set A www.kozbeylikonagi.com.tr to 76.76.21.21.",
+              "Do not change mail records unless a separate mail migration is approved.",
+            ]),
+          }),
         }),
       ]),
     );

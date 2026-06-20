@@ -62,6 +62,13 @@ gate'e dahildir; güncel uygulamayı servis etmeli veya seçilen canonical origi
 güvenli şekilde yönlenmelidir. Nameserver sağlayıcısı değiştirilecekse
 MX/TXT/SPF/DKIM/DMARC kayıtları korunmadan geçiş yapılmamalıdır.
 
+2026-06-20 Cloudflare proxy notu: Cloudflare proxy açıkken public DNS sorguları
+Vercel hedefi yerine Cloudflare anycast IP'lerini gösterebilir. İlk cutover
+doğrulamasında kayıtları DNS-only modda test etmek veya proxy açık kalacaksa
+`/api/health` yanıtının `service=kozbeyli-konagi` dönmesi ve ana sayfanın
+`/videos/hero.mp4` açılış videosunu göstermesi zorunludur. Public A sorgusu tek
+başına GO kanıtı sayılmaz.
+
 2026-06-20 public light theme güncellemesi: koyu public yüzeyler geriye
 alındı. Mobil menü, oda detay rezervasyon kartı, exit-intent rezervasyon paneli
 ve hata ekranı açık taş/olive tema yüzeylerine çekildi; `tests/light-theme-contract.test.ts`

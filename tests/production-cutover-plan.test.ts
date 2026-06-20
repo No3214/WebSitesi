@@ -211,6 +211,9 @@ describe("production cutover plan", () => {
       "Vercel domains inspect currently expects A records to 76.76.21.21 for the apex and www hosts in this project; re-run vercel domains inspect before editing DNS because Vercel can return project-specific values.",
     );
     expect(canonical?.diagnostics).toContain(
+      "If Cloudflare proxy is enabled, public DNS lookups can show Cloudflare anycast IPs instead of the Vercel target; the final proof is /api/health plus the opening hero video on the public origin.",
+    );
+    expect(canonical?.diagnostics).toContain(
       "The active Turkish ccTLD brand origins are part of the public launch gate; they must serve the current app or securely redirect to the chosen canonical app without stale menu/legacy content.",
     );
     expect(canonical?.checklist).toContain(
@@ -221,6 +224,9 @@ describe("production cutover plan", () => {
     );
     expect(canonical?.checklist).toContain(
       "Check the canonical .com and Turkish ccTLD .com.tr zones independently; do not assume both domains use the same Cloudflare zone or nameserver pair.",
+    );
+    expect(canonical?.checklist).toContain(
+      "For first verification on Cloudflare, use DNS-only records or rerun npm run domain:verify:strict after enabling proxy to prove the proxied origin still serves the current app.",
     );
     expect(canonical?.checklist).toContain(
       "If choosing Isimtescil DNS instead of Cloudflare, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding the Vercel A/CNAME records shown by vercel domains inspect.",

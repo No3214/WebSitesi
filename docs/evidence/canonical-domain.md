@@ -70,6 +70,11 @@ As of 2026-06-20, `npm run domain:verify:json` reports these concrete blockers:
   origins must also serve the current app or securely redirect to the chosen
   canonical app. Existing MX/TXT/SPF/DKIM/DMARC records must be preserved when
   changing the authoritative DNS provider.
+- If Cloudflare proxy is enabled, public A lookups can show Cloudflare anycast
+  IPs instead of the Vercel target. The operator should use DNS-only mode for
+  first cutover verification, or keep proxy enabled only after `/api/health`
+  returns `service: "kozbeyli-konagi"` at the current commit and the homepage
+  exposes `/videos/hero.mp4`.
 
 ## Residual Risk
 

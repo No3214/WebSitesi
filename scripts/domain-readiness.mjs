@@ -76,6 +76,8 @@ const DNS_FALLBACK_ENDPOINTS = [
   "https://cloudflare-dns.com/dns-query",
   "https://dns.google/resolve",
 ];
+const CLOUDFLARE_PROXY_CUTOVER_NOTE =
+  "If Cloudflare proxy is enabled, public DNS can show Cloudflare anycast IPs instead of the Vercel target. For first cutover verification, use DNS only or prove the proxied host with /api/health and the opening hero video before marking the gate ready.";
 
 function normalizeOrigin(origin) {
   return origin.replace(/\/+$/, "");
@@ -265,6 +267,41 @@ function classifyDnsAuthority(nsRecords) {
     label: "Third-party DNS",
     action:
       "Edit records at the authoritative DNS provider shown by the nameservers, not necessarily the registrar.",
+  };
+}
+
+function recordsForZone(zone) {
+  return VERCEL_TARGET_RECORDS.filter(
+    (record) =>
+      record.group === zone.group &&
+      (record.host === zone.apexDomain || record.host.endsWith(`.${zone.apexDomain}`)),
+  );
+}
+
+function buildZoneCutoverGuidance(zone, authority) {
+  const records = recordsForZone(zone);
+  const checklist = [
+    `Open the ${authority.label} authoritative DNS zone for ${zone.apexDomain}.`,
+    ...records.map((record) => `Set ${record.type} ${record.host} to ${record.value}.`),
+  ];
+
+  if (authority.provider === "cloudflare") {
+    checklist.push(CLOUDFLARE_PROXY_CUTOVER_NOTE);
+  }
+
+  if (zone.mailRequired) {
+    checklist.push(
+      `Preserve MX ${zone.expectedMx} and all existing TXT/SPF/DKIM/DMARC records during web cutover.`,
+    );
+  } else {
+    checklist.push("Do not change mail records unless a separate mail migration is approved.");
+  }
+
+  return {
+    records,
+    checklist,
+    cloudflareProxyNote:
+      authority.provider === "cloudflare" ? CLOUDFLARE_PROXY_CUTOVER_NOTE : "",
   };
 }
 
@@ -616,6 +653,7 @@ async function checkDnsZone({
   const authority = classifyDnsAuthority(ns);
   const nsOk = ns.length > 0 && authority.provider !== "unknown";
   const mxOk = !zone.mailRequired || mx.some((item) => item.exchange === zone.expectedMx);
+  const cutover = buildZoneCutoverGuidance(zone, authority);
 
   return {
     group: zone.group,
@@ -627,6 +665,7 @@ async function checkDnsZone({
     authority,
     nsOk,
     mxOk,
+    cutover,
     nsSource: nsResult.source,
     mxSource: mxResult.source,
     nsError: nsResult.error,
@@ -862,6 +901,8 @@ export function formatDomainReadiness(result) {
     );
     lines.push(`    active DNS authority: ${zone.authority.label}`);
     lines.push(`    action: ${zone.authority.action}`);
+    lines.push("    cutover checklist:");
+    zone.cutover.checklist.forEach((item) => lines.push(`    - ${item}`));
   }
   lines.push(`  registrar/DNS note: ${result.dns.registrarVsDnsNote}`);
   lines.push(`  Isimtescil caution: ${result.dns.isimtescilCaution}`);

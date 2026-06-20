@@ -656,6 +656,9 @@ describe("production readiness contracts", () => {
     expect(domainScript).toContain("legacy Joomla/Seagull template");
     expect(domainScript).toContain("legacy HotelRunner hosted landing surface");
     expect(domainScript).toContain("serves legacy host surface");
+    expect(domainScript).toContain("CLOUDFLARE_PROXY_CUTOVER_NOTE");
+    expect(domainScript).toContain("buildZoneCutoverGuidance");
+    expect(domainScript).toContain("public DNS can show Cloudflare anycast IPs");
     expect(domainScript).toContain("process.exitCode");
     expect(domainScript).not.toContain("process.exit(strict");
     expect(domainScript).toContain("kozbeylikonagi.com");
@@ -670,6 +673,7 @@ describe("production readiness contracts", () => {
 
     expect(launchReadiness).toContain("Son revizyon: 2026-06-20.");
     expect(launchReadiness).toContain("2026-06-20 canonical legacy host güncellemesi");
+    expect(launchReadiness).toContain("2026-06-20 Cloudflare proxy notu");
     expect(launchReadiness).toContain("2026-06-20 public light theme güncellemesi");
     expect(launchReadiness).toContain("31 files / 186 tests");
     expect(launchReadiness).toContain("68 routes generated");
@@ -693,6 +697,7 @@ describe("production readiness contracts", () => {
     expect(canonicalEvidence).toContain("legacy Joomla/Seagull template");
     expect(canonicalEvidence).toContain("legacy HotelRunner hosted landing surface");
     expect(canonicalEvidence).toContain("DNS NS/MX can be verified through DNS-over-HTTPS");
+    expect(canonicalEvidence).toContain("public A lookups can show Cloudflare anycast");
   });
 
   it("keeps Vercel operational prerequisites visible without hiding the global CLI requirement", () => {
@@ -733,6 +738,8 @@ describe("production readiness contracts", () => {
     expect(cutover).toContain("VERCEL_AUTH_COMMANDS");
     expect(cutover).toContain("vercel whoami");
     expect(cutover).toContain("npm run hms:verify:strict");
+    expect(cutover).toContain("If Cloudflare proxy is enabled");
+    expect(cutover).toContain("For first verification on Cloudflare");
     expect(vercelOps).toContain("PASS_WITH_WARNINGS");
     expect(vercelOps).toContain("npm i -g vercel");
     expect(vercelOps).toContain("APPDATA");
