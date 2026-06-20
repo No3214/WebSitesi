@@ -881,6 +881,11 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("Kozbeyli Konagi production cutover plan");
     expect(cutoverPlan).toContain("npm i -g vercel");
     expect(cutoverPlan).toContain("HTTPS-to-HTTP first-hop redirect");
+    expect(cutoverPlan).toContain("legacy Joomla/Seagull template");
+    expect(cutoverPlan).toContain("legacy HotelRunner hosted landing surface");
+    expect(cutoverPlan).toContain("Remove old Joomla/Seagull and HotelRunner hosted landing routing");
+    expect(cutoverPlan).toContain("no legacy host signatures");
+    expect(cutoverPlan).toContain("Treat NS/MX DNS PASS separately from web serving readiness");
     expect(cutoverPlan).toContain("remove the bad override to use the official code fallback");
     expect(cutoverPlan).toContain("Run npm run hms:verify:strict");
     expect(cutoverPlan).toContain("Verify the public reservation CTA opens the approved HTTPS HMS engine");

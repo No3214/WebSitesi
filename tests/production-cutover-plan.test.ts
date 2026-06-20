@@ -54,6 +54,7 @@ type CutoverModule = {
       owner: string;
       timing: string;
       missingEnv: string[];
+      diagnostics: string[];
       envDiagnostics: {
         source: string;
         requiredCount: number;
@@ -189,14 +190,25 @@ describe("production cutover plan", () => {
       fallbackApplied: false,
     });
     expect(canonical?.checklist).toContain(
+      "Remove old Joomla/Seagull and HotelRunner hosted landing routing from the canonical web origin.",
+    );
+    expect(canonical?.checklist).toContain(
       "Remove any HTTPS-to-HTTP first-hop redirect on kozbeylikonagi.com or www before marking the canonical gate ready.",
     );
+    expect(canonical?.diagnostics).toContain(
+      "If domain:verify reports legacy Joomla/Seagull template or legacy HotelRunner hosted landing surface, the canonical domain is still routed to the old host even if Vercel shows an alias.",
+    );
+    expect(canonical?.diagnostics).toContain(
+      "Treat NS/MX DNS PASS separately from web serving readiness; mail/nameserver success does not clear a legacy host surface.",
+    );
+    expect(canonical?.commands).toContain("npm run domain:verify");
     expect(canonical?.commands).toContain("npm run domain:verify:strict");
     expect(canonical?.commands).toContain("npm run launch:smoke:live");
     expect(canonical?.commands).toEqual(
       expect.arrayContaining(["npm i -g vercel", "vercel login", "vercel whoami"]),
     );
     expect(canonical?.kpiAndReviewLoop).toContain("/api/health");
+    expect(canonical?.kpiAndReviewLoop).toContain("no legacy host signatures");
 
     const abuseControls = plan.gateSteps.find((step) => step.id === "production_abuse_controls");
     expect(abuseControls?.commands).toEqual(
@@ -226,6 +238,9 @@ describe("production cutover plan", () => {
     const formatted = cutover.formatProductionCutoverPlan(plan);
     expect(formatted).toContain("Kozbeyli Konagi production cutover plan");
     expect(formatted).toContain("Vercel CLI install: npm i -g vercel");
+    expect(formatted).toContain("diagnostics:");
+    expect(formatted).toContain("legacy Joomla/Seagull template");
+    expect(formatted).toContain("legacy HotelRunner hosted landing surface");
     expect(formatted).toContain("env: missing");
     expect(formatted).toContain("fallback=yes");
     expect(formatted).toContain("Final verification commands:");

@@ -13,11 +13,17 @@ const gateActionCatalog = {
     owner: "Vercel/DNS operator",
     timing: "Before public domain announcement",
     objective: "Serve the current Vercel deployment on kozbeylikonagi.com and www.kozbeylikonagi.com.",
+    diagnostics: [
+      "Run npm run domain:verify before DNS edits; it must report preview PASS and canonical origins PASS before this gate is ready.",
+      "If domain:verify reports legacy Joomla/Seagull template or legacy HotelRunner hosted landing surface, the canonical domain is still routed to the old host even if Vercel shows an alias.",
+      "Treat NS/MX DNS PASS separately from web serving readiness; mail/nameserver success does not clear a legacy host surface.",
+    ],
     actions: [
       "Install and authenticate Vercel CLI if it is missing.",
       "Attach both canonical domains to the kozbeyli-konagi Vercel project.",
       "Set NEXT_PUBLIC_SITE_URL to the chosen canonical HTTPS origin in Vercel production env.",
       "Correct Cloudflare DNS so both domains resolve to the Vercel production deployment, not the old landing host.",
+      "Remove old Joomla/Seagull and HotelRunner hosted landing routing from the canonical web origin.",
       "Remove any HTTPS-to-HTTP first-hop redirect on kozbeylikonagi.com or www before marking the canonical gate ready.",
       "Run npm run domain:verify:strict and npm run launch:smoke:live before marking evidence ready.",
     ],
@@ -25,11 +31,12 @@ const gateActionCatalog = {
       ...VERCEL_AUTH_COMMANDS,
       "vercel env pull",
       "vercel env add NEXT_PUBLIC_SITE_URL production",
+      "npm run domain:verify",
       "npm run domain:verify:strict",
       "npm run launch:smoke:live",
     ],
     evidence: ["docs/evidence/canonical-domain.md"],
-    kpi: "Both canonical origins return /api/health service=kozbeyli-konagi at the current commit and expose /videos/hero.mp4 on the homepage.",
+    kpi: "Both canonical origins return /api/health service=kozbeyli-konagi at the current commit, expose /videos/hero.mp4 on the homepage and report no legacy host signatures.",
   },
   production_abuse_controls: {
     owner: "Security / platform operator",
@@ -195,6 +202,7 @@ function buildGateStep(gate) {
     actions: ["Resolve the blocked launch gate and provide redacted evidence."],
     commands: ["npm run launch:audit"],
     evidence: gate.evidence || [],
+    diagnostics: [],
     kpi: "Gate passes in npm run launch:audit.",
   };
 
@@ -216,6 +224,7 @@ function buildGateStep(gate) {
     },
     missingEnv: gate.missingEnv,
     missingEvidence: gate.missingEvidence,
+    diagnostics: catalog.diagnostics || [],
     checklist: resolveGateChecklist(gate, catalog),
     commands: resolveGateCommands(gate, catalog),
     evidence: unique([...(gate.evidence || []), ...(catalog.evidence || [])]),
@@ -296,6 +305,10 @@ export function formatProductionCutoverPlan(plan) {
             .map((item) => `${item.path} (${item.reason})`)
             .join(", ")}`,
         );
+      }
+      if (step.diagnostics.length > 0) {
+        lines.push("  diagnostics:");
+        step.diagnostics.forEach((item) => lines.push(`  - ${item}`));
       }
       lines.push("  checklist:");
       step.checklist.forEach((item) => lines.push(`  - ${item}`));
