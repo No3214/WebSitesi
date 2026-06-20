@@ -8,6 +8,7 @@ import { TrackingScripts } from "@/components/tracking-scripts";
 import { WebVitalsReporter } from "@/components/web-vitals-reporter";
 import { defaultMetadata } from "@/lib/metadata";
 import { hotelSchema } from "@/lib/schema";
+import { sanitizeJsonLd } from "@/lib/security";
 import "./globals.css";
 
 import { FloatingContact } from "@/components/floating-contact";
@@ -39,7 +40,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelSchema()) }}
+          dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(hotelSchema()) }}
         />
         <ErrorBoundary>
           <CSPostHogProvider>

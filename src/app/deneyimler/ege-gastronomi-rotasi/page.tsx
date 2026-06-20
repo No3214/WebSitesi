@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SectionTitle } from "@/components/section-title";
 import { FadeIn } from "@/components/animations";
 import { absoluteUrl } from "@/lib/utils";
+import { sanitizeJsonLd } from "@/lib/security";
 
 export const metadata: Metadata = {
   title: "Ege Gastronomi Rotası",
@@ -47,7 +48,7 @@ export default function EgeGastronomiRotasiPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(breadcrumbJsonLd) }}
       />
       <SiteHeader />
       <main>

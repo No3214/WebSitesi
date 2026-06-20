@@ -43,6 +43,17 @@ export function validateSameOrigin(request: Request) {
 }
 
 /**
+ * Sanitizes an object into a JSON-LD string by escaping characters
+ * that could be used to break out of a <script> tag and execute XSS.
+ */
+export function sanitizeJsonLd(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+}
+
+/**
  * Audit T4: in-memory Map kaldırıldı; paylaşımlı backend'e (lib/rate-limit)
  * delege edilir. İmza async oldu — çağıranlar `await` kullanmalı.
  */
