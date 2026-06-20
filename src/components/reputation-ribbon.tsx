@@ -10,13 +10,13 @@ import { ExternalLink, Star } from "lucide-react";
  */
 export const ReputationRibbon = () => {
   return (
-    <div className="w-full bg-black/80 backdrop-blur-xl border-y border-zinc-900 py-4 overflow-hidden">
+    <div className="w-full bg-[#fbf7ed]/95 backdrop-blur-xl border-y border-[rgba(61,74,59,0.12)] py-4 overflow-hidden shadow-[0_10px_34px_rgba(68,53,31,0.08)]">
       <div className="container mx-auto px-6">
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
           <div className="flex items-center gap-4">
             <div className="serif text-2xl text-gold font-bold">{ReputationData.overall.score}</div>
             <div className="flex flex-col">
-              <span className="text-white text-[10px] uppercase font-bold tracking-tighter">Genel Puan</span>
+              <span className="text-[var(--olive)] text-[10px] uppercase font-bold tracking-tighter">Genel Puan</span>
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} size={8} className="fill-gold text-gold" />
@@ -34,24 +34,24 @@ export const ReputationRibbon = () => {
               whileHover={{ y: -2 }}
               className="flex items-center gap-3 group"
             >
-              <div className="h-8 w-[1px] bg-zinc-800" />
+              <div className="h-8 w-[1px] bg-[rgba(61,74,59,0.16)]" />
               <div className="flex flex-col">
                 <div className="flex items-center gap-1">
-                  <span className="text-white/60 text-[10px] font-bold uppercase tracking-widest group-hover:text-gold transition-colors">
+                  <span className="text-[var(--muted)] text-[10px] font-bold uppercase tracking-widest group-hover:text-gold transition-colors">
                     {plat.name}
                   </span>
-                  <ExternalLink size={8} className="text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ExternalLink size={8} className="text-[var(--gold-text)] opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-                <div className="text-white font-serif text-sm">
-                  {plat.score} <span className="text-zinc-600 text-xs">/ {plat.maxScore}</span>
+                <div className="text-[var(--olive)] font-serif text-sm">
+                  {plat.score} <span className="text-[var(--muted)] text-xs">/ {plat.maxScore}</span>
                 </div>
               </div>
             </motion.a>
           ))}
           
           <div className="hidden lg:flex items-center gap-3">
-            <div className="h-8 w-[1px] bg-zinc-800" />
-            <div className="text-zinc-500 text-[10px] uppercase tracking-widest max-w-[150px] leading-tight italic">
+            <div className="h-8 w-[1px] bg-[rgba(61,74,59,0.16)]" />
+            <div className="text-[var(--muted)] text-[10px] uppercase tracking-widest max-w-[150px] leading-tight italic">
               &quot;Kültürel Miras ve Gastronominin En Yüksek Puanlı Adresi&quot;
             </div>
           </div>

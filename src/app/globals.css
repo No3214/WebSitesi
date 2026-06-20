@@ -162,23 +162,25 @@
     background: var(--soft);
   }
 
-  /* Dark, cinematic section */
+  /* Legacy cinematic section hook.
+     Public brand surfaces now stay on warm stone/light olive instead of black. */
   .section-dark {
     background:
-      radial-gradient(1200px 500px at 80% -10%, rgba(179, 146, 92, 0.12), transparent 60%),
-      radial-gradient(900px 420px at 8% 110%, rgba(46, 93, 107, 0.18), transparent 55%),
-      var(--ink);
-    color: var(--ivory);
+      radial-gradient(1100px 480px at 75% -10%, rgba(179, 146, 92, 0.16), transparent 60%),
+      radial-gradient(800px 400px at 10% 110%, rgba(61, 74, 59, 0.08), transparent 55%),
+      linear-gradient(180deg, #fbf7ed 0%, #f2ecdf 100%);
+    color: var(--text);
+    border-block: 1px solid rgba(61, 74, 59, 0.1);
   }
 
   .section-dark .section-title h2,
   .section-dark h2,
   .section-dark h3 {
-    color: var(--ivory);
+    color: var(--olive);
   }
 
   .section-dark .section-text {
-    color: rgba(250, 249, 246, 0.72);
+    color: var(--muted);
   }
 
   /* Subtle film grain for texture */
@@ -222,7 +224,7 @@
   }
 
   .site-header.overlay:not(.scrolled) {
-    background: linear-gradient(180deg, rgba(20, 22, 26, 0.45), transparent);
+    background: linear-gradient(180deg, rgba(61, 74, 59, 0.42), transparent);
   }
 
   .site-header.overlay:not(.scrolled) .nav-link,
@@ -527,7 +529,7 @@
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(to top, rgba(61, 74, 59, 0.88) 0%, rgba(61, 74, 59, 0.35) 42%, rgba(0, 0, 0, 0.16) 100%);
+      linear-gradient(to top, rgba(61, 74, 59, 0.88) 0%, rgba(61, 74, 59, 0.35) 42%, rgba(61, 74, 59, 0.16) 100%);
   }
 
   /* Hero arka plan videosu: İlk HTML'de görünür kalır. Tarayıcı video hazır
@@ -554,7 +556,7 @@
     justify-content: center;
     border: 1px solid rgba(250, 249, 246, 0.42);
     border-radius: 999px;
-    background: rgba(20, 22, 26, 0.35);
+    background: rgba(61, 74, 59, 0.38);
     color: var(--ivory);
     cursor: pointer;
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
@@ -868,7 +870,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 55%, rgba(20, 22, 26, 0.35));
+    background: linear-gradient(180deg, transparent 55%, rgba(61, 74, 59, 0.38));
     opacity: 0;
     transition: opacity 0.6s ease;
   }
@@ -1165,7 +1167,7 @@
     right: 0;
     bottom: 0;
     padding: 28px 16px 14px;
-    background: linear-gradient(180deg, transparent, rgba(20, 22, 26, 0.65));
+    background: linear-gradient(180deg, transparent, rgba(61, 74, 59, 0.62));
     color: var(--ivory);
     font-size: 0.72rem;
     letter-spacing: 0.18em;
@@ -1208,7 +1210,7 @@
     position: absolute;
     inset: auto 0 0 0;
     padding: 28px 16px 14px;
-    background: linear-gradient(180deg, transparent, rgba(20, 22, 26, 0.65));
+    background: linear-gradient(180deg, transparent, rgba(61, 74, 59, 0.62));
     color: var(--ivory);
     font-size: 0.72rem;
     letter-spacing: 0.18em;

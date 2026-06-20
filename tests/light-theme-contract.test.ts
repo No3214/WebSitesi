@@ -39,6 +39,42 @@ describe("public light theme contract", () => {
     expect(combined).toContain("#fbf7ed");
   });
 
+  it("keeps legacy cinematic widgets on light stone surfaces", () => {
+    const globals = read("src/app/globals.css");
+    const atmospheric = read("src/components/atmospheric-immersion.tsx");
+    const reputation = read("src/components/reputation-ribbon.tsx");
+    const heritage = read("src/components/heritage-archive.tsx");
+    const floatingContact = read("src/components/floating-contact.tsx");
+    const exitIntent = read("src/components/exit-intent.tsx");
+    const roomDetail = read("src/components/room-detail-client.tsx");
+    const sectionDarkBlock = globals.slice(
+      globals.indexOf(".section-dark {"),
+      globals.indexOf(".section-dark .section-title h2")
+    );
+
+    expect(sectionDarkBlock).toContain("#fbf7ed");
+    expect(sectionDarkBlock).not.toContain("var(--ink)");
+    expect(sectionDarkBlock).not.toContain("color: var(--ivory)");
+
+    const combined = [
+      atmospheric,
+      reputation,
+      heritage,
+      floatingContact,
+      exitIntent,
+      roomDetail,
+    ].join("\n");
+
+    expect(combined).not.toContain("bg-black");
+    expect(combined).not.toContain("bg-zinc-900");
+    expect(combined).not.toContain("border-zinc-900");
+    expect(combined).not.toContain("rgba(20, 22, 26");
+    expect(combined).toContain("bg-[#fffcf6]/95");
+    expect(reputation).toContain("bg-[#fbf7ed]/95");
+    expect(heritage).toContain("bg-[#fffcf6]/90");
+    expect(exitIntent).toContain("bg-[rgba(61,74,59,0.38)]");
+  });
+
   it("keeps public event imagery placeholders in the warm stone palette", () => {
     const organizations = read("src/components/organizations-client.tsx");
 

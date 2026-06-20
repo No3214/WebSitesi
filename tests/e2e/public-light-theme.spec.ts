@@ -44,6 +44,20 @@ async function lightThemeSnapshot(page: Page) {
   });
 }
 
+async function resolvedBackground(page: Page, selector: string) {
+  return page.locator(selector).first().evaluate((element) => {
+    let current: Element | null = element;
+    while (current) {
+      const background = getComputedStyle(current).backgroundColor;
+      if (background && !background.includes("rgba(0, 0, 0, 0)") && background !== "transparent") {
+        return background;
+      }
+      current = current.parentElement;
+    }
+    return getComputedStyle(document.body).backgroundColor;
+  });
+}
+
 test.describe("Public light theme", () => {
   for (const route of publicRoutes) {
     test(`${route} keeps the warm stone theme loaded`, async ({ page }) => {
@@ -70,6 +84,26 @@ test.describe("Public light theme", () => {
       expect(luminance(colors.bodyBackground), `${route} body ${colors.bodyBackground}`).toBeGreaterThan(0.82);
       expect(luminance(colors.footerBackground), `${route} footer ${colors.footerBackground}`).toBeGreaterThan(0.78);
       expect(colors.scrollOverflow, `${route} mobile horizontal overflow`).toBeLessThanOrEqual(1);
+    }
+  });
+
+  test("key public page sections render on light stone surfaces", async ({ page }) => {
+    const checks = [
+      { route: "/odalar", selectors: [".page-hero", ".rooms-catalog-section", ".room-card"] },
+      { route: "/gastronomi", selectors: ["main.gastronomy-story-page", "main.gastronomy-story-page > .grain"] },
+      { route: "/hikayemiz", selectors: ["main.history-story-page", "main.history-story-page > .relative .grain", "[data-testid='living-museum-map']"] },
+      { route: "/deneyimler", selectors: [".page-hero", ".feature-box"] },
+      { route: "/organizasyonlar", selectors: [".page-hero", ".org-main", ".event-documents"] },
+    ];
+
+    for (const check of checks) {
+      await page.goto(check.route, { waitUntil: "domcontentloaded" });
+      await expect(page.locator("footer.footer")).toBeVisible({ timeout: 15000 });
+
+      for (const selector of check.selectors) {
+        const background = await resolvedBackground(page, selector);
+        expect(luminance(background), `${check.route} ${selector} ${background}`).toBeGreaterThan(0.72);
+      }
     }
   });
 

@@ -196,7 +196,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
           right: 14px;
           bottom: 14px;
           z-index: 2;
-          background: rgba(20, 22, 26, 0.6);
+          background: rgba(61, 74, 59, 0.72);
           color: var(--ivory);
           font-size: 0.72rem;
           letter-spacing: 0.14em;

@@ -11,7 +11,7 @@ type RitualType = "morning" | "evening" | "ritual";
 
 /**
  * Atmospheric Immersion Component
- * Handles the "Midnight Luxury" rituals and cinematic sense of place.
+ * Handles the Aegean light rituals and cinematic sense of place.
  * Includes 'Liquid Gold' (Olive Oil) and 'Mansion Rhythms'.
  */
 export const AtmosphericImmersion = () => {
@@ -192,18 +192,18 @@ export const AtmosphericImmersion = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 30, scale: 0.95 }}
               transition={{ type: "spring", damping: 20 }}
-              className="bg-black/85 backdrop-blur-xl border border-white/10 rounded-2xl p-6 w-[320px] shadow-2xl text-white flex flex-col gap-5"
-              style={{ boxShadow: "0 20px 50px rgba(0, 0, 0, 0.4)" }}
+              className="bg-[#fffcf6]/95 backdrop-blur-xl border border-[rgba(61,74,59,0.14)] rounded-2xl p-6 w-[320px] shadow-2xl text-[var(--olive)] flex flex-col gap-5"
+              style={{ boxShadow: "0 20px 50px rgba(68, 53, 31, 0.14)" }}
             >
               {/* Header */}
-              <div className="flex justify-between items-center border-bottom border-white/5 pb-3">
+              <div className="flex justify-between items-center border-b border-[rgba(61,74,59,0.1)] pb-3">
                 <div className="flex items-center gap-2">
                   <Sliders size={15} className="text-gold" />
-                  <span className="serif text-[0.95rem] tracking-wider uppercase font-semibold text-ivory">Atmosfer Paneli</span>
+                  <span className="serif text-[0.95rem] tracking-wider uppercase font-semibold text-[var(--olive)]">Atmosfer Paneli</span>
                 </div>
                 <button 
                   onClick={() => setIsOpen(false)}
-                  className="text-white/40 hover:text-white transition-colors"
+                  className="text-[var(--muted)] hover:text-[var(--olive)] transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -222,11 +222,11 @@ export const AtmosphericImmersion = () => {
                       onClick={() => selectRitual(key)}
                       className={`text-left p-3.5 rounded-xl border flex items-start gap-3 transition-all ${
                         isSelected 
-                          ? "bg-gold/10 border-gold/40 text-white" 
-                          : "bg-white/5 border-white/5 text-white/70 hover:bg-white/10"
+                          ? "bg-gold/10 border-gold/40 text-[var(--olive)]"
+                          : "bg-white/60 border-[rgba(61,74,59,0.1)] text-[var(--muted)] hover:bg-white"
                       }`}
                     >
-                      <div className={`p-2 rounded-lg ${isSelected ? "bg-gold/20 text-gold" : "bg-white/5 text-white/50"}`}>
+                      <div className={`p-2 rounded-lg ${isSelected ? "bg-gold/20 text-gold" : "bg-[rgba(61,74,59,0.06)] text-[var(--muted)]"}`}>
                         <Icon size={16} />
                       </div>
                       <div className="flex-1">
@@ -234,7 +234,7 @@ export const AtmosphericImmersion = () => {
                           <span className="serif text-[0.85rem] font-medium tracking-wide">{item.title}</span>
                           {isSelected && <Check size={12} className="text-gold" />}
                         </div>
-                        <p className="text-[0.7rem] text-white/40 leading-normal mt-1">{item.description}</p>
+                        <p className="text-[0.7rem] text-[var(--muted)] leading-normal mt-1">{item.description}</p>
                       </div>
                     </button>
                   );
@@ -242,8 +242,8 @@ export const AtmosphericImmersion = () => {
               </div>
 
               {/* Volume & Audio Controls */}
-              <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col gap-3">
-                <div className="flex justify-between items-center text-[0.75rem] text-white/50 uppercase tracking-widest">
+              <div className="bg-white/70 border border-[rgba(61,74,59,0.1)] rounded-xl p-4 flex flex-col gap-3">
+                <div className="flex justify-between items-center text-[0.75rem] text-[var(--muted)] uppercase tracking-widest">
                   <span>Ses Düzeyi</span>
                   <span>{isMuted ? "Sessiz" : `${Math.round(volume * 100)}%`}</span>
                 </div>
@@ -266,7 +266,7 @@ export const AtmosphericImmersion = () => {
                       setVolume(Number(e.target.value));
                       if (isMuted) setIsMuted(false);
                     }}
-                    className="flex-1 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-gold"
+                    className="flex-1 h-1 bg-[rgba(61,74,59,0.16)] rounded-lg appearance-none cursor-pointer accent-gold"
                     style={{
                       accentColor: "var(--gold)"
                     }}
@@ -275,7 +275,7 @@ export const AtmosphericImmersion = () => {
               </div>
 
               {/* Bottom Brand Slogan */}
-              <div className="text-center text-[0.65rem] text-white/30 tracking-widest uppercase">
+              <div className="text-center text-[0.65rem] text-[var(--muted)] tracking-widest uppercase">
                 Beş Asırlık Köy Dokusunda Yavaş Rota
               </div>
             </motion.div>
@@ -290,7 +290,7 @@ export const AtmosphericImmersion = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => setIsOpen(!isOpen)}
-            className="bg-black/75 backdrop-blur-md px-4 py-2.5 rounded-full border border-white/10 text-[10px] text-white uppercase tracking-[0.2em] flex items-center gap-2.5 cursor-pointer hover:bg-black/90 hover:border-gold/30 transition-all shadow-xl"
+            className="bg-[#fffcf6]/92 backdrop-blur-md px-4 py-2.5 rounded-full border border-[rgba(61,74,59,0.14)] text-[10px] text-[var(--olive)] uppercase tracking-[0.2em] flex items-center gap-2.5 cursor-pointer hover:bg-white hover:border-gold/40 transition-all shadow-xl"
           >
             {/* Animated Soundwave lines */}
             <div className="flex items-center gap-0.5 h-4 w-4">
@@ -299,7 +299,7 @@ export const AtmosphericImmersion = () => {
               <span className={`soundwave-bar ${!isMuted && isPlaying ? "animating" : ""}`} style={{ height: "8px" }} />
               <span className={`soundwave-bar ${!isMuted && isPlaying ? "animating" : ""}`} style={{ height: "10px" }} />
             </div>
-            <span className="text-white/80 font-medium">{current.title}</span>
+            <span className="text-[var(--olive)] font-medium">{current.title}</span>
           </motion.div>
 
           {/* Quick Toggle Mute/Play Button */}
@@ -307,7 +307,7 @@ export const AtmosphericImmersion = () => {
             onClick={togglePlay}
             className={`w-11 h-11 rounded-full flex items-center justify-center transition-all group shadow-xl border relative ${
               isMuted 
-                ? "bg-black/70 border-white/10 text-white/60 hover:text-white" 
+                ? "bg-[#fffcf6]/92 border-[rgba(61,74,59,0.14)] text-[var(--olive)] hover:text-gold"
                 : "bg-gold text-black border-gold hover:bg-white hover:text-black"
             }`}
           >
@@ -331,7 +331,7 @@ export const AtmosphericImmersion = () => {
             className={`w-11 h-11 rounded-full flex items-center justify-center transition-all group shadow-xl border ${
               isOpen 
                 ? "bg-gold text-black border-gold" 
-                : "bg-black/70 border-white/10 text-white hover:border-gold/30 hover:text-gold"
+                : "bg-[#fffcf6]/92 border-[rgba(61,74,59,0.14)] text-[var(--olive)] hover:border-gold/40 hover:text-gold"
             }`}
           >
             <Sliders size={15} />

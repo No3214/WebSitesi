@@ -135,10 +135,10 @@ export const HeritageArchive = ({ locale = "tr" }: { locale?: Locale }) => {
           >
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden transition-all duration-1000 border border-[rgba(61,74,59,0.14)]">
               <Image src={item.image} alt={item.title} fill className="object-cover scale-110 group-hover:scale-100 transition-transform duration-[2000ms]" />
-              <div className="absolute inset-x-4 bottom-4 bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-white/5">
+              <div className="absolute inset-x-4 bottom-4 bg-[#fffcf6]/90 backdrop-blur-md p-4 rounded-2xl border border-[rgba(61,74,59,0.14)] shadow-[0_18px_40px_rgba(68,53,31,0.16)]">
                 <div className="grid grid-cols-2 gap-2">
                   {item.specs.map((spec, j) => (
-                    <div key={j} className="text-[9px] text-ivory/70 uppercase tracking-widest border-l border-gold pl-2">
+                    <div key={j} className="text-[9px] text-[var(--olive)] uppercase tracking-widest border-l border-gold pl-2">
                       {spec}
                     </div>
                   ))}

@@ -43,7 +43,7 @@ export const ExitIntent = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm exit-intent-backdrop">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-[rgba(61,74,59,0.38)] backdrop-blur-sm exit-intent-backdrop">
       <div className="relative w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl exit-intent-dialog">
         <button
           onClick={() => setIsVisible(false)}

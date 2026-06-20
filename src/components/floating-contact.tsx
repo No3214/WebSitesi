@@ -72,7 +72,7 @@ export const FloatingContact = () => {
         aria-label={toggleLabel}
         aria-expanded={isOpen}
         className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl transition-all duration-300 ${
-          isOpen ? "bg-zinc-900 rotate-90" : "bg-gold"
+          isOpen ? "bg-[var(--olive)] rotate-90" : "bg-gold"
         }`}
       >
         {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
