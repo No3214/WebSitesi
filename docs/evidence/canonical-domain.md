@@ -61,9 +61,11 @@ As of 2026-06-20, `npm run domain:verify:json` reports these concrete blockers:
   Cloudflare nameservers; in that state, Isimtescil DNS-zone edits do not affect
   public traffic until nameservers are moved.
 - The current Vercel cutover target records are reported in the verifier output:
-  `A kozbeylikonagi.com 76.76.21.21` and
-  `A www.kozbeylikonagi.com 76.76.21.21`. Existing MX/TXT/SPF/DKIM/DMARC records
-  must be preserved when changing the authoritative DNS provider.
+  apex domains use `A 76.76.21.21`; `www` subdomains use
+  `CNAME cname.vercel-dns-0.com`. The Turkish ccTLD brand origins must also
+  serve the current app or securely redirect to the chosen canonical app.
+  Existing MX/TXT/SPF/DKIM/DMARC records must be preserved when changing the
+  authoritative DNS provider.
 
 ## Residual Risk
 

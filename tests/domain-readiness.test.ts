@@ -161,14 +161,28 @@ describe("domain readiness", () => {
     expect(result.dns.isimtescilCaution).toContain("registered at Isimtescil");
     expect(result.dns.vercelTargetRecords).toEqual([
       expect.objectContaining({
+        group: "canonical",
         type: "A",
         host: "kozbeylikonagi.com",
         value: "76.76.21.21",
       }),
       expect.objectContaining({
-        type: "A",
+        group: "canonical",
+        type: "CNAME",
         host: "www.kozbeylikonagi.com",
+        value: "cname.vercel-dns-0.com",
+      }),
+      expect.objectContaining({
+        group: "brand",
+        type: "A",
+        host: "kozbeylikonagi.com.tr",
         value: "76.76.21.21",
+      }),
+      expect.objectContaining({
+        group: "brand",
+        type: "CNAME",
+        host: "www.kozbeylikonagi.com.tr",
+        value: "cname.vercel-dns-0.com",
       }),
     ]);
     expect(result.blockers).toContain(

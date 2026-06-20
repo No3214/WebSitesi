@@ -9,16 +9,32 @@ const EXPECTED_SERVICE = "kozbeyli-konagi";
 const EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4";
 const VERCEL_TARGET_RECORDS = [
   {
+    group: "canonical",
     type: "A",
     host: "kozbeylikonagi.com",
     value: "76.76.21.21",
     purpose: "Apex domain should point to Vercel production.",
   },
   {
-    type: "A",
+    group: "canonical",
+    type: "CNAME",
     host: "www.kozbeylikonagi.com",
+    value: "cname.vercel-dns-0.com",
+    purpose: "WWW subdomain should alias to Vercel production.",
+  },
+  {
+    group: "brand",
+    type: "A",
+    host: "kozbeylikonagi.com.tr",
     value: "76.76.21.21",
-    purpose: "WWW domain should point to Vercel production per current Vercel domain recommendation.",
+    purpose: "Brand apex domain should serve or securely redirect to the current Vercel app.",
+  },
+  {
+    group: "brand",
+    type: "CNAME",
+    host: "www.kozbeylikonagi.com.tr",
+    value: "cname.vercel-dns-0.com",
+    purpose: "Brand WWW subdomain should serve or securely redirect to the current Vercel app.",
   },
 ];
 const LEGACY_HOST_SIGNATURES = [
@@ -666,7 +682,7 @@ export function formatDomainReadiness(result) {
   lines.push(`  Isimtescil caution: ${result.dns.isimtescilCaution}`);
   lines.push("  Vercel target records:");
   for (const record of result.dns.vercelTargetRecords) {
-    lines.push(`  - ${record.type} ${record.host} ${record.value} (${record.purpose})`);
+    lines.push(`  - [${record.group}] ${record.type} ${record.host} ${record.value} (${record.purpose})`);
   }
 
   if (result.warnings.length > 0) {

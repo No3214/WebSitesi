@@ -52,9 +52,11 @@ aktif DNS yetkilisini ayrı gösterir. Domain İsimtescil panelinde kayıtlı ol
 bile nameserver Cloudflare ise canlı A/TXT/MX kayıtları Cloudflare zone'unda
 değişmelidir; İsimtescil DNS zone kayıtları nameserver değişmeden canlı trafiği
 etkilemez. Vercel hedef kayıtları raporda açıkça listelenir:
-`A kozbeylikonagi.com 76.76.21.21` ve
-`A www.kozbeylikonagi.com 76.76.21.21`. Nameserver sağlayıcısı değiştirilecekse
-MX/TXT/SPF/DKIM/DMARC kayıtları korunmadan geçiş yapılmamalıdır.
+apex domainler için `A 76.76.21.21`, `www` subdomainleri için
+`CNAME cname.vercel-dns-0.com`. Türkçe ccTLD marka yüzeyleri de aynı gate'e
+dahildir; güncel uygulamayı servis etmeli veya seçilen canonical origin'e güvenli
+şekilde yönlenmelidir. Nameserver sağlayıcısı değiştirilecekse MX/TXT/SPF/DKIM/DMARC
+kayıtları korunmadan geçiş yapılmamalıdır.
 
 2026-06-20 public light theme güncellemesi: koyu public yüzeyler geriye
 alındı. Mobil menü, oda detay rezervasyon kartı, exit-intent rezervasyon paneli
