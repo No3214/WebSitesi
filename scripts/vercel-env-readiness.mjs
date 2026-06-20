@@ -32,6 +32,22 @@ function isProductionConfigured(rows, key) {
   return rows.some((row) => row.name === key && row.environments.includes(PRODUCTION_ENV));
 }
 
+function expectedValueKeys(gate) {
+  const expectedKeys = new Set(Object.keys(gate.expectedEnv ?? {}));
+  return unique([
+    ...gate.env.filter((key) => expectedKeys.has(key)),
+    ...(gate.envAnyOf ?? []).flatMap((group) => group.keys.filter((key) => expectedKeys.has(key))),
+  ]);
+}
+
+function valueValidationCommand(gateId) {
+  return {
+    canonical_domain: "npm run domain:verify:strict",
+    hms_booking_engine: "npm run hms:verify:strict",
+    analytics_purchase: "npm run analytics:verify:strict",
+  }[gateId] ?? "npm run launch:audit:strict";
+}
+
 function gateEnvState(gate, rows) {
   const missingEnv = [];
   const configuredEnv = [];
@@ -65,7 +81,10 @@ function gateEnvState(gate, rows) {
 
   const requiredCount = gate.env.length + (gate.envAnyOf?.length ?? 0);
   const configuredCount = configuredEnv.length + fallbackEnv.length + configuredAnyOf.length;
-  const ready = missingEnv.length === 0 && missingAnyOf.length === 0;
+  const namesReady = missingEnv.length === 0 && missingAnyOf.length === 0;
+  const valueValidationKeys = expectedValueKeys(gate).filter((key) => isProductionConfigured(rows, key));
+  const valueValidationStatus = valueValidationKeys.length > 0 ? "required_not_performed" : "not_required";
+  const ready = namesReady && valueValidationStatus !== "required_not_performed";
 
   return {
     id: gate.id,
@@ -78,6 +97,10 @@ function gateEnvState(gate, rows) {
     missingEnv,
     configuredAnyOf,
     missingAnyOf,
+    namesReady,
+    valueValidationKeys,
+    valueValidationStatus,
+    valueValidationCommand: valueValidationKeys.length > 0 ? valueValidationCommand(gate.id) : "",
     ready,
   };
 }
@@ -119,6 +142,7 @@ export function evaluateVercelEnvReadiness({ output, available = true, candidate
       blockers: [
         "Vercel CLI production env inventory is unavailable; run npm i -g vercel, vercel login, then npm run vercel:env.",
       ],
+      warnings: [],
       errors,
     };
   }
@@ -135,9 +159,22 @@ export function evaluateVercelEnvReadiness({ output, available = true, candidate
       (group) => `${gate.id}: ${group.keys.join(" or ")} is missing from Vercel Production env (${group.label})`,
     ),
   ]);
+  const warnings = gateResults
+    .filter((gate) => gate.valueValidationStatus === "required_not_performed")
+    .map(
+      (gate) =>
+        `${gate.id}: ${gate.valueValidationKeys.join(", ")} present by name only; Vercel hides values, so validate deployed values with ${gate.valueValidationCommand}`,
+    );
+
+  let decision = "VERCEL PRODUCTION ENV PASS";
+  if (blockers.length > 0) {
+    decision = "VERCEL PRODUCTION ENV INCOMPLETE";
+  } else if (warnings.length > 0) {
+    decision = "VERCEL PRODUCTION ENV NAMES PASS - VALUE VALIDATION REQUIRED";
+  }
 
   return {
-    decision: blockers.length === 0 ? "VERCEL PRODUCTION ENV PASS" : "VERCEL PRODUCTION ENV INCOMPLETE",
+    decision,
     scope: "vercel-production-env-names-only",
     valueValidation: "not_performed",
     candidate,
@@ -145,6 +182,7 @@ export function evaluateVercelEnvReadiness({ output, available = true, candidate
     configuredProductionCount: productionEnvNames.length,
     gateResults,
     blockers,
+    warnings,
     errors: [],
   };
 }
@@ -165,12 +203,18 @@ export function formatVercelEnvReadiness(result) {
   }
 
   for (const gate of result.gateResults) {
+    const status = gate.ready ? "PASS" : gate.namesReady ? "VERIFY" : "BLOCKED";
     lines.push(
-      `${gate.ready ? "PASS" : "BLOCKED"} ${gate.id}: ${gate.configuredCount}/${gate.requiredCount} production env requirements covered`,
+      `${status} ${gate.id}: ${gate.configuredCount}/${gate.requiredCount} production env requirements covered`,
     );
     if (gate.configuredEnv.length > 0) lines.push(`  configured env: ${gate.configuredEnv.join(", ")}`);
     if (gate.fallbackEnv.length > 0) lines.push(`  code fallback: ${gate.fallbackEnv.join(", ")}`);
     if (gate.missingEnv.length > 0) lines.push(`  missing env: ${gate.missingEnv.join(", ")}`);
+    if (gate.valueValidationKeys.length > 0) {
+      lines.push(
+        `  value validation required: ${gate.valueValidationKeys.join(", ")} (${gate.valueValidationCommand})`,
+      );
+    }
     if (gate.configuredAnyOf.length > 0) {
       lines.push(
         `  configured alternatives: ${gate.configuredAnyOf
@@ -185,6 +229,12 @@ export function formatVercelEnvReadiness(result) {
           .join("; ")}`,
       );
     }
+  }
+
+  if (result.warnings.length > 0) {
+    lines.push("");
+    lines.push("Warnings:");
+    result.warnings.forEach((warning) => lines.push(`- ${warning}`));
   }
 
   if (result.blockers.length > 0) {

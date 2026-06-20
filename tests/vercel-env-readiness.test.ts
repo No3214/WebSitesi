@@ -19,13 +19,18 @@ type VercelEnvModule = {
     productionEnvNames: string[];
     configuredProductionCount: number;
     blockers: string[];
+    warnings: string[];
     gateResults: Array<{
       id: string;
       ready: boolean;
+      namesReady: boolean;
       configuredEnv: string[];
       fallbackEnv: string[];
       missingEnv: string[];
       missingAnyOf: Array<{ label: string; keys: string[] }>;
+      valueValidationKeys: string[];
+      valueValidationStatus: string;
+      valueValidationCommand: string;
     }>;
   };
 };
@@ -102,6 +107,16 @@ describe("Vercel production env readiness", () => {
     expect(result.scope).toBe("vercel-production-env-names-only");
     expect(result.valueValidation).toBe("not_performed");
     expect(result.productionEnvNames).toContain("NEXT_PUBLIC_SITE_URL");
+    expect(result.warnings).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining(
+          "canonical_domain: NEXT_PUBLIC_SITE_URL present by name only; Vercel hides values",
+        ),
+        expect.stringContaining(
+          "hms_booking_engine: NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL present by name only; Vercel hides values",
+        ),
+      ]),
+    );
     expect(result.blockers).toEqual(
       expect.arrayContaining([
         "production_abuse_controls: NEXT_PUBLIC_TURNSTILE_SITE_KEY is missing from Vercel Production env",
@@ -112,8 +127,14 @@ describe("Vercel production env readiness", () => {
     );
 
     const hmsGate = result.gateResults.find((gate) => gate.id === "hms_booking_engine");
-    expect(hmsGate?.ready).toBe(true);
+    expect(hmsGate?.namesReady).toBe(true);
+    expect(hmsGate?.ready).toBe(false);
     expect(hmsGate?.configuredEnv).toEqual(["NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"]);
+    expect(hmsGate).toMatchObject({
+      valueValidationKeys: ["NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"],
+      valueValidationStatus: "required_not_performed",
+      valueValidationCommand: "npm run hms:verify:strict",
+    });
 
     const serialized = JSON.stringify(result);
     expect(serialized).not.toContain("Encrypted");
@@ -128,13 +149,15 @@ describe("Vercel production env readiness", () => {
     const hmsGate = result.gateResults.find((gate) => gate.id === "hms_booking_engine");
 
     expect(hmsGate?.ready).toBe(true);
+    expect(hmsGate?.namesReady).toBe(true);
     expect(hmsGate?.fallbackEnv).toEqual(["NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"]);
+    expect(hmsGate?.valueValidationStatus).toBe("not_required");
     expect(result.blockers).not.toContain(
       "hms_booking_engine: NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL is missing from Vercel Production env",
     );
   });
 
-  it("passes only when every non-fallback commercial env requirement is in Vercel Production", async () => {
+  it("reports names-only pass with warnings when every commercial env name exists but values are hidden", async () => {
     const mod = await loadEnvModule();
     const audit = await loadAuditModule();
     const keys = [
@@ -150,9 +173,16 @@ describe("Vercel production env readiness", () => {
       output: makeEnvList(keys),
     });
 
-    expect(result.decision).toBe("VERCEL PRODUCTION ENV PASS");
+    expect(result.decision).toBe("VERCEL PRODUCTION ENV NAMES PASS - VALUE VALIDATION REQUIRED");
     expect(result.blockers).toEqual([]);
-    expect(result.gateResults.every((gate) => gate.ready)).toBe(true);
+    expect(result.warnings).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("canonical_domain: NEXT_PUBLIC_SITE_URL present by name only"),
+        expect.stringContaining("analytics_purchase:"),
+      ]),
+    );
+    expect(result.gateResults.every((gate) => gate.namesReady)).toBe(true);
+    expect(result.gateResults.some((gate) => !gate.ready)).toBe(true);
   });
 
   it("does not fail non-strict inventory when CLI output is unavailable", async () => {
@@ -164,6 +194,7 @@ describe("Vercel production env readiness", () => {
 
     expect(result.decision).toBe("VERCEL ENV INVENTORY UNAVAILABLE");
     expect(result.blockers[0]).toContain("npm i -g vercel");
+    expect(result.warnings).toEqual([]);
     expect(result.gateResults).toEqual([]);
   });
 });
