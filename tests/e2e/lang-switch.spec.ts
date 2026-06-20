@@ -38,7 +38,8 @@ test.describe("Dil degistirici", () => {
 
     await page.waitForURL("**/en/menu");
     expect(new URL(page.url()).pathname).toBe("/en/menu");
-    await expect(page.getByRole("heading", { name: /A Curated Aegean/i })).toBeVisible();
+    await expect(page.getByText("Restaurant Menu")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Breakfast", exact: true })).toBeVisible();
   });
 
   test("EN header navigasyonu Turkce rotalara dusmez", async ({ page }) => {

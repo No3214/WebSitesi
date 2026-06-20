@@ -169,9 +169,9 @@ test.describe("EN public localization", () => {
     expect(headerText).toContain("EXPERIENCES");
     expect(headerText).not.toContain("BOOKİNG");
     expect(headerText).not.toContain("EXPERİENCES");
-    await expect(page.getByRole("heading", { name: "Breakfast" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Warm Starters & Appetizers" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Main Courses" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Breakfast", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Warm Starters & Appetizers", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Main Courses", exact: true })).toBeVisible();
     await expect(page.getByText("Gourmet Village Breakfast")).toBeVisible();
     await expect(page.getByText("A Kozbeyli Morning")).toBeVisible();
     await expect(page.getByText("Kozbeyli'de Güne Başlamak")).toHaveCount(0);
