@@ -1,9 +1,14 @@
 import { spawnSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
-const gates = [
+export const gates = [
   {
     script: "security:audit",
     label: "Runtime dependency audit",
+    transientRetry: {
+      maxRetries: 1,
+      reason: "npm audit registry/network timeout",
+    },
   },
   {
     script: "evidence:scan",
@@ -72,8 +77,29 @@ const gates = [
 ];
 
 const isWindows = process.platform === "win32";
+const transientFailurePatterns = [
+  /\bETIMEDOUT\b/i,
+  /\bECONNRESET\b/i,
+  /\bEAI_AGAIN\b/i,
+  /\bENOTFOUND\b/i,
+  /audit endpoint returned an error/i,
+  /request to .* failed/i,
+  /socket hang up/i,
+  /fetch failed/i,
+];
 
-function runNpmScript(script) {
+export function isTransientReleaseFailure(result) {
+  const output = [
+    result.error,
+    result.stdout,
+    result.stderr,
+    result.output,
+  ].filter(Boolean).join("\n");
+
+  return transientFailurePatterns.some((pattern) => pattern.test(output));
+}
+
+export function runNpmScript(script, { captureOutput = false } = {}) {
   const startedAt = Date.now();
   const command = isWindows ? process.env.ComSpec || "cmd.exe" : "npm";
   const args = isWindows ? ["/d", "/s", "/c", `npm run ${script}`] : ["run", script];
@@ -84,8 +110,17 @@ function runNpmScript(script) {
       NEXT_TELEMETRY_DISABLED: process.env.NEXT_TELEMETRY_DISABLED || "1",
     },
     shell: false,
-    stdio: "inherit",
+    stdio: captureOutput ? ["ignore", "pipe", "pipe"] : "inherit",
+    encoding: "utf8",
+    maxBuffer: 200 * 1024 * 1024,
   });
+  const stdout = typeof result.stdout === "string" ? result.stdout : "";
+  const stderr = typeof result.stderr === "string" ? result.stderr : "";
+
+  if (captureOutput) {
+    if (stdout) process.stdout.write(stdout);
+    if (stderr) process.stderr.write(stderr);
+  }
 
   return {
     script,
@@ -93,7 +128,28 @@ function runNpmScript(script) {
     signal: result.signal,
     durationMs: Date.now() - startedAt,
     error: result.error?.message,
+    stdout,
+    stderr,
+    output: `${stdout}\n${stderr}`.trim(),
   };
+}
+
+export function runGate(gate, { runScript = runNpmScript, log = console.log } = {}) {
+  const maxRetries = gate.transientRetry?.maxRetries ?? 0;
+  const captureOutput = Boolean(gate.transientRetry);
+  let result = runScript(gate.script, { captureOutput });
+
+  for (let retry = 1; result.status !== 0 && retry <= maxRetries; retry += 1) {
+    if (!isTransientReleaseFailure(result)) break;
+
+    log(
+      `WARN ${gate.script} failed with ${gate.transientRetry.reason}; retrying ${retry}/${maxRetries}.`,
+    );
+    result = runScript(gate.script, { captureOutput });
+    result.retryCount = retry;
+  }
+
+  return result;
 }
 
 function formatDuration(ms) {
@@ -134,7 +190,7 @@ function main() {
 
   for (const gate of gates) {
     console.log(`\n--- ${gate.label}: npm run ${gate.script} ---`);
-    const result = runNpmScript(gate.script);
+    const result = runGate(gate);
     results.push(result);
 
     if (result.status !== 0) {
@@ -146,4 +202,6 @@ function main() {
   printSummary(results);
 }
 
-main();
+if (import.meta.url === pathToFileURL(process.argv[1] || "").href) {
+  main();
+}
