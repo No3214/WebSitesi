@@ -261,6 +261,7 @@ export function buildProductionCutoverPlan({
     gateSteps: blockedGates.map(buildGateStep),
     finalVerificationCommands: [
       "npm run vercel:ops:strict",
+      "npm run vercel:env:strict",
       "npm run domain:verify:strict",
       "npm run hms:verify:strict",
       "npm run launch:smoke:live",

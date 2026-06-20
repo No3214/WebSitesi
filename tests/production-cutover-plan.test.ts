@@ -342,6 +342,7 @@ describe("production cutover plan", () => {
     expect(plan.currentScore).toBe(100);
     expect(plan.blockedPoints).toBe(0);
     expect(plan.gateSteps).toEqual([]);
+    expect(plan.finalVerificationCommands).toContain("npm run vercel:env:strict");
     expect(plan.finalVerificationCommands).toContain("npm run hms:verify:strict");
     expect(plan.finalVerificationCommands).toContain("npm run launch:audit:strict");
   });
