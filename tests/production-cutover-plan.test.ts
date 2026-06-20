@@ -201,6 +201,18 @@ describe("production cutover plan", () => {
     expect(canonical?.diagnostics).toContain(
       "Treat NS/MX DNS PASS separately from web serving readiness; mail/nameserver success does not clear a legacy host surface.",
     );
+    expect(canonical?.diagnostics).toContain(
+      "Registrar ownership is not the same as live DNS authority. If nameservers are Cloudflare, edit Cloudflare DNS records; Isimtescil DNS-zone records will not affect traffic until nameservers move to Isimtescil/Natro.",
+    );
+    expect(canonical?.diagnostics).toContain(
+      "Vercel currently expects A kozbeylikonagi.com 76.76.21.21 and A www.kozbeylikonagi.com 76.76.21.21 for this cutover.",
+    );
+    expect(canonical?.checklist).toContain(
+      "Confirm active nameservers before editing DNS; make changes at the authoritative DNS provider, not just the registrar panel.",
+    );
+    expect(canonical?.checklist).toContain(
+      "If choosing Isimtescil DNS instead of Cloudflare, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding Vercel A records.",
+    );
     expect(canonical?.commands).toContain("npm run domain:verify");
     expect(canonical?.commands).toContain("npm run domain:verify:strict");
     expect(canonical?.commands).toContain("npm run launch:smoke:live");

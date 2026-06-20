@@ -47,6 +47,15 @@ fakat `kozbeylikonagi.com` ve `www` hâlâ `legacy Joomla/Seagull template` ve
 ve alias başarılı olsa bile Cloudflare/DNS veya eski host yönlendirmesi
 düzelmeden canonical gate'in NO-GO kalacağını kanıtlar.
 
+2026-06-20 DNS yetki güncellemesi: `npm run domain:verify` artık registrar ile
+aktif DNS yetkilisini ayrı gösterir. Domain İsimtescil panelinde kayıtlı olsa
+bile nameserver Cloudflare ise canlı A/TXT/MX kayıtları Cloudflare zone'unda
+değişmelidir; İsimtescil DNS zone kayıtları nameserver değişmeden canlı trafiği
+etkilemez. Vercel hedef kayıtları raporda açıkça listelenir:
+`A kozbeylikonagi.com 76.76.21.21` ve
+`A www.kozbeylikonagi.com 76.76.21.21`. Nameserver sağlayıcısı değiştirilecekse
+MX/TXT/SPF/DKIM/DMARC kayıtları korunmadan geçiş yapılmamalıdır.
+
 2026-06-20 public light theme güncellemesi: koyu public yüzeyler geriye
 alındı. Mobil menü, oda detay rezervasyon kartı, exit-intent rezervasyon paneli
 ve hata ekranı açık taş/olive tema yüzeylerine çekildi; `tests/light-theme-contract.test.ts`

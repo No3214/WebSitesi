@@ -45,6 +45,14 @@ As of 2026-06-20, `npm run domain:verify:json` reports these concrete blockers:
   expose `/videos/hero.mp4`.
 - DNS NS/MX can be verified through DNS-over-HTTPS, so the remaining blocker is
   web serving/redirect cutover, not missing nameserver or mail records.
+- The verifier now separates registrar ownership from live DNS authority. A
+  domain may be registered at Isimtescil while live DNS is delegated to
+  Cloudflare nameservers; in that state, Isimtescil DNS-zone edits do not affect
+  public traffic until nameservers are moved.
+- The current Vercel cutover target records are reported in the verifier output:
+  `A kozbeylikonagi.com 76.76.21.21` and
+  `A www.kozbeylikonagi.com 76.76.21.21`. Existing MX/TXT/SPF/DKIM/DMARC records
+  must be preserved when changing the authoritative DNS provider.
 
 ## Residual Risk
 

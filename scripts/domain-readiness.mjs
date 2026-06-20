@@ -6,6 +6,20 @@ const DEFAULT_CANONICAL_ORIGINS = ["https://kozbeylikonagi.com", "https://www.ko
 const DEFAULT_PREVIEW_ORIGIN = "https://kozbeyli-konagi.vercel.app";
 const EXPECTED_SERVICE = "kozbeyli-konagi";
 const EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4";
+const VERCEL_TARGET_RECORDS = [
+  {
+    type: "A",
+    host: "kozbeylikonagi.com",
+    value: "76.76.21.21",
+    purpose: "Apex domain should point to Vercel production.",
+  },
+  {
+    type: "A",
+    host: "www.kozbeylikonagi.com",
+    value: "76.76.21.21",
+    purpose: "WWW domain should point to Vercel production per current Vercel domain recommendation.",
+  },
+];
 const LEGACY_HOST_SIGNATURES = [
   {
     id: "joomla-seagull",
@@ -176,6 +190,51 @@ function hasInsecureFirstHop(response) {
 
 function stripTrailingDot(value) {
   return String(value || "").replace(/\.+$/, "");
+}
+
+function classifyDnsAuthority(nsRecords) {
+  const normalized = nsRecords.map((item) => item.toLowerCase());
+
+  if (normalized.length === 0) {
+    return {
+      provider: "unknown",
+      label: "Unknown",
+      action: "Verify the nameserver delegation at the registrar before changing DNS records.",
+    };
+  }
+
+  if (normalized.some((item) => item.includes("cloudflare.com"))) {
+    return {
+      provider: "cloudflare",
+      label: "Cloudflare",
+      action:
+        "Edit the Cloudflare DNS zone, or change the domain nameservers away from Cloudflare before expecting registrar-zone DNS records to affect live traffic.",
+    };
+  }
+
+  if (normalized.some((item) => item.includes("isimtescil") || item.includes("natro"))) {
+    return {
+      provider: "isimtescil",
+      label: "Isimtescil/Natro",
+      action:
+        "Edit DNS records in the Isimtescil/Natro DNS zone and preserve existing mail and verification records.",
+    };
+  }
+
+  if (normalized.some((item) => item.includes("vercel-dns.com"))) {
+    return {
+      provider: "vercel",
+      label: "Vercel DNS",
+      action: "Edit records in Vercel DNS and keep third-party mail records intact.",
+    };
+  }
+
+  return {
+    provider: "third-party",
+    label: "Third-party DNS",
+    action:
+      "Edit records at the authoritative DNS provider shown by the nameservers, not necessarily the registrar.",
+  };
 }
 
 function parseDohAnswers(payload, recordType) {
@@ -446,11 +505,18 @@ async function checkDns({
 
   const ns = nsResult.records;
   const mx = mxResult.records;
+  const authority = classifyDnsAuthority(ns);
 
   return {
     apexDomain,
     ns,
     mx,
+    authority,
+    registrarVsDnsNote:
+      "The registrar panel and the live DNS authority can be different. Nameservers decide where live DNS records must be edited.",
+    isimtescilCaution:
+      "If the domain is registered at Isimtescil but nameservers stay on Cloudflare, Isimtescil DNS-zone records will not control live web traffic. To use Isimtescil DNS, change nameservers first and preserve MX/TXT/SPF/DKIM/DMARC records.",
+    vercelTargetRecords: VERCEL_TARGET_RECORDS,
     nsOk: ns.some((item) => item.includes("cloudflare.com")),
     mxOk: mx.some((item) => item.exchange === "mx.kozbeylikonagi.com"),
     nsSource: nsResult.source,
@@ -555,6 +621,14 @@ export function formatDomainReadiness(result) {
       "n/a"
     }`,
   );
+  lines.push(`  active DNS authority: ${result.dns.authority.label}`);
+  lines.push(`  action: ${result.dns.authority.action}`);
+  lines.push(`  registrar/DNS note: ${result.dns.registrarVsDnsNote}`);
+  lines.push(`  Isimtescil caution: ${result.dns.isimtescilCaution}`);
+  lines.push("  Vercel target records:");
+  for (const record of result.dns.vercelTargetRecords) {
+    lines.push(`  - ${record.type} ${record.host} ${record.value} (${record.purpose})`);
+  }
 
   if (result.warnings.length > 0) {
     lines.push("");

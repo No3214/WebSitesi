@@ -24,6 +24,19 @@ type DomainReadinessModule = {
       mx: Array<{ exchange: string; preference: number }>;
       nsSource: string;
       mxSource: string;
+      authority: {
+        provider: string;
+        label: string;
+        action: string;
+      };
+      registrarVsDnsNote: string;
+      isimtescilCaution: string;
+      vercelTargetRecords: Array<{
+        type: string;
+        host: string;
+        value: string;
+        purpose: string;
+      }>;
     };
     preview: {
       home: {
@@ -130,6 +143,24 @@ describe("domain readiness", () => {
     expect(result.previewReady).toBe(true);
     expect(result.canonicalReady).toBe(false);
     expect(result.decision).toBe("CANONICAL DOMAIN NO-GO");
+    expect(result.dns.authority).toMatchObject({
+      provider: "cloudflare",
+      label: "Cloudflare",
+    });
+    expect(result.dns.registrarVsDnsNote).toContain("Nameservers decide");
+    expect(result.dns.isimtescilCaution).toContain("registered at Isimtescil");
+    expect(result.dns.vercelTargetRecords).toEqual([
+      expect.objectContaining({
+        type: "A",
+        host: "kozbeylikonagi.com",
+        value: "76.76.21.21",
+      }),
+      expect.objectContaining({
+        type: "A",
+        host: "www.kozbeylikonagi.com",
+        value: "76.76.21.21",
+      }),
+    ]);
     expect(result.blockers).toContain(
       "https://kozbeylikonagi.com does not serve kozbeyli-konagi at current commit",
     );
@@ -323,8 +354,32 @@ describe("domain readiness", () => {
     expect(result.dnsReady).toBe(true);
     expect(result.dns.ns).toEqual(["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"]);
     expect(result.dns.mx).toEqual([{ exchange: "mx.kozbeylikonagi.com", preference: 0 }]);
+    expect(result.dns.authority.provider).toBe("cloudflare");
     expect(result.dns.nsSource).toContain("dns");
     expect(result.dns.mxSource).toContain("dns");
     expect(result.warnings).toEqual([]);
+  });
+
+  it("classifies Isimtescil/Natro nameservers as the active DNS authority", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://kozbeylikonagi.com"],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      fetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
+        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
+      },
+      resolveNsImpl: async () => ["ns1.natrohost.com", "ns2.natrohost.com"],
+      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
+    });
+
+    expect(result.decision).toBe("CANONICAL DOMAIN GO");
+    expect(result.dns.authority).toMatchObject({
+      provider: "isimtescil",
+      label: "Isimtescil/Natro",
+    });
+    expect(result.dns.authority.action).toContain("Isimtescil/Natro DNS zone");
   });
 });
