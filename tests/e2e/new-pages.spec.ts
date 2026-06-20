@@ -31,6 +31,8 @@ test.describe("Rezervasyon sayfasi", () => {
       "href",
       `${HMS_BOOKING_URL}&room=standart-deniz-manzarali-oda`,
     );
+    await expect(main.getByText("Official HMS screen opens in a new tab")).toBeVisible();
+    await expect(main.getByText("Card details are not stored on this site")).toBeVisible();
     await expect(main.getByRole("heading", { name: "Dates and Guests" })).toHaveCount(0);
     await expect(main.getByText("Check-in Date")).toHaveCount(0);
     await expect(main.getByRole("button", { name: "List Rooms" })).toHaveCount(0);

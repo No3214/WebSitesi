@@ -15,6 +15,10 @@ performs an insecure first hop redirect from HTTPS to
 `http://www.kozbeylikonagi.com/...`, so the canonical cutover must correct both
 the DNS/host target and the redirect chain.
 
+The public-domain gate also monitors the active Turkish ccTLD brand surfaces.
+Those domains must not remain on a split legacy menu/site after the canonical
+launch, because guests can still reach them from search results or old links.
+
 ## Proof
 
 Use `npm run domain:verify` to reproduce the check. The gate requires both
@@ -43,6 +47,13 @@ As of 2026-06-20, `npm run domain:verify:json` reports these concrete blockers:
   of `service: "kozbeyli-konagi"` JSON.
 - Both canonical homepages still render the stale landing page and do not
   expose `/videos/hero.mp4`.
+- The verifier now checks the `.com.tr` brand origins as separate public
+  surfaces, requiring the same `/api/health`, current commit, secure redirect
+  and opening hero video proof before full public-domain launch is considered
+  ready.
+- The Turkish ccTLD brand origins currently return HTML for `/api/health`
+  instead of the expected `service: "kozbeyli-konagi"` JSON, and their
+  homepages do not expose the approved `/videos/hero.mp4` opening shell.
 - DNS NS/MX can be verified through DNS-over-HTTPS, so the remaining blocker is
   web serving/redirect cutover, not missing nameserver or mail records.
 - The verifier now separates registrar ownership from live DNS authority. A

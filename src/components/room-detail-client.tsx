@@ -130,6 +130,11 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                     <span className="price-eyebrow">DİREKT REZERVASYON AVANTAJI</span>
                     <span className="price-main">Lütfen Tarih Seçiniz</span>
                   </div>
+                  <ul className="room-booking-trust" aria-label="Rezervasyon güven notları">
+                    <li>Resmi HMS rezervasyon ekranı</li>
+                    <li>Kart bilgisi bu sitede saklanmaz</li>
+                    <li>WhatsApp destek açık kalır</li>
+                  </ul>
                   <a
                     href={bookingHref}
                     className="button premium-cta full"
@@ -280,6 +285,33 @@ export function RoomDetailClient({ slug }: { slug: string }) {
         .price-stack { margin-bottom: 24px; }
         .price-eyebrow { display: block; font-size: 0.7rem; color: var(--gold); margin-bottom: 4px; }
         .price-main { font-size: 1.8rem; font-family: var(--serif); color: var(--olive, #3d4a3b); }
+
+        .room-booking-trust {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 24px;
+          display: grid;
+          gap: 10px;
+        }
+
+        .room-booking-trust li {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #4f5a4b;
+          font-size: 0.88rem;
+          line-height: 1.45;
+        }
+
+        .room-booking-trust li::before {
+          content: "";
+          flex: 0 0 8px;
+          width: 8px;
+          height: 8px;
+          border-radius: 999px;
+          background: var(--gold);
+          box-shadow: 0 0 0 4px rgba(179, 146, 92, 0.16);
+        }
 
         .premium-cta {
           background: var(--olive, #3d4a3b);

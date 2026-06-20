@@ -576,6 +576,13 @@ describe("production readiness contracts", () => {
     expect(bookingEmbed).not.toContain("Rezervasyon Ekranı Ayrı Sekmede");
     expect(bookingEmbed).not.toContain("Rezervasyonu Ayrı Sekmede Aç");
     expect(bookingEmbed).toContain("Booking");
+    expect(bookingEmbed).toContain("Resmi HMS ekranı yeni sekmede açılır");
+    expect(bookingEmbed).toContain("Kart bilgisi bu sitede saklanmaz");
+    expect(bookingEmbed).toContain("Official HMS screen opens in a new tab");
+    expect(bookingEmbed).toContain("Card details are not stored on this site");
+    expect(read("src/app/globals.css")).toContain(".booking-handoff-trust");
+    expect(roomDetail).toContain("Resmi HMS rezervasyon ekranı");
+    expect(roomDetail).toContain("Kart bilgisi bu sitede saklanmaz");
     expect(bookingEmbed).not.toContain("<iframe");
     expect(siteHeader).toContain("getConfiguredBookingEngineHref");
     expect(siteHeader).toContain('target="_blank"');

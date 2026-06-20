@@ -90,6 +90,8 @@ test.describe("Rezervasyon HMS handoff", () => {
       "href",
       HMS_BOOKING_URL,
     );
+    await expect(page.getByText("Resmi HMS ekranı yeni sekmede açılır")).toBeVisible();
+    await expect(page.getByText("Kart bilgisi bu sitede saklanmaz").first()).toBeVisible();
     await expect(page.getByRole("link", { name: /WhatsApp/i }).first()).toBeVisible({ timeout: 10000 });
   });
 });

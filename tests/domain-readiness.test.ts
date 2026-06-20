@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 type DomainReadinessModule = {
   evaluateDomainReadiness: (args: {
     canonicalOrigins?: string[];
+    brandOrigins?: string[];
     previewOrigin?: string;
     expectedCommit?: string;
     fetchImpl?: typeof fetch;
@@ -15,6 +16,7 @@ type DomainReadinessModule = {
   }) => Promise<{
     previewReady: boolean;
     canonicalReady: boolean;
+    brandReady: boolean;
     dnsReady: boolean;
     decision: string;
     blockers: string[];
@@ -74,6 +76,13 @@ type DomainReadinessModule = {
         };
       };
     }>;
+    brand: Array<{
+      origin: string;
+      legacyHost: {
+        detected: boolean;
+        signatures: Array<{ id: string; label: string }>;
+      };
+    }>;
   }>;
 };
 
@@ -127,6 +136,7 @@ describe("domain readiness", () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
     const result = await evaluateDomainReadiness({
       canonicalOrigins: ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"],
+      brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
       fetchImpl: async (url: string | URL | Request) => {
@@ -173,6 +183,7 @@ describe("domain readiness", () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
     const result = await evaluateDomainReadiness({
       canonicalOrigins: ["https://www.kozbeylikonagi.com"],
+      brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
       fetchImpl: async (url: string | URL | Request) => {
@@ -198,10 +209,38 @@ describe("domain readiness", () => {
     );
   });
 
+  it("keeps com.tr brand domains in the public launch gate so split legacy surfaces cannot pass", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"],
+      brandOrigins: ["https://www.kozbeylikonagi.com.tr"],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      fetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href.includes("kozbeylikonagi.com.tr")) return legacyHostResponse();
+        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
+        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
+      },
+      resolveNsImpl: async () => ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
+      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
+    });
+
+    expect(result.previewReady).toBe(true);
+    expect(result.canonicalReady).toBe(true);
+    expect(result.brandReady).toBe(false);
+    expect(result.decision).toBe("CANONICAL DOMAIN NO-GO");
+    expect(result.brand[0]?.legacyHost.detected).toBe(true);
+    expect(result.blockers).toContain(
+      "https://www.kozbeylikonagi.com.tr serves legacy host surface: legacy Joomla/Seagull template, legacy HotelRunner hosted landing surface",
+    );
+  });
+
   it("returns NO-GO when app health is current but the homepage is not the opening video shell", async () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
     const result = await evaluateDomainReadiness({
       canonicalOrigins: ["https://kozbeylikonagi.com"],
+      brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
       fetchImpl: async (url: string | URL | Request) => {
@@ -226,6 +265,7 @@ describe("domain readiness", () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
     const result = await evaluateDomainReadiness({
       canonicalOrigins: ["https://kozbeylikonagi.com"],
+      brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
       fetchImpl: async (url: string | URL | Request, init?: RequestInit) => {
@@ -265,6 +305,7 @@ describe("domain readiness", () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
     const result = await evaluateDomainReadiness({
       canonicalOrigins: ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"],
+      brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def4567890",
       fetchImpl: async (url: string | URL | Request) => {
@@ -288,6 +329,7 @@ describe("domain readiness", () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
     const result = await evaluateDomainReadiness({
       canonicalOrigins: ["https://kozbeylikonagi.com"],
+      brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
       fetchImpl: async (url: string | URL | Request) => {
@@ -318,6 +360,7 @@ describe("domain readiness", () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
     const result = await evaluateDomainReadiness({
       canonicalOrigins: ["https://kozbeylikonagi.com"],
+      brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
       fetchImpl: async (url: string | URL | Request) => {
@@ -364,6 +407,7 @@ describe("domain readiness", () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
     const result = await evaluateDomainReadiness({
       canonicalOrigins: ["https://kozbeylikonagi.com"],
+      brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
       fetchImpl: async (url: string | URL | Request) => {

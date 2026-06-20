@@ -3,6 +3,7 @@ import { resolveMx, resolveNs } from "node:dns/promises";
 import { pathToFileURL } from "node:url";
 
 const DEFAULT_CANONICAL_ORIGINS = ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"];
+const DEFAULT_BRAND_ORIGINS = ["https://kozbeylikonagi.com.tr", "https://www.kozbeylikonagi.com.tr"];
 const DEFAULT_PREVIEW_ORIGIN = "https://kozbeyli-konagi.vercel.app";
 const EXPECTED_SERVICE = "kozbeyli-konagi";
 const EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4";
@@ -50,14 +51,14 @@ function normalizeOrigin(origin) {
   return origin.replace(/\/+$/, "");
 }
 
-function originsFromEnv(value) {
+function originsFromEnv(value, fallbackOrigins) {
   return value
     ? value
         .split(",")
         .map((item) => item.trim())
         .filter(Boolean)
         .map(normalizeOrigin)
-    : DEFAULT_CANONICAL_ORIGINS;
+    : fallbackOrigins;
 }
 
 function getExpectedCommit() {
@@ -527,7 +528,8 @@ async function checkDns({
 }
 
 export async function evaluateDomainReadiness({
-  canonicalOrigins = originsFromEnv(process.env.CANONICAL_DOMAIN_ORIGINS),
+  canonicalOrigins = originsFromEnv(process.env.CANONICAL_DOMAIN_ORIGINS, DEFAULT_CANONICAL_ORIGINS),
+  brandOrigins = originsFromEnv(process.env.BRAND_DOMAIN_ORIGINS, DEFAULT_BRAND_ORIGINS),
   previewOrigin = process.env.PW_BASE_URL || DEFAULT_PREVIEW_ORIGIN,
   expectedCommit = getExpectedCommit(),
   fetchImpl = fetch,
@@ -537,10 +539,15 @@ export async function evaluateDomainReadiness({
   dnsFallbackFetchImpl = fetch,
   dnsFallbackTimeoutMs = 6000,
 } = {}) {
-  const [preview, canonical, dns] = await Promise.all([
+  const [preview, canonical, brand, dns] = await Promise.all([
     checkOrigin({ origin: previewOrigin, expectedCommit, fetchImpl, timeoutMs }),
     Promise.all(
       canonicalOrigins.map((origin) =>
+        checkOrigin({ origin, expectedCommit, fetchImpl, timeoutMs }),
+      ),
+    ),
+    Promise.all(
+      brandOrigins.map((origin) =>
         checkOrigin({ origin, expectedCommit, fetchImpl, timeoutMs }),
       ),
     ),
@@ -548,6 +555,7 @@ export async function evaluateDomainReadiness({
   ]);
 
   const canonicalReady = canonical.every((item) => item.ready);
+  const brandReady = brand.every((item) => item.ready);
   const previewReady = preview.ready;
   const warnings = [
     ...(dns.nsOk ? [] : ["canonical domain nameservers could not be verified as Cloudflare"]),
@@ -555,18 +563,21 @@ export async function evaluateDomainReadiness({
   ];
   const blockers = [
     ...canonical.flatMap(originBlockers),
+    ...brand.flatMap(originBlockers),
     ...(previewReady ? [] : originBlockers(preview).map((blocker) => blocker.replace(preview.origin, `${preview.origin} preview`))),
   ];
 
   return {
     expectedService: EXPECTED_SERVICE,
     expectedCommit,
-    decision: canonicalReady && previewReady ? "CANONICAL DOMAIN GO" : "CANONICAL DOMAIN NO-GO",
+    decision: canonicalReady && brandReady && previewReady ? "CANONICAL DOMAIN GO" : "CANONICAL DOMAIN NO-GO",
     canonicalReady,
+    brandReady,
     previewReady,
     dnsReady: dns.nsOk && dns.mxOk,
     preview,
     canonical,
+    brand,
     dns,
     warnings,
     blockers,
@@ -607,6 +618,34 @@ export function formatDomainReadiness(result) {
         lines.push(
           `  insecure first-hop redirect: ${redirect.location} -> ${redirect.resolvedLocation}`,
         );
+      }
+    }
+  }
+
+  if (result.brand.length > 0) {
+    lines.push("");
+    lines.push("Brand domains:");
+    for (const item of result.brand) {
+      lines.push(`${item.ready ? "PASS" : "FAIL"} ${item.origin}`);
+      lines.push(
+        `  health: HTTP ${item.health.status}, final=${item.health.finalUrl || "n/a"}, content-type=${item.health.contentType || "n/a"}, service=${item.health.service || "n/a"}, commit=${item.health.deploymentCommit || "n/a"}`,
+      );
+      lines.push(
+        `  home: HTTP ${item.home.status}, final=${item.home.finalUrl || "n/a"}, title=${item.home.title || "n/a"}, heroVideo=${item.home.hasOpeningHeroVideo ? "yes" : "no"}`,
+      );
+      if (item.legacyHost.detected) {
+        lines.push(
+          `  legacy host signatures: ${item.legacyHost.signatures
+            .map((signature) => signature.label)
+            .join(", ")}`,
+        );
+      }
+      for (const redirect of [item.health.redirect, item.home.redirect]) {
+        if (redirect?.firstHopInsecure) {
+          lines.push(
+            `  insecure first-hop redirect: ${redirect.location} -> ${redirect.resolvedLocation}`,
+          );
+        }
       }
     }
   }

@@ -1570,6 +1570,43 @@
     box-shadow: var(--shadow-soft);
   }
 
+  .booking-handoff-trust {
+    list-style: none;
+    padding: 18px 0 0;
+    margin: 20px 0 0;
+    border-top: 1px solid rgba(61, 74, 59, 0.12);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .booking-handoff-trust li {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--olive);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .booking-handoff-trust li::before {
+    content: "";
+    flex: 0 0 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--gold);
+    box-shadow: 0 0 0 4px rgba(179, 146, 92, 0.16);
+  }
+
+  @media (max-width: 760px) {
+    .booking-handoff-trust {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .object-cover {
     object-fit: cover;
   }

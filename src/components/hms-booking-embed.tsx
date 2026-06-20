@@ -15,6 +15,19 @@ const WHATSAPP_MESSAGE = {
   en: "Hello, I came from the website and would like to check availability.",
 } as const;
 
+const HANDOFF_TRUST = {
+  tr: [
+    "Resmi HMS ekranı yeni sekmede açılır",
+    "Kart bilgisi bu sitede saklanmaz",
+    "WhatsApp ve telefon desteği açık kalır",
+  ],
+  en: [
+    "Official HMS screen opens in a new tab",
+    "Card details are not stored on this site",
+    "WhatsApp and phone support remain available",
+  ],
+} as const;
+
 type HMSBookingEmbedProps = {
   locale?: "tr" | "en";
   roomSlug?: string;
@@ -80,6 +93,14 @@ export function HMSBookingEmbed({ locale = "tr", roomSlug, roomLabel }: HMSBooki
             : "Dates, guest count and room selection open in the official HMS booking screen in a new tab. This page remains available for room details and WhatsApp support."}
         </p>
       </div>
+      <ul
+        className="booking-handoff-trust"
+        aria-label={locale === "tr" ? "Rezervasyon güven notları" : "Booking trust notes"}
+      >
+        {HANDOFF_TRUST[locale].map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
       <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "24px" }}>
         <a
           className="button gold"
