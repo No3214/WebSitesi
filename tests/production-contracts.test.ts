@@ -667,7 +667,8 @@ describe("production readiness contracts", () => {
     expect(launchReadiness).toContain("31 files / 186 tests");
     expect(launchReadiness).toContain("68 routes generated");
     expect(launchReadiness).toContain("170 Playwright tests (168 passed / 2 skipped)");
-    expect(launchReadiness).toContain("dpl_J5Q71a4nwHL3zqtKir5No6yPyujA");
+    expect(launchReadiness).toContain("current commit'i `/api/health` üzerinden doğruluyor");
+    expect(launchReadiness).toContain("https://kozbeyli-konagi.vercel.app");
     expect(launchReadiness).toContain("legacy Joomla/Seagull template");
     expect(launchReadiness).not.toContain("9 files / 29 tests");
     expect(launchReadiness).not.toContain("66 routes generated");

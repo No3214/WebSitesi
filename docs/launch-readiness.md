@@ -166,7 +166,9 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 - `npm audit --omit=dev --audit-level=high` — PASS, 0 vulnerabilities.
 - `npm run publish:verify` — PASS: quality + 170 Playwright tests (168 passed / 2 skipped) + publish target inventory.
 - `npm run domain:verify:json` — preview PASS, canonical domain NO-GO; legacy Joomla/HotelRunner signatures detected on both canonical origins.
-- Vercel production deploy — READY: `dpl_J5Q71a4nwHL3zqtKir5No6yPyujA`, commit `c272d59b344c`, production URL `https://kozbeyli-konagi.vercel.app`.
+- Vercel production deploy — READY: `npm run domain:verify` preview kontrolü
+  current commit'i `/api/health` üzerinden doğruluyor; production URL
+  `https://kozbeyli-konagi.vercel.app`.
 - `.github/workflows/ci.yml` — launch smoke gate publish verification öncesine eklendi.
 - `npx playwright test tests/smoke.spec.ts tests/security.spec.ts tests/e2e/checkout-contract.spec.ts --reporter=line` — PASS, 17 passed / 2 skipped.
 - `npx playwright test tests/monkey.spec.ts tests/destructive-chaos.spec.ts` — PASS, 3/3.
