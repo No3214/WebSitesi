@@ -6,16 +6,34 @@ import { menuSections } from "@/data/menu";
 // Bu testler veri bütünlüğünü doğrular; ürün/fiyat içeriği src/data/menu.ts'te tutulur.
 
 describe("menu data (src/data/menu.ts)", () => {
-  it("en az 4 menü bölümü içerir", () => {
-    expect(menuSections.length).toBeGreaterThanOrEqual(4);
+  const allItems = menuSections.flatMap((section) =>
+    section.items.map((item) => ({ ...item, section: section.title })),
+  );
+
+  function findItem(name: string) {
+    return allItems.find((item) => item.name === name);
+  }
+
+  it("zip kaynaklı güncel menü bölümlerini içerir", () => {
+    expect(menuSections).toHaveLength(12);
+    expect(menuSections.map((section) => section.title)).toEqual([
+      "Kahvaltı",
+      "Mezeler",
+      "Ara Sıcaklar & Başlangıçlar",
+      "Napoliten Pizza & Sandviç",
+      "Peynir Tabakları",
+      "Ana Yemekler",
+      "Tatlılar",
+      "Şaraplar",
+      "Rakı",
+      "Kokteyl & Bira",
+      "Viskiler",
+      "İçecekler",
+    ]);
   });
 
-  it("toplam ürün sayısı en az 20 olmalı", () => {
-    const totalItems = menuSections.reduce(
-      (sum, section) => sum + section.items.length,
-      0,
-    );
-    expect(totalItems).toBeGreaterThanOrEqual(20);
+  it("kaynak menüdeki geniş ürün kapsamını korur", () => {
+    expect(allItems.length).toBeGreaterThanOrEqual(120);
   });
 
   it("her ürünün adı boş olmamalı", () => {
@@ -24,5 +42,23 @@ describe("menu data (src/data/menu.ts)", () => {
         expect(item.name.length).toBeGreaterThan(0);
       }
     }
+  });
+
+  it("kaynak dosyadaki kritik ürün ve fiyatları korur", () => {
+    expect(findItem("Gurme Serpme Kahvaltı (kişi başı)")?.price).toBe("850 TL");
+    expect(findItem("Konağın Meze Tabağı (2 kişilik - 5 çeşit)")?.price).toBe("3.200 TL");
+    expect(findItem("Paçanga Böreği (adet)")?.price).toBe("200 TL");
+    expect(findItem("Kavurmalı Konak Pizza")?.price).toBe("950 TL");
+    expect(findItem("Konağın Sac Kavurması")?.price).toBe("1.000 TL");
+    expect(findItem("Beyaz Şarap Tadımı")?.price).toBe("1.600 TL");
+    expect(findItem("Beylerbeyi Göbek 100cl")?.price).toBe("4.600 TL");
+    expect(findItem("Jack Daniel's 35cl")?.price).toBe("2.500 TL");
+    expect(findItem("Termos Çay")?.price).toBe("400 TL");
+  });
+
+  it("doğrulanmamış eski tarih iddialarını menü verisine taşımaz", () => {
+    const serializedMenu = JSON.stringify(menuSections);
+    expect(serializedMenu).not.toContain("500 yıllık taş konak");
+    expect(serializedMenu).not.toContain("200 yıllık");
   });
 });

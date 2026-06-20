@@ -16,6 +16,22 @@ async function forceSunsetMode(page: Page) {
   });
 }
 
+async function forceDayMode(page: Page) {
+  await page.route("**/api/local-pulse", async (route) => {
+    const now = Date.now();
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        sun: {
+          sunrise: new Date(now - 60 * 60 * 1000).toISOString(),
+          sunset: new Date(now + 60 * 60 * 1000).toISOString(),
+        },
+      }),
+    });
+  });
+}
+
 function luminance(rgb: string) {
   const channels = rgb.match(/\d+/g)?.slice(0, 3).map(Number) ?? [0, 0, 0];
   const [r, g, b] = channels.map((value) => {
@@ -74,6 +90,27 @@ test.describe("Sunset light theme", () => {
 
     await expect(page.locator(".sunset-mode-overlay")).toHaveCSS("pointer-events", "none");
     await expect(page.locator(".sunset-mode-indicator")).toHaveCount(1);
+  });
+
+  test("desktop control toggles between day and sunset modes", async ({ page }) => {
+    await forceDayMode(page);
+    await page.goto("/odalar", { waitUntil: "domcontentloaded" });
+
+    await expect(page.locator(".page-hero h1")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByTestId("sunset-mode-indicator")).toHaveAttribute("data-mode", "day");
+    await expect(page.locator(".sunset-mode-overlay")).toHaveCount(0);
+    await expect(page.getByTestId("sunset-day-toggle")).toHaveAttribute("aria-pressed", "true");
+
+    await page.getByTestId("sunset-night-toggle").click();
+    await expect(page.getByTestId("sunset-mode-indicator")).toHaveAttribute("data-mode", "sunset");
+    await expect(page.getByTestId("sunset-night-toggle")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator(".sunset-mode-overlay")).toHaveCSS("pointer-events", "none");
+    await waitForSunsetPalette(page);
+
+    await page.getByTestId("sunset-day-toggle").click();
+    await expect(page.getByTestId("sunset-mode-indicator")).toHaveAttribute("data-mode", "day");
+    await expect(page.getByTestId("sunset-day-toggle")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator(".sunset-mode-overlay")).toHaveCount(0);
   });
 
   test("mobile rooms page keeps the light theme without horizontal overflow", async ({ page }) => {

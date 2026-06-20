@@ -1042,11 +1042,15 @@ describe("production readiness contracts", () => {
     expect(kpiBand).not.toContain('to={500}');
   });
 
-  it("keeps first-visit hero rendering from waiting on late webfont swaps", () => {
+  it("keeps production builds independent from Google Fonts network fetches", () => {
     const layout = read("src/app/layout.tsx");
+    const globals = read("src/app/globals.css");
 
-    expect(layout).toContain('display: "optional"');
-    expect(layout).not.toContain('display: "swap"');
+    expect(layout).not.toContain("next/font/google");
+    expect(layout).not.toContain("Inter(");
+    expect(layout).not.toContain("Playfair_Display(");
+    expect(globals).toContain("--font-playfair:");
+    expect(globals).toContain("--font-inter:");
   });
 
   it("keeps language switching on hydration-safe href navigation", () => {

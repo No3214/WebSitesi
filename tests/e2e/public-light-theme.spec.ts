@@ -111,7 +111,12 @@ test.describe("Public light theme", () => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     await page.goto("/gastronomi", { waitUntil: "domcontentloaded" });
+    const rejectCookies = page.getByRole("button", { name: /reddet|reject/i });
+    if (await rejectCookies.count()) {
+      await rejectCookies.first().click();
+    }
     await page.getByRole("button", { name: /menüyü aç|open menu/i }).click();
+    await expect(page.locator("#mobile-menu")).toBeVisible({ timeout: 10000 });
     const menuBackground = await page.locator("#mobile-menu").evaluate((el) => getComputedStyle(el).backgroundColor);
     const firstMenuLinkColor = await page.locator("#mobile-menu a").first().evaluate((el) => getComputedStyle(el).color);
     expect(luminance(menuBackground), `mobile menu ${menuBackground}`).toBeGreaterThan(0.78);

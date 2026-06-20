@@ -3,24 +3,28 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
+type ManualSunsetMode = "day" | "sunset" | null;
+
 export const SunsetMode = () => {
-  const [isSunset, setIsSunset] = useState(false);
+  const [autoIsSunset, setAutoIsSunset] = useState(false);
+  const [manualMode, setManualMode] = useState<ManualSunsetMode>(null);
   const [mounted, setMounted] = useState(false);
+  const isSunset = manualMode ? manualMode === "sunset" : autoIsSunset;
 
   useEffect(() => {
     setMounted(true);
 
-    // Gerçek gün batımı saati (sunrise-sunset.org → /api/local-pulse, ücretsiz)
+    // Gercek gun batimi saati (/api/local-pulse) gelmezse saat bazli fallback kullanilir.
     let sunTimes: { sunrise: number; sunset: number } | null = null;
 
     const checkTime = () => {
       if (sunTimes) {
         const now = Date.now();
-        setIsSunset(now >= sunTimes.sunset || now < sunTimes.sunrise);
+        setAutoIsSunset(now >= sunTimes.sunset || now < sunTimes.sunrise);
       } else {
         const hour = new Date().getHours();
         // Fallback: 18:00 - 06:00
-        setIsSunset(hour >= 18 || hour < 6);
+        setAutoIsSunset(hour >= 18 || hour < 6);
       }
     };
 
@@ -49,16 +53,36 @@ export const SunsetMode = () => {
       {isSunset ? (
         <div className="sunset-mode-overlay fixed inset-0 pointer-events-none z-[0]" aria-hidden="true" />
       ) : null}
-      
-      {/* Visual Indicator/Toggle in Corner (Optional Premium Touch) */}
-      <div className="fixed top-24 right-8 z-[100] hidden lg:block" aria-hidden="true">
-        <div className="sunset-mode-indicator">
-           <div className={`p-1.5 rounded-full transition-colors ${!isSunset ? "bg-gold text-white" : "text-stone-500"}`}>
-             <Sun size={14} />
-           </div>
-           <div className={`p-1.5 rounded-full transition-colors ${isSunset ? "bg-[#fff5df] text-gold" : "text-stone-700"}`}>
-             <Moon size={14} />
-           </div>
+
+      <div className="fixed top-24 right-8 z-[100] hidden lg:block">
+        <div
+          className="sunset-mode-indicator"
+          data-testid="sunset-mode-indicator"
+          data-mode={isSunset ? "sunset" : "day"}
+          aria-label="Görünüm modu"
+        >
+          <button
+            type="button"
+            className={`sunset-mode-button transition-colors ${!isSunset ? "is-active is-day" : ""}`}
+            data-testid="sunset-day-toggle"
+            aria-label="Sabah görünümünü aç"
+            aria-pressed={!isSunset}
+            onClick={() => setManualMode("day")}
+            title="Sabah görünümü"
+          >
+            <Sun size={14} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className={`sunset-mode-button transition-colors ${isSunset ? "is-active is-sunset" : ""}`}
+            data-testid="sunset-night-toggle"
+            aria-label="Akşam görünümünü aç"
+            aria-pressed={isSunset}
+            onClick={() => setManualMode("sunset")}
+            title="Akşam görünümü"
+          >
+            <Moon size={14} aria-hidden="true" />
+          </button>
         </div>
       </div>
 
@@ -79,6 +103,29 @@ export const SunsetMode = () => {
           box-shadow: 0 18px 46px rgba(61, 48, 31, 0.12);
           backdrop-filter: blur(14px) saturate(1.25);
           -webkit-backdrop-filter: blur(14px) saturate(1.25);
+        }
+        .sunset-mode-button {
+          display: grid;
+          width: 1.8rem;
+          height: 1.8rem;
+          place-items: center;
+          border: 0;
+          border-radius: 999px;
+          background: transparent;
+          color: #4b5563;
+          cursor: pointer;
+        }
+        .sunset-mode-button:focus-visible {
+          outline: 2px solid var(--gold);
+          outline-offset: 3px;
+        }
+        .sunset-mode-button.is-day {
+          background: var(--gold);
+          color: #ffffff;
+        }
+        .sunset-mode-button.is-sunset {
+          background: #fff5df;
+          color: var(--gold);
         }
         @keyframes sunsetOverlayIn {
           from {

@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import type { Viewport } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
 import { Suspense } from "react";
 import { CookieConsent } from "@/components/cookie-consent";
 import { SiteFooter } from "@/components/site-footer";
@@ -19,9 +18,6 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
 
 
-const inter = Inter({ subsets: ["latin", "latin-ext"], display: "optional", variable: "--font-inter" });
-const playfair = Playfair_Display({ subsets: ["latin", "latin-ext"], display: "optional", variable: "--font-playfair" });
-
 export const metadata = defaultMetadata;
 
 export const viewport: Viewport = {
@@ -35,7 +31,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="tr" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="tr">
       <body>
         <script
           type="application/ld+json"
