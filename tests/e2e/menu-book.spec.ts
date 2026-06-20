@@ -12,6 +12,10 @@ test.describe("Restaurant menu book design", () => {
     await expect(page.getByText("Beylerbeyi Göbek 100cl")).toBeVisible();
     await expect(page.getByText("Termos Çay")).toBeVisible();
     await expect(page.getByText("500 yıllık taş konak")).toHaveCount(0);
+    await expect(page.getByRole("navigation", { name: "Menü kategorileri" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Mezeler 5 ürün/ })).toHaveAttribute("href", "#mezeler");
+    await expect(page.getByText("Şarap Eşleşmesi").first()).toBeVisible();
+    await expect(page.getByText("Öneri: Paşaeli SYS veya CSKS")).toBeVisible();
 
     const backgroundImage = await menuBook.evaluate((element) => {
       return getComputedStyle(element).backgroundImage;
@@ -29,6 +33,7 @@ test.describe("Restaurant menu book design", () => {
     await page.goto("/menu");
 
     await expect(page.locator(".menu-book")).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Menü kategorileri" })).toBeVisible();
     const overflow = await page.evaluate(() => {
       return Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth;
     });

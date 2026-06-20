@@ -54,6 +54,9 @@ export default function MenuPage() {
         ctaLabel="İLETİŞİME GEÇİN"
         featuredLabel="Konağın Seçimi"
         bundleLabel="Özel Seçki"
+        indexLabel="Menü kategorileri"
+        itemCountLabel="ürün"
+        signalLanguage="tr"
         allergenNotes={[
           "(G) Gluten",
           "(S) Süt",

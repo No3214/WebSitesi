@@ -2072,8 +2072,58 @@
   font-style: italic;
 }
 
+.menu-book-index {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
+  gap: 8px;
+  padding: 18px 0 8px;
+  border-bottom: 1px solid rgba(80, 93, 75, 0.2);
+}
+
+.menu-book-index a {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 11px;
+  border: 1px solid rgba(196, 162, 101, 0.28);
+  border-radius: 5px;
+  color: var(--menu-fildisi-dim);
+  background: rgba(248, 245, 240, 0.04);
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.menu-book-index a:hover,
+.menu-book-index a:focus-visible {
+  border-color: var(--menu-altin);
+  color: var(--menu-fildisi);
+  background: rgba(196, 162, 101, 0.1);
+  outline: none;
+}
+
+.menu-book-index small {
+  flex: 0 0 auto;
+  color: var(--menu-altin-dim);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: none;
+}
+
 .menu-book-category {
   padding: 50px 0 20px;
+  scroll-margin-top: 110px;
 }
 
 .menu-book-category-header {
@@ -2180,6 +2230,44 @@
   color: var(--menu-fildisi-dim);
   font-size: 0.9rem;
   line-height: 1.65;
+}
+
+.menu-book-item-signals {
+  display: grid;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.menu-book-item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.menu-book-item-tags span {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 3px 8px;
+  border: 1px solid rgba(196, 162, 101, 0.34);
+  border-radius: 3px;
+  color: var(--menu-altin);
+  background: rgba(196, 162, 101, 0.08);
+  font-family: var(--font-inter), Arial, sans-serif;
+  font-size: 0.65rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.menu-book-item-signals p {
+  margin: 0;
+  color: var(--menu-altin-dim);
+  font-size: 0.78rem;
+  font-style: italic;
+  line-height: 1.45;
 }
 
 .menu-book-item {
@@ -2306,6 +2394,24 @@
   .menu-book {
     border: 0;
     box-shadow: none;
+  }
+
+  .menu-book-index {
+    display: flex;
+    gap: 8px;
+    margin: 0 -18px 6px;
+    padding: 16px 18px 10px;
+    overflow-x: auto;
+    scroll-padding-inline: 18px;
+    scrollbar-width: none;
+  }
+
+  .menu-book-index::-webkit-scrollbar {
+    display: none;
+  }
+
+  .menu-book-index a {
+    min-width: 148px;
   }
 
   .menu-book-featured,

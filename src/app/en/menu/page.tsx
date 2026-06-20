@@ -165,6 +165,9 @@ export default function EnglishMenuPage() {
         ctaLabel="CONTACT GUEST RELATIONS"
         featuredLabel="Mansion Selection"
         bundleLabel="Curated Selection"
+        indexLabel="Menu categories"
+        itemCountLabel="items"
+        signalLanguage="en"
         allergenNotes={[
           "(G) Gluten",
           "(D) Dairy",
