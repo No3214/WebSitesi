@@ -12,8 +12,8 @@ type DomainReadinessModule = {
     fetchImpl?: typeof fetch;
     resolve4Impl?: (host: string) => Promise<string[]>;
     resolveCnameImpl?: (host: string) => Promise<string[]>;
-    resolveNsImpl?: () => Promise<string[]>;
-    resolveMxImpl?: () => Promise<Array<{ exchange: string; preference: number }>>;
+    resolveNsImpl?: (host: string) => Promise<string[]>;
+    resolveMxImpl?: (host: string) => Promise<Array<{ exchange: string; preference: number }>>;
     dnsFallbackFetchImpl?: typeof fetch;
   }) => Promise<{
     previewReady: boolean;
@@ -26,6 +26,21 @@ type DomainReadinessModule = {
     dns: {
       ns: string[];
       mx: Array<{ exchange: string; preference: number }>;
+      zones: Array<{
+        group: string;
+        apexDomain: string;
+        mailRequired: boolean;
+        ns: string[];
+        mx: Array<{ exchange: string; preference: number }>;
+        nsOk: boolean;
+        mxOk: boolean;
+        authority: {
+          provider: string;
+          label: string;
+          action: string;
+        };
+      }>;
+      zonesOk: boolean;
       nsSource: string;
       mxSource: string;
       authority: {
@@ -176,6 +191,25 @@ describe("domain readiness", () => {
       provider: "cloudflare",
       label: "Cloudflare",
     });
+    expect(result.dns.zones).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          group: "canonical",
+          apexDomain: "kozbeylikonagi.com",
+          nsOk: true,
+          mxOk: true,
+          authority: expect.objectContaining({ provider: "cloudflare" }),
+        }),
+        expect.objectContaining({
+          group: "brand",
+          apexDomain: "kozbeylikonagi.com.tr",
+          mailRequired: false,
+          nsOk: true,
+          mxOk: true,
+          authority: expect.objectContaining({ provider: "cloudflare" }),
+        }),
+      ]),
+    );
     expect(result.dns.registrarVsDnsNote).toContain("Nameservers decide");
     expect(result.dns.isimtescilCaution).toContain("registered at Isimtescil");
     expect(result.dns.vercelTargetRecords).toEqual([
@@ -269,6 +303,49 @@ describe("domain readiness", () => {
     expect(result.blockers).toContain(
       "https://www.kozbeylikonagi.com.tr serves legacy host surface: legacy Joomla/Seagull template, legacy HotelRunner hosted landing surface",
     );
+  });
+
+  it("reports the brand ccTLD DNS authority separately from the canonical .com zone", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://kozbeylikonagi.com"],
+      brandOrigins: ["https://www.kozbeylikonagi.com.tr"],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      ...vercelWebRecordResolvers(),
+      fetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
+        return appShellResponse(href.includes(".com.tr") ? "Brand" : "Canonical");
+      },
+      resolveNsImpl: async (host: string) =>
+        host.endsWith(".com.tr")
+          ? ["lucy.ns.cloudflare.com", "memphis.ns.cloudflare.com"]
+          : ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
+      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
+    });
+
+    expect(result.decision).toBe("CANONICAL DOMAIN GO");
+    expect(result.dns.zones).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          group: "canonical",
+          apexDomain: "kozbeylikonagi.com",
+          ns: ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
+          authority: expect.objectContaining({ provider: "cloudflare" }),
+        }),
+        expect.objectContaining({
+          group: "brand",
+          apexDomain: "kozbeylikonagi.com.tr",
+          ns: ["lucy.ns.cloudflare.com", "memphis.ns.cloudflare.com"],
+          mailRequired: false,
+          authority: expect.objectContaining({ provider: "cloudflare" }),
+        }),
+      ]),
+    );
+    expect(result.dns.zonesOk).toBe(true);
+    expect(result.dnsReady).toBe(true);
+    expect(result.warnings).toEqual([]);
   });
 
   it("returns NO-GO when app health is current but the homepage is not the opening video shell", async () => {

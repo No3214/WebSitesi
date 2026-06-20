@@ -60,6 +60,9 @@ As of 2026-06-20, `npm run domain:verify:json` reports these concrete blockers:
   domain may be registered at Isimtescil while live DNS is delegated to
   Cloudflare nameservers; in that state, Isimtescil DNS-zone edits do not affect
   public traffic until nameservers are moved.
+- The verifier reports `.com` and `.com.tr` DNS zones separately because the
+  canonical and Turkish ccTLD domains may be delegated to different Cloudflare
+  nameserver pairs. Edit each authoritative zone separately during cutover.
 - The current Vercel cutover target records are reported in the verifier output.
   For this project, `vercel domains inspect` currently expects `A 76.76.21.21`
   for apex and `www` hosts. Re-run the inspect command before DNS edits because

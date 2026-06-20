@@ -893,6 +893,7 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("Remove old Joomla/Seagull and HotelRunner hosted landing routing");
     expect(cutoverPlan).toContain("no legacy host signatures");
     expect(cutoverPlan).toContain("Treat NS/MX DNS PASS separately from web serving readiness");
+    expect(cutoverPlan).toContain("verify and edit each authoritative zone separately");
     expect(cutoverPlan).toContain("A records to 76.76.21.21 for the apex and www hosts");
     expect(cutoverPlan).toContain("re-run vercel domains inspect before editing DNS");
     expect(cutoverPlan).toContain("Turkish ccTLD brand origins");

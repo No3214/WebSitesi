@@ -51,14 +51,16 @@ düzelmeden canonical gate'in NO-GO kalacağını kanıtlar.
 aktif DNS yetkilisini ayrı gösterir. Domain İsimtescil panelinde kayıtlı olsa
 bile nameserver Cloudflare ise canlı A/TXT/MX kayıtları Cloudflare zone'unda
 değişmelidir; İsimtescil DNS zone kayıtları nameserver değişmeden canlı trafiği
-etkilemez. Vercel hedef kayıtları raporda açıkça listelenir. Bu proje için
-`vercel domains inspect` çıktısı apex ve `www` hostları için `A 76.76.21.21`
-bekliyor; DNS düzenlemesinden hemen önce inspect komutu tekrar çalıştırılmalı,
-çünkü Vercel proje bazlı A/CNAME değerleri döndürebilir. Türkçe ccTLD marka
-yüzeyleri de aynı gate'e dahildir; güncel uygulamayı servis etmeli veya seçilen
-canonical origin'e güvenli şekilde yönlenmelidir. Nameserver sağlayıcısı
-değiştirilecekse MX/TXT/SPF/DKIM/DMARC kayıtları korunmadan geçiş
-yapılmamalıdır.
+etkilemez. `npm run domain:verify` artık `.com` ve `.com.tr` DNS zone'larını
+ayrı raporlar; bu domainler farklı Cloudflare nameserver çiftlerine delege
+edilebilir, bu yüzden her authoritative zone ayrı kontrol edilmelidir. Vercel
+hedef kayıtları raporda açıkça listelenir. Bu proje için `vercel domains
+inspect` çıktısı apex ve `www` hostları için `A 76.76.21.21` bekliyor; DNS
+düzenlemesinden hemen önce inspect komutu tekrar çalıştırılmalı, çünkü Vercel
+proje bazlı A/CNAME değerleri döndürebilir. Türkçe ccTLD marka yüzeyleri de aynı
+gate'e dahildir; güncel uygulamayı servis etmeli veya seçilen canonical origin'e
+güvenli şekilde yönlenmelidir. Nameserver sağlayıcısı değiştirilecekse
+MX/TXT/SPF/DKIM/DMARC kayıtları korunmadan geçiş yapılmamalıdır.
 
 2026-06-20 public light theme güncellemesi: koyu public yüzeyler geriye
 alındı. Mobil menü, oda detay rezervasyon kartı, exit-intent rezervasyon paneli

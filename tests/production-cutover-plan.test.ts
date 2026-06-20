@@ -205,6 +205,9 @@ describe("production cutover plan", () => {
       "Registrar ownership is not the same as live DNS authority. If nameservers are Cloudflare, edit Cloudflare DNS records; Isimtescil DNS-zone records will not affect traffic until nameservers move to Isimtescil/Natro.",
     );
     expect(canonical?.diagnostics).toContain(
+      "The .com and .com.tr domains can be delegated to different DNS zones or nameserver pairs; verify and edit each authoritative zone separately before assuming a single DNS panel controls both.",
+    );
+    expect(canonical?.diagnostics).toContain(
       "Vercel domains inspect currently expects A records to 76.76.21.21 for the apex and www hosts in this project; re-run vercel domains inspect before editing DNS because Vercel can return project-specific values.",
     );
     expect(canonical?.diagnostics).toContain(
@@ -215,6 +218,9 @@ describe("production cutover plan", () => {
     );
     expect(canonical?.checklist).toContain(
       "Confirm active nameservers before editing DNS; make changes at the authoritative DNS provider, not just the registrar panel.",
+    );
+    expect(canonical?.checklist).toContain(
+      "Check the canonical .com and Turkish ccTLD .com.tr zones independently; do not assume both domains use the same Cloudflare zone or nameserver pair.",
     );
     expect(canonical?.checklist).toContain(
       "If choosing Isimtescil DNS instead of Cloudflare, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding the Vercel A/CNAME records shown by vercel domains inspect.",

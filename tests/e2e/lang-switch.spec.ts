@@ -38,7 +38,7 @@ test.describe("Dil degistirici", () => {
 
     await Promise.all([page.waitForURL("**/en/menu"), enLink.click()]);
     expect(new URL(page.url()).pathname).toBe("/en/menu");
-    await expect(page.getByText("Restaurant Menu")).toBeVisible();
+    await expect(page.locator("main .menu-book-subtitle")).toHaveText("Restaurant Menu");
     await expect(page.getByRole("heading", { name: "Breakfast", exact: true })).toBeVisible();
   });
 

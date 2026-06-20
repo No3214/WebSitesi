@@ -58,6 +58,17 @@ async function resolvedBackground(page: Page, selector: string) {
   });
 }
 
+async function dismissCookieBanner(page: Page) {
+  const dialog = page.getByRole("dialog", { name: /çerez tercihleri|cookie preferences/i });
+  const rejectCookies = page.getByRole("button", { name: /reddet|reject/i }).first();
+
+  await dialog.waitFor({ state: "visible", timeout: 3000 }).catch(() => undefined);
+  if (await rejectCookies.isVisible().catch(() => false)) {
+    await rejectCookies.click();
+    await expect(dialog).toBeHidden({ timeout: 5000 });
+  }
+}
+
 test.describe("Public light theme", () => {
   for (const route of publicRoutes) {
     test(`${route} keeps the warm stone theme loaded`, async ({ page }) => {
@@ -111,10 +122,7 @@ test.describe("Public light theme", () => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     await page.goto("/gastronomi", { waitUntil: "domcontentloaded" });
-    const rejectCookies = page.getByRole("button", { name: /reddet|reject/i });
-    if (await rejectCookies.count()) {
-      await rejectCookies.first().click();
-    }
+    await dismissCookieBanner(page);
     await page.getByRole("button", { name: /menüyü aç|open menu/i }).click();
     await expect(page.locator("#mobile-menu")).toBeVisible({ timeout: 10000 });
     const menuBackground = await page.locator("#mobile-menu").evaluate((el) => getComputedStyle(el).backgroundColor);

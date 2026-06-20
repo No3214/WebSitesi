@@ -37,6 +37,20 @@ const VERCEL_TARGET_RECORDS = [
     purpose: "Brand WWW domain should serve or securely redirect through the Vercel production target.",
   },
 ];
+const DNS_ZONES = [
+  {
+    group: "canonical",
+    apexDomain: "kozbeylikonagi.com",
+    mailRequired: true,
+    expectedMx: "mx.kozbeylikonagi.com",
+  },
+  {
+    group: "brand",
+    apexDomain: "kozbeylikonagi.com.tr",
+    mailRequired: false,
+    expectedMx: "",
+  },
+];
 const LEGACY_HOST_SIGNATURES = [
   {
     id: "joomla-seagull",
@@ -573,6 +587,53 @@ function originBlockers(item) {
   return blockers;
 }
 
+async function checkDnsZone({
+  zone,
+  resolveNsImpl = resolveNs,
+  resolveMxImpl = resolveMx,
+  dnsFallbackFetchImpl,
+  dnsFallbackTimeoutMs = 6000,
+}) {
+  const nsResultPromise = resolveDnsRecord({
+    apexDomain: zone.apexDomain,
+    recordType: "NS",
+    nativeLookup: resolveNsImpl,
+    dnsFallbackFetchImpl,
+    dnsFallbackTimeoutMs,
+  });
+  const mxResultPromise = zone.mailRequired
+    ? resolveDnsRecord({
+        apexDomain: zone.apexDomain,
+        recordType: "MX",
+        nativeLookup: resolveMxImpl,
+        dnsFallbackFetchImpl,
+        dnsFallbackTimeoutMs,
+      })
+    : Promise.resolve({ records: [], source: "not-required", error: "" });
+  const [nsResult, mxResult] = await Promise.all([nsResultPromise, mxResultPromise]);
+  const ns = nsResult.records;
+  const mx = mxResult.records;
+  const authority = classifyDnsAuthority(ns);
+  const nsOk = ns.length > 0 && authority.provider !== "unknown";
+  const mxOk = !zone.mailRequired || mx.some((item) => item.exchange === zone.expectedMx);
+
+  return {
+    group: zone.group,
+    apexDomain: zone.apexDomain,
+    mailRequired: zone.mailRequired,
+    expectedMx: zone.expectedMx,
+    ns,
+    mx,
+    authority,
+    nsOk,
+    mxOk,
+    nsSource: nsResult.source,
+    mxSource: mxResult.source,
+    nsError: nsResult.error,
+    mxError: mxResult.error,
+  };
+}
+
 async function checkDns({
   apexDomain = "kozbeylikonagi.com",
   resolve4Impl = resolve4,
@@ -582,39 +643,52 @@ async function checkDns({
   dnsFallbackFetchImpl,
   dnsFallbackTimeoutMs = 6000,
 } = {}) {
-  const [nsResult, mxResult] = await Promise.all([
-    resolveDnsRecord({
-      apexDomain,
-      recordType: "NS",
-      nativeLookup: resolveNsImpl,
-      dnsFallbackFetchImpl,
-      dnsFallbackTimeoutMs,
-    }),
-    resolveDnsRecord({
-      apexDomain,
-      recordType: "MX",
-      nativeLookup: resolveMxImpl,
+  const zonesToCheck = DNS_ZONES.map((zone) =>
+    zone.apexDomain === apexDomain || zone.group !== "canonical"
+      ? zone
+      : { ...zone, apexDomain },
+  );
+  const [zones, webRecordChecks] = await Promise.all([
+    Promise.all(
+      zonesToCheck.map((zone) =>
+        checkDnsZone({
+          zone,
+          resolveNsImpl,
+          resolveMxImpl,
+          dnsFallbackFetchImpl,
+          dnsFallbackTimeoutMs,
+        }),
+      ),
+    ),
+    checkWebTargetRecords({
+      resolve4Impl,
+      resolveCnameImpl,
       dnsFallbackFetchImpl,
       dnsFallbackTimeoutMs,
     }),
   ]);
-  const webRecordChecks = await checkWebTargetRecords({
-    resolve4Impl,
-    resolveCnameImpl,
-    dnsFallbackFetchImpl,
-    dnsFallbackTimeoutMs,
-  });
-
-  const ns = nsResult.records;
-  const mx = mxResult.records;
-  const authority = classifyDnsAuthority(ns);
+  const canonicalZone = zones.find((zone) => zone.group === "canonical") || zones[0] || {
+    apexDomain,
+    ns: [],
+    mx: [],
+    authority: classifyDnsAuthority([]),
+    nsOk: false,
+    mxOk: false,
+    nsSource: "",
+    mxSource: "",
+    nsError: "",
+    mxError: "",
+  };
+  const zonesOk = zones.every((zone) => zone.nsOk && zone.mxOk);
   const webRecordsOk = webRecordChecks.every((item) => item.ready);
 
   return {
-    apexDomain,
-    ns,
-    mx,
-    authority,
+    apexDomain: canonicalZone.apexDomain,
+    zones,
+    zonesOk,
+    ns: canonicalZone.ns,
+    mx: canonicalZone.mx,
+    authority: canonicalZone.authority,
     registrarVsDnsNote:
       "The registrar panel and the live DNS authority can be different. Nameservers decide where live DNS records must be edited.",
     isimtescilCaution:
@@ -622,12 +696,12 @@ async function checkDns({
     vercelTargetRecords: VERCEL_TARGET_RECORDS,
     webRecordChecks,
     webRecordsOk,
-    nsOk: ns.some((item) => item.includes("cloudflare.com")),
-    mxOk: mx.some((item) => item.exchange === "mx.kozbeylikonagi.com"),
-    nsSource: nsResult.source,
-    mxSource: mxResult.source,
-    nsError: nsResult.error,
-    mxError: mxResult.error,
+    nsOk: canonicalZone.nsOk,
+    mxOk: canonicalZone.mxOk,
+    nsSource: canonicalZone.nsSource,
+    mxSource: canonicalZone.mxSource,
+    nsError: canonicalZone.nsError,
+    mxError: canonicalZone.mxError,
   };
 }
 
@@ -671,8 +745,12 @@ export async function evaluateDomainReadiness({
   const brandReady = brand.every((item) => item.ready);
   const previewReady = preview.ready;
   const warnings = [
-    ...(dns.nsOk ? [] : ["canonical domain nameservers could not be verified as Cloudflare"]),
-    ...(dns.mxOk ? [] : ["canonical domain MX record could not be verified as mx.kozbeylikonagi.com"]),
+    ...dns.zones
+      .filter((zone) => !zone.nsOk)
+      .map((zone) => `${zone.group} domain nameservers could not be verified for ${zone.apexDomain}`),
+    ...dns.zones
+      .filter((zone) => !zone.mxOk)
+      .map((zone) => `${zone.group} domain MX record could not be verified as ${zone.expectedMx}`),
     ...dns.webRecordChecks
       .filter((item) => !item.ready)
       .map((item) =>
@@ -694,7 +772,7 @@ export async function evaluateDomainReadiness({
     canonicalReady,
     brandReady,
     previewReady,
-    dnsReady: dns.nsOk && dns.mxOk && dns.webRecordsOk,
+    dnsReady: dns.zonesOk && dns.webRecordsOk,
     preview,
     canonical,
     brand,
@@ -771,17 +849,20 @@ export function formatDomainReadiness(result) {
   }
 
   lines.push("");
-  lines.push(`DNS: ${result.dnsReady ? "PASS" : "WARN"} ${result.dns.apexDomain}`);
-  lines.push(`  NS (${result.dns.nsSource || "unknown"}): ${result.dns.ns.join(", ") || result.dns.nsError || "n/a"}`);
-  lines.push(
-    `  MX (${result.dns.mxSource || "unknown"}): ${
-      result.dns.mx.map((item) => `${item.preference} ${item.exchange}`).join(", ") ||
-      result.dns.mxError ||
-      "n/a"
-    }`,
-  );
-  lines.push(`  active DNS authority: ${result.dns.authority.label}`);
-  lines.push(`  action: ${result.dns.authority.action}`);
+  lines.push(`DNS: ${result.dnsReady ? "PASS" : "WARN"}`);
+  for (const zone of result.dns.zones) {
+    lines.push(`  [${zone.group}] ${zone.apexDomain}`);
+    lines.push(`    NS (${zone.nsSource || "unknown"}): ${zone.ns.join(", ") || zone.nsError || "n/a"}`);
+    lines.push(
+      `    MX (${zone.mxSource || "unknown"}): ${
+        zone.mailRequired
+          ? zone.mx.map((item) => `${item.preference} ${item.exchange}`).join(", ") || zone.mxError || "n/a"
+          : "not required for this launch gate"
+      }`,
+    );
+    lines.push(`    active DNS authority: ${zone.authority.label}`);
+    lines.push(`    action: ${zone.authority.action}`);
+  }
   lines.push(`  registrar/DNS note: ${result.dns.registrarVsDnsNote}`);
   lines.push(`  Isimtescil caution: ${result.dns.isimtescilCaution}`);
   lines.push("  Vercel target records:");
