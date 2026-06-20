@@ -645,11 +645,46 @@ describe("production readiness contracts", () => {
     expect(domainScript).toContain("queryDnsOverHttps");
     expect(domainScript).toContain("DNS_FALLBACK_ENDPOINTS");
     expect(domainScript).toContain("dnsFallbackFetchImpl");
+    expect(domainScript).toContain("LEGACY_HOST_SIGNATURES");
+    expect(domainScript).toContain("legacy Joomla/Seagull template");
+    expect(domainScript).toContain("legacy HotelRunner hosted landing surface");
+    expect(domainScript).toContain("serves legacy host surface");
     expect(domainScript).toContain("process.exitCode");
     expect(domainScript).not.toContain("process.exit(strict");
     expect(domainScript).toContain("kozbeylikonagi.com");
     expect(domainScript).toContain("kozbeyli-konagi.vercel.app");
     expect(releaseScript).not.toContain("domain:verify:strict");
+  });
+
+  it("keeps launch readiness evidence current after the light-theme and domain hardening passes", () => {
+    const launchReadiness = read("docs/launch-readiness.md");
+    const publishTarget = read("docs/publish-target.md");
+    const canonicalEvidence = read("docs/evidence/canonical-domain.md");
+
+    expect(launchReadiness).toContain("Son revizyon: 2026-06-20.");
+    expect(launchReadiness).toContain("2026-06-20 canonical legacy host güncellemesi");
+    expect(launchReadiness).toContain("2026-06-20 public light theme güncellemesi");
+    expect(launchReadiness).toContain("31 files / 186 tests");
+    expect(launchReadiness).toContain("68 routes generated");
+    expect(launchReadiness).toContain("170 Playwright tests (168 passed / 2 skipped)");
+    expect(launchReadiness).toContain("dpl_J5Q71a4nwHL3zqtKir5No6yPyujA");
+    expect(launchReadiness).toContain("legacy Joomla/Seagull template");
+    expect(launchReadiness).not.toContain("9 files / 29 tests");
+    expect(launchReadiness).not.toContain("66 routes generated");
+    expect(launchReadiness).not.toContain("113 passed / 2 skipped");
+
+    expect(publishTarget).toContain("Son revizyon: 2026-06-20");
+    expect(publishTarget).toContain("168 passed / 2 skipped");
+    expect(publishTarget).toContain("31 files / 186 tests");
+    expect(publishTarget).toContain("68 routes");
+    expect(publishTarget).toContain("legacy Joomla/HotelRunner host imzası");
+    expect(publishTarget).not.toContain("113 passed / 2 skipped");
+    expect(publishTarget).not.toContain("http://127.0.0.1:3010");
+
+    expect(canonicalEvidence).toContain("date: 2026-06-20");
+    expect(canonicalEvidence).toContain("legacy Joomla/Seagull template");
+    expect(canonicalEvidence).toContain("legacy HotelRunner hosted landing surface");
+    expect(canonicalEvidence).toContain("DNS NS/MX can be verified through DNS-over-HTTPS");
   });
 
   it("keeps Vercel operational prerequisites visible without hiding the global CLI requirement", () => {

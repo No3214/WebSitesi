@@ -6,6 +6,27 @@ const DEFAULT_CANONICAL_ORIGINS = ["https://kozbeylikonagi.com", "https://www.ko
 const DEFAULT_PREVIEW_ORIGIN = "https://kozbeyli-konagi.vercel.app";
 const EXPECTED_SERVICE = "kozbeyli-konagi";
 const EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4";
+const LEGACY_HOST_SIGNATURES = [
+  {
+    id: "joomla-seagull",
+    label: "legacy Joomla/Seagull template",
+    patterns: [
+      /Seagull for Joomla/i,
+      /Open Source Matters/i,
+      /Sayfa Bulunamadi/i,
+      /404 - Error: 404/i,
+    ],
+  },
+  {
+    id: "hotelrunner-legacy-landing",
+    label: "legacy HotelRunner hosted landing surface",
+    patterns: [
+      /kozbeyli-konagi-1\.hotelrunner\.com/i,
+      /renderPageSections/i,
+      /window\.parent\.postMessage/i,
+    ],
+  },
+];
 const DNS_FALLBACK_ENDPOINTS = [
   "https://cloudflare-dns.com/dns-query",
   "https://dns.google/resolve",
@@ -128,6 +149,25 @@ async function fetchText(url, fetchImpl, timeoutMs) {
 
 function extractTitle(html) {
   return html.match(/<title[^>]*>(.*?)<\/title>/i)?.[1]?.trim() || "";
+}
+
+function detectLegacyHostSignatures(text) {
+  return LEGACY_HOST_SIGNATURES
+    .filter((signature) => signature.patterns.some((pattern) => pattern.test(text)))
+    .map(({ id, label }) => ({ id, label }));
+}
+
+function mergeLegacyHostSignatures(...groups) {
+  const seen = new Set();
+  const merged = [];
+
+  for (const group of groups.flat()) {
+    if (!group?.id || seen.has(group.id)) continue;
+    seen.add(group.id);
+    merged.push(group);
+  }
+
+  return merged;
 }
 
 function hasInsecureFirstHop(response) {
@@ -302,11 +342,19 @@ async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutM
   const hasOpeningHeroVideo = home.text.includes(EXPECTED_HERO_VIDEO_SRC);
   const homeOk = Boolean(home.ok && hasOpeningHeroVideo);
   const secureRedirectsOk = !hasInsecureFirstHop(health) && !hasInsecureFirstHop(home);
-  const ready = Boolean(serviceOk && commitOk && homeOk && secureRedirectsOk);
+  const healthLegacySignatures = detectLegacyHostSignatures(health.text);
+  const homeLegacySignatures = detectLegacyHostSignatures(home.text);
+  const legacyHostSignatures = mergeLegacyHostSignatures(healthLegacySignatures, homeLegacySignatures);
+  const legacyHostDetected = legacyHostSignatures.length > 0;
+  const ready = Boolean(serviceOk && commitOk && homeOk && secureRedirectsOk && !legacyHostDetected);
 
   return {
     origin: normalizedOrigin,
     ready,
+    legacyHost: {
+      detected: legacyHostDetected,
+      signatures: legacyHostSignatures,
+    },
     health: {
       url: healthUrl,
       status: health.status,
@@ -319,6 +367,7 @@ async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutM
       deploymentCommit: actualCommit,
       serviceOk,
       commitOk,
+      legacySignatures: healthLegacySignatures,
     },
     home: {
       url: homeUrl,
@@ -332,6 +381,7 @@ async function checkOrigin({ origin, expectedCommit, fetchImpl = fetch, timeoutM
       expectedHeroVideoSrc: EXPECTED_HERO_VIDEO_SRC,
       hasOpeningHeroVideo,
       homeOk,
+      legacySignatures: homeLegacySignatures,
     },
   };
 }
@@ -347,6 +397,14 @@ function originBlockers(item) {
 
   for (const location of insecureRedirects) {
     blockers.push(`${item.origin} redirects first hop to insecure HTTP: ${location}`);
+  }
+
+  if (item.legacyHost?.detected) {
+    blockers.push(
+      `${item.origin} serves legacy host surface: ${item.legacyHost.signatures
+        .map((signature) => signature.label)
+        .join(", ")}`,
+    );
   }
 
   if (!item.health.serviceOk || !item.health.commitOk) {
@@ -471,6 +529,13 @@ export function formatDomainReadiness(result) {
     lines.push(
       `  home: HTTP ${item.home.status}, final=${item.home.finalUrl || "n/a"}, title=${item.home.title || "n/a"}, heroVideo=${item.home.hasOpeningHeroVideo ? "yes" : "no"}`,
     );
+    if (item.legacyHost.detected) {
+      lines.push(
+        `  legacy host signatures: ${item.legacyHost.signatures
+          .map((signature) => signature.label)
+          .join(", ")}`,
+      );
+    }
     for (const redirect of [item.health.redirect, item.home.redirect]) {
       if (redirect?.firstHopInsecure) {
         lines.push(

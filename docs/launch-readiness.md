@@ -1,7 +1,7 @@
 # Kozbeyli Konağı — Launch Readiness Denetimi
 
 Master denetim promptunun repo üzerinde çalıştırılmış halidir.
-Son revizyon: 2026-06-19.
+Son revizyon: 2026-06-20.
 Kural: kanıt yoksa "kanıt yok"; belirsizse "belirsiz". Kanıtlar dosya yoluyla verilir.
 
 ## 1. Executive Summary
@@ -38,6 +38,19 @@ NO-GO kalır.
 kaynağını raporlar. Bu yalnızca teşhisi güçlendirir; eski landing, eksik
 `/api/health`, insecure first-hop veya hero video yokluğu varsa canonical gate
 yine NO-GO kalır.
+
+2026-06-20 canonical legacy host güncellemesi: `npm run domain:verify:json`
+artık eski host yüzeyini ayrıca sınıflandırır. Canlı ölçümde Vercel production
+preview `c272d59b344c` commit'iyle sağlıklı, DNS NS/MX kayıtları doğrulanabilir,
+fakat `kozbeylikonagi.com` ve `www` hâlâ `legacy Joomla/Seagull template` ve
+`legacy HotelRunner hosted landing surface` imzası veriyor. Bu, Vercel deploy
+ve alias başarılı olsa bile Cloudflare/DNS veya eski host yönlendirmesi
+düzelmeden canonical gate'in NO-GO kalacağını kanıtlar.
+
+2026-06-20 public light theme güncellemesi: koyu public yüzeyler geriye
+alındı. Mobil menü, oda detay rezervasyon kartı, exit-intent rezervasyon paneli
+ve hata ekranı açık taş/olive tema yüzeylerine çekildi; `tests/light-theme-contract.test.ts`
+ve `tests/e2e/public-light-theme.spec.ts` regresyonu kilitler.
 
 2026-06-19 Vercel operasyon güncellemesi: `npm run vercel:ops` artık tek
 seferlik `npx vercel` veya AppData içindeki doğrudan paket dosyasını global CLI
@@ -118,7 +131,7 @@ hero görseli Next optimizer yerine gerçek statik WebP türevleriyle servis
 ediliyor ve geç webfont swap'ı kapatıldı. Sonraki teknik hedef, LCP'yi 2.5s
 altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 
-## 2. Current Score (rev. 2026-06-13)
+## 2. Current Score (rev. 2026-06-20)
 
 - **Repo/Kod Kalite Skoru: 95/100** — iç kalite kapıları yeşil; kalan 5 puan
   gerçek üretim entegrasyonu, canlı analitik doğrulaması ve dış hesap kurulumuna
@@ -144,20 +157,20 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 | QA/UAT/launch | 10 | 9 | `publish:verify`, smoke ve monkey/chaos kapıları var; canonical domain strict, production abuse-control ve canlı rezervasyon UAT'si kaldı |
 | **Toplam** | **100** | **82** | Kod tarafı güçlü; ticari launch 82/100 çünkü canonical domain, production abuse controls, POS/HMS/analytics/GBP/legal dış kanıt bekliyor |
 
-### 2026-06-13 Verification Evidence
+### 2026-06-20 Verification Evidence
 
 - `npm run lint` — PASS, 0 warning.
 - `npm run typecheck` — PASS.
-- `npm run test:unit` — PASS, 9 files / 29 tests.
-- `npm run build` — PASS, 66 routes generated.
+- `npm run test:unit` — PASS, 31 files / 186 tests.
+- `npm run build` — PASS, 68 routes generated.
 - `npm audit --omit=dev --audit-level=high` — PASS, 0 vulnerabilities.
-- `npm run publish:verify` — PASS: quality + 115 publish Playwright tests (113 passed / 2 skipped) + publish target inventory.
-- `npm run publish:verify` — PASS (2026-06-14): quality + 121 publish Playwright tests (119 passed / 2 skipped) + publish target inventory.
-- `npm run launch:smoke:live` — PASS (2026-06-14): canlı Vercel URL üzerinde public rota, `/api/health`, hero video, iletişim konumu ve medya smoke.
+- `npm run publish:verify` — PASS: quality + 170 Playwright tests (168 passed / 2 skipped) + publish target inventory.
+- `npm run domain:verify:json` — preview PASS, canonical domain NO-GO; legacy Joomla/HotelRunner signatures detected on both canonical origins.
+- Vercel production deploy — READY: `dpl_J5Q71a4nwHL3zqtKir5No6yPyujA`, commit `c272d59b344c`, production URL `https://kozbeyli-konagi.vercel.app`.
 - `.github/workflows/ci.yml` — launch smoke gate publish verification öncesine eklendi.
 - `npx playwright test tests/smoke.spec.ts tests/security.spec.ts tests/e2e/checkout-contract.spec.ts --reporter=line` — PASS, 17 passed / 2 skipped.
 - `npx playwright test tests/monkey.spec.ts tests/destructive-chaos.spec.ts` — PASS, 3/3.
-- Local production preview: `http://127.0.0.1:3010`.
+- Local production preview: `http://127.0.0.1:3008`.
 - Screenshot evidence: `test-results/local-preview/final-home-desktop.png`, `final-home-mobile.png`, `final-org-desktop.png`, `final-org-mobile.png`.
 
 ## 3. Alan Bazlı Pass / Partial / Fail

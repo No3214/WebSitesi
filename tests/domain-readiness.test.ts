@@ -42,13 +42,19 @@ type DomainReadinessModule = {
     };
     canonical: Array<{
       origin: string;
+      legacyHost: {
+        detected: boolean;
+        signatures: Array<{ id: string; label: string }>;
+      };
       home: {
+        legacySignatures?: Array<{ id: string; label: string }>;
         redirect?: {
           firstHopInsecure: boolean;
           resolvedLocation: string;
         };
       };
       health: {
+        legacySignatures?: Array<{ id: string; label: string }>;
         redirect?: {
           firstHopInsecure: boolean;
           resolvedLocation: string;
@@ -80,6 +86,21 @@ function htmlResponse(title: string, status = 200, body = "") {
 
 function appShellResponse(title = "Kozbeyli Konağı") {
   return htmlResponse(title, 200, '<video class="hero-video"><source src="/videos/hero.mp4" /></video>');
+}
+
+function legacyHostResponse() {
+  return htmlResponse(
+    "Kozbeyli Konağı - 404",
+    404,
+    `
+      <style>/* @package Seagull for Joomla! */</style>
+      <div>404 - Error: 404</div>
+      <div>Sayfa Bulunamadi</div>
+      <script>
+        window.parent.postMessage({method: 'renderPageSections'}, 'https://kozbeyli-konagi-1.hotelrunner.com/');
+      </script>
+    `,
+  );
 }
 
 const healthyBody = {
@@ -114,6 +135,35 @@ describe("domain readiness", () => {
     );
     expect(result.blockers).toContain(
       "https://kozbeylikonagi.com homepage does not expose opening hero video /videos/hero.mp4",
+    );
+  });
+
+  it("classifies legacy Joomla and HotelRunner host surfaces as explicit canonical blockers", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://www.kozbeylikonagi.com"],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      fetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href.includes("kozbeyli-konagi.vercel.app/api/health")) return jsonResponse(healthyBody);
+        if (href.includes("kozbeyli-konagi.vercel.app")) return appShellResponse();
+        return legacyHostResponse();
+      },
+      resolveNsImpl: async () => ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
+      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
+    });
+
+    expect(result.previewReady).toBe(true);
+    expect(result.canonicalReady).toBe(false);
+    expect(result.decision).toBe("CANONICAL DOMAIN NO-GO");
+    expect(result.canonical[0]?.legacyHost.detected).toBe(true);
+    expect(result.canonical[0]?.legacyHost.signatures.map((signature) => signature.id)).toEqual([
+      "joomla-seagull",
+      "hotelrunner-legacy-landing",
+    ]);
+    expect(result.blockers).toContain(
+      "https://www.kozbeylikonagi.com serves legacy host surface: legacy Joomla/Seagull template, legacy HotelRunner hosted landing surface",
     );
   });
 

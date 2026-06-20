@@ -1,6 +1,6 @@
 # Kozbeyli Konağı — Publish Target & Gate
 
-Son revizyon: 2026-06-19
+Son revizyon: 2026-06-20
 
 Bu dosya yayın hedefini tek yerde tanımlar. Amaç: "hazır mı?" sorusuna
 ölçülebilir kapılarla cevap vermek ve dış bağımlılıkları kod kalitesiyle
@@ -52,9 +52,12 @@ türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
 - Ticari Launch Readiness: **82/100**
 - Karar: **Marketing publish için koşullu hazır; gerçek booking/payment için NO-GO**
 - Son doğrulama: `npm run publish:verify` PASS, tam normal Playwright kümesi PASS
-  (113 passed / 2 skipped), monkey/chaos PASS (3/3), `npm audit --omit=dev
-  --audit-level=high` PASS.
-- Local production preview: `http://127.0.0.1:3010`.
+  (168 passed / 2 skipped), unit PASS (31 files / 186 tests), build PASS
+  (68 routes), `npm audit --omit=dev --audit-level=high` PASS.
+- Canonical domain durumu: Vercel production URL güncel; `kozbeylikonagi.com`
+  ve `www` hâlâ legacy Joomla/HotelRunner host imzası verdiği için
+  `npm run domain:verify:strict` NO-GO.
+- Local production preview: `http://127.0.0.1:3008`.
 
 ## Publish Gate
 
@@ -102,7 +105,7 @@ kadar bilinçli olarak ayrı kırmızı kapı halinde tutulur.
 Ek genişletilmiş yerel kapılar:
 
 ```bash
-PW_BASE_URL=http://127.0.0.1:3010 npx playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts tests/smoke.spec.ts
+PW_BASE_URL=http://127.0.0.1:3008 npx playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts tests/smoke.spec.ts
 npx playwright test tests/monkey.spec.ts tests/destructive-chaos.spec.ts
 npm audit --omit=dev --audit-level=high
 ```

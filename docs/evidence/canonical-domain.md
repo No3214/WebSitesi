@@ -1,18 +1,19 @@
 # Evidence: Canonical Domain
 
 status: pending
-date: 2026-06-19
+date: 2026-06-20
 owner: launch-qa
 
 ## Summary
 
-Canonical domain validation is not ready yet. The Vercel preview deployment at
-`https://kozbeyli-konagi.vercel.app` serves the current application and
+Canonical domain validation is not ready yet. The Vercel production deployment
+at `https://kozbeyli-konagi.vercel.app` serves the current application and
 `/api/health`, but `https://kozbeylikonagi.com` and
-`https://www.kozbeylikonagi.com` do not currently serve the same Next.js
-application health endpoint. The apex domain also performs an insecure first
-hop redirect from HTTPS to `http://www.kozbeylikonagi.com/...`, so the canonical
-cutover must correct both the target deployment and the redirect chain.
+`https://www.kozbeylikonagi.com` still resolve to the old Joomla/HotelRunner
+surface instead of the current Next.js application. The apex domain also
+performs an insecure first hop redirect from HTTPS to
+`http://www.kozbeylikonagi.com/...`, so the canonical cutover must correct both
+the DNS/host target and the redirect chain.
 
 ## Proof
 
@@ -31,14 +32,19 @@ and MX results. DNS warnings do not make a stale web deployment ready; the
 health endpoint, current commit, secure redirect chain and hero video checks
 remain the launch blockers.
 
-As of 2026-06-19, `npm run domain:verify:json` reports these concrete blockers:
+As of 2026-06-20, `npm run domain:verify:json` reports these concrete blockers:
 
 - `https://kozbeylikonagi.com` first redirects to insecure HTTP before reaching
   `www`.
-- `https://www.kozbeylikonagi.com/api/health` returns the old/non-app surface
-  instead of `service: "kozbeyli-konagi"`.
-- Both canonical homepages still render the stale landing page and do not expose
-  `/videos/hero.mp4`.
+- Both canonical origins serve legacy host signatures:
+  `legacy Joomla/Seagull template` and
+  `legacy HotelRunner hosted landing surface`.
+- `https://www.kozbeylikonagi.com/api/health` returns legacy HTML/404 instead
+  of `service: "kozbeyli-konagi"` JSON.
+- Both canonical homepages still render the stale landing page and do not
+  expose `/videos/hero.mp4`.
+- DNS NS/MX can be verified through DNS-over-HTTPS, so the remaining blocker is
+  web serving/redirect cutover, not missing nameserver or mail records.
 
 ## Residual Risk
 
