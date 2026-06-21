@@ -16,6 +16,7 @@ import { MobileActionBar } from "@/components/mobile-action-bar";
 import { LoadingBar } from "@/components/loading-bar";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
+import { sanitizeJsonLd } from "@/lib/security";
 
 
 export const metadata = defaultMetadata;
@@ -35,7 +36,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelSchema()) }}
+          dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(hotelSchema()) }}
         />
         <ErrorBoundary>
           <CSPostHogProvider>
