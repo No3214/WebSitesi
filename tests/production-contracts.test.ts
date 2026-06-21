@@ -534,6 +534,7 @@ describe("production readiness contracts", () => {
     };
     const garantiReadiness = read("scripts/garanti-pos-readiness.mjs");
     const checkoutRoute = read("src/app/api/checkout/route.ts");
+    const paymentInfoPage = read("src/app/odeme/page.tsx");
     const wizardHook = read("src/components/payment-wizard/use-payment-wizard.ts");
     const paymentStep = read("src/components/payment-wizard/steps/payment-step.tsx");
     const wizardTypes = read("src/components/payment-wizard/types.ts");
@@ -563,6 +564,14 @@ describe("production readiness contracts", () => {
     expect(checkoutRoute).toContain("Garanti BBVA Sanal POS 3D Secure");
     expect(checkoutRoute).not.toContain("cardNumber:");
     expect(checkoutRoute).not.toContain("cvv:");
+    expect(paymentInfoPage).toContain("Güvenli Ödeme Bilgilendirmesi");
+    expect(paymentInfoPage).toContain("Kart verisi bu sitede alınmaz");
+    expect(paymentInfoPage).toContain("ön-rezervasyon ve teyit sürecini başlatır");
+    expect(paymentInfoPage).toContain("ödeme başlatmaz");
+    expect(paymentInfoPage).toContain("Ön-Rezervasyon Talebi Oluştur");
+    expect(paymentInfoPage).not.toContain("Ödeme Simülasyonu");
+    expect(paymentInfoPage).not.toContain("Demo");
+    expect(paymentInfoPage).not.toContain("demonstrasyon");
     expect(paymentUiSource).toContain("Kart state'i YOK");
     expect(paymentUiSource).toContain("Kart alanlari KASITLI olarak yok");
     expect(paymentUiSource).toContain("We do not ask for card details here");

@@ -91,7 +91,7 @@ export function usePaymentWizard(locale: BookingLocale = "tr") {
     setPaymentError("");
 
     try {
-      // API handshake simulation
+      // Server-side reservation request handoff.
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

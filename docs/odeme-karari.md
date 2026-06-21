@@ -32,7 +32,8 @@ otomatikleşecek (aşağıda).
 - `api/checkout` şemasından `cardNumber` çıktı; mock kart doğrulaması silindi; route saf
   "doğrulanmış talep kaydı" oldu
 - UI metinleri: "kart bilgisi istemiyoruz; ödeme Garanti BBVA Sanal POS güvenli sayfasında"
-- README "Demo/Mock Yüzeyler" tablosu güncellendi
+- Public `/odeme` sayfası demo/simülasyon akışı değil; kart verisi almayan ve ödeme
+  UAT kanıtı tamamlanana kadar tahsilat başlatmayan güvenli ödeme bilgilendirmesi oldu.
 
 ## Garanti'den İSTENECEKLER (başvuru/teslimde)
 
