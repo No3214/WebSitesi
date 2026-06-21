@@ -3,6 +3,10 @@
 > Principal-level teknik denetim · Analiz amaçlı, **kod değiştirilmedi**.
 > Tarih: 2026-06-10 · Commit: `ad0521a` · Denetlenen: `src/` (≈13.8k satır TS/TSX), `payload/`, `tests/`, config.
 > Her bulgu kanıta dayalıdır (file:line). Doğrulanamayanlar açıkça belirtilmiştir.
+>
+> 2026-06-21 hardening notu: Bu audit ilk snapshot'tır. F9/T13 deploy hedefi
+> kararı sonradan kapatıldı; kökteki `railway.json` kaldırıldı ve tek aktif
+> hedef Vercel olarak belgelendi.
 
 ---
 
@@ -57,7 +61,7 @@ quadrantChart
 
 **Amaç:** Kozbeyli Konağı taş otel & restoranın resmi sitesi — rezervasyon dönüşümü ve marka otoritesi odaklı (`README.md:3`). Hedef kitle: romantik çift, sessiz lüks arayan aileler, etkinlik planlayanlar (`.claude/CLAUDE.md`).
 
-**Stack (doğrulandı `package.json`):** Next.js 15.4.11 (App Router, React 19) · Payload CMS 3 (Postgres adapter) · Tailwind v4 · Framer Motion 12 · Zod · PostHog · Vitest + Playwright + Storybook · Hedef: Vercel (`railway.json` da var — ikili sinyal).
+**Stack (doğrulandı `package.json`):** Next.js 15.4.11 (App Router, React 19) · Payload CMS 3 (Postgres adapter) · Tailwind v4 · Framer Motion 12 · Zod · PostHog · Vitest + Playwright + Storybook · Hedef: Vercel. Snapshot sırasında Railway config'i de vardı; 2026-06-21 hardening ile kaldırıldı.
 
 **Olgunluk:** Üretim-öncesi. Gerçek dönüşüm akışı + CMS şeması olgun; ama ödeme mock, bir kısım "AI growth" yüzeyi simülasyon, CI yok.
 
@@ -176,7 +180,7 @@ agent/, brand/, scratch/   # vendor/çalışma alanı (scratch .gitignore'da)
 ```
 *Generated: `payload-types.ts` (506 sat), `app/(payload)/admin/importMap.js`. Ölü/şüpheli: `payload/collections/HotelRunnerEvents.ts` (HotelRunner kaldırıldı), `src/remotion/*` (siteden import edilmiyor).*
 
-**Şaşırtanlar:** (1) `railway.json` + Vercel hedefi birlikte — deploy hikayesi belirsiz. (2) `lib/security.ts` (gerçek, sağlam) ile `app/api/swarm` (tamamen mock cevaplar) aynı repoda yan yana. (3) `/admin/growth` "DA_VINCI / HOPPER / VON_NEUMANN" gibi sahte ajan node'larıyla dolu bir dashboard ama korumasız.
+**Şaşırtanlar:** (1) Snapshot sırasında Railway + Vercel hedefi birlikteydi; 2026-06-21'de tek hedef Vercel olacak şekilde kapatıldı. (2) `lib/security.ts` (gerçek, sağlam) ile `app/api/swarm` (deterministic advisory) aynı repoda yan yana. (3) `/admin/growth` "DA_VINCI / HOPPER / VON_NEUMANN" gibi sahte ajan node'larıyla dolu bir dashboard ama korumasız.
 
 ---
 
@@ -205,14 +209,14 @@ agent/, brand/, scratch/   # vendor/çalışma alanı (scratch .gitignore'da)
 | **F6** | Security | B2B availability public key kodda hardcoded "MOCK" (`api/v1/availability/route.ts:5-8`) + yorum "gerçekte DB'den gelir" | Endpoint canlı sanılırsa sahte imzalı erişim; ya tamamla ya kaldır | **High** | Fact |
 | **F7** | Arch/Dead code | `swarm/route.ts` tüm cevaplar hardcoded mock; `payload/collections/HotelRunnerEvents.ts` artık ölü (HotelRunner kaldırıldı) | Gerçek-mock sınırı belirsiz; ölü kod bakım yükü + yanlış yönlendirme | **High** | Fact |
 | **F8** | Dependencies | Remotion (3 paket, `@remotion/*` + `remotion`) yalnız `src/remotion/*` içinde; site hiç import etmiyor. `graphql` hiç kullanılmıyor (`grep` 0 hit) | ~node_modules şişkinliği, build yüzeyi, güvenlik yüzeyi; gereksizse kaldırılmalı | **Medium** | Fact |
-| **F9** | Ops | İki deploy hedefi: `railway.json` + Vercel (README) | Belirsiz deploy hikayesi; env/secret yönetimi ikiye bölünür | **Medium** | Judgment |
+| **F9** | Ops | İki deploy hedefi: Railway + Vercel (snapshot) | Belirsiz deploy hikayesi; env/secret yönetimi ikiye bölünür | **Closed 2026-06-21** | Judgment |
 | **F10** | Testing | `tests/monkey.spec.ts` ve `tests/monkey-test.spec.ts` neredeyse aynı | Bakım ikiliği; hangisi kaynak belirsiz | **Medium** | Fact |
 | **F11** | Code quality | `as any` cast'leri checkout/lead'de (`checkout/route.ts:95,103`) | Payload tip güvenliği deliği; şema değişince sessiz kırılma | **Medium** | Fact |
 | **F12** | Observability | Yapılandırılmış log yok; düz `console.log/warn` (`checkout/route.ts:128`, `middleware.ts:20`) | Prod'da arama/alarm zor; PII (IP, isim) log'a sızabilir | **Medium** | Judgment |
 | **F13** | Security | Checkout kart numarasını alıyor (`cardNumber` şemada, `:24`) ama PCI kapsamı yok | Gerçek karta geçilirse PCI-DSS yükümlülüğü; şu an ham PAN sunucuya geliyor | **Medium** | Fact |
 | **F14** | DevEx | README "copy .env.example" diyor ama tek komutluk seed/bootstrap akışı eksik; ilk admin manuel | Onboarding sürtünmesi (düşük, tek geliştirici) | **Low** | Judgment |
 | **F15** | Perf | `middleware.ts` her eşleşen istekte çalışıp no-op `NextResponse.next()` dönüyor (`:25`) | Sıfır faydaya karşılık edge invocation maliyeti; ya işlev kazandır ya kaldır | **Low** | Fact |
-| **F16** | Docs | README stack tablosu "Supabase" derken `railway.json` ve mock ödeme dokümante değil | Yeni geliştirici mock ödemeyi gerçek sanabilir | **Low** | Judgment |
+| **F16** | Docs | README stack tablosu ve ödeme sınırları snapshot sırasında yeterince net değildi | Yeni geliştirici mock ödemeyi gerçek sanabilir | **Partially closed** | Judgment |
 
 ### D4 — Coupling & Hotspot Graph
 
@@ -379,7 +383,7 @@ Her Critical/High bulgu ≥1 task'a bağlı (izlenebilirlik sütunu).
 | **T10** | `as any` cast'lerini tiple | `checkout/route.ts`, `lead/route.ts` | Payload generated tipleri; `any` yok; tsc temiz | S | Düşük | — | F11 |
 | **T11** | Yapılandırılmış log + PII maskeleme | `lib/` (yeni `logger.ts`), route'lar | JSON log; IP/isim maskeli; `console.*` route'lardan kalktı | M | Düşük | — | F12 |
 | **T12** | Duplike monkey testi birleştir | `tests/monkey*.spec.ts` | Tek dosya; diğeri silindi; playwright yeşil | S | Düşük | — | F10 |
-| **T13** | Deploy hedefini tekleştir + README | `railway.json`, `README.md` | Tek hedef belgeli; mock ödeme + env tablosu doğru | S | Düşük | — | F9,F16,F14 |
+| **T13** | Deploy hedefini tekleştir + README | `README.md`, production contract | Tek hedef Vercel belgeli; legacy Railway config kaldırıldı | Done | Düşük | — | F9,F16,F14 |
 | **T14** | `middleware.ts`: işlev ver veya kaldır | `middleware.ts` | Ya gerçek geo/i18n rewrite ya matcher kaldırıldı | S | Düşük | — | F15 |
 | **T15** | PAN'ı sunucudan çıkar (PSP token) | `checkout/route.ts`, `payment-wizard.tsx` | Sunucuya ham kart numarası gelmiyor; PSP token alanı | L | Yüksek | T1 | F13 |
 
@@ -514,7 +518,7 @@ quadrantChart
 2. **B2B availability** (`/api/v1/availability`): Gerçek bir partner entegrasyonu planı var mı, yoksa kaldırılsın mı? (F6/T5)
 3. **`/admin/growth`** paneli: İç ekip için gerçek bir araç mı olacak (o zaman gerçek veri + auth), yoksa demo mu? Demo ise prod'da tamamen kapatılmalı.
 4. **Remotion:** Video render pipeline'ı kullanılacak mı? Değilse T6 ile kaldırılır (~3 paket).
-5. **Deploy:** Vercel mi Railway mi? `railway.json` kalsın mı? (F9/T13)
+5. **Deploy:** Karar verildi: tek aktif hedef Vercel; legacy Railway config kaldırıldı. (F9/T13)
 6. **Performans hedefi:** Belirli bir Lighthouse/LCP hedefi var mı? Şu an ölçüt yok; varsa M2'ye perf task'ı eklenir.
 
 ---

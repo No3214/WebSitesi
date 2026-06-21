@@ -13,6 +13,10 @@ function readBytes(relPath: string) {
   return fs.readFileSync(path.join(root, relPath));
 }
 
+function exists(relPath: string) {
+  return fs.existsSync(path.join(root, relPath));
+}
+
 function listSourceFiles(dir: string): string[] {
   return fs.readdirSync(path.join(root, dir), { withFileTypes: true }).flatMap((entry) => {
     const relPath = path.join(dir, entry.name);
@@ -85,6 +89,19 @@ describe("production readiness contracts", () => {
       "playwright test tests/destructive-chaos.spec.ts --reporter=line",
     );
     expect(packageJson.scripts?.["test:stress"]).toBe("npm run test:monkey && npm run test:chaos");
+  });
+
+  it("keeps Vercel as the only deploy target in the repo root", () => {
+    const readme = read("README.md");
+    const audit = read("AUDIT.md");
+
+    expect(exists("railway.json")).toBe(false);
+    expect(readme).toContain("Birincil ve tek hedef **Vercel**");
+    expect(readme).toContain("eski Railway hedefi");
+    expect(readme).toContain("npm i -g vercel");
+    expect(readme).toContain("npm run evidence:handoff");
+    expect(audit).toContain("F9/T13 deploy hedefi");
+    expect(audit).toContain("legacy Railway config kaldırıldı");
   });
 
   it("keeps cookie banner policy copy readable in Turkish and English", () => {

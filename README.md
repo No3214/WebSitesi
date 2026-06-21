@@ -82,6 +82,8 @@ npm run test:monkey              # Lokal deterministik desktop/mobile monkey tes
 npm run test:chaos               # Lokal sert etkileşim stres testi
 npm run test:stress              # monkey + chaos
 npm run media:hero               # Açılış videosu kalite/provenance denetimi
+npm run evidence:handoff         # Kalan 100/100 kanıtlarını sahip/komut/checklist olarak listeler
+npm run evidence:handoff:json    # Aynı evidence handoff çıktısı makine okunur JSON
 npm run launch:audit             # Ticari 100/100 hedefi için env/kanıt denetimi
 npm run launch:audit:json        # Aynı ticari denetimin makine okunur JSON çıktısı
 npm run launch:audit:strict      # Tüm ticari kanıtlar tamamlanmadan fail verir
@@ -106,6 +108,7 @@ npx playwright test              # E2E testler (lokal sunucuya karşı)
 npm run test:stress              # Canlı prod'u yormadan lokal monkey/chaos paketi
 npm run launch:audit             # Booking/payment 100/100 için kalan kanıtları listeler
 npm run launch:audit:json        # CI/ajanlar için structured launch audit çıktısı
+npm run evidence:handoff         # Operasyon ekibi için güvenli kanıt tamamlama listesi
 npm run media:hero               # Hero video hash, çözünürlük, süre, bitrate ve mobil/desktop sözleşmesi
 npm run domain:verify            # kozbeylikonagi.com ve www domain health/commit kontrolü
 npm run launch:smoke             # Public rota, health, hero video, konum ve medya smoke
@@ -149,6 +152,8 @@ Tüm çağrılar server-side yapılır, 30 dakikalık Next.js fetch cache ile ko
 5. DNS/Vercel domain yönlendirmesi tamamlanınca `npm run domain:verify:strict`
    çalıştır; `kozbeylikonagi.com` ve `www` `/api/health` üzerinden aynı canlı
    commit'i göstermeden ticari launch evidence'i `ready` yapılmaz.
+6. Agentic Vercel işlemleri için yerelde kalıcı CLI kurun ve oturum açın:
+   `npm i -g vercel`, `vercel login`, `vercel whoami`.
 
 `NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL` boşken de site sorunsuz yayınlanır; rezervasyon CTA'ları WhatsApp'a yönlenir.
 
@@ -168,9 +173,10 @@ Yayın öncesi tek komut:
 npm run release:verify
 ```
 
-Bu komut runtime dependency audit, `publish:verify`, lokal `launch:smoke`,
-monkey/chaos stres testleri ve non-strict JSON commercial launch audit'i tek
-sırada çalıştırır. `launch:audit:strict` ve `domain:verify:strict`, dış kanıtlar
+Bu komut runtime dependency audit, evidence redaction scan, evidence handoff,
+`publish:verify`, lokal `launch:smoke`, monkey/chaos stres testleri ve
+non-strict JSON commercial launch audit'i tek sırada çalıştırır.
+`launch:audit:strict` ve `domain:verify:strict`, dış kanıtlar
 hazır olana kadar ayrı kırmızı kapı olarak tutulur. `publish:verify` içinde lint, typecheck, unit, production build,
 tüm TR/EN public rota smoke, security, prestige/mobile, a11y ve publish target
 envanteri kalır.
@@ -185,10 +191,6 @@ iletişim konumunu ve görünür medya kırıklarını canlı URL üzerinde tekr
 
 Vercel env/deploy/log kontrolü için Vercel CLI oturumu (`vercel login`) veya
 Vercel panel erişimi gerekir.
-
-### Railway (legacy)
-
-Kökteki `railway.json` eski Railway dağıtımından kalmadır; aktif hedef Vercel'dir.
 
 ## Klasör Haritası
 
@@ -247,8 +249,9 @@ bu sayede CI build'i secret'sız çalışır.
 
 ## Deploy
 
-Birincil hedef **Vercel**'dir (env değişkenleri Vercel panelinden yönetilir).
-`railway.json` alternatif/legacy hedef olarak durur; aktif kullanılmıyorsa silinebilir.
+Birincil ve tek hedef **Vercel**'dir (env değişkenleri Vercel panelinden
+yönetilir). Kökte ikinci bir platform config'i tutulmaz; eski Railway hedefi
+production-readiness hardening kapsamında kaldırıldı.
 
 ## Rollback (acil geri dönüş)
 
