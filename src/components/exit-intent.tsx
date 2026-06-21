@@ -71,13 +71,13 @@ export const ExitIntent = () => {
           <div className="md:w-3/5 p-8">
             <h2 className="serif text-2xl text-zinc-900 mb-4">Gitmeden Önce Keşfedin!</h2>
             <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
-              Kozbeyli Konağı web sitemiz üzerinden yapacağınız direkt rezervasyonlarda
-              <strong> En İyi Fiyat Garantisi</strong> ve kişisel <strong>WhatsApp destek</strong> hizmeti sizi bekliyor.
+              Kozbeyli Konağı web sitemiz üzerinden resmi HMS rezervasyon ekranına geçebilir,
+              kişisel <strong>WhatsApp destek</strong> ile oda ve tarih seçeneklerini netleştirebilirsiniz.
             </p>
 
             <div className="bg-zinc-50 border border-gold/20 rounded-lg p-4 mb-6 text-center">
               <span className="text-[10px] uppercase tracking-widest text-zinc-400 block mb-1">DİREKT REZERVASYON AYRICALIĞI</span>
-              <span className="text-xl font-bold text-gold tracking-widest">En İyi Fiyat Garantisi</span>
+              <span className="text-xl font-bold text-gold tracking-widest">Resmi Direkt Rezervasyon</span>
             </div>
 
             <a

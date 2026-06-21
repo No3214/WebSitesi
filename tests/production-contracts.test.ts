@@ -917,6 +917,8 @@ describe("production readiness contracts", () => {
     expect(exitIntent).toContain("getConfiguredBookingEngineHref");
     expect(exitIntent).toContain('target="_blank"');
     expect(exitIntent).not.toContain('|| "/rezervasyon"');
+    expect(exitIntent).toContain("Resmi Direkt Rezervasyon");
+    expect(exitIntent).not.toMatch(/En İyi Fiyat Garantisi|Best Rate Guarantee|Best Price Guarantee/i);
   });
 
   it("keeps homepage Foça positioning broad instead of only Eski or Yeni Foça", () => {

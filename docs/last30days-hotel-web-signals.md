@@ -1,4 +1,4 @@
-# Last30Days Hotel Web Signal Brief - 2026-06-20
+# Last30Days Hotel Web Signal Brief - 2026-06-21
 
 ## Scope
 
@@ -13,8 +13,14 @@ altinda saklandi.
   Polymarket kaynaklarini gorebiliyor.
 - X/Twitter gercek taramasi yapilamadi: `bird_authenticated=false` ve
   `x_backend=null`. X icin `AUTH_TOKEN`/`CT0` veya `XAI_API_KEY` gerekir.
+- 2026-06-21 denemesinde Playwright/Chrome oturumu ile X cookie yakalanamadi;
+  kullanici talimatiyla X olmadan devam edildi.
 - Son calisma 2 aktif kaynak dondurdu: GitHub ve Reddit. YouTube ve Hacker News
   bu sorguda son 30 gun icinde anlamli sonuc dondurmedi.
+- Acik web kontrolu Cloudbeds, PriceLabs, RMS Cloud ve ARO Digital Strategy
+  kaynaklarinda ayni temayi dogruladi: mobilde kolay rezervasyon, dogrudan
+  booking engine, net guven sinyali, hizli medya ve surukleyici ama gercek
+  urun gorselleri.
 
 ## Fresh signals
 
@@ -28,6 +34,10 @@ altinda saklandi.
   mobile-first booking, ilk ekranda net direkt rezervasyon avantaji, hizli
   tarih/oda secimi, immersive ama dogrulanmis gorsel hikaye, sosyal kanit ve
   fiyat/oda bilgisinde seffaflik.
+- Dogrudan rezervasyon avantajlari one cikarilabilir; ancak "en iyi fiyat
+  garantisi" gibi garanti vaatleri yalnizca isletme ve hukuk tarafindan
+  kanitlandiginda public copy'ye girmeli. 2026-06-21 kod degisikligi
+  exit-intent popup'ini "Resmi Direkt Rezervasyon" diline cekti.
 
 ## Kozbeyli backlog
 
