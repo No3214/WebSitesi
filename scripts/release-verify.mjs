@@ -15,6 +15,10 @@ export const gates = [
     label: "Commercial evidence redaction scan",
   },
   {
+    script: "evidence:handoff:json",
+    label: "Commercial evidence handoff manifest",
+  },
+  {
     script: "media:hero:json",
     label: "Opening hero media quality audit",
   },
@@ -179,12 +183,12 @@ function main() {
 
   if (process.argv.includes("--help")) {
     console.log("Usage: node scripts/release-verify.mjs [--list]");
-    console.log("Runs the local release gate: security, evidence scan, hero media audit, readiness diagnostics, domain/HMS/Vercel diagnostics, publish verify, launch smoke, stress, audit json and cutover plan.");
+    console.log("Runs the local release gate: security, evidence scan, evidence handoff, hero media audit, readiness diagnostics, domain/HMS/Vercel diagnostics, publish verify, launch smoke, stress, audit json and cutover plan.");
     return;
   }
 
   console.log("Kozbeyli Konagi release verification");
-  console.log("Target: security + evidence scan + hero media audit + readiness diagnostics + domain/HMS/Vercel diagnostics + publish verification + launch smoke + stress + commercial audit + cutover plan");
+  console.log("Target: security + evidence scan + evidence handoff + hero media audit + readiness diagnostics + domain/HMS/Vercel diagnostics + publish verification + launch smoke + stress + commercial audit + cutover plan");
 
   const results = [];
 

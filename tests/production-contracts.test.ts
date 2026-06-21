@@ -121,6 +121,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"security:audit"');
     expect(readinessScript).toContain('"evidence:scan"');
     expect(readinessScript).toContain('"evidence:scan:json"');
+    expect(readinessScript).toContain('"evidence:handoff"');
+    expect(readinessScript).toContain('"evidence:handoff:json"');
+    expect(readinessScript).toContain('"evidence:handoff:strict"');
     expect(readinessScript).toContain('"media:hero"');
     expect(readinessScript).toContain('"media:hero:json"');
     expect(readinessScript).toContain('"media:hero:strict"');
@@ -175,6 +178,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["evidence:scan"]).toBe("node scripts/evidence-redaction-scan.mjs");
     expect(packageJson.scripts?.["evidence:scan:json"]).toBe(
       "node scripts/evidence-redaction-scan.mjs --json",
+    );
+    expect(packageJson.scripts?.["evidence:handoff"]).toBe("node scripts/evidence-handoff.mjs");
+    expect(packageJson.scripts?.["evidence:handoff:json"]).toBe(
+      "node scripts/evidence-handoff.mjs --json",
+    );
+    expect(packageJson.scripts?.["evidence:handoff:strict"]).toBe(
+      "node scripts/evidence-handoff.mjs --strict",
     );
     expect(packageJson.scripts?.["media:hero"]).toBe("node scripts/hero-media-audit.mjs");
     expect(packageJson.scripts?.["media:hero:json"]).toBe(
@@ -250,6 +260,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"docs/evidence/README.md"');
     expect(readinessScript).toContain('"docs/github-actions-readiness.md"');
     expect(readinessScript).toContain('"docs/vercel-operations.md"');
+    expect(readinessScript).toContain('"scripts/evidence-handoff.mjs"');
     expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
     expect(readinessScript).toContain('"scripts/abuse-controls-readiness.mjs"');
@@ -270,6 +281,7 @@ describe("production readiness contracts", () => {
     for (const gate of [
       "security:audit",
       "evidence:scan",
+      "evidence:handoff:json",
       "media:hero:json",
       "abuse:verify:json",
       "analytics:verify:json",
@@ -290,6 +302,7 @@ describe("production readiness contracts", () => {
 
     expect(releaseScript).toContain("--list");
     expect(releaseScript).toContain("Commercial evidence redaction scan");
+    expect(releaseScript).toContain("Commercial evidence handoff manifest");
     expect(releaseScript).toContain("Production abuse-control readiness diagnosis");
     expect(releaseScript).toContain("Analytics purchase readiness diagnosis");
     expect(releaseScript).toContain("Search and local SEO readiness diagnosis");
@@ -862,6 +875,8 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("tests/e2e/hero-video.spec.ts");
     expect(launchSmokeScript).toContain("tests/e2e/contact-location.spec.ts");
     expect(launchSmokeScript).toContain("tests/e2e/media-assets.spec.ts");
+    expect(launchSmokeScript).toContain('process.env.LAUNCH_SMOKE_WORKERS || "1"');
+    expect(launchSmokeScript).toContain('"--workers"');
     expect(launchSmokeScript).toContain("PW_BASE_URL");
     expect(launchSmokeScript).toContain("npm i -g vercel");
     expect(launchSmokeScript).toContain("where.exe");

@@ -12,6 +12,11 @@ machine-readable JSON for CI, dashboards and agent review. `npm run
 launch:audit:strict` intentionally fails until all evidence is present and no
 gate is blocked.
 
+`npm run evidence:handoff` converts the blocked launch gates into a human
+operator checklist with the evidence file, owner, timing, safe source reference
+rules, missing environment key names and verification commands. `npm run
+evidence:handoff:json` emits the same handoff as machine-readable JSON.
+
 Ready evidence must include redacted source-system references, such as ticket
 IDs, dashboard permalink IDs, approval note IDs, or UAT run IDs. Do not paste
 raw contracts, credentials, card data, customer PII, or private guest data into

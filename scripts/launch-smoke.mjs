@@ -15,6 +15,7 @@ const isWindows = process.platform === "win32";
 const nodeBin = process.execPath;
 const playwrightCli = "node_modules/@playwright/test/cli.js";
 const launchSmokeOutputRoot = path.join("test-results", "launch-smoke");
+const launchSmokeWorkers = process.env.LAUNCH_SMOKE_WORKERS || "1";
 
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
@@ -121,6 +122,8 @@ function main() {
     "test",
     ...playwrightSpecs,
     "--reporter=line",
+    "--workers",
+    launchSmokeWorkers,
     "--output",
     outputDir,
   ]);
