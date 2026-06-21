@@ -54,10 +54,11 @@ değişmelidir; İsimtescil DNS zone kayıtları nameserver değişmeden canlı 
 etkilemez. `npm run domain:verify` artık `.com` ve `.com.tr` DNS zone'larını
 ayrı raporlar; bu domainler farklı Cloudflare nameserver çiftlerine delege
 edilebilir, bu yüzden her authoritative zone ayrı kontrol edilmelidir. Vercel
-hedef kayıtları raporda açıkça listelenir. Bu proje için `vercel domains
-inspect` çıktısı apex ve `www` hostları için `A 76.76.21.21` bekliyor; DNS
-düzenlemesinden hemen önce inspect komutu tekrar çalıştırılmalı, çünkü Vercel
-proje bazlı A/CNAME değerleri döndürebilir. Türkçe ccTLD marka yüzeyleri de aynı
+hedef kayıtları raporda açıkça listelenir. Vercel DNS apex hostlar için
+`A 76.76.21.21`, `www` ve diğer subdomainler için CNAME kaydı kullanır; DNS
+düzenlemesinden hemen önce inspect komutu tekrar çalıştırılmalı veya Project
+Settings kontrol edilmeli, çünkü Vercel proje bazlı CNAME değerleri
+döndürebilir. Türkçe ccTLD marka yüzeyleri de aynı
 gate'e dahildir; güncel uygulamayı servis etmeli veya seçilen canonical origin'e
 güvenli şekilde yönlenmelidir. Nameserver sağlayıcısı değiştirilecekse
 MX/TXT/SPF/DKIM/DMARC kayıtları korunmadan geçiş yapılmamalıdır.

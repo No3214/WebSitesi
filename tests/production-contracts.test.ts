@@ -901,8 +901,8 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("no legacy host signatures");
     expect(cutoverPlan).toContain("Treat NS/MX DNS PASS separately from web serving readiness");
     expect(cutoverPlan).toContain("verify and edit each authoritative zone separately");
-    expect(cutoverPlan).toContain("A records to 76.76.21.21 for the apex and www hosts");
-    expect(cutoverPlan).toContain("re-run vercel domains inspect before editing DNS");
+    expect(cutoverPlan).toContain("A records for apex hosts and CNAME records for www/subdomains");
+    expect(cutoverPlan).toContain("subdomain CNAME records shown by vercel domains inspect");
     expect(cutoverPlan).toContain("Turkish ccTLD brand origins");
     expect(cutoverPlan).toContain("remove the bad override to use the official code fallback");
     expect(cutoverPlan).toContain("Run npm run hms:verify:strict");

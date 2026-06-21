@@ -208,7 +208,7 @@ describe("production cutover plan", () => {
       "The .com and .com.tr domains can be delegated to different DNS zones or nameserver pairs; verify and edit each authoritative zone separately before assuming a single DNS panel controls both.",
     );
     expect(canonical?.diagnostics).toContain(
-      "Vercel domains inspect currently expects A records to 76.76.21.21 for the apex and www hosts in this project; re-run vercel domains inspect before editing DNS because Vercel can return project-specific values.",
+      "Vercel DNS uses A records for apex hosts and CNAME records for www/subdomains; re-run vercel domains inspect or check Project Settings before editing DNS because Vercel can return project-specific values.",
     );
     expect(canonical?.diagnostics).toContain(
       "If Cloudflare proxy is enabled, public DNS lookups can show Cloudflare anycast IPs instead of the Vercel target; the final proof is /api/health plus the opening hero video on the public origin.",
@@ -229,7 +229,7 @@ describe("production cutover plan", () => {
       "For first verification on Cloudflare, use DNS-only records or rerun npm run domain:verify:strict after enabling proxy to prove the proxied origin still serves the current app.",
     );
     expect(canonical?.checklist).toContain(
-      "If choosing Isimtescil DNS instead of Cloudflare, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding the Vercel A/CNAME records shown by vercel domains inspect.",
+      "If choosing Isimtescil DNS instead of Cloudflare, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding the Vercel apex A and subdomain CNAME records shown by vercel domains inspect.",
     );
     expect(canonical?.commands).toContain("npm run domain:verify");
     expect(canonical?.commands).toContain("npm run domain:verify:strict");

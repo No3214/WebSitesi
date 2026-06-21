@@ -64,12 +64,12 @@ As of 2026-06-20, `npm run domain:verify:json` reports these concrete blockers:
   canonical and Turkish ccTLD domains may be delegated to different Cloudflare
   nameserver pairs. Edit each authoritative zone separately during cutover.
 - The current Vercel cutover target records are reported in the verifier output.
-  For this project, `vercel domains inspect` currently expects `A 76.76.21.21`
-  for apex and `www` hosts. Re-run the inspect command before DNS edits because
-  Vercel can return project-specific A/CNAME values. The Turkish ccTLD brand
-  origins must also serve the current app or securely redirect to the chosen
-  canonical app. Existing MX/TXT/SPF/DKIM/DMARC records must be preserved when
-  changing the authoritative DNS provider.
+  Vercel DNS uses `A 76.76.21.21` for apex hosts and CNAME records for `www` /
+  subdomains. Re-run `vercel domains inspect` or check Project Settings before
+  DNS edits because Vercel can return project-specific CNAME values. The Turkish
+  ccTLD brand origins must also serve the current app or securely redirect to
+  the chosen canonical app. Existing MX/TXT/SPF/DKIM/DMARC records must be
+  preserved when changing the authoritative DNS provider.
 - If Cloudflare proxy is enabled, public A lookups can show Cloudflare anycast
   IPs instead of the Vercel target. The operator should use DNS-only mode for
   first cutover verification, or keep proxy enabled only after `/api/health`

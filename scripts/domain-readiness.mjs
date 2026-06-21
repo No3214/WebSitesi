@@ -7,34 +7,41 @@ const DEFAULT_BRAND_ORIGINS = ["https://kozbeylikonagi.com.tr", "https://www.koz
 const DEFAULT_PREVIEW_ORIGIN = "https://kozbeyli-konagi.vercel.app";
 const EXPECTED_SERVICE = "kozbeyli-konagi";
 const EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4";
+const VERCEL_APEX_A_VALUE = "76.76.21.21";
+const VERCEL_SUBDOMAIN_CNAME_FALLBACK = "cname.vercel-dns.com";
+const VERCEL_SUBDOMAIN_CNAME_PATTERN = "^[a-z0-9-]+\\.vercel-dns(?:-\\d+)?\\.com$";
+const VERCEL_DNS_TARGET_NOTE =
+  "Use A records for apex domains and CNAME records for subdomains; copy the exact project-specific value shown in Vercel Project Settings or vercel domains inspect before editing DNS.";
 const VERCEL_TARGET_RECORDS = [
   {
     group: "canonical",
     type: "A",
     host: "kozbeylikonagi.com",
-    value: "76.76.21.21",
+    value: VERCEL_APEX_A_VALUE,
     purpose: "Apex domain should point to Vercel production.",
   },
   {
     group: "canonical",
-    type: "A",
+    type: "CNAME",
     host: "www.kozbeylikonagi.com",
-    value: "76.76.21.21",
-    purpose: "WWW domain should point to the Vercel production target shown by vercel domains inspect.",
+    value: VERCEL_SUBDOMAIN_CNAME_FALLBACK,
+    acceptedPattern: VERCEL_SUBDOMAIN_CNAME_PATTERN,
+    purpose: "WWW subdomain should point to the project-specific Vercel CNAME target.",
   },
   {
     group: "brand",
     type: "A",
     host: "kozbeylikonagi.com.tr",
-    value: "76.76.21.21",
+    value: VERCEL_APEX_A_VALUE,
     purpose: "Brand apex domain should serve or securely redirect to the current Vercel app.",
   },
   {
     group: "brand",
-    type: "A",
+    type: "CNAME",
     host: "www.kozbeylikonagi.com.tr",
-    value: "76.76.21.21",
-    purpose: "Brand WWW domain should serve or securely redirect through the Vercel production target.",
+    value: VERCEL_SUBDOMAIN_CNAME_FALLBACK,
+    acceptedPattern: VERCEL_SUBDOMAIN_CNAME_PATTERN,
+    purpose: "Brand WWW subdomain should serve or securely redirect through the project-specific Vercel CNAME target.",
   },
 ];
 const DNS_ZONES = [
@@ -278,11 +285,22 @@ function recordsForZone(zone) {
   );
 }
 
+function describeVercelTarget(record) {
+  return record.acceptedPattern
+    ? `${record.value} or the project-specific Vercel CNAME shown in Project Settings / vercel domains inspect`
+    : record.value;
+}
+
+function buildRecordChecklistItem(record) {
+  return `Set ${record.type} ${record.host} to ${describeVercelTarget(record)}.`;
+}
+
 function buildZoneCutoverGuidance(zone, authority) {
   const records = recordsForZone(zone);
   const checklist = [
     `Open the ${authority.label} authoritative DNS zone for ${zone.apexDomain}.`,
-    ...records.map((record) => `Set ${record.type} ${record.host} to ${record.value}.`),
+    VERCEL_DNS_TARGET_NOTE,
+    ...records.map(buildRecordChecklistItem),
   ];
 
   if (authority.provider === "cloudflare") {
@@ -462,10 +480,21 @@ function webRecordMatches(record, actualValues) {
   }
 
   if (record.type === "CNAME") {
-    return actual.includes(expected);
+    if (actual.includes(expected)) return true;
+    if (record.acceptedPattern) {
+      const accepted = new RegExp(record.acceptedPattern, "i");
+      return actual.some((value) => accepted.test(value));
+    }
+    return false;
   }
 
   return false;
+}
+
+function describeActualDns(item) {
+  if (item.actualValues.length > 0) return item.actualValues.join(", ");
+  if (item.actualAValues?.length > 0) return `no CNAME; A records: ${item.actualAValues.join(", ")}`;
+  return item.error || "n/a";
 }
 
 async function checkWebTargetRecord({
@@ -486,20 +515,38 @@ async function checkWebTargetRecord({
   const actualValues = normalizeDnsValues(result.records);
   const expectedValue = stripTrailingDot(record.value).toLowerCase();
   const ready = webRecordMatches(record, result.records);
+  let actualAValues = [];
+  let aRecordSource = "";
+
+  if (record.type === "CNAME" && !ready) {
+    const aResult = await resolveDnsRecord({
+      apexDomain: record.host,
+      recordType: "A",
+      nativeLookup: resolve4Impl,
+      dnsFallbackFetchImpl,
+      dnsFallbackTimeoutMs,
+    });
+    actualAValues = normalizeDnsValues(aResult.records);
+    aRecordSource = aResult.source;
+  }
 
   return {
     group: record.group,
     type: record.type,
     host: record.host,
     expectedValue,
+    expectedDescription: describeVercelTarget(record),
+    expectedPattern: record.acceptedPattern || "",
     actualValues,
+    actualAValues,
     source: result.source,
+    aRecordSource,
     error: result.error,
     ready,
     purpose: record.purpose,
     remediation: ready
       ? ""
-      : `Set ${record.type} ${record.host} to ${record.value} at the active DNS authority, or use an explicit redirect after proving the web origin serves the current app.`,
+      : `Set ${record.type} ${record.host} to ${describeVercelTarget(record)} at the active DNS authority, or use an explicit redirect after proving the web origin serves the current app.`,
   };
 }
 
@@ -732,6 +779,7 @@ async function checkDns({
       "The registrar panel and the live DNS authority can be different. Nameservers decide where live DNS records must be edited.",
     isimtescilCaution:
       "If the domain is registered at Isimtescil but nameservers stay on Cloudflare, Isimtescil DNS-zone records will not control live web traffic. To use Isimtescil DNS, change nameservers first and preserve MX/TXT/SPF/DKIM/DMARC records.",
+    vercelDnsTargetNote: VERCEL_DNS_TARGET_NOTE,
     vercelTargetRecords: VERCEL_TARGET_RECORDS,
     webRecordChecks,
     webRecordsOk,
@@ -793,8 +841,8 @@ export async function evaluateDomainReadiness({
     ...dns.webRecordChecks
       .filter((item) => !item.ready)
       .map((item) =>
-        `${item.type} ${item.host} does not match Vercel target ${item.expectedValue}; actual: ${
-          item.actualValues.join(", ") || item.error || "n/a"
+        `${item.type} ${item.host} does not match Vercel target ${item.expectedDescription}; actual: ${
+          describeActualDns(item)
         }`,
       ),
   ];
@@ -906,15 +954,16 @@ export function formatDomainReadiness(result) {
   }
   lines.push(`  registrar/DNS note: ${result.dns.registrarVsDnsNote}`);
   lines.push(`  Isimtescil caution: ${result.dns.isimtescilCaution}`);
+  lines.push(`  Vercel DNS target note: ${result.dns.vercelDnsTargetNote}`);
   lines.push("  Vercel target records:");
   for (const record of result.dns.vercelTargetRecords) {
-    lines.push(`  - [${record.group}] ${record.type} ${record.host} ${record.value} (${record.purpose})`);
+    lines.push(`  - [${record.group}] ${record.type} ${record.host} ${describeVercelTarget(record)} (${record.purpose})`);
   }
   lines.push("  Live web records:");
   for (const record of result.dns.webRecordChecks) {
     lines.push(
-      `  - ${record.ready ? "PASS" : "WARN"} [${record.group}] ${record.type} ${record.host} expected=${record.expectedValue} actual=${
-        record.actualValues.join(", ") || record.error || "n/a"
+      `  - ${record.ready ? "PASS" : "WARN"} [${record.group}] ${record.type} ${record.host} expected=${record.expectedDescription} actual=${
+        describeActualDns(record)
       } source=${record.source}`,
     );
     if (!record.ready) lines.push(`    remediation: ${record.remediation}`);

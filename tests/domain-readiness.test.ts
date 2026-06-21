@@ -213,8 +213,9 @@ describe("domain readiness", () => {
           cutover: expect.objectContaining({
             cloudflareProxyNote: expect.stringContaining("Cloudflare proxy"),
             checklist: expect.arrayContaining([
+              expect.stringContaining("Use A records for apex domains and CNAME records for subdomains"),
               "Set A kozbeylikonagi.com to 76.76.21.21.",
-              "Set A www.kozbeylikonagi.com to 76.76.21.21.",
+              expect.stringContaining("Set CNAME www.kozbeylikonagi.com to cname.vercel-dns.com"),
               expect.stringContaining("DNS only"),
               expect.stringContaining("Preserve MX mx.kozbeylikonagi.com"),
             ]),
@@ -229,8 +230,9 @@ describe("domain readiness", () => {
           authority: expect.objectContaining({ provider: "cloudflare" }),
           cutover: expect.objectContaining({
             checklist: expect.arrayContaining([
+              expect.stringContaining("Use A records for apex domains and CNAME records for subdomains"),
               "Set A kozbeylikonagi.com.tr to 76.76.21.21.",
-              "Set A www.kozbeylikonagi.com.tr to 76.76.21.21.",
+              expect.stringContaining("Set CNAME www.kozbeylikonagi.com.tr to cname.vercel-dns.com"),
               "Do not change mail records unless a separate mail migration is approved.",
             ]),
           }),
@@ -248,9 +250,9 @@ describe("domain readiness", () => {
       }),
       expect.objectContaining({
         group: "canonical",
-        type: "A",
+        type: "CNAME",
         host: "www.kozbeylikonagi.com",
-        value: "76.76.21.21",
+        value: "cname.vercel-dns.com",
       }),
       expect.objectContaining({
         group: "brand",
@@ -260,9 +262,9 @@ describe("domain readiness", () => {
       }),
       expect.objectContaining({
         group: "brand",
-        type: "A",
+        type: "CNAME",
         host: "www.kozbeylikonagi.com.tr",
-        value: "76.76.21.21",
+        value: "cname.vercel-dns.com",
       }),
     ]);
     expect(result.blockers).toContain(
@@ -476,7 +478,12 @@ describe("domain readiness", () => {
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
       resolve4Impl: async () => ["203.0.113.10"],
-      resolveCnameImpl: async () => ["old-host.example.com"],
+      resolveCnameImpl: async () => {
+        throw new Error("queryCname ENODATA");
+      },
+      dnsFallbackFetchImpl: async () => {
+        throw new Error("dns-over-https disabled in this test");
+      },
       fetchImpl: async (url: string | URL | Request) => {
         const href = String(url);
         if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
@@ -493,7 +500,7 @@ describe("domain readiness", () => {
     expect(result.warnings).toEqual(
       expect.arrayContaining([
         "A kozbeylikonagi.com does not match Vercel target 76.76.21.21; actual: 203.0.113.10",
-        "A www.kozbeylikonagi.com does not match Vercel target 76.76.21.21; actual: 203.0.113.10",
+        "CNAME www.kozbeylikonagi.com does not match Vercel target cname.vercel-dns.com or the project-specific Vercel CNAME shown in Project Settings / vercel domains inspect; actual: no CNAME; A records: 203.0.113.10",
       ]),
     );
     expect(result.dns.webRecordChecks.find((record) => record.host === "kozbeylikonagi.com")).toMatchObject({
