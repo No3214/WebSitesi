@@ -2,14 +2,47 @@
 
 import { useEffect, useState } from "react";
 import { X, Gift, ArrowRight } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
 
+const COPY = {
+  tr: {
+    dialogLabel: "Direkt rezervasyon teklifi",
+    closeLabel: "Rezervasyon teklifini kapat",
+    panelTitle: "Direkt Rezervasyon",
+    panelSubtitle: "Web Sitemize Özel Ayrıcalıklar",
+    title: "Gitmeden Önce Keşfedin!",
+    bodyPrefix: "Kozbeyli Konağı web sitemiz üzerinden resmi HMS rezervasyon ekranına geçebilir,",
+    bodyStrong: "WhatsApp destek",
+    bodySuffix: "ile oda ve tarih seçeneklerini netleştirebilirsiniz.",
+    badge: "DİREKT REZERVASYON AYRICALIĞI",
+    badgeValue: "Resmi Direkt Rezervasyon",
+    cta: "REZERVASYON YAP",
+  },
+  en: {
+    dialogLabel: "Direct booking offer",
+    closeLabel: "Close booking offer",
+    panelTitle: "Direct Booking",
+    panelSubtitle: "Website Guest Support",
+    title: "Before You Leave",
+    bodyPrefix: "Open the official HMS reservation screen from our website and use personal",
+    bodyStrong: "WhatsApp support",
+    bodySuffix: "to confirm room and date options.",
+    badge: "DIRECT BOOKING SUPPORT",
+    badgeValue: "Official Direct Reservation",
+    cta: "BOOK NOW",
+  },
+} as const;
+
 export const ExitIntent = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [hasShown, setHasShown] = useState(false);
+  const pathname = usePathname();
 
+  const locale = pathname?.startsWith("/en") ? "en" : "tr";
+  const copy = COPY[locale];
   const target = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
 
   useEffect(() => {
@@ -49,11 +82,11 @@ export const ExitIntent = () => {
         className="relative w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl exit-intent-dialog"
         role="dialog"
         aria-modal="true"
-        aria-label="Direkt rezervasyon teklifi"
+        aria-label={copy.dialogLabel}
       >
         <button
           onClick={() => setIsVisible(false)}
-          aria-label="Rezervasyon teklifini kapat"
+          aria-label={copy.closeLabel}
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-zinc-100 transition-colors"
         >
           <X size={20} className="text-zinc-400" />
@@ -64,20 +97,19 @@ export const ExitIntent = () => {
             <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center mb-4">
               <Gift className="text-gold w-8 h-8" />
             </div>
-            <h3 className="serif text-2xl mb-2">Direkt Rezervasyon</h3>
-            <p className="text-xs text-[var(--muted)]">Web Sitemize Özel Ayrıcalıklar</p>
+            <h3 className="serif text-2xl mb-2">{copy.panelTitle}</h3>
+            <p className="text-xs text-[var(--muted)]">{copy.panelSubtitle}</p>
           </div>
 
           <div className="md:w-3/5 p-8">
-            <h2 className="serif text-2xl text-zinc-900 mb-4">Gitmeden Önce Keşfedin!</h2>
+            <h2 className="serif text-2xl text-zinc-900 mb-4">{copy.title}</h2>
             <p className="text-zinc-600 text-sm mb-6 leading-relaxed">
-              Kozbeyli Konağı web sitemiz üzerinden resmi HMS rezervasyon ekranına geçebilir,
-              kişisel <strong>WhatsApp destek</strong> ile oda ve tarih seçeneklerini netleştirebilirsiniz.
+              {copy.bodyPrefix} <strong>{copy.bodyStrong}</strong> {copy.bodySuffix}
             </p>
 
             <div className="bg-zinc-50 border border-gold/20 rounded-lg p-4 mb-6 text-center">
-              <span className="text-[10px] uppercase tracking-widest text-zinc-400 block mb-1">DİREKT REZERVASYON AYRICALIĞI</span>
-              <span className="text-xl font-bold text-gold tracking-widest">Resmi Direkt Rezervasyon</span>
+              <span className="text-[10px] uppercase tracking-widest text-zinc-400 block mb-1">{copy.badge}</span>
+              <span className="text-xl font-bold text-gold tracking-widest">{copy.badgeValue}</span>
             </div>
 
             <a
@@ -86,7 +118,7 @@ export const ExitIntent = () => {
               rel="noopener noreferrer"
               className="btn-premium-solid w-full flex items-center justify-center gap-2 group"
             >
-              REZERVASYON YAP
+              {copy.cta}
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </a>
           </div>

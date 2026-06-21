@@ -111,6 +111,25 @@ test.describe("Rezervasyon HMS handoff", () => {
     await expect(exitIntentBooking).toHaveAttribute("href", HMS_BOOKING_URL);
     await expect(exitIntentBooking).toHaveAttribute("target", "_blank");
   });
+
+  test("ingilizce exit-intent resmi HMS ekranina ingilizce metinle gider", async ({ page }) => {
+    await page.addInitScript(() => window.sessionStorage.clear());
+    await page.goto("/en");
+    await page.waitForTimeout(500);
+
+    await page.mouse.move(300, 300);
+    await page.mouse.move(300, -10);
+
+    const exitIntentDialog = page.getByRole("dialog", { name: "Direct booking offer" });
+    await expect(exitIntentDialog).toBeVisible();
+    await expect(exitIntentDialog.getByText("Official Direct Reservation")).toBeVisible();
+    await expect(exitIntentDialog.getByText("Resmi Direkt Rezervasyon")).toHaveCount(0);
+
+    const exitIntentBooking = exitIntentDialog.getByRole("link", { name: "BOOK NOW", exact: true });
+    await expect(exitIntentBooking).toBeVisible();
+    await expect(exitIntentBooking).toHaveAttribute("href", HMS_BOOKING_URL);
+    await expect(exitIntentBooking).toHaveAttribute("target", "_blank");
+  });
 });
 
 test.describe("Rezervasyon oda parametresi", () => {
