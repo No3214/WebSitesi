@@ -27,6 +27,12 @@ npm run vercel:env:json
 npm run launch:cutover:json
 ```
 
+For the canonical-domain gate, `launch:cutover:json` also emits
+`dnsTargetNote` and `dnsTargetRecords`. Use those machine-readable records as
+the operator handoff source: apex hosts use Vercel A records, while `www` /
+subdomains use the project-specific Vercel CNAME shown in Project Settings or
+`vercel domains inspect`.
+
 `vercel:env` reads only production environment variable names from `vercel env
 ls`. It never prints values. Use it to distinguish local `.env.local` readiness
 from the real Vercel Production inventory before marking any launch gate ready.

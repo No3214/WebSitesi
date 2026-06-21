@@ -757,6 +757,7 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("npm run vercel:ops");
     expect(runbook).toContain("npm run vercel:env");
     expect(runbook).toContain("npm run vercel:env:strict");
+    expect(runbook).toContain("dnsTargetRecords");
     expect(runbook).toContain("never prints values");
     expect(runbook).toContain("npm run launch:cutover");
     expect(runbook).toContain("KPI and review loop");
@@ -893,6 +894,9 @@ describe("production readiness contracts", () => {
     expect(publishReadiness).toContain("scripts/production-cutover-plan.mjs");
     expect(publishReadiness).toContain("launch:cutover:strict");
     expect(cutoverPlan).toContain("Kozbeyli Konagi production cutover plan");
+    expect(cutoverPlan).toContain("VERCEL_TARGET_RECORDS");
+    expect(cutoverPlan).toContain("VERCEL_DNS_TARGET_NOTE");
+    expect(cutoverPlan).toContain("dnsTargetRecords");
     expect(cutoverPlan).toContain("npm i -g vercel");
     expect(cutoverPlan).toContain("HTTPS-to-HTTP first-hop redirect");
     expect(cutoverPlan).toContain("legacy Joomla/Seagull template");

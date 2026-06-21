@@ -66,6 +66,16 @@ type CutoverModule = {
       };
       commands: string[];
       checklist: string[];
+      dnsTargetNote: string;
+      dnsTargetRecords: Array<{
+        group: string;
+        type: string;
+        host: string;
+        value: string;
+        acceptedPattern: string;
+        expectedDescription: string;
+        purpose: string;
+      }>;
       kpiAndReviewLoop: string;
     }>;
     finalVerificationCommands: string[];
@@ -237,6 +247,38 @@ describe("production cutover plan", () => {
     expect(canonical?.commands).toEqual(
       expect.arrayContaining(["npm i -g vercel", "vercel login", "vercel whoami"]),
     );
+    expect(canonical?.dnsTargetNote).toContain("A records for apex domains and CNAME records for subdomains");
+    expect(canonical?.dnsTargetRecords).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          group: "canonical",
+          type: "A",
+          host: "kozbeylikonagi.com",
+          value: "76.76.21.21",
+          expectedDescription: "76.76.21.21",
+        }),
+        expect.objectContaining({
+          group: "canonical",
+          type: "CNAME",
+          host: "www.kozbeylikonagi.com",
+          value: "cname.vercel-dns.com",
+          acceptedPattern: "^[a-z0-9-]+\\.vercel-dns(?:-\\d+)?\\.com$",
+          expectedDescription: expect.stringContaining("project-specific Vercel CNAME"),
+        }),
+        expect.objectContaining({
+          group: "brand",
+          type: "A",
+          host: "kozbeylikonagi.com.tr",
+          value: "76.76.21.21",
+        }),
+        expect.objectContaining({
+          group: "brand",
+          type: "CNAME",
+          host: "www.kozbeylikonagi.com.tr",
+          value: "cname.vercel-dns.com",
+        }),
+      ]),
+    );
     expect(canonical?.kpiAndReviewLoop).toContain("/api/health");
     expect(canonical?.kpiAndReviewLoop).toContain("no legacy host signatures");
     expect(canonical?.kpiAndReviewLoop).toContain("Canonical and brand origins");
@@ -274,6 +316,9 @@ describe("production cutover plan", () => {
     expect(formatted).toContain("legacy HotelRunner hosted landing surface");
     expect(formatted).toContain("env: missing");
     expect(formatted).toContain("fallback=yes");
+    expect(formatted).toContain("DNS target records:");
+    expect(formatted).toContain("[canonical] CNAME www.kozbeylikonagi.com");
+    expect(formatted).toContain("[brand] CNAME www.kozbeylikonagi.com.tr");
     expect(formatted).toContain("Final verification commands:");
   });
 

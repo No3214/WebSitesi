@@ -10,9 +10,9 @@ const EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4";
 const VERCEL_APEX_A_VALUE = "76.76.21.21";
 const VERCEL_SUBDOMAIN_CNAME_FALLBACK = "cname.vercel-dns.com";
 const VERCEL_SUBDOMAIN_CNAME_PATTERN = "^[a-z0-9-]+\\.vercel-dns(?:-\\d+)?\\.com$";
-const VERCEL_DNS_TARGET_NOTE =
+export const VERCEL_DNS_TARGET_NOTE =
   "Use A records for apex domains and CNAME records for subdomains; copy the exact project-specific value shown in Vercel Project Settings or vercel domains inspect before editing DNS.";
-const VERCEL_TARGET_RECORDS = [
+export const VERCEL_TARGET_RECORDS = [
   {
     group: "canonical",
     type: "A",
@@ -285,7 +285,7 @@ function recordsForZone(zone) {
   );
 }
 
-function describeVercelTarget(record) {
+export function describeVercelTarget(record) {
   return record.acceptedPattern
     ? `${record.value} or the project-specific Vercel CNAME shown in Project Settings / vercel domains inspect`
     : record.value;

@@ -1,12 +1,29 @@
 import { pathToFileURL } from "node:url";
 
 import { evaluateCommercialLaunch } from "./commercial-launch-audit.mjs";
+import {
+  VERCEL_DNS_TARGET_NOTE,
+  VERCEL_TARGET_RECORDS,
+  describeVercelTarget,
+} from "./domain-readiness.mjs";
 import { evaluateVercelOpsReadiness } from "./vercel-ops-readiness.mjs";
 
 const VERCEL_INSTALL_COMMAND = "npm i -g vercel";
 const VERCEL_LOGIN_COMMAND = "vercel login";
 const VERCEL_AUTH_CHECK_COMMAND = "vercel whoami";
 const VERCEL_AUTH_COMMANDS = [VERCEL_INSTALL_COMMAND, VERCEL_LOGIN_COMMAND, VERCEL_AUTH_CHECK_COMMAND];
+
+function buildDnsTargetRecords() {
+  return VERCEL_TARGET_RECORDS.map((record) => ({
+    group: record.group,
+    type: record.type,
+    host: record.host,
+    value: record.value,
+    acceptedPattern: record.acceptedPattern || "",
+    expectedDescription: describeVercelTarget(record),
+    purpose: record.purpose,
+  }));
+}
 
 const gateActionCatalog = {
   canonical_domain: {
@@ -44,6 +61,8 @@ const gateActionCatalog = {
       "npm run domain:verify:strict",
       "npm run launch:smoke:live",
     ],
+    dnsTargetNote: VERCEL_DNS_TARGET_NOTE,
+    dnsTargetRecords: buildDnsTargetRecords(),
     evidence: ["docs/evidence/canonical-domain.md"],
     kpi: "Canonical and brand origins return /api/health service=kozbeyli-konagi at the current commit, expose /videos/hero.mp4 on the homepage or securely redirect to an origin that does, and report no legacy host signatures.",
   },
@@ -236,6 +255,8 @@ function buildGateStep(gate) {
     diagnostics: catalog.diagnostics || [],
     checklist: resolveGateChecklist(gate, catalog),
     commands: resolveGateCommands(gate, catalog),
+    dnsTargetNote: catalog.dnsTargetNote || "",
+    dnsTargetRecords: catalog.dnsTargetRecords || [],
     evidence: unique([...(gate.evidence || []), ...(catalog.evidence || [])]),
     kpiAndReviewLoop: catalog.kpi,
   };
@@ -322,6 +343,15 @@ export function formatProductionCutoverPlan(plan) {
       }
       lines.push("  checklist:");
       step.checklist.forEach((item) => lines.push(`  - ${item}`));
+      if (step.dnsTargetRecords.length > 0) {
+        lines.push("  DNS target records:");
+        if (step.dnsTargetNote) lines.push(`  - ${step.dnsTargetNote}`);
+        step.dnsTargetRecords.forEach((record) =>
+          lines.push(
+            `  - [${record.group}] ${record.type} ${record.host} -> ${record.expectedDescription}`,
+          ),
+        );
+      }
       lines.push(`  commands: ${step.commands.join(" && ")}`);
       lines.push(`  KPI/review: ${step.kpiAndReviewLoop}`);
     }
