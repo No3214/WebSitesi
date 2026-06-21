@@ -18,8 +18,14 @@ const forbiddenPaymentFields = [
   "expireYear",
 ] as const;
 
+function createBookingReference(now = new Date()) {
+  const datePart = now.toISOString().slice(0, 10).replace(/-/g, "");
+  const entropy = crypto.randomBytes(4).toString("hex").toUpperCase();
+  return `KK-${datePart}-${entropy}`;
+}
+
 const checkoutSchema = z.object({
-  bookingId: z.string(),
+  bookingId: z.string().optional(),
   checkIn: z.string(),
   checkOut: z.string(),
   nights: z.number().int().positive(),
@@ -138,7 +144,8 @@ export async function POST(req: Request) {
     }
 
     const userAgent = req.headers.get("user-agent") || "";
-    const dedupeHash = crypto.createHash("sha256").update(`booking:${data.bookingId}`).digest("hex");
+    const bookingId = createBookingReference();
+    const dedupeHash = crypto.createHash("sha256").update(`booking:${bookingId}`).digest("hex");
 
     await payload.create({
       collection: "organization-leads",
@@ -157,7 +164,7 @@ export async function POST(req: Request) {
         ipAddress: clientIp,
         userAgent: safeText(userAgent, 500),
         message: [
-          `Rezervasyon ID: ${data.bookingId}`,
+          `Rezervasyon ID: ${bookingId}`,
           `Oda: ${safeText(data.roomTitle, 120)} (${data.roomSlug})`,
           `Giriş / Çıkış: ${data.checkIn} / ${data.checkOut} (${quote.nights} Gece)`,
           `Konuk: ${data.guests} Yetişkin`,
@@ -176,7 +183,7 @@ export async function POST(req: Request) {
 
     // PII: misafir adı log'a HAM yazılmaz (F12) — kayıt zaten CMS'te.
     logEvent("info", "checkout.booking_created", {
-      bookingId: data.bookingId,
+      bookingId,
       roomSlug: data.roomSlug,
       nights: quote.nights,
       total: quote.totalPrice,
@@ -188,7 +195,7 @@ export async function POST(req: Request) {
       ok: true, 
       message:
         "Rezervasyon talebiniz alındı. Tahsilat yapılmadı — ekibimiz teyit ve güvenli ödeme için sizinle iletişime geçecek.",
-      bookingId: data.bookingId 
+      bookingId,
     });
 
   } catch (error) {

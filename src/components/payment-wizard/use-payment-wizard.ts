@@ -55,8 +55,6 @@ export function usePaymentWizard(locale: BookingLocale = "tr") {
     setCheckIn(tomorrow.toISOString().split("T")[0]);
     setCheckOut(dayAfter.toISOString().split("T")[0]);
 
-    // Generate random booking ID
-    setBookingId("KK-" + Math.floor(10000 + Math.random() * 90000));
   }, []);
 
   // Calculate nights
@@ -98,7 +96,6 @@ export function usePaymentWizard(locale: BookingLocale = "tr") {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          bookingId,
           checkIn,
           checkOut,
           nights,
@@ -120,6 +117,9 @@ export function usePaymentWizard(locale: BookingLocale = "tr") {
 
       const result = await res.json();
       if (res.ok && result.ok) {
+        if (typeof result.bookingId === "string") {
+          setBookingId(result.bookingId);
+        }
         setStep("success");
       } else {
         setPaymentError(result.message || copy.errors.paymentFailed);

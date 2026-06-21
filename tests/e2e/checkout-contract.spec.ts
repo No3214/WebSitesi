@@ -7,7 +7,6 @@ import { expect, test } from "@playwright/test";
  */
 
 const validBody = {
-  bookingId: "KK-TEST-1",
   checkIn: "2026-07-01",
   checkOut: "2026-07-03",
   nights: 2,
@@ -46,7 +45,7 @@ test.describe("Checkout API kontratları", () => {
   test("Geçerli origin + bozuk gövde 400 döner (zod)", async ({ request, baseURL }) => {
     const res = await request.post(`${baseURL}/api/checkout`, {
       headers: sameOriginHeaders(baseURL!, "10.20.0.2"),
-      data: { bookingId: "KK-X" }, // zorunlu alanlar eksik
+      data: { roomSlug: "standart-deniz-manzarali-oda" }, // zorunlu alanlar eksik
     });
     expect(res.status()).toBe(400);
     const json = await res.json();
