@@ -1,40 +1,56 @@
-/**
- * Autonomous Growth Pilot 
- * Logic to proactively monitor conversion velocity and suggest optimizations.
- */
+type GrowthHealthStatus = "EVIDENCE_GATED";
+
+type DriftToken = {
+  token: string;
+  purpose: string;
+};
+
+const identityTokens: DriftToken[] = [
+  { token: "Kozbeyli", purpose: "place identity" },
+  { token: "tas", purpose: "stone-house texture" },
+  { token: "Ege", purpose: "regional hospitality" },
+  { token: "Antakya", purpose: "culinary origin" },
+  { token: "Foça", purpose: "location demand" },
+];
 
 export const GrowthEngine = {
   checkHealth: () => {
-    const engagement = 0.85 + Math.random() * 0.1;
-    const latency = Math.floor(35 + Math.random() * 15);
-    
     return {
-      status: engagement > 0.9 ? 'SURGE' : 'OPTIMAL',
+      status: "EVIDENCE_GATED" as GrowthHealthStatus,
       metrics: {
-        lead_engagement: engagement,
-        conversion_velocity: 0.88,
-        latency: `${latency}ms`,
-        uptime: '99.99%',
-        last_drift_check: new Date().toISOString()
+        commercial_readiness: "82/100",
+        blocked_points: "18",
+        release_gate: "npm run release:verify",
+        cutover_plan: "npm run launch:cutover:json",
       },
-      alerts: engagement < 0.86 ? ['Low lead engagement detected in Gastronomy node'] : []
-    };
-  },
-  
-  /**
-   * Scans site context vs Brand Identity to detect experience drift.
-   */
-  runDriftCheck: (currentPath: string, content: string) => {
-    console.log(`[GrowthEngine] Scanning ${currentPath} for identity alignment...`);
-    // Logic to ensure keywords like 'Horasan', 'İnci Hanım', 'Slow Living' are present
-    const identityTokens = ['Horasan', 'İnci Hanım', 'Slow Living', 'Merchant', 'Dibek'];
-    const foundTokens = identityTokens.filter(token => content.includes(token));
-    const alignmentScore = foundTokens.length / identityTokens.length;
-    
-    return {
-      alignmentScore,
-      suggestion: alignmentScore < 0.6 ? 'Increase heritage token density' : 'Alignment Optimal'
+      alerts: [
+        "Do not mark production ready until external DNS, HMS, POS, analytics, SEO and legal evidence is ready.",
+      ],
     };
   },
 
+  runDriftCheck: (currentPath: string, content: string) => {
+    const normalizedContent = content.toLocaleLowerCase("tr-TR");
+    const tokenResults = identityTokens.map((item) => {
+      const normalizedToken = item.token.toLocaleLowerCase("tr-TR");
+      return {
+        ...item,
+        present: normalizedContent.includes(normalizedToken),
+      };
+    });
+    const foundTokens = tokenResults.filter((item) => item.present);
+    const missingTokens = tokenResults.filter((item) => !item.present);
+    const alignmentScore = foundTokens.length / identityTokens.length;
+
+    return {
+      currentPath,
+      alignmentScore,
+      foundTokens,
+      missingTokens,
+      suggestion:
+        alignmentScore < 0.6
+          ? "Review page copy against verified Kozbeyli hospitality evidence before publishing."
+          : "Brand evidence alignment is acceptable for this deterministic check.",
+    };
+  },
 };

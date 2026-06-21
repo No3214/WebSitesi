@@ -1,43 +1,39 @@
 /**
- * Growth Engine Stress Test Simulator
- * Simulates concurrent AI requests and Growth Engine health checks.
+ * Deterministic growth evidence smoke.
+ * Keeps the legacy script entrypoint useful without simulating live traffic,
+ * fake agents or synthetic conversion metrics.
  */
 
-import { GrowthEngine } from '../src/lib/growth-engine';
+import { GrowthEngine } from "../src/lib/growth-engine";
 
-async function runStressTest() {
-  console.log('--- STARTING GROWTH ENGINE STRESS TEST ---');
-  const CONCURRENT_REQUESTS = 50;
-  const iterations = 5;
-  
-  for (let i = 0; i < iterations; i++) {
-    console.log(`\nIteration ${i+1}/${iterations} - Simulating ${CONCURRENT_REQUESTS} concurrent requests...`);
-    
-    const startTime = Date.now();
-    const results = await Promise.all(
-      Array.from({ length: CONCURRENT_REQUESTS }).map(() => {
-        return GrowthEngine.checkHealth();
-      })
-    );
-    const endTime = Date.now();
-    
-    const surgeCount = results.filter(r => r.status === 'SURGE').length;
-    const optimalCount = results.filter(r => r.status === 'OPTIMAL').length;
-    
-    console.log(`Results: ${optimalCount} Optimal, ${surgeCount} Surge`);
-    console.log(`Execution Time: ${endTime - startTime}ms`);
-    
-    // Simulate drift check
-    const drift = GrowthEngine.runDriftCheck('/stress-test', 'Kozbeyli Konağı Horasan mirası İnci Hanım');
-    console.log(`Drift Score: ${drift.alignmentScore * 100}% | ${drift.suggestion}`);
-    
-    // Verify Rate Limiting Simulation (Conceptual)
-    if ((endTime - startTime) > 200) {
-      console.warn('ALERT: Latency threshold exceeded. Scaling simulator load...');
-    }
+function runGrowthEvidenceSmoke() {
+  console.log("--- STARTING GROWTH EVIDENCE SMOKE ---");
+
+  const health = GrowthEngine.checkHealth();
+  console.log(`Status: ${health.status}`);
+  console.log(`Commercial readiness: ${health.metrics.commercial_readiness}`);
+  console.log(`Blocked points: ${health.metrics.blocked_points}`);
+  console.log(`Release gate: ${health.metrics.release_gate}`);
+  console.log(`Cutover plan: ${health.metrics.cutover_plan}`);
+
+  for (const alert of health.alerts) {
+    console.log(`Alert: ${alert}`);
   }
-  
-  console.log('\n--- STRESS TEST COMPLETE: SYSTEM STABLE ---');
+
+  const drift = GrowthEngine.runDriftCheck(
+    "/admin/growth",
+    "Kozbeyli Konağı taş otel, Antakya ve Ege mutfağıyla Foça çevresinde konumlanır.",
+  );
+
+  console.log(`Drift path: ${drift.currentPath}`);
+  console.log(`Drift score: ${Math.round(drift.alignmentScore * 100)}%`);
+  console.log(`Suggestion: ${drift.suggestion}`);
+
+  if (drift.alignmentScore < 0.6) {
+    process.exitCode = 1;
+  }
+
+  console.log("--- GROWTH EVIDENCE SMOKE COMPLETE ---");
 }
 
-runStressTest().catch(console.error);
+runGrowthEvidenceSmoke();

@@ -823,6 +823,42 @@ describe("production readiness contracts", () => {
     expect(growthPage).not.toContain("authenticated = Boolean(user)");
   });
 
+  it("keeps admin growth operations evidence-bound instead of simulated agent theater", () => {
+    const growthDashboard = read("src/app/admin/growth/growth-client.tsx");
+    const growthEngine = read("src/lib/growth-engine.ts");
+    const growthSmoke = read("scripts/stress-test-growth.ts");
+    const combined = [growthDashboard, growthEngine, growthSmoke].join("\n");
+
+    expect(growthDashboard).toContain("Kozbeyli Commercial Launch Control");
+    expect(growthDashboard).toContain("82/100");
+    expect(growthDashboard).toContain("docs/evidence/canonical-domain.md");
+    expect(growthDashboard).toContain("npm run release:verify");
+    expect(growthDashboard).toContain("npm run launch:cutover:json");
+    expect(growthDashboard).toContain("No secrets in repo evidence");
+    expect(growthEngine).toContain("EVIDENCE_GATED");
+    expect(growthSmoke).toContain("Deterministic growth evidence smoke");
+
+    for (const forbidden of [
+      "SNAKEEZY",
+      "DA_VINCI",
+      "HOPPER",
+      "VON_NEUMANN",
+      "LOVELACE",
+      "Math.random",
+      "MCP PROXY ACTIVE",
+      "SYSTEM_ORCHESTRATOR_LOGS",
+      "Node-10.0.42.10",
+      "geofence_boundary",
+      "Edge Nodes",
+      "Redis Sync",
+      "@import url",
+      "ACTIVE AGENTS",
+      "CONVERSION VELOCITY",
+    ]) {
+      expect(combined, `growth operations must not contain ${forbidden}`).not.toContain(forbidden);
+    }
+  });
+
   it("keeps legal copy aligned with no-card-data payment architecture", () => {
     const privacy = read("src/app/gizlilik-politikasi/page.tsx");
     const kvkk = read("src/app/kvkk/page.tsx");

@@ -1,275 +1,308 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { 
-  Activity, 
-  Target, 
-  Zap, 
-  Cpu, 
-  Database, 
-  ShieldCheck, 
-  BarChart3, 
-  Globe,
-  Smartphone,
-  Server
+import {
+  AlertTriangle,
+  CalendarClock,
+  CheckCircle2,
+  ClipboardList,
+  FileCheck2,
+  Gauge,
+  Globe2,
+  LockKeyhole,
+  ShieldCheck,
 } from "lucide-react";
+
 import { SiteHeader } from "@/components/site-header";
-import { GrowthEngine } from "@/lib/growth-engine";
+
+type GateStatus = "verified" | "action_required" | "operator_required";
+
+type LaunchGate = {
+  id: string;
+  title: string;
+  owner: string;
+  timing: string;
+  status: GateStatus;
+  command: string;
+  evidence: string;
+  kpi: string;
+};
+
+const launchGates: LaunchGate[] = [
+  {
+    id: "canonical_domain",
+    title: "Canonical domain cutover",
+    owner: "Vercel / DNS operator",
+    timing: "Before public domain announcement",
+    status: "action_required",
+    command: "npm run domain:verify:strict",
+    evidence: "docs/evidence/canonical-domain.md",
+    kpi: "kozbeylikonagi.com and www return the current app health endpoint with no legacy host signatures.",
+  },
+  {
+    id: "production_abuse_controls",
+    title: "Production abuse controls",
+    owner: "Security / platform operator",
+    timing: "Before lead capture at scale",
+    status: "operator_required",
+    command: "npm run abuse:verify:strict",
+    evidence: "docs/evidence/production-abuse-controls.md",
+    kpi: "Turnstile and shared rate-limit controls accept valid traffic and block replay without logging secrets.",
+  },
+  {
+    id: "hms_booking_engine",
+    title: "HMS booking engine UAT",
+    owner: "Revenue / booking operator",
+    timing: "Before reservation CTA becomes the primary sales path",
+    status: "operator_required",
+    command: "npm run hms:verify:strict",
+    evidence: "docs/evidence/hms-booking-engine.md",
+    kpi: "Reservation CTA opens the approved Kozbeyli HMS engine in a new tab and date/guest selection is proven.",
+  },
+  {
+    id: "garanti_pos",
+    title: "Garanti Sanal POS evidence",
+    owner: "Finance / payment operator",
+    timing: "Before card payment launch",
+    status: "operator_required",
+    command: "npm run garanti:verify:strict",
+    evidence: "docs/evidence/garanti-pos.md",
+    kpi: "3D Secure success, failed payment, callback verification and refund/cancel flows are redacted and approved.",
+  },
+  {
+    id: "analytics_purchase",
+    title: "Analytics and purchase validation",
+    owner: "Growth / analytics operator",
+    timing: "Before paid acquisition or revenue reporting",
+    status: "operator_required",
+    command: "npm run analytics:verify:strict",
+    evidence: "docs/evidence/analytics-purchase.md",
+    kpi: "Consent-gated pageview, lead and booking events appear in GA4/GTM/Meta debug tools without PII.",
+  },
+  {
+    id: "search_local_seo",
+    title: "Search and local SEO proof",
+    owner: "SEO / local listings operator",
+    timing: "Before final canonical launch sign-off",
+    status: "operator_required",
+    command: "npm run search:verify:strict",
+    evidence: "docs/evidence/search-local-seo.md",
+    kpi: "Search Console, sitemap, Google Business Profile and Hotel Center states are source-referenced.",
+  },
+  {
+    id: "legal_dpa",
+    title: "Legal and vendor approval",
+    owner: "Legal / operations owner",
+    timing: "Before full booking/payment launch",
+    status: "operator_required",
+    command: "npm run launch:audit:strict",
+    evidence: "docs/evidence/legal-dpa.md",
+    kpi: "Vendor DPA, KVKK/privacy coverage and cancellation/payment terms are approved with redacted references.",
+  },
+];
+
+const verifiedChecks = [
+  "Source-controlled release gate: npm run release:verify",
+  "Public route smoke set: hero video, location, media and publish routes",
+  "Evidence redaction scan: docs/evidence/* must not contain secrets, card data, IBAN or guest PII",
+  "Reservation handoff contract: approved HMS URL only, opened outside the main page flow",
+];
+
+const operatingSop = [
+  "Run npm run release:verify before any production deploy.",
+  "Run npm run launch:cutover:json and work gates in order.",
+  "Collect only redacted source-system evidence in docs/evidence/*.md.",
+  "Re-run launch:audit:strict after every external DNS, HMS, POS, analytics or legal update.",
+];
+
+const reviewLoop = [
+  "Daily until launch: domain, HMS, abuse controls and analytics evidence status.",
+  "Weekly after launch: reservation funnel, lead quality, Search Console coverage and blocked form attempts.",
+  "After every campaign: consented booking events, Meta/Google Ads attribution and guest inquiry quality.",
+];
+
+function statusLabel(status: GateStatus) {
+  if (status === "verified") return "Verified";
+  if (status === "action_required") return "Action required";
+  return "Operator required";
+}
+
+function statusClass(status: GateStatus) {
+  if (status === "verified") return "border-emerald-200 bg-emerald-50 text-emerald-800";
+  if (status === "action_required") return "border-amber-200 bg-amber-50 text-amber-900";
+  return "border-stone-200 bg-stone-50 text-stone-700";
+}
 
 export function GrowthDashboardClient() {
-  const [conversionVelocity, setConversionVelocity] = useState(0.85);
-  const [health, setHealth] = useState(GrowthEngine.checkHealth());
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setConversionVelocity(v => Math.min(1, v + (Math.random() * 0.01 - 0.005)));
-      setHealth(GrowthEngine.checkHealth());
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const agents = [
-    { id: "agent-01", node: "DA_VINCI", role: "Tech Lead", status: "Active", load: "12%" },
-    { id: "agent-02", node: "HOPPER", role: "Hospitality Specialist", status: "Scanning", load: "45%" },
-    { id: "agent-03", node: "VON_NEUMANN", role: "Gastronomy Expert", status: "Idle", load: "2%" },
-    { id: "agent-04", node: "LOVELACE", role: "Growth Architect", status: "Active", load: "88%" },
-  ];
+  const blockedGateCount = launchGates.filter((gate) => gate.status !== "verified").length;
 
   return (
-    <div className="min-h-screen bg-[#020203] text-[#a1a1aa] font-sans selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-[#f7f4ec] text-[#27352b]">
       <SiteHeader />
-      
-      <main className="container max-w-[1400px] mx-auto px-6 py-24 md:py-32">
-        
-        {/* TECH HEADER */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 mb-16">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-          >
-            <div className="flex items-center gap-3 text-emerald-500 mb-4">
-              <Activity size={20} className="animate-pulse" />
-              <span className="text-xs font-black uppercase tracking-[0.4em]">Node-10.0.42.10 ONLINE</span>
+
+      <main className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
+        <section className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div>
+            <div className="mb-5 inline-flex items-center gap-2 border border-[#c9b07a]/40 bg-white/70 px-3 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[#a9813b]">
+              <LockKeyhole size={16} />
+              Payload admin only
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-4">
-              SNAKEEZY <span className="text-emerald-500">GROWTH</span>
+            <h1 className="max-w-4xl text-4xl font-semibold tracking-normal text-[#27352b] sm:text-5xl lg:text-6xl">
+              Kozbeyli Commercial Launch Control
             </h1>
-            <p className="max-w-xl text-lg text-zinc-500 leading-relaxed">
-              Otonom büyüme ajanları ve davranış analitiği merkezi. Veri odaklı lüks yönetimi istatistikleri.
+            <p className="mt-5 max-w-3xl text-base leading-8 text-[#5e665d] sm:text-lg">
+              Bu panel rastgele metrik veya hayali ajan durumu gostermiyor. Ticari yayina hazirlik yalnizca repo
+              kapilari, resmi komutlar ve redakte edilmis kaynak sistem kanitlariyla ilerler.
             </p>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex flex-col items-end text-right"
-          >
-            <div className="text-zinc-600 font-mono text-xs mb-2">LAST_SYNC: {new Date().toLocaleTimeString()}</div>
-            <div className="flex gap-4">
-              <div className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl">
-                <div className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest mb-1">CONVERSION VELOCITY</div>
-                <div className="text-2xl font-mono text-emerald-400">{(conversionVelocity * 10).toFixed(2)}x</div>
-              </div>
-              <div className="bg-zinc-900/50 border border-zinc-800 p-4 rounded-xl">
-                <div className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest mb-1">ACTIVE AGENTS</div>
-                <div className="text-2xl font-mono text-white">11/11</div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* PRIMARY METRICS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: "Direct Booking ROI", value: "+24.8%", icon: <Zap className="text-amber-400" />, trend: "up" },
-            { label: "Guest Inquiry Quality", value: "98.2%", icon: <Cpu className="text-blue-400" />, trend: "steady" },
-            { label: "Lead Capture Rate", value: "12.4%", icon: <Target className="text-rose-400" />, trend: "up" },
-            { label: "Data Integrity", value: "99.9%", icon: <ShieldCheck className="text-emerald-400" />, trend: "steady" },
-          ].map((metric, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors group"
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className="p-2.5 bg-zinc-800/50 rounded-lg group-hover:scale-110 transition-transform">
-                  {metric.icon}
-                </div>
-                <span className="text-[10px] text-emerald-500 font-mono">STABLE</span>
-              </div>
-              <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">{metric.label}</div>
-              <div className="text-3xl font-mono font-bold text-white tracking-tighter">{metric.value}</div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* MAIN ANALYSIS BLOCK */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* LOGS / AGENT STATUS */}
-          <div className="lg:col-span-2 bg-zinc-900/30 border border-zinc-800 rounded-3xl p-8 overflow-hidden">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <Server size={18} className="text-zinc-600" />
-                <h2 className="font-bold text-white tracking-tight">AGENT FLEET MONITOR</h2>
-              </div>
-              <button className="text-[10px] font-bold text-zinc-500 hover:text-white transition-colors">PURGE_CACHE</button>
-            </div>
-
-            <div className="space-y-3">
-              {agents.map((agent, i) => (
-                <motion.div 
-                  key={agent.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="flex items-center justify-between p-4 bg-zinc-900/50 border border-zinc-800/50 rounded-xl hover:border-zinc-700 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`w-2 h-2 rounded-full ${agent.status === 'Active' ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-zinc-600'}`} />
-                    <div>
-                      <div className="text-xs font-mono text-white tracking-tight">{agent.id}</div>
-                      <div className="text-[10px] text-zinc-500 uppercase">{agent.role}</div>
-                    </div>
-                  </div>
-                  <div className="hidden md:flex items-center gap-12 text-[11px] font-mono">
-                    <div className="text-zinc-500">NODE: <span className="text-zinc-300">{agent.node}</span></div>
-                    <div className="text-zinc-500 w-16">LOAD: <span className="text-emerald-500">{agent.load}</span></div>
-                  </div>
-                  <div className="text-[10px] font-bold bg-zinc-800 px-3 py-1 rounded-full text-zinc-400">
-                    {agent.status}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            
-            {/* NEW: SECURITY HARDENING NODE */}
-            <div className="mt-8 p-6 bg-zinc-900/50 border border-zinc-800 rounded-2xl flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="p-2 bg-emerald-500/20 rounded-lg">
-                  <ShieldCheck className="text-emerald-400" size={20} />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white uppercase tracking-tighter">Security Hardening</p>
-                  <p className="text-[10px] text-zinc-500 font-mono tracking-tight">Status: ACTIVE · Rate Limit: 5req/min · Guardrail: ON</p>
-                </div>
-              </div>
-              <div className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full uppercase tracking-widest">
-                VERIFIED
-              </div>
-            </div>
-
-            <button className="mt-8 w-full py-5 rounded-2xl bg-white text-black font-black hover:bg-[#f7f4ec] transition-all transform hover:scale-[1.01] active:scale-[0.99] shadow-2xl">
-              YENİ FIRSATLARI TARA (MCP PROXY ACTIVE)
-            </button>
-
-            <div className="mt-8 p-6 bg-black border border-zinc-800 rounded-xl font-mono text-[11px]">
-               <div className="flex items-center gap-2 mb-4">
-                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                 <span className="text-zinc-500 uppercase">SYSTEM_ORCHESTRATOR_LOGS</span>
-               </div>
-               <div className="space-y-1.5">
-                  <p><span className="text-zinc-600">[{new Date().toLocaleTimeString()}]</span> <span className="text-blue-400">INIT</span> expert_bridge_gastronomy_plugin_master</p>
-                  <p><span className="text-zinc-600">[{new Date().toLocaleTimeString()}]</span> <span className="text-emerald-400">PUSH</span> behavior_event: intent_to_book_high_velocity</p>
-                  <p><span className="text-zinc-600">[{new Date().toLocaleTimeString()}]</span> <span className="text-amber-400">WARN</span> geofence_boundary: anonymous_access_detected_vpn_bypass</p>
-                  <p className="animate-pulse">{">"} Root: Scan cycle complete (48.2ms)</p>
-               </div>
-            </div>
           </div>
 
-          {/* RIGHT SIDEBAR: GROWTH FUNNEL */}
-          <div className="space-y-6">
-            <div className="bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-emerald-500/20 rounded-3xl p-8">
-              <div className="flex items-center gap-3 mb-8">
-                <BarChart3 size={18} className="text-emerald-400" />
-                <h2 className="font-bold text-white tracking-tight">GROWTH FUNNEL</h2>
+          <div className="border border-[#d8c7a3] bg-white p-6 shadow-[0_24px_60px_rgba(56,47,32,0.08)]">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#a9813b]">
+                  Commercial readiness
+                </p>
+                <p className="mt-2 text-5xl font-semibold text-[#27352b]">82/100</p>
               </div>
-              <div className="space-y-6">
-                {[
-                  { label: "Awareness", val: 88, color: "bg-emerald-500" },
-                  { label: "Intent", val: 64, color: "bg-blue-500" },
-                  { label: "Conversion", val: 32, color: "bg-amber-500" },
-                ].map((step, i) => (
-                  <div key={i} className="space-y-2">
-                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-                      <span>{step.label}</span>
-                      <span className="text-white">{step.val}%</span>
-                    </div>
-                    <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${step.val}%` }}
-                        transition={{ duration: 1, delay: i * 0.2 }}
-                        className={`h-full ${step.color}`}
-                      />
-                    </div>
-                  </div>
+              <Gauge className="text-[#a9813b]" size={42} />
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
+              <div className="border border-[#eadfc8] bg-[#fbfaf6] p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-[#7c6f5c]">Blocked points</p>
+                <p className="mt-2 text-2xl font-semibold text-[#8a5c1f]">18</p>
+              </div>
+              <div className="border border-[#eadfc8] bg-[#fbfaf6] p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-[#7c6f5c]">Open gates</p>
+                <p className="mt-2 text-2xl font-semibold text-[#8a5c1f]">{blockedGateCount}</p>
+              </div>
+            </div>
+            <p className="mt-5 text-sm leading-6 text-[#6b6254]">
+              Hedef: public domain, HMS rezervasyon, POS, analytics, local SEO ve hukuk kanitlari tamamlanmadan
+              100/100 veya production ready iddiasi kullanilmamali.
+            </p>
+          </div>
+        </section>
+
+        <section className="mt-10 grid gap-4 md:grid-cols-4">
+          {verifiedChecks.map((check) => (
+            <div key={check} className="border border-[#dfd1b5] bg-white p-5">
+              <CheckCircle2 className="mb-4 text-[#4f6b45]" size={22} />
+              <p className="text-sm leading-6 text-[#4e584d]">{check}</p>
+            </div>
+          ))}
+        </section>
+
+        <section className="mt-12 grid gap-8 lg:grid-cols-[0.72fr_1.28fr]">
+          <aside className="space-y-6">
+            <div className="border border-[#dfd1b5] bg-white p-6">
+              <div className="mb-5 flex items-center gap-3">
+                <ClipboardList className="text-[#a9813b]" size={22} />
+                <h2 className="text-xl font-semibold text-[#27352b]">Launch SOP</h2>
+              </div>
+              <ol className="space-y-4">
+                {operatingSop.map((item, index) => (
+                  <li key={item} className="flex gap-3 text-sm leading-6 text-[#555f54]">
+                    <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#efe4ce] text-xs font-semibold text-[#8a5c1f]">
+                      {index + 1}
+                    </span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="border border-[#dfd1b5] bg-[#ffffff] p-6">
+              <div className="mb-5 flex items-center gap-3">
+                <CalendarClock className="text-[#a9813b]" size={22} />
+                <h2 className="text-xl font-semibold text-[#27352b]">KPI review loop</h2>
+              </div>
+              <div className="space-y-4">
+                {reviewLoop.map((item) => (
+                  <p key={item} className="border-l-2 border-[#c9b07a] pl-4 text-sm leading-6 text-[#555f54]">
+                    {item}
+                  </p>
                 ))}
               </div>
-              <div className="mt-8 pt-6 border-t border-zinc-800/50">
-                <p className="text-xs text-zinc-500 leading-relaxed italic">
-                  &quot;Advisory mode: live lift estimates require verified analytics and booking data.&quot;
+            </div>
+
+            <div className="border border-[#ead3a0] bg-[#fff9ec] p-6">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="mt-1 shrink-0 text-[#a66b16]" size={20} />
+                <p className="text-sm leading-6 text-[#6c552f]">
+                  Public sayfalarda premium deneyim gosterilebilir; bu admin panelinde ise yalnizca kanitlanmis veya
+                  kanit bekleyen operasyon durumu gosterilir.
                 </p>
               </div>
             </div>
+          </aside>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              <div className="p-8 bg-black border border-zinc-800 rounded-3xl group hover:border-zinc-700 transition-all duration-500 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Activity size={80} />
-                </div>
-                <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-2">Engine Health</p>
-                <div className="flex items-end gap-2">
-                  <h3 className="text-4xl font-black text-white">{health.status}</h3>
-                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse mb-2" />
-                </div>
-                <p className="text-[10px] text-zinc-600 font-mono mt-4">LEAD ENGAGEMENT: {(health.metrics.lead_engagement * 100).toFixed(0)}%</p>
+          <section className="space-y-4">
+            <div className="flex flex-col justify-between gap-4 border border-[#dfd1b5] bg-white p-6 sm:flex-row sm:items-center">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#a9813b]">Gate sequence</p>
+                <h2 className="mt-2 text-2xl font-semibold text-[#27352b]">100/100 icin kalan kanit akisi</h2>
               </div>
-
-              <div className="p-8 bg-black border border-zinc-800 rounded-3xl group hover:border-zinc-700 transition-all duration-500 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Globe size={80} />
-                </div>
-                <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-2">Brand Alignment</p>
-                <div className="flex items-end gap-2">
-                  <h3 className="text-4xl font-black text-white">94%</h3>
-                  <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse mb-2" />
-                </div>
-                <p className="text-[10px] text-zinc-600 font-mono mt-4">DRIFT CHECK: OPTIMAL</p>
+              <div className="flex items-center gap-2 text-sm text-[#5f675d]">
+                <ShieldCheck size={18} className="text-[#4f6b45]" />
+                Fail closed until evidence is ready
               </div>
             </div>
 
-            <div className="bg-zinc-900/30 border border-zinc-800 rounded-3xl p-8">
-               <div className="flex items-center gap-3 mb-6">
-                 <Globe size={18} className="text-zinc-500" />
-                 <h2 className="font-bold text-white tracking-tight">INFRASTRUCTURE</h2>
-               </div>
-               <div className="grid grid-cols-2 gap-3">
-                  <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
-                    <Smartphone size={16} className="text-zinc-600 mb-2" />
-                    <div className="text-[10px] font-bold text-zinc-400 uppercase">Edge Nodes</div>
-                    <div className="text-lg font-mono text-white">22</div>
+            {launchGates.map((gate) => (
+              <article key={gate.id} className="border border-[#dfd1b5] bg-white p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <div className="mb-3 flex flex-wrap items-center gap-2">
+                      <span className={`border px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${statusClass(gate.status)}`}>
+                        {statusLabel(gate.status)}
+                      </span>
+                      <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#8b806f]">{gate.id}</span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-[#27352b]">{gate.title}</h3>
                   </div>
-                  <div className="p-4 bg-zinc-900/50 rounded-xl border border-zinc-800">
-                    <Database size={16} className="text-zinc-600 mb-2" />
-                    <div className="text-[10px] font-bold text-zinc-400 uppercase">Redis Sync</div>
-                    <div className="text-lg font-mono text-emerald-400">READY</div>
+                  <Globe2 className="text-[#a9813b]" size={24} />
+                </div>
+
+                <div className="mt-5 grid gap-4 md:grid-cols-2">
+                  <div className="border border-[#efe4ce] bg-[#fbfaf6] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b806f]">Owner / timing</p>
+                    <p className="mt-2 text-sm leading-6 text-[#4d584d]">
+                      {gate.owner} - {gate.timing}
+                    </p>
                   </div>
-               </div>
+                  <div className="border border-[#efe4ce] bg-[#fbfaf6] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b806f]">Command</p>
+                    <code className="mt-2 block break-words text-sm text-[#27352b]">{gate.command}</code>
+                  </div>
+                  <div className="border border-[#efe4ce] bg-[#fbfaf6] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b806f]">Evidence</p>
+                    <code className="mt-2 block break-words text-sm text-[#27352b]">{gate.evidence}</code>
+                  </div>
+                  <div className="border border-[#efe4ce] bg-[#fbfaf6] p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b806f]">KPI</p>
+                    <p className="mt-2 text-sm leading-6 text-[#4d584d]">{gate.kpi}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </section>
+        </section>
+
+        <section className="mt-12 border border-[#d8c7a3] bg-[#27352b] p-6 text-white">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="mb-3 flex items-center gap-2 text-[#d8bd7b]">
+                <FileCheck2 size={20} />
+                <span className="text-xs font-semibold uppercase tracking-[0.22em]">Next operator handoff</span>
+              </div>
+              <p className="max-w-3xl text-sm leading-7 text-[#f7f4ec]">
+                Vercel CLI kurulumu ve login sonrasinda domain/env/deploy kanitlari ayni sira ile tamamlanmali:
+                npm i -g vercel, vercel login, vercel whoami, npm run launch:cutover:json.
+              </p>
+            </div>
+            <div className="border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-[#f6e6bd]">
+              No secrets in repo evidence
             </div>
           </div>
-
-        </div>
-
+        </section>
       </main>
-
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-      `}</style>
     </div>
   );
 }
