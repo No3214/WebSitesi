@@ -1643,6 +1643,16 @@ describe("production readiness contracts", () => {
     expect(llmContextRoute).not.toContain("X-Agentic-Architecture");
   });
 
+  it("keeps lead API failure logging structured and free from raw payload dumps", () => {
+    const leadRoute = read("src/app/api/lead/route.ts");
+
+    expect(leadRoute).toContain('logEvent("error", "lead.submission_failed"');
+    expect(leadRoute).toContain("maskIp(extractClientIp(req.headers))");
+    expect(leadRoute).toContain('reason: error instanceof Error ? error.name : "UnknownError"');
+    expect(leadRoute).not.toContain("console.error(\"Lead submission error:\"");
+    expect(leadRoute).not.toContain("errField(error)");
+  });
+
   it("publishes a dedicated location route with schema, hreflang and inventory coverage", () => {
     const trLocation = read("src/app/lokasyon/page.tsx");
     const enLocation = read("src/app/en/lokasyon/page.tsx");

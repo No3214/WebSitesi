@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { env } from "@/lib/env";
+import { logEvent, maskIp } from "@/lib/logger";
 import { getPayloadClient } from "@/lib/payload";
 import {
   enforceRateLimit,
@@ -189,7 +190,10 @@ export async function POST(req: Request) {
       message: "Talebiniz alındı. Satış danışmanımız 24 saat içinde sizinle iletişime geçecek.",
     });
   } catch (error) {
-    console.error("Lead submission error:", error);
+    logEvent("error", "lead.submission_failed", {
+      reason: error instanceof Error ? error.name : "UnknownError",
+      ip: maskIp(extractClientIp(req.headers)),
+    });
     return NextResponse.json({ ok: false, message: "Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz." }, { status: 500 });
   }
 }
