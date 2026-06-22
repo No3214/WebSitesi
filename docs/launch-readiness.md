@@ -75,8 +75,8 @@ başına GO kanıtı sayılmaz.
 `NS1.VERCEL-DNS.COM,NS2.VERCEL-DNS.COM` olarak kaydedildi ve Vercel DNS
 doğrudan kontrollerinde web/mail kayıtları hazır göründü. Canlı public ölçümde
 `kozbeylikonagi.com` ve `www.kozbeylikonagi.com` artık current Vercel app'i
-servis ediyor: `/api/health` `service=kozbeyli-konagi` ve commit
-`f040ea9cc452` döndürüyor, ilk redirect HTTPS kalıyor ve ana sayfada
+servis ediyor: `/api/health` `service=kozbeyli-konagi` ve current production
+commit döndürüyor, ilk redirect HTTPS kalıyor ve ana sayfada
 `/videos/hero.mp4` var. `domain:verify:strict` yine NO-GO kalır; sebep artık
 `.com` değil, `.com.tr` brand origin'lerinin eski HTML yüzeyinde kalması ve
 production env/evidence kapılarının tamamlanmamış olmasıdır.

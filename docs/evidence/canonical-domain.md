@@ -9,10 +9,10 @@ owner: launch-qa
 Canonical `.com` validation is now live for the current Vercel application:
 `https://kozbeylikonagi.com` redirects over HTTPS to
 `https://www.kozbeylikonagi.com`, and both canonical origins return
-`/api/health` JSON with `service: "kozbeyli-konagi"` at deployment commit
-`f040ea9cc452`. Both homepages expose the approved opening hero video,
-`/videos/hero.mp4`, and no legacy host signatures are detected on the `.com`
-origins.
+`/api/health` JSON with `service: "kozbeyli-konagi"` at the deployment commit
+reported by `npm run domain:verify:json`. Both homepages expose the approved
+opening hero video, `/videos/hero.mp4`, and no legacy host signatures are
+detected on the `.com` origins.
 
 Full public-domain validation is not ready yet because the active Turkish ccTLD
 brand surfaces, `https://kozbeylikonagi.com.tr` and
@@ -44,7 +44,7 @@ As of 2026-06-22, `npm run domain:verify:json` reports this concrete state:
   `https://www.kozbeylikonagi.com/`; no HTTPS-to-HTTP first hop remains.
 - `https://kozbeylikonagi.com/api/health` and
   `https://www.kozbeylikonagi.com/api/health` return
-  `service: "kozbeyli-konagi"` and deployment commit `f040ea9cc452`.
+  `service: "kozbeyli-konagi"` and the current production deployment commit.
 - Both `.com` homepages expose `/videos/hero.mp4`, so the approved opening
   video shell is present on the canonical public domain.
 - The `.com.tr` brand origins currently return HTML for `/api/health` instead
@@ -85,7 +85,7 @@ As of 2026-06-22, `npm run domain:verify:json` reports this concrete state:
   (`prj_lM3tFqaJ5DIv9JaYTUobdTBQlXC8`) is linked to
   `kozbeylikonagi.com` and `www.kozbeylikonagi.com`, and the Vercel preview
   plus both `.com` origins serve `service: "kozbeyli-konagi"` with deployment
-  commit `f040ea9cc452`.
+  commit reported by `npm run domain:verify:json`.
 - Current public DNS authority on 2026-06-22: recursive DNS still reports
   `.com` Cloudflare
   nameservers `anastasia.ns.cloudflare.com` and `theo.ns.cloudflare.com`, so

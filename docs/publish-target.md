@@ -56,7 +56,7 @@ türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
   (68 routes), `npm audit --omit=dev --audit-level=high` PASS.
 - Public domain durumu: Vercel production URL ve `.com` canonical origin'ler
   güncel; `kozbeylikonagi.com` ve `www` `/api/health` üzerinden current commit
-  `f040ea9cc452` döndürüyor ve `/videos/hero.mp4` açılış videosunu gösteriyor.
+  döndürüyor ve `/videos/hero.mp4` açılış videosunu gösteriyor.
   `npm run domain:verify:strict` hâlâ NO-GO; sebep `.com.tr` brand origin'lerin
   eski HTML yüzeyinde kalması ve production env/evidence kapılarının eksik
   olmasıdır.

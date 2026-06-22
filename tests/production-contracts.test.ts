@@ -760,7 +760,7 @@ describe("production readiness contracts", () => {
     expect(launchReadiness).toContain("https://kozbeyli-konagi.vercel.app");
     expect(launchReadiness).toContain("legacy Joomla/Seagull template");
     expect(launchReadiness).toContain("`.com` canonical origins PASS");
-    expect(launchReadiness).toContain("f040ea9cc452");
+    expect(launchReadiness).toContain("current production");
     expect(launchReadiness).not.toContain("9 files / 29 tests");
     expect(launchReadiness).not.toContain("66 routes generated");
     expect(launchReadiness).not.toContain("113 passed / 2 skipped");
@@ -778,7 +778,7 @@ describe("production readiness contracts", () => {
     expect(canonicalEvidence).toContain("legacy Joomla/Seagull template");
     expect(canonicalEvidence).toContain("legacy HotelRunner hosted landing surface");
     expect(canonicalEvidence).toContain("Canonical `.com` validation is now live");
-    expect(canonicalEvidence).toContain("deployment commit `f040ea9cc452`");
+    expect(canonicalEvidence).toContain("commit reported by");
     expect(canonicalEvidence).toContain("Full public-domain validation is not ready yet");
     expect(canonicalEvidence).toContain("DNS NS/MX can be verified through DNS-over-HTTPS");
     expect(canonicalEvidence).toContain("public A lookups can show Cloudflare anycast");
