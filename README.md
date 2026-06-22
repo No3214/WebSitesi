@@ -84,6 +84,8 @@ npm run test:stress              # monkey + chaos
 npm run media:hero               # Açılış videosu kalite/provenance denetimi
 npm run evidence:handoff         # Kalan 100/100 kanıtlarını sahip/komut/checklist olarak listeler
 npm run evidence:handoff:json    # Aynı evidence handoff çıktısı makine okunur JSON
+npm run evidence:templates       # Kalan kanıt dosyaları için status: pending template üretir
+npm run evidence:templates:json  # Aynı template çıktısı makine okunur JSON
 npm run launch:audit             # Ticari 100/100 hedefi için env/kanıt denetimi
 npm run launch:audit:json        # Aynı ticari denetimin makine okunur JSON çıktısı
 npm run launch:audit:strict      # Tüm ticari kanıtlar tamamlanmadan fail verir
@@ -110,6 +112,7 @@ npm run test:stress              # Canlı prod'u yormadan lokal monkey/chaos pak
 npm run launch:audit             # Booking/payment 100/100 için kalan kanıtları listeler
 npm run launch:audit:json        # CI/ajanlar için structured launch audit çıktısı
 npm run evidence:handoff         # Operasyon ekibi için güvenli kanıt tamamlama listesi
+npm run evidence:templates       # Operasyon ekibi için kopyalanabilir güvenli kanıt şablonları
 npm run media:hero               # Hero video hash, çözünürlük, süre, bitrate ve mobil/desktop sözleşmesi
 npm run domain:verify            # kozbeylikonagi.com ve www domain health/commit kontrolü
 npm run launch:smoke             # Public rota, health, hero video, konum ve medya smoke

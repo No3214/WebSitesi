@@ -20,6 +20,12 @@ operator checklist with the evidence file, owner, timing, safe source reference
 rules, missing environment key names and verification commands. `npm run
 evidence:handoff:json` emits the same handoff as machine-readable JSON.
 
+`npm run evidence:templates` prints copy-ready `status: pending` evidence
+templates for the currently blocked gates. Use `npm run evidence:templates:json`
+for dashboard or agent workflows. Use `npm run evidence:templates -- --all` to
+print reference templates for every commercial launch gate, or `npm run
+evidence:templates -- --gate hms_booking_engine` for one gate.
+
 Ready evidence must include redacted source-system references, such as ticket
 IDs, dashboard permalink IDs, approval note IDs, or UAT run IDs. Do not paste
 raw contracts, credentials, database connection strings, access tokens, card

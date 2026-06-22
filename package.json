@@ -28,6 +28,8 @@
     "evidence:handoff": "node scripts/evidence-handoff.mjs",
     "evidence:handoff:json": "node scripts/evidence-handoff.mjs --json",
     "evidence:handoff:strict": "node scripts/evidence-handoff.mjs --strict",
+    "evidence:templates": "node scripts/evidence-template.mjs",
+    "evidence:templates:json": "node scripts/evidence-template.mjs --json",
     "media:hero": "node scripts/hero-media-audit.mjs",
     "media:hero:json": "node scripts/hero-media-audit.mjs --json",
     "media:hero:strict": "node scripts/hero-media-audit.mjs --strict",

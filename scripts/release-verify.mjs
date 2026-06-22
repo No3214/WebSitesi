@@ -23,6 +23,10 @@ const baseGates = [
     label: "Commercial evidence handoff manifest",
   },
   {
+    script: "evidence:templates:json",
+    label: "Commercial evidence template manifest",
+  },
+  {
     script: "media:hero:json",
     label: "Opening hero media quality audit",
   },

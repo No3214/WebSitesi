@@ -100,6 +100,7 @@ describe("production readiness contracts", () => {
     expect(readme).toContain("eski Railway hedefi");
     expect(readme).toContain("npm i -g vercel");
     expect(readme).toContain("npm run evidence:handoff");
+    expect(readme).toContain("npm run evidence:templates");
     expect(audit).toContain("F9/T13 deploy hedefi");
     expect(audit).toContain("legacy Railway config kaldırıldı");
   });
@@ -142,6 +143,8 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"evidence:handoff"');
     expect(readinessScript).toContain('"evidence:handoff:json"');
     expect(readinessScript).toContain('"evidence:handoff:strict"');
+    expect(readinessScript).toContain('"evidence:templates"');
+    expect(readinessScript).toContain('"evidence:templates:json"');
     expect(readinessScript).toContain('"media:hero"');
     expect(readinessScript).toContain('"media:hero:json"');
     expect(readinessScript).toContain('"media:hero:strict"');
@@ -223,6 +226,10 @@ describe("production readiness contracts", () => {
     );
     expect(packageJson.scripts?.["evidence:handoff:strict"]).toBe(
       "node scripts/evidence-handoff.mjs --strict",
+    );
+    expect(packageJson.scripts?.["evidence:templates"]).toBe("node scripts/evidence-template.mjs");
+    expect(packageJson.scripts?.["evidence:templates:json"]).toBe(
+      "node scripts/evidence-template.mjs --json",
     );
     expect(packageJson.scripts?.["media:hero"]).toBe("node scripts/hero-media-audit.mjs");
     expect(packageJson.scripts?.["media:hero:json"]).toBe(
@@ -333,6 +340,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"docs/github-actions-readiness.md"');
     expect(readinessScript).toContain('"docs/vercel-operations.md"');
     expect(readinessScript).toContain('"scripts/evidence-handoff.mjs"');
+    expect(readinessScript).toContain('"scripts/evidence-template.mjs"');
     expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
     expect(readinessScript).toContain('"scripts/admin-surface-readiness.mjs"');
@@ -373,6 +381,7 @@ describe("production readiness contracts", () => {
       "security:audit",
       "evidence:scan",
       "evidence:handoff:json",
+      "evidence:templates:json",
       "media:hero:json",
       "admin:verify:json",
       "webhook:verify:json",
@@ -400,6 +409,7 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("commercialStrictGateOverrides");
     expect(releaseScript).toContain("Commercial evidence redaction scan");
     expect(releaseScript).toContain("Commercial evidence handoff manifest");
+    expect(releaseScript).toContain("Commercial evidence template manifest");
     expect(releaseScript).toContain("Admin-only growth dashboard access diagnosis");
     expect(releaseScript).toContain("Webhook signature, replay and body-limit diagnosis");
     expect(releaseScript).toContain("Production abuse-control readiness diagnosis");
