@@ -81,6 +81,16 @@ commit döndürüyor, ilk redirect HTTPS kalıyor ve ana sayfada
 `.com` değil, `.com.tr` brand origin'lerinin eski HTML yüzeyinde kalması ve
 production env/evidence kapılarının tamamlanmamış olmasıdır.
 
+2026-06-22 domain readiness sinyal ayrımı: `npm run domain:verify` canlı web
+origin doğrulamasını DNS kayıt şekli uyarısından ayrı gösterir. `.com`
+origin'leri `/api/health`, current commit, güvenli redirect ve
+`/videos/hero.mp4` kontrollerinden geçiyorsa live record satırında
+`originVerified=yes` görünür. Resolver cache veya Cloudflare/Vercel proxy
+durumundan gelen eski A/CNAME cevapları yine `dnsReady=false` uyarısı üretir,
+ama `.com` web hazır sinyalini bastırmaz. Tam GO için `.com.tr` brand origin'leri
+de güncel uygulamayı servis etmeli veya güvenli canonical yönlendirmeye
+alınmalıdır.
+
 2026-06-20 public light theme güncellemesi: koyu public yüzeyler geriye
 alındı. Mobil menü, oda detay rezervasyon kartı, exit-intent rezervasyon paneli
 ve hata ekranı açık taş/olive tema yüzeylerine çekildi; `tests/light-theme-contract.test.ts`

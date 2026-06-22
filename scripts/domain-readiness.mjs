@@ -497,6 +497,57 @@ function describeActualDns(item) {
   return item.error || "n/a";
 }
 
+function hostnameForOrigin(origin) {
+  try {
+    return new URL(origin).hostname.toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
+function annotateWebRecordChecks({ dns, canonical, brand }) {
+  const originsByHost = new Map();
+
+  for (const item of [...canonical, ...brand]) {
+    const hostname = hostnameForOrigin(item.origin);
+    if (!hostname) continue;
+    originsByHost.set(hostname, {
+      origin: item.origin,
+      ready: item.ready,
+    });
+  }
+
+  const webRecordChecks = dns.webRecordChecks.map((item) => {
+    const origin = originsByHost.get(item.host.toLowerCase());
+
+    return {
+      ...item,
+      originVerified: Boolean(origin?.ready),
+      origin: origin?.origin || "",
+      propagationNote:
+        !item.ready && origin?.ready
+          ? "The web origin is verified on the current deployment; this DNS mismatch is treated as propagation, resolver-cache, or proxy-state evidence."
+          : "",
+    };
+  });
+
+  return {
+    ...dns,
+    webRecordChecks,
+    webRecordsOk: webRecordChecks.every((item) => item.ready),
+  };
+}
+
+function describeDnsRecordWarning(item) {
+  const base = `${item.type} ${item.host} does not match Vercel target ${
+    item.expectedDescription
+  }; actual: ${describeActualDns(item)}`;
+
+  if (!item.originVerified) return base;
+
+  return `${base}; web origin ${item.origin} is already verified, so treat this as DNS propagation/proxy-state evidence`;
+}
+
 async function checkWebTargetRecord({
   record,
   resolve4Impl,
@@ -806,7 +857,7 @@ export async function evaluateDomainReadiness({
   dnsFallbackFetchImpl = fetch,
   dnsFallbackTimeoutMs = 6000,
 } = {}) {
-  const [preview, canonical, brand, dns] = await Promise.all([
+  const [preview, canonical, brand, rawDns] = await Promise.all([
     checkOrigin({ origin: previewOrigin, expectedCommit, fetchImpl, timeoutMs }),
     Promise.all(
       canonicalOrigins.map((origin) =>
@@ -831,6 +882,7 @@ export async function evaluateDomainReadiness({
   const canonicalReady = canonical.every((item) => item.ready);
   const brandReady = brand.every((item) => item.ready);
   const previewReady = preview.ready;
+  const dns = annotateWebRecordChecks({ dns: rawDns, canonical, brand });
   const warnings = [
     ...dns.zones
       .filter((zone) => !zone.nsOk)
@@ -840,11 +892,7 @@ export async function evaluateDomainReadiness({
       .map((zone) => `${zone.group} domain MX record could not be verified as ${zone.expectedMx}`),
     ...dns.webRecordChecks
       .filter((item) => !item.ready)
-      .map((item) =>
-        `${item.type} ${item.host} does not match Vercel target ${item.expectedDescription}; actual: ${
-          describeActualDns(item)
-        }`,
-      ),
+      .map(describeDnsRecordWarning),
   ];
   const blockers = [
     ...canonical.flatMap(originBlockers),
@@ -964,8 +1012,9 @@ export function formatDomainReadiness(result) {
     lines.push(
       `  - ${record.ready ? "PASS" : "WARN"} [${record.group}] ${record.type} ${record.host} expected=${record.expectedDescription} actual=${
         describeActualDns(record)
-      } source=${record.source}`,
+      } source=${record.source} originVerified=${record.originVerified ? "yes" : "no"}`,
     );
+    if (record.propagationNote) lines.push(`    note: ${record.propagationNote}`);
     if (!record.ready) lines.push(`    remediation: ${record.remediation}`);
   }
 

@@ -125,6 +125,11 @@ As of 2026-06-22, `npm run domain:verify:json` reports this concrete state:
   redirect-chain and `/videos/hero.mp4` checks. Keep status `pending` until
   the `.com.tr` brand origins also pass or securely redirect, and until public
   DNS propagation is no longer ambiguous.
+- `npm run domain:verify` now marks mismatched live DNS record rows with
+  `originVerified=yes` when the corresponding HTTPS origin is already serving
+  the current Vercel deployment. Those rows remain DNS propagation/proxy-state
+  warnings and keep `dnsReady=false`, but they no longer obscure the stronger
+  live web-origin proof for `.com`.
 
 ## Residual Risk
 

@@ -75,6 +75,9 @@ type DomainReadinessModule = {
         actualValues: string[];
         ready: boolean;
         remediation: string;
+        originVerified: boolean;
+        origin: string;
+        propagationNote: string;
       }>;
     };
     preview: {
@@ -499,14 +502,22 @@ describe("domain readiness", () => {
     expect(result.blockers).toEqual([]);
     expect(result.warnings).toEqual(
       expect.arrayContaining([
-        "A kozbeylikonagi.com does not match Vercel target 76.76.21.21; actual: 203.0.113.10",
-        "CNAME www.kozbeylikonagi.com does not match Vercel target cname.vercel-dns.com or the project-specific Vercel CNAME shown in Project Settings / vercel domains inspect; actual: no CNAME; A records: 203.0.113.10",
+        "A kozbeylikonagi.com does not match Vercel target 76.76.21.21; actual: 203.0.113.10; web origin https://kozbeylikonagi.com is already verified, so treat this as DNS propagation/proxy-state evidence",
       ]),
     );
     expect(result.dns.webRecordChecks.find((record) => record.host === "kozbeylikonagi.com")).toMatchObject({
       ready: false,
       expectedValue: "76.76.21.21",
       actualValues: ["203.0.113.10"],
+      originVerified: true,
+      origin: "https://kozbeylikonagi.com",
+      propagationNote: expect.stringContaining("web origin is verified"),
+    });
+    expect(result.dns.webRecordChecks.find((record) => record.host === "www.kozbeylikonagi.com")).toMatchObject({
+      ready: false,
+      originVerified: false,
+      origin: "",
+      propagationNote: "",
     });
   });
 
