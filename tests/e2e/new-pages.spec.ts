@@ -50,6 +50,9 @@ test.describe("EN public localization", () => {
     await page.goto("/en");
 
     const main = page.locator("main");
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.lang))
+      .toBe("en");
     await expect(page.getByRole("heading", { name: "In the Heart of History An Elegant Aegean Escape" })).toBeVisible();
     await expect(main.getByText("Tarihin Kalbinde")).toHaveCount(0);
     await expect(main.getByRole("link", { name: "Book Now" })).toHaveAttribute("href", HMS_BOOKING_URL);
@@ -57,6 +60,30 @@ test.describe("EN public localization", () => {
     await expect(main.getByRole("link", { name: "Plan an Event" })).toHaveAttribute("href", "/en/organizasyonlar");
     await expect(main.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("href", HMS_BOOKING_URL);
     await expect(main.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("target", "_blank");
+  });
+
+  test("EN rooms stay fully translated on mobile cards and detail pages", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/en/odalar");
+
+    const main = page.locator("main");
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.lang))
+      .toBe("en");
+    await expect(page.getByRole("heading", { name: "Refined Rooms & Suites" })).toBeVisible();
+    await expect(main.getByRole("heading", { name: "Triple Room", exact: true })).toBeVisible();
+    await expect(main.getByText("3 Adults · Village & Nature")).toBeVisible();
+    await expect(main.getByText("Üç Kişilik Oda")).toHaveCount(0);
+    await expect(main.getByText("3 Yetişkin")).toHaveCount(0);
+    await expect(main.getByText("Köy ve Doğa")).toHaveCount(0);
+
+    await page.goto("/en/odalar/uc-kisilik-oda");
+    await expect(page.getByRole("heading", { name: "Triple Room" })).toBeVisible();
+    await expect(page.getByText("3 Adults")).toBeVisible();
+    await expect(page.getByText("Village & Nature")).toBeVisible();
+    await expect(page.getByText("Üç Kişilik Oda")).toHaveCount(0);
+    await expect(page.getByText("Yetişkin")).toHaveCount(0);
+    await expect(page.getByText("Köy ve Doğa")).toHaveCount(0);
   });
 
   test("EN ana sayfa uppercase metinleri Ingilizce locale ile render eder", async ({ page }) => {

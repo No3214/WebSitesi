@@ -54,10 +54,15 @@ describe("English public copy contracts", () => {
     const roomsClient = read("src/components/rooms-client.tsx");
     const roomDetailClient = read("src/components/room-detail-client.tsx");
     const englishRoomDetailPage = read("src/app/en/odalar/[slug]/page.tsx");
+    const documentLocaleSync = read("src/components/document-locale-sync.tsx");
+    const rootLayout = read("src/app/layout.tsx");
 
     expect(roomsClient).toContain(": initialLocale;");
     expect(roomDetailClient).toContain("initialLocale = \"tr\"");
     expect(roomDetailClient).toContain(": initialLocale;");
     expect(englishRoomDetailPage).toContain('<RoomDetailClient slug={slug} initialLocale="en" />');
+    expect(rootLayout).toContain("<DocumentLocaleSync />");
+    expect(documentLocaleSync).toContain("document.documentElement.lang = locale");
+    expect(documentLocaleSync).toContain("document.documentElement.dataset.locale = locale");
   });
 });

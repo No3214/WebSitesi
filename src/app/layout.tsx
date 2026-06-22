@@ -16,6 +16,7 @@ import { MobileActionBar } from "@/components/mobile-action-bar";
 import { LoadingBar } from "@/components/loading-bar";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
+import { DocumentLocaleSync } from "@/components/document-locale-sync";
 
 
 export const metadata = defaultMetadata;
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             <Suspense fallback={null}>
               <LoadingBar />
             </Suspense>
+            <DocumentLocaleSync />
             {/* Görsel QA (2026-06-10): Eski reputation ribbon fixed header'la
                 üst üste biniyordu; AtmosphericImmersion tam-ekran perdesi hero'yu örtüyordu;
                 ConversionVelocity/Motivators uydurma aciliyet üretiyordu (sahte
