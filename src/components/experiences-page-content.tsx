@@ -4,6 +4,7 @@ import { FadeIn } from "@/components/animations";
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
 import { absoluteUrl } from "@/lib/utils";
+import { sanitizeJsonLd } from "@/lib/security";
 
 type Locale = "tr" | "en";
 
@@ -89,7 +90,7 @@ export function ExperiencesPageContent({ locale = "tr" }: { locale?: Locale }) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(itemListJsonLd) }}
       />
       <SiteHeader />
       <main>
