@@ -1,6 +1,11 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { getLocalizedRoom, getLocalizedRooms, rooms } from "@/data/rooms";
+
+const root = process.cwd();
+const read = (relativePath: string) => readFileSync(join(root, relativePath), "utf8");
 
 const turkishRoomCopyPatterns = [
   /Yetişkin/i,
@@ -51,5 +56,15 @@ describe("room localization", () => {
     const englishRoom = turkishRoom ? getLocalizedRoom(turkishRoom, "en") : undefined;
     expect(englishRoom?.title).toBe("Triple Room");
     expect(turkishRoom?.title).toBe("Üç Kişilik Oda");
+  });
+
+  it("renders reservation selection and fallback wizard rooms from localized room data", () => {
+    const reservationPage = read("src/components/reservation-page-content.tsx");
+    const roomsStep = read("src/components/payment-wizard/steps/rooms-step.tsx");
+
+    expect(reservationPage).toContain("getLocalizedRoom(selectedBaseRoom, locale)");
+    expect(reservationPage).not.toContain("roomTitle={rooms.find");
+    expect(roomsStep).toContain("getLocalizedRooms(locale)");
+    expect(roomsStep).not.toContain("rooms.map((room)");
   });
 });

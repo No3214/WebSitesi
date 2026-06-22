@@ -2,7 +2,7 @@ import { SiteHeader } from "@/components/site-header";
 import { PageHero } from "@/components/page-hero";
 import { ReservationClient } from "@/components/reservation-client";
 import { getDictionary } from "@/lib/dictionary";
-import { rooms } from "@/data/rooms";
+import { getLocalizedRoom, rooms } from "@/data/rooms";
 import { absoluteUrl } from "@/lib/utils";
 
 type ReservationLocale = "tr" | "en";
@@ -36,7 +36,8 @@ export async function ReservationPageContent({
   locale = "tr",
 }: ReservationPageContentProps) {
   const { oda } = await searchParams;
-  const selectedRoom = oda ? rooms.find((room) => room.slug === oda) : undefined;
+  const selectedBaseRoom = oda ? rooms.find((room) => room.slug === oda) : undefined;
+  const selectedRoom = selectedBaseRoom ? getLocalizedRoom(selectedBaseRoom, locale) : undefined;
   const initialDict = await getDictionary(locale);
   const copy = reservationCopy[locale];
   const jsonLd = {

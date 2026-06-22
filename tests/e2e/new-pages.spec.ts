@@ -20,16 +20,18 @@ test.describe("Rezervasyon sayfasi", () => {
   });
 
   test("EN rezervasyon sayfasi Ingilizce kalir ve destek linkleri /en rotalarina gider", async ({ page }) => {
-    await page.goto("/en/rezervasyon?oda=standart-deniz-manzarali-oda");
+    await page.goto("/en/rezervasyon?oda=uc-kisilik-oda");
 
     const main = page.locator("main");
     await expect(page.getByRole("heading", { name: "Booking", level: 1 })).toBeVisible();
     await expect(main.getByText("Your choice:")).toBeVisible();
+    await expect(main.getByText("Triple Room")).toBeVisible();
     await expect(main.getByText("Seçiminiz:")).toHaveCount(0);
+    await expect(main.getByText("Üç Kişilik Oda")).toHaveCount(0);
     await expect(main.getByRole("heading", { name: "Booking" })).toBeVisible();
     await expect(main.getByRole("link", { name: "Booking" })).toHaveAttribute(
       "href",
-      `${HMS_BOOKING_URL}&room=standart-deniz-manzarali-oda`,
+      `${HMS_BOOKING_URL}&room=uc-kisilik-oda`,
     );
     await expect(main.getByText("Official HMS screen opens in a new tab")).toBeVisible();
     await expect(main.getByText("Card details are not stored on this site")).toBeVisible();

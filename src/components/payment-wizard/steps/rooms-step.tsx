@@ -2,12 +2,13 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import { rooms } from "@/data/rooms";
+import { getLocalizedRooms } from "@/data/rooms";
 import type { usePaymentWizard } from "../use-payment-wizard";
 
 // Adim 2: Oda secimi ve gecelik fiyat listesi
 export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWizard> }) {
-  const { nights, selectedRoom, setSelectedRoom, setStep, copy } = wizard;
+  const { nights, selectedRoom, setSelectedRoom, setStep, copy, locale } = wizard;
+  const localizedRooms = getLocalizedRooms(locale);
 
   return (
     <motion.div
@@ -21,7 +22,7 @@ export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
       </div>
 
       <div className="rooms-grid" style={{ display: "grid", gap: 18, maxHeight: "400px", overflowY: "auto", paddingRight: 8, marginBottom: 24 }}>
-        {rooms.map((room) => {
+        {localizedRooms.map((room) => {
           let rate = 4500;
           if (room.slug.includes("superior")) rate = 8500;
           else if (room.slug.includes("aile")) rate = 7500;
