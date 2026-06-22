@@ -1335,9 +1335,10 @@ describe("production readiness contracts", () => {
 
     expect(galleryPage).not.toContain('from "next/image"');
     expect(galleryPage).toContain("<img");
-    expect(galleryPage).toContain('loading="eager"');
+    expect(galleryPage).toContain('const eagerImageSources = new Set(["/images/galeri/tas-firin-pide.jpg"])');
+    expect(galleryPage).toContain('loading={i < 4 || eagerImageSources.has(shot.src) ? "eager" : "lazy"}');
     expect(galleryPage).toContain('decoding="async"');
-    expect(galleryPage).toContain('fetchPriority={i < 4 ? "high" : "auto"}');
+    expect(galleryPage).toContain('fetchPriority={i < 4 || eagerImageSources.has(shot.src) ? "high" : "auto"}');
     expect(globals).toContain(".gallery-grid-item img {\n    width: 100%;\n    height: 100%;\n    display: block;");
   });
 

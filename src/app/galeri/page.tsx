@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 };
 
 export default function GalleryPage() {
+  const eagerImageSources = new Set(["/images/galeri/tas-firin-pide.jpg"]);
   const imageGalleryJsonLd = {
     "@context": "https://schema.org",
     "@type": "ImageGallery",
@@ -53,9 +54,9 @@ export default function GalleryPage() {
                       src={shot.src}
                       alt={shot.caption.tr}
                       className="object-cover"
-                      loading="eager"
+                      loading={i < 4 || eagerImageSources.has(shot.src) ? "eager" : "lazy"}
                       decoding="async"
-                      fetchPriority={i < 4 ? "high" : "auto"}
+                      fetchPriority={i < 4 || eagerImageSources.has(shot.src) ? "high" : "auto"}
                     />
                     <figcaption>{shot.caption.tr}</figcaption>
                   </figure>
