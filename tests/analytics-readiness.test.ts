@@ -9,6 +9,8 @@ const root = process.cwd();
 const tmpDirs: string[] = [];
 
 type AnalyticsReadinessModule = {
+  parseEnvFile: (source: string) => Record<string, string>;
+  loadEnvFileSnapshot: (envFile: string, baseEnv?: Record<string, string>) => Record<string, string>;
   evaluateAnalyticsReadiness: (args?: {
     env?: Record<string, string>;
     baseDir?: string;
@@ -107,6 +109,27 @@ afterEach(() => {
 });
 
 describe("analytics purchase readiness", () => {
+  it("parses pulled env files and keeps empty analytics values authoritative", async () => {
+    const mod = await loadModule();
+    const parsed = mod.parseEnvFile(
+      [
+        "NEXT_PUBLIC_META_PIXEL_ID=",
+        "NEXT_PUBLIC_GOOGLE_ADS_ID=AW-800024713",
+        'GA4_MEASUREMENT_ID=""',
+        "GA4_API_SECRET=''",
+        "NEXT_PUBLIC_GA4_MEASUREMENT_ID=G-V3R66C3MEF",
+      ].join("\n"),
+    );
+
+    expect(parsed).toEqual({
+      NEXT_PUBLIC_META_PIXEL_ID: "",
+      NEXT_PUBLIC_GOOGLE_ADS_ID: "AW-800024713",
+      GA4_MEASUREMENT_ID: "",
+      GA4_API_SECRET: "",
+      NEXT_PUBLIC_GA4_MEASUREMENT_ID: "G-V3R66C3MEF",
+    });
+  });
+
   it("keeps current source contracts passing while production analytics evidence is pending", async () => {
     const mod = await loadModule();
     const result = mod.evaluateAnalyticsReadiness({ env: {}, baseDir: root });
@@ -147,6 +170,45 @@ describe("analytics purchase readiness", () => {
     expect(result.evidence.ready).toBe(true);
     expect(result.sourceContracts.ready).toBe(true);
     expect(result.blockers).toEqual([]);
+  });
+
+  it("uses a pulled Vercel env file over local fallback analytics values", async () => {
+    const mod = await loadModule();
+    const baseDir = makeTmpDir();
+    copyContractFiles(baseDir);
+    writeEvidence(baseDir, "ready");
+    const envFile = path.join(baseDir, "vercel-production.env");
+    fs.writeFileSync(
+      envFile,
+      [
+        "NEXT_PUBLIC_GTM_ID=",
+        "NEXT_PUBLIC_GA4_MEASUREMENT_ID=",
+        "NEXT_PUBLIC_GOOGLE_ADS_ID=",
+        "NEXT_PUBLIC_META_PIXEL_ID=",
+        "GA4_MEASUREMENT_ID=",
+        "GA4_API_SECRET=",
+      ].join("\n"),
+    );
+
+    const env = mod.loadEnvFileSnapshot(envFile, readyEnv);
+    const result = mod.evaluateAnalyticsReadiness({ env, baseDir });
+
+    expect(env.NEXT_PUBLIC_GTM_ID).toBe("");
+    expect(env.NEXT_PUBLIC_GA4_MEASUREMENT_ID).toBe("");
+    expect(env.NEXT_PUBLIC_GOOGLE_ADS_ID).toBe("");
+    expect(env.NEXT_PUBLIC_META_PIXEL_ID).toBe("");
+    expect(env.GA4_MEASUREMENT_ID).toBe("");
+    expect(env.GA4_API_SECRET).toBe("");
+    expect(result.decision).toBe("ANALYTICS PURCHASE TRACKING BLOCKED");
+    expect(result.env.missing).toEqual([
+      "NEXT_PUBLIC_META_PIXEL_ID",
+      "NEXT_PUBLIC_GOOGLE_ADS_ID",
+      "GA4_MEASUREMENT_ID",
+      "GA4_API_SECRET",
+      "NEXT_PUBLIC_GTM_ID or NEXT_PUBLIC_GA4_MEASUREMENT_ID",
+    ]);
+    expect(JSON.stringify(result)).not.toContain("ga4-secret");
+    expect(JSON.stringify(result)).not.toContain("GTM-ABCDE1");
   });
 
   it("blocks invalid IDs and legacy Facebook pixel env aliases", async () => {

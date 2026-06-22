@@ -555,6 +555,10 @@ describe("production readiness contracts", () => {
     expect(analyticsReadiness).toContain("NEXT_PUBLIC_GOOGLE_ADS_ID must look like AW-XXXXXXXXX");
     expect(analyticsReadiness).toContain("direct_google_tag_fallback");
     expect(analyticsReadiness).toContain("meta_legacy_key_removed");
+    expect(analyticsReadiness).toContain("loadEnvFileSnapshot");
+    expect(analyticsReadiness).toContain("parseEnvFile");
+    expect(analyticsReadiness).toContain('"--env-file"');
+    expect(analyticsReadiness).not.toContain("GA4_API_SECRET=");
     expect(analyticsReadiness).toContain("process.exitCode");
     expect(analyticsReadiness).not.toContain("process.exit(strict");
     expect(layout).toContain("<TrackingScripts />");

@@ -36,6 +36,28 @@ const CONTRACT_FILES = {
 
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
 
+export function parseEnvFile(source) {
+  return Object.fromEntries(
+    source
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith("#") && line.includes("="))
+      .map((line) => {
+        const index = line.indexOf("=");
+        const key = line.slice(0, index).trim();
+        const value = line.slice(index + 1).trim().replace(/^["']|["']$/g, "");
+        return [key, value];
+      }),
+  );
+}
+
+export function loadEnvFileSnapshot(envFile, baseEnv = loadEnvSnapshot()) {
+  return {
+    ...baseEnv,
+    ...parseEnvFile(fs.readFileSync(envFile, "utf8")),
+  };
+}
+
 function read(baseDir, relPath) {
   const fullPath = path.join(baseDir, relPath);
   return fs.existsSync(fullPath) ? fs.readFileSync(fullPath, "utf8") : "";
@@ -323,7 +345,10 @@ export function formatAnalyticsReadiness(result) {
 function main() {
   const strict = process.argv.includes("--strict");
   const json = process.argv.includes("--json");
-  const result = evaluateAnalyticsReadiness();
+  const envFileArgIndex = process.argv.indexOf("--env-file");
+  const envFile = envFileArgIndex >= 0 ? process.argv[envFileArgIndex + 1] : "";
+  const env = envFile ? loadEnvFileSnapshot(envFile) : loadEnvSnapshot();
+  const result = evaluateAnalyticsReadiness({ env });
 
   console.log(json ? JSON.stringify(result, null, 2) : formatAnalyticsReadiness(result));
   process.exitCode = strict && result.decision !== "ANALYTICS PURCHASE TRACKING PASS" ? 1 : 0;

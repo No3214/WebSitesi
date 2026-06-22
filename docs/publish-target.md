@@ -53,6 +53,12 @@ değerlerini local `.env` ile maskelenmeden denetler:
 `node scripts/abuse-controls-readiness.mjs --env-file %TEMP%\kozbeyli-abuse.env`.
 Snapshot içinde boş `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`,
 `UPSTASH_REDIS_REST_URL` veya `UPSTASH_REDIS_REST_TOKEN` varsa gate bloklu kalır.
+`analytics:verify` de aynı snapshot modeliyle GTM/GA4/Meta/Google Ads production
+env değerlerini local `.env` yerine Vercel Production dosyasından doğrular:
+`vercel env pull %TEMP%\kozbeyli-analytics.env --environment=production` ve
+`node scripts/analytics-readiness.mjs --env-file %TEMP%\kozbeyli-analytics.env`.
+Boş public ID'ler veya `GA4_API_SECRET` local değerlerle tamamlanmaz; işlem
+sonunda temp dosyayı sil veya önce boşalt.
 `launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
 
 - Canonical domain health + current Vercel commit: `docs/evidence/canonical-domain.md`

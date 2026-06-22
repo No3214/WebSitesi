@@ -146,6 +146,10 @@ strict POS ve ticari launch kapısı bilinçli olarak BLOCKED kalır.
 `GTM-MSL2FLF5`) doğrulanana kadar hardcode edilmez; GTM yoksa consent-gated
 doğrudan Google tag fallback'i `NEXT_PUBLIC_GA4_MEASUREMENT_ID` ve
 `NEXT_PUBLIC_GOOGLE_ADS_ID` ile çalışır.
+2026-06-22 ek doğrulama: `analytics-readiness.mjs --env-file` artık Vercel'den
+çekilmiş geçici production env snapshot'ını local `.env` yerine otoriter kabul
+eder. Boş public analytics ID'leri veya `GA4_API_SECRET` local fallback ile
+maskelenmez ve secret değerleri rapora yazılmaz.
 
 2026-06-18 güvenlik güncellemesi: Tam ticari launch artık production Turnstile
 ve Upstash shared rate-limit/replay kanıtını da ister. Kod fallbackleri dev için
