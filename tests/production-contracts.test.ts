@@ -1015,10 +1015,11 @@ describe("production readiness contracts", () => {
     expect(growthDashboard).toContain("docs/evidence/production-database.md");
     expect(growthDashboard).toContain("Payload database proof");
     expect(growthDashboard).toContain("npm run supabase:verify:strict");
+    expect(growthDashboard).toContain("bank account details");
     expect(growthEngine).toContain("database");
     expect(growthDashboard).toContain("npm run release:verify");
     expect(growthDashboard).toContain("npm run launch:cutover:json");
-    expect(growthDashboard).toContain("No secrets in repo evidence");
+    expect(growthDashboard).toContain("No secrets or bank details in repo evidence");
     expect(growthEngine).toContain("EVIDENCE_GATED");
     expect(growthSmoke).toContain("Deterministic growth evidence smoke");
 

@@ -111,7 +111,7 @@ const launchGates: LaunchGate[] = [
 const verifiedChecks = [
   "Source-controlled release gate: npm run release:verify",
   "Public route smoke set: hero video, location, media and publish routes",
-  "Evidence redaction scan: docs/evidence/* must not contain secrets, card data, IBAN or guest PII",
+  "Evidence redaction scan: docs/evidence/* must not contain secrets, card data, bank account details, IBAN or guest PII",
   "Reservation handoff contract: approved HMS URL only, opened outside the main page flow",
 ];
 
@@ -308,7 +308,7 @@ export function GrowthDashboardClient() {
               </p>
             </div>
             <div className="border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-[#f6e6bd]">
-              No secrets in repo evidence
+              No secrets or bank details in repo evidence
             </div>
           </div>
         </section>
