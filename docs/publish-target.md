@@ -25,6 +25,7 @@ npm run launch:cutover
 npm run launch:cutover:json
 npm run media:hero
 npm run launch:audit:strict
+npm run release:verify:commercial
 npm run supabase:verify
 npm run supabase:verify:strict
 npm run domain:verify
@@ -92,6 +93,7 @@ Yayın öncesi yerel kapı:
 
 ```bash
 npm run release:verify
+npm run release:verify:commercial # sadece 100/100 booking/payment sign-off için
 ```
 
 Bu üst komut aşağıdaki kapıları sırayla çalıştırır:
@@ -132,6 +134,9 @@ npm run domain:verify:strict
 Not: `release:verify` lokal repo/release yeşil kapısıdır ve `launch:audit:json`
 çıktısını raporlar; domain/commercial strict gate'leri dış kanıtlar hazır olana
 kadar bilinçli olarak ayrı kırmızı kapı halinde tutulur.
+`release:verify:commercial`, aynı release sırasını `launch:audit:strict` ve
+`launch:cutover:strict` ile çalıştırır; bu komut sadece tam ticari
+booking/payment yayını için yeşil kabul edilir.
 
 `publish:target`, commercial launch blocker listesinin yanında kısa
 `commercial launch progress notes` satırı da basar. Bu satır, kanıtı eksik olduğu

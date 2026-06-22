@@ -244,6 +244,7 @@ const requiredScripts = [
   "preview:verify:json",
   "preview:verify:strict",
   "release:verify",
+  "release:verify:commercial",
   "prebuild",
   "build",
   "publish:routes",

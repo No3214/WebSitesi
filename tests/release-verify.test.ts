@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 const root = process.cwd();
 
 type ReleaseVerifyModule = {
+  buildReleaseGates: (options?: { commercialStrict?: boolean }) => ReleaseVerifyModule["gates"];
   gates: Array<{
     script: string;
     label: string;
@@ -44,6 +45,26 @@ async function loadReleaseVerify() {
 }
 
 describe("release verification runner", () => {
+  it("keeps the default release gate diagnostic while offering a commercial strict gate list", async () => {
+    const releaseVerify = await loadReleaseVerify();
+
+    const defaultScripts = releaseVerify.buildReleaseGates().map((gate) => gate.script);
+    const commercialScripts = releaseVerify
+      .buildReleaseGates({ commercialStrict: true })
+      .map((gate) => gate.script);
+
+    expect(defaultScripts).toContain("launch:audit:json");
+    expect(defaultScripts).toContain("launch:cutover:json");
+    expect(defaultScripts).not.toContain("launch:audit:strict");
+    expect(defaultScripts).not.toContain("launch:cutover:strict");
+    expect(releaseVerify.gates.map((gate) => gate.script)).toEqual(defaultScripts);
+
+    expect(commercialScripts).toContain("launch:audit:strict");
+    expect(commercialScripts).toContain("launch:cutover:strict");
+    expect(commercialScripts).not.toContain("launch:audit:json");
+    expect(commercialScripts).not.toContain("launch:cutover:json");
+  });
+
   it("retries npm audit once when the registry audit endpoint times out", async () => {
     const releaseVerify = await loadReleaseVerify();
     const securityAudit = releaseVerify.gates.find((gate) => gate.script === "security:audit");

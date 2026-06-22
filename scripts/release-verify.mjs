@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
-export const gates = [
+const baseGates = [
   {
     script: "security:audit",
     label: "Runtime dependency audit",
@@ -100,6 +100,28 @@ export const gates = [
   },
 ];
 
+const commercialStrictGateOverrides = {
+  "launch:audit:json": {
+    script: "launch:audit:strict",
+    label: "Commercial launch strict evidence gate",
+  },
+  "launch:cutover:json": {
+    script: "launch:cutover:strict",
+    label: "Commercial cutover strict readiness gate",
+  },
+};
+
+export function buildReleaseGates({ commercialStrict = false } = {}) {
+  if (!commercialStrict) return baseGates;
+
+  return baseGates.map((gate) => ({
+    ...gate,
+    ...(commercialStrictGateOverrides[gate.script] || {}),
+  }));
+}
+
+export const gates = buildReleaseGates();
+
 const isWindows = process.platform === "win32";
 const transientFailurePatterns = [
   /\bETIMEDOUT\b/i,
@@ -180,8 +202,8 @@ function formatDuration(ms) {
   return `${Math.round(ms / 1000)}s`;
 }
 
-function printList() {
-  console.log(gates.map((gate) => gate.script).join("\n"));
+function printList(selectedGates) {
+  console.log(selectedGates.map((gate) => gate.script).join("\n"));
 }
 
 function printSummary(results) {
@@ -196,23 +218,31 @@ function printSummary(results) {
 }
 
 function main() {
+  const commercialStrict = process.argv.includes("--commercial-strict");
+  const selectedGates = buildReleaseGates({ commercialStrict });
+
   if (process.argv.includes("--list")) {
-    printList();
+    printList(selectedGates);
     return;
   }
 
   if (process.argv.includes("--help")) {
-    console.log("Usage: node scripts/release-verify.mjs [--list]");
-    console.log("Runs the local release gate: security, evidence scan, evidence handoff, hero media audit, readiness diagnostics, domain/HMS/Vercel diagnostics, publish verify, launch smoke, stress, audit json and cutover plan.");
+    console.log("Usage: node scripts/release-verify.mjs [--list] [--commercial-strict]");
+    console.log("Runs the local release gate: security, evidence scan, evidence handoff, hero media audit, readiness diagnostics, domain/HMS/Vercel diagnostics, publish verify, launch smoke, stress, audit and cutover plan.");
+    console.log("--commercial-strict replaces diagnostic launch audit/cutover JSON with strict gates for full booking/payment launch sign-off.");
     return;
   }
 
   console.log("Kozbeyli Konagi release verification");
-  console.log("Target: security + evidence scan + evidence handoff + hero media audit + readiness diagnostics + domain/HMS/Vercel diagnostics + publish verification + launch smoke + stress + commercial audit + cutover plan");
+  console.log(
+    commercialStrict
+      ? "Target: full commercial launch sign-off with strict evidence gates"
+      : "Target: security + evidence scan + evidence handoff + hero media audit + readiness diagnostics + domain/HMS/Vercel diagnostics + publish verification + launch smoke + stress + commercial audit + cutover plan",
+  );
 
   const results = [];
 
-  for (const gate of gates) {
+  for (const gate of selectedGates) {
     console.log(`\n--- ${gate.label}: npm run ${gate.script} ---`);
     const result = runGate(gate);
     results.push(result);

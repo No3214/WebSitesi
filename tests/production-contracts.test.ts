@@ -190,6 +190,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"preview:verify:json"');
     expect(readinessScript).toContain('"preview:verify:strict"');
     expect(readinessScript).toContain('"release:verify"');
+    expect(readinessScript).toContain('"release:verify:commercial"');
     expect(packageJson.scripts?.["launch:smoke"]).toBe("node scripts/launch-smoke.mjs");
     expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
       "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/launch-smoke.mjs",
@@ -311,6 +312,9 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["security:audit"]).toBe("npm audit --omit=dev --audit-level=high");
     expect(packageJson.scripts?.prebuild).toBe("node scripts/clean-next-build.mjs");
     expect(packageJson.scripts?.["release:verify"]).toBe("node scripts/release-verify.mjs");
+    expect(packageJson.scripts?.["release:verify:commercial"]).toBe(
+      "node scripts/release-verify.mjs --commercial-strict",
+    );
     expect(readinessScript).toContain('"scripts/clean-next-build.mjs"');
     expect(readinessScript).toContain('"src/app/api/health/route.ts"');
     expect(readinessScript).toContain('"src/lib/production-readiness.ts"');
@@ -391,6 +395,9 @@ describe("production readiness contracts", () => {
     }
 
     expect(releaseScript).toContain("--list");
+    expect(releaseScript).toContain("--commercial-strict");
+    expect(releaseScript).toContain("buildReleaseGates");
+    expect(releaseScript).toContain("commercialStrictGateOverrides");
     expect(releaseScript).toContain("Commercial evidence redaction scan");
     expect(releaseScript).toContain("Commercial evidence handoff manifest");
     expect(releaseScript).toContain("Admin-only growth dashboard access diagnosis");
@@ -407,7 +414,9 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("GitHub Actions CI readiness diagnosis");
     expect(releaseScript).toContain("domain/HMS/Vercel diagnostics");
     expect(releaseScript).toContain("process.env.ComSpec");
-    expect(releaseScript).not.toContain("launch:audit:strict");
+    expect(releaseScript).toContain("launch:audit:strict");
+    expect(releaseScript).toContain("launch:cutover:strict");
+    expect(releaseScript).toContain("export const gates = buildReleaseGates();");
     expect(ciWorkflow).toContain("Release gate manifest");
     expect(ciWorkflow).toContain("node scripts/release-verify.mjs --list");
     expect(ciWorkflow).toContain("Evidence redaction scan");

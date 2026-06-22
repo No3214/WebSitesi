@@ -83,6 +83,7 @@
     "preview:verify:strict": "node scripts/local-preview-verify.mjs --strict",
     "quality": "npm run lint && npm run typecheck && npm run test:unit && npm run build",
     "release:verify": "node scripts/release-verify.mjs",
+    "release:verify:commercial": "node scripts/release-verify.mjs --commercial-strict",
     "publish:routes": "playwright test tests/e2e/publish-routes.spec.ts --reporter=line",
     "publish:target": "node scripts/publish-readiness.mjs",
     "publish:verify": "npm run quality && playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts --reporter=line && npm run publish:target",
