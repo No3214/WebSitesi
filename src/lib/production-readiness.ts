@@ -1,4 +1,7 @@
-import { OFFICIAL_HMS_BOOKING_ENGINE_URL } from "@/lib/booking-engine-url";
+import {
+  OFFICIAL_HMS_BOOKING_ENGINE_HOST,
+  OFFICIAL_HMS_BOOKING_ENGINE_URL,
+} from "@/lib/booking-engine-url";
 
 type RuntimeGate = {
   id: string;
@@ -11,6 +14,9 @@ type RuntimeGate = {
 type RuntimeConfigurationSource = "env" | "code_fallback" | "missing" | "partial" | "invalid" | "not_applicable";
 
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
+const officialHmsBookingEnginePattern = new RegExp(
+  `^https://${OFFICIAL_HMS_BOOKING_ENGINE_HOST.replace(/\./g, "\\.")}(?:/|\\?|$)`,
+);
 
 const runtimeGates: RuntimeGate[] = [
   {
@@ -41,7 +47,7 @@ const runtimeGates: RuntimeGate[] = [
     requiredEnv: ["NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"],
     fallbackUrl: OFFICIAL_HMS_BOOKING_ENGINE_URL,
     expected: {
-      NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: /^https:\/\//,
+      NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: officialHmsBookingEnginePattern,
     },
   },
   {

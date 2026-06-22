@@ -1424,7 +1424,9 @@ describe("production readiness contracts", () => {
     expect(productionReadiness).toContain("localhost");
     expect(productionReadiness).toContain("production_abuse_controls");
     expect(productionReadiness).toContain("hms_booking_engine");
+    expect(productionReadiness).toContain("OFFICIAL_HMS_BOOKING_ENGINE_HOST");
     expect(productionReadiness).toContain("OFFICIAL_HMS_BOOKING_ENGINE_URL");
+    expect(productionReadiness).toContain("officialHmsBookingEnginePattern");
     expect(productionReadiness).toContain("code_fallback");
     expect(productionReadiness).toContain("fallbackApplied");
     expect(productionReadiness).toContain("invalidCount");

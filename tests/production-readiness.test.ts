@@ -11,7 +11,7 @@ const readyEnv = {
   TURNSTILE_SECRET_KEY: "turnstile-secret",
   UPSTASH_REDIS_REST_URL: "https://upstash.kozbeylikonagi.com",
   UPSTASH_REDIS_REST_TOKEN: "upstash-token",
-  NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: "https://booking.kozbeylikonagi.com/search",
+  NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: "https://kozbeyli-konagi.hmshotel.net/bv3/search",
   GARANTI_POS_MODE: "production",
   GARANTI_MERCHANT_ID: "merchant",
   GARANTI_TERMINAL_ID: "terminal",
@@ -132,6 +132,26 @@ describe("runtime production readiness", () => {
     const result = getRuntimeReadiness({
       ...readyEnv,
       NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: "http://kozbeyli-invalid.invalid/search",
+    } as NodeJS.ProcessEnv);
+
+    const hmsCheck = result.checks.find((check) => check.id === "hms_booking_engine");
+
+    expect(result.ready).toBe(false);
+    expect(result.blockedGates).toContain("hms_booking_engine");
+    expect(hmsCheck).toMatchObject({
+      ready: false,
+      configuredCount: 1,
+      missingCount: 0,
+      invalidCount: 1,
+      fallbackApplied: false,
+      configurationSource: "invalid",
+    });
+  });
+
+  it("blocks HTTPS HMS booking URLs that point to another property", () => {
+    const result = getRuntimeReadiness({
+      ...readyEnv,
+      NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: "https://soleil-mansion.hotelrunner.com/bv3/search",
     } as NodeJS.ProcessEnv);
 
     const hmsCheck = result.checks.find((check) => check.id === "hms_booking_engine");
