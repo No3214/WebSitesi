@@ -1310,6 +1310,15 @@ describe("production readiness contracts", () => {
     }
   });
 
+  it("keeps homepage gallery and room media on direct approved public assets", () => {
+    const galleryStrip = read("src/components/home/gallery-strip.tsx");
+    const roomsShowcase = read("src/components/home/rooms-showcase.tsx");
+
+    expect(galleryStrip).toContain("unoptimized");
+    expect(galleryStrip).toContain('loading="lazy"');
+    expect(roomsShowcase).toContain("unoptimized");
+  });
+
   it("keeps below-fold homepage videos from preloading on first paint", () => {
     const gastronomyEditorial = read("src/components/home/gastronomy-editorial.tsx");
 
