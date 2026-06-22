@@ -59,7 +59,6 @@ describe("gtm utils", () => {
 
     it("should not push if window is undefined", () => {
       const originalWindow = global.window;
-      // @ts-expect-error global.window cannot be deleted strictly but this simulates it
       delete (global as Partial<typeof global>).window;
       localStorage.setItem("consent_test", "analytics");
       pushEvent("test_event");
