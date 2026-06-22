@@ -8,26 +8,25 @@ type HomeLocale = "tr" | "en";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
-  title: "Kozbeyli Konağı | Foça’nın En Prestijli Taş Butik Oteli & Restoranı",
-  description: "Foça’da beş asırlık köy dokusu içinde 19. yüzyıl tescilli taş konak, Antakya & Ege mutfağı ve kişiselleştirilmiş hizmet.",
+  title: "Kozbeyli Konağı | Tarihi Taş Butik Otel & Restoran | Foça",
+  description:
+    "Foça'da beş asırlık köy dokusu içinde 19. yüzyıl tescilli taş konak, Ege ve Antakya mutfağı ile kişiselleştirilmiş konaklama.",
   alternates: {
     canonical: "/",
-  }
+  },
 };
 
 const buildFaqJsonLd = (locale: HomeLocale) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: faqs.map((f) => ({
+  mainEntity: faqs.map((faq) => ({
     "@type": "Question",
-    name: f.q[locale],
-    acceptedAnswer: { "@type": "Answer", text: f.a[locale] },
+    name: faq.q[locale],
+    acceptedAnswer: { "@type": "Answer", text: faq.a[locale] },
   })),
 });
 
 export async function HomePageContent({ locale = "tr" }: { locale?: HomeLocale }) {
-  // SSR/SSG: build embeds the correct dictionary for the active route, so /en
-  // does not rely on a client cookie correction for its first meaningful paint.
   const initialDict = await getDictionary(locale);
   const faqJsonLd = buildFaqJsonLd(locale);
 
@@ -40,7 +39,7 @@ export async function HomePageContent({ locale = "tr" }: { locale?: HomeLocale }
       <HomeClient initialDict={initialDict} initialLocale={locale} />
     </>
   );
-};
+}
 
 export default async function HomePage() {
   return <HomePageContent locale="tr" />;
