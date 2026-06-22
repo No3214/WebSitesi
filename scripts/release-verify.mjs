@@ -31,6 +31,10 @@ export const gates = [
     label: "Production security headers diagnosis",
   },
   {
+    script: "admin:verify:json",
+    label: "Admin-only growth dashboard access diagnosis",
+  },
+  {
     script: "abuse:verify:json",
     label: "Production abuse-control readiness diagnosis",
   },

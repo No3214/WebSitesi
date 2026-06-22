@@ -53,6 +53,9 @@ jobs:
       - name: Production security headers diagnosis
         run: npm run security:headers:json
 
+      - name: Admin surface diagnosis
+        run: npm run admin:verify:json
+
       - name: Commercial readiness diagnostics
         run: |
           npm run abuse:verify:json
