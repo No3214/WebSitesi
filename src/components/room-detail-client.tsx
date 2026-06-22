@@ -56,6 +56,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                           sizes="(max-width: 1200px) 100vw, 55vw"
                           className="object-cover"
                           priority
+                          unoptimized
                         />
                       </motion.div>
                     </AnimatePresence>
@@ -80,6 +81,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                            fill
                            sizes="120px"
                            className="object-cover"
+                           unoptimized
                          />
                        </button>
                      ))}

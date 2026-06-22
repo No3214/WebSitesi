@@ -1332,10 +1332,14 @@ describe("production readiness contracts", () => {
   it("keeps homepage gallery and room media on direct approved public assets", () => {
     const galleryStrip = read("src/components/home/gallery-strip.tsx");
     const roomsShowcase = read("src/components/home/rooms-showcase.tsx");
+    const roomDetail = read("src/components/room-detail-client.tsx");
 
     expect(galleryStrip).toContain("unoptimized");
     expect(galleryStrip).toContain('loading="lazy"');
     expect(roomsShowcase).toContain("unoptimized");
+    expect(roomDetail.match(/unoptimized/g)?.length ?? 0).toBeGreaterThanOrEqual(2);
+    expect(roomDetail).toContain("src={room.images[activeImg] ?? room.images[0]}");
+    expect(roomDetail).toContain("src={img}");
   });
 
   it("keeps below-fold homepage videos from preloading on first paint", () => {

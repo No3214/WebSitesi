@@ -5,6 +5,8 @@ import { buildProductionCutoverPlan } from "./production-cutover-plan.mjs";
 
 export const requiredEvidenceSections = [
   "status: ready",
+  "date: YYYY-MM-DD",
+  "owner: <person/team>",
   "source_refs: <redacted-source-ids>",
   "## Summary",
   "## Proof",

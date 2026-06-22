@@ -360,6 +360,81 @@ describe("commercial launch audit", () => {
     ]);
   });
 
+  it("blocks ready evidence that uses pending source references", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const databasePath = path.join(baseDir, "docs/evidence/production-database.md");
+    fs.writeFileSync(
+      databasePath,
+      fs.readFileSync(databasePath, "utf8").replace(/^source_refs:.*$/m, "source_refs: pending"),
+    );
+
+    const result = audit.evaluateCommercialLaunch({ env, baseDir });
+    const databaseGate = result.gateResults.find((gate) => gate.id === "production_database");
+
+    expect(result.score).toBeLessThan(100);
+    expect(databaseGate?.ready).toBe(false);
+    expect(databaseGate?.missingEvidence).toEqual([
+      {
+        path: "docs/evidence/production-database.md",
+        ready: false,
+        reason: "missing source refs",
+      },
+    ]);
+  });
+
+  it("blocks ready evidence without a valid date and named owner", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const seoPath = path.join(baseDir, "docs/evidence/search-local-seo.md");
+    fs.writeFileSync(
+      seoPath,
+      fs.readFileSync(seoPath, "utf8").replace(/^date:.*$/m, "date: 22-06-2026"),
+    );
+
+    const dateResult = audit.evaluateCommercialLaunch({ env, baseDir });
+    const dateGate = dateResult.gateResults.find((gate) => gate.id === "search_local_seo");
+
+    expect(dateGate?.missingEvidence).toEqual([
+      {
+        path: "docs/evidence/search-local-seo.md",
+        ready: false,
+        reason: "missing valid date",
+      },
+    ]);
+
+    fs.writeFileSync(
+      seoPath,
+      fs
+        .readFileSync(seoPath, "utf8")
+        .replace(/^date:.*$/m, "date: 2026-06-22")
+        .replace(/^owner:.*$/m, "owner: pending"),
+    );
+
+    const ownerResult = audit.evaluateCommercialLaunch({ env, baseDir });
+    const ownerGate = ownerResult.gateResults.find((gate) => gate.id === "search_local_seo");
+
+    expect(ownerGate?.missingEvidence).toEqual([
+      {
+        path: "docs/evidence/search-local-seo.md",
+        ready: false,
+        reason: "missing owner",
+      },
+    ]);
+  });
+
   it("blocks ready evidence that contains redaction findings", async () => {
     const audit = await loadAuditModule();
     const baseDir = makeTmpDir();

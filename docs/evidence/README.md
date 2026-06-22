@@ -25,6 +25,10 @@ IDs, dashboard permalink IDs, approval note IDs, or UAT run IDs. Do not paste
 raw contracts, credentials, database connection strings, access tokens, card
 data, customer PII, or private guest data into this repository.
 
+The launch audit rejects `ready` evidence that has no `date: YYYY-MM-DD`, no
+named `owner`, or placeholder source references such as `pending`, `todo`,
+`tbd`, `none`, `draft` or `<redacted-source-ids>`.
+
 ## Required Evidence Files
 
 | File | Required proof |

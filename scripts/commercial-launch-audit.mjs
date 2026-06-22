@@ -127,6 +127,7 @@ export const commercialLaunchGates = [
 const envFiles = [".env.production.local", ".env.production", ".env.local", ".env"];
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
 const requiredReadySections = ["## Summary", "## Proof", "## Residual Risk"];
+const blockedEvidenceFieldPattern = /^(<.*>|replace_with.*|todo|tbd|none|pending|draft)$/i;
 
 function parseEnvFile(source) {
   return Object.fromEntries(
@@ -280,12 +281,22 @@ function evidenceState(relPath, baseDir) {
     return { path: relPath, ready: false, reason: "missing ready status" };
   }
 
+  if (!/^date:\s*\d{4}-\d{2}-\d{2}\s*$/im.test(content)) {
+    return { path: relPath, ready: false, reason: "missing valid date" };
+  }
+
+  const ownerMatch = content.match(/^owner:\s*(.+)$/im);
+  if (!ownerMatch || blockedEvidenceFieldPattern.test(ownerMatch[1].trim())) {
+    return { path: relPath, ready: false, reason: "missing owner" };
+  }
+
   const missingSections = requiredReadySections.filter((section) => !content.includes(section));
   if (missingSections.length > 0) {
     return { path: relPath, ready: false, reason: `missing sections: ${missingSections.join(", ")}` };
   }
 
-  if (!/^source_refs:\s*\S+/im.test(content) || /^source_refs:\s*(<.*>|replace_with.*|todo|tbd|none)\s*$/im.test(content)) {
+  const sourceRefsMatch = content.match(/^source_refs:\s*(.+)$/im);
+  if (!sourceRefsMatch || blockedEvidenceFieldPattern.test(sourceRefsMatch[1].trim())) {
     return { path: relPath, ready: false, reason: "missing source refs" };
   }
 
