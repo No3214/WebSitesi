@@ -23,6 +23,10 @@ export const gates = [
     label: "Opening hero media quality audit",
   },
   {
+    script: "security:headers:json",
+    label: "Production security headers diagnosis",
+  },
+  {
     script: "abuse:verify:json",
     label: "Production abuse-control readiness diagnosis",
   },

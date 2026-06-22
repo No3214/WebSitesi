@@ -47,6 +47,9 @@ jobs:
       - name: Hero media audit
         run: npm run media:hero:json
 
+      - name: Production security headers diagnosis
+        run: npm run security:headers:json
+
       - name: Commercial readiness diagnostics
         run: |
           npm run abuse:verify:json
