@@ -14,7 +14,7 @@ export const commercialLaunchGates = [
   {
     id: "canonical_domain",
     points: 2,
-    label: "Canonical kozbeylikonagi.com domains serve current Vercel production health",
+    label: "Public .com and .com.tr domains serve current Vercel production health",
     env: ["NEXT_PUBLIC_SITE_URL"],
     expectedEnv: {
       NEXT_PUBLIC_SITE_URL: {

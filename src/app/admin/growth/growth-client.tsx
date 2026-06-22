@@ -28,13 +28,13 @@ type LaunchGate = {
 const launchGates: LaunchGate[] = [
   {
     id: "canonical_domain",
-    title: "Canonical domain cutover",
+    title: "Public domain cutover",
     owner: "Vercel / DNS operator",
     timing: "Before public domain announcement",
     status: "action_required",
     command: "npm run domain:verify:strict",
     evidence: "docs/evidence/canonical-domain.md",
-    kpi: "kozbeylikonagi.com and www return the current app health endpoint with no legacy host signatures.",
+    kpi: "The .com and .com.tr public origins return the current app health endpoint, expose the opening video, or securely redirect to the chosen canonical origin.",
   },
   {
     id: "production_abuse_controls",

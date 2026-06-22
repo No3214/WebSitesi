@@ -748,9 +748,10 @@ describe("production readiness contracts", () => {
     const publishTarget = read("docs/publish-target.md");
     const canonicalEvidence = read("docs/evidence/canonical-domain.md");
 
-    expect(launchReadiness).toContain("Son revizyon: 2026-06-20.");
+    expect(launchReadiness).toContain("Son revizyon: 2026-06-22.");
     expect(launchReadiness).toContain("2026-06-20 canonical legacy host güncellemesi");
     expect(launchReadiness).toContain("2026-06-20 Cloudflare proxy notu");
+    expect(launchReadiness).toContain("2026-06-22 İsimtescil/Vercel nameserver güncellemesi");
     expect(launchReadiness).toContain("2026-06-20 public light theme güncellemesi");
     expect(launchReadiness).toContain("31 files / 186 tests");
     expect(launchReadiness).toContain("68 routes generated");
@@ -758,27 +759,33 @@ describe("production readiness contracts", () => {
     expect(launchReadiness).toContain("current commit'i `/api/health` üzerinden doğruluyor");
     expect(launchReadiness).toContain("https://kozbeyli-konagi.vercel.app");
     expect(launchReadiness).toContain("legacy Joomla/Seagull template");
+    expect(launchReadiness).toContain("`.com` canonical origins PASS");
+    expect(launchReadiness).toContain("f040ea9cc452");
     expect(launchReadiness).not.toContain("9 files / 29 tests");
     expect(launchReadiness).not.toContain("66 routes generated");
     expect(launchReadiness).not.toContain("113 passed / 2 skipped");
 
-    expect(publishTarget).toContain("Son revizyon: 2026-06-20");
+    expect(publishTarget).toContain("Son revizyon: 2026-06-22");
     expect(publishTarget).toContain("168 passed / 2 skipped");
     expect(publishTarget).toContain("31 files / 186 tests");
     expect(publishTarget).toContain("68 routes");
-    expect(publishTarget).toContain("legacy Joomla/HotelRunner host imzası");
+    expect(publishTarget).toContain("`.com` canonical origin'ler");
+    expect(publishTarget).toContain("`.com.tr` brand origin'lerin");
     expect(publishTarget).not.toContain("113 passed / 2 skipped");
     expect(publishTarget).not.toContain("http://127.0.0.1:3010");
 
     expect(canonicalEvidence).toContain("date: 2026-06-22");
     expect(canonicalEvidence).toContain("legacy Joomla/Seagull template");
     expect(canonicalEvidence).toContain("legacy HotelRunner hosted landing surface");
+    expect(canonicalEvidence).toContain("Canonical `.com` validation is now live");
+    expect(canonicalEvidence).toContain("deployment commit `f040ea9cc452`");
+    expect(canonicalEvidence).toContain("Full public-domain validation is not ready yet");
     expect(canonicalEvidence).toContain("DNS NS/MX can be verified through DNS-over-HTTPS");
     expect(canonicalEvidence).toContain("public A lookups can show Cloudflare anycast");
-    expect(canonicalEvidence).toContain("deployment commit reported by");
+    expect(canonicalEvidence).toContain("with deployment");
     expect(canonicalEvidence).toContain("anastasia.ns.cloudflare.com");
     expect(canonicalEvidence).toContain("theo.ns.cloudflare.com");
-    expect(canonicalEvidence).toContain("Isimtescil DNS-zone edits alone will not change public traffic");
+    expect(canonicalEvidence).toContain("Isimtescil nameserver update may still be propagating");
     expect(canonicalEvidence).toContain("dacb3ec12ca81d22.vercel-dns-017.com");
     expect(canonicalEvidence).toContain("mail-continuity records");
     expect(canonicalEvidence).toContain("NS1.VERCEL-DNS.COM,NS2.VERCEL-DNS.COM");

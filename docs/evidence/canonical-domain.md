@@ -6,18 +6,20 @@ owner: launch-qa
 
 ## Summary
 
-Canonical domain validation is not ready yet. The Vercel production deployment
-at `https://kozbeyli-konagi.vercel.app` serves the current application and
-`/api/health`, but `https://kozbeylikonagi.com` and
-`https://www.kozbeylikonagi.com` still resolve to the old Joomla/HotelRunner
-surface instead of the current Next.js application. The apex domain also
-performs an insecure first hop redirect from HTTPS to
-`http://www.kozbeylikonagi.com/...`, so the canonical cutover must correct both
-the DNS/host target and the redirect chain.
+Canonical `.com` validation is now live for the current Vercel application:
+`https://kozbeylikonagi.com` redirects over HTTPS to
+`https://www.kozbeylikonagi.com`, and both canonical origins return
+`/api/health` JSON with `service: "kozbeyli-konagi"` at deployment commit
+`f040ea9cc452`. Both homepages expose the approved opening hero video,
+`/videos/hero.mp4`, and no legacy host signatures are detected on the `.com`
+origins.
 
-The public-domain gate also monitors the active Turkish ccTLD brand surfaces.
-Those domains must not remain on a split legacy menu/site after the canonical
-launch, because guests can still reach them from search results or old links.
+Full public-domain validation is not ready yet because the active Turkish ccTLD
+brand surfaces, `https://kozbeylikonagi.com.tr` and
+`https://www.kozbeylikonagi.com.tr`, still return HTML for `/api/health` and do
+not expose `/videos/hero.mp4`. Those domains must serve the current Vercel app
+or securely redirect to the chosen canonical `.com` origin before the public
+domain gate can be marked ready.
 
 ## Proof
 
@@ -36,26 +38,30 @@ and MX results. DNS warnings do not make a stale web deployment ready; the
 health endpoint, current commit, secure redirect chain and hero video checks
 remain the launch blockers.
 
-As of 2026-06-22, `npm run domain:verify:json` reports these concrete blockers:
+As of 2026-06-22, `npm run domain:verify:json` reports this concrete state:
 
-- `https://kozbeylikonagi.com` first redirects to insecure HTTP before reaching
-  `www`.
-- Both canonical origins serve legacy host signatures:
-  `legacy Joomla/Seagull template` and
-  `legacy HotelRunner hosted landing surface`.
-- `https://www.kozbeylikonagi.com/api/health` returns legacy HTML/404 instead
-  of `service: "kozbeyli-konagi"` JSON.
-- Both canonical homepages still render the stale landing page and do not
-  expose `/videos/hero.mp4`.
-- The verifier now checks the `.com.tr` brand origins as separate public
-  surfaces, requiring the same `/api/health`, current commit, secure redirect
-  and opening hero video proof before full public-domain launch is considered
-  ready.
-- The Turkish ccTLD brand origins currently return HTML for `/api/health`
-  instead of the expected `service: "kozbeyli-konagi"` JSON, and their
-  homepages do not expose the approved `/videos/hero.mp4` opening shell.
-- DNS NS/MX can be verified through DNS-over-HTTPS, so the remaining blocker is
-  web serving/redirect cutover, not missing nameserver or mail records.
+- `https://kozbeylikonagi.com` returns a secure 308 redirect to
+  `https://www.kozbeylikonagi.com/`; no HTTPS-to-HTTP first hop remains.
+- `https://kozbeylikonagi.com/api/health` and
+  `https://www.kozbeylikonagi.com/api/health` return
+  `service: "kozbeyli-konagi"` and deployment commit `f040ea9cc452`.
+- Both `.com` homepages expose `/videos/hero.mp4`, so the approved opening
+  video shell is present on the canonical public domain.
+- The `.com.tr` brand origins currently return HTML for `/api/health` instead
+  of the expected `service: "kozbeyli-konagi"` JSON, and their homepages do not
+  expose the approved `/videos/hero.mp4` opening shell.
+- Earlier pre-cutover measurements detected `legacy Joomla/Seagull template`
+  and `legacy HotelRunner hosted landing surface` on the `.com` origins. That
+  historical risk is retained here because the verifier must keep detecting
+  stale host regressions, but the current `.com` measurement is now clean.
+- DNS NS/MX can be verified through DNS-over-HTTPS. Current public A/CNAME
+  warnings for the `.com` origins show Cloudflare anycast/proxy-shaped records,
+  but the live `/api/health` and hero-video proof confirms the `.com` web
+  surface is serving the current Vercel app. The `.com.tr` web surface remains
+  the real domain blocker.
+- The verifier checks the `.com.tr` brand origins as separate public surfaces,
+  requiring the same `/api/health`, current commit, secure redirect and opening
+  hero video proof before full public-domain launch is considered ready.
 - The verifier now separates registrar ownership from live DNS authority. A
   domain may be registered at Isimtescil while live DNS is delegated to
   Cloudflare nameservers; in that state, Isimtescil DNS-zone edits do not affect
@@ -78,14 +84,15 @@ As of 2026-06-22, `npm run domain:verify:json` reports these concrete blockers:
 - Current Vercel proof on 2026-06-22: project `kozbeyli-konagi`
   (`prj_lM3tFqaJ5DIv9JaYTUobdTBQlXC8`) is linked to
   `kozbeylikonagi.com` and `www.kozbeylikonagi.com`, and the Vercel preview
-  at `https://kozbeyli-konagi.vercel.app` serves `service:
-  "kozbeyli-konagi"` with the deployment commit reported by
-  `npm run domain:verify:json`.
-- Current DNS authority on 2026-06-22: `.com` still uses Cloudflare
+  plus both `.com` origins serve `service: "kozbeyli-konagi"` with deployment
+  commit `f040ea9cc452`.
+- Current public DNS authority on 2026-06-22: recursive DNS still reports
+  `.com` Cloudflare
   nameservers `anastasia.ns.cloudflare.com` and `theo.ns.cloudflare.com`, so
-  Isimtescil DNS-zone edits alone will not change public traffic while that
-  delegation remains. Either edit the actual Cloudflare zone or move the
-  nameservers after preserving mail records.
+  the Isimtescil nameserver update may still be propagating. The `.com.tr`
+  brand zone reports `lucy.ns.cloudflare.com` and `memphis.ns.cloudflare.com`
+  and must be changed or redirected through the authoritative provider that
+  controls that ccTLD.
 - Vercel Project Settings currently presents the Cloudflare manual setup as
   `CNAME @ dacb3ec12ca81d22.vercel-dns-017.com` with proxy disabled, while
   `vercel domains inspect` also reports the older compatible apex fallback
@@ -113,14 +120,16 @@ As of 2026-06-22, `npm run domain:verify:json` reports these concrete blockers:
   Vercel DNS is ready for the nameserver delegation: `NS ns1/ns2.vercel-dns.com`,
   `MX mx.kozbeylikonagi.com`, `A mx.kozbeylikonagi.com 78.142.208.142`,
   the SPF TXT record, and `A www.kozbeylikonagi.com` Vercel web targets.
-- Public recursive DNS and `vercel domains inspect` still returned the old
-  Cloudflare delegation immediately after the panel change. Keep status
-  `pending` until public NS delegation, `/api/health`, secure redirect chain
-  and `/videos/hero.mp4` all pass from public DNS.
+- Public recursive DNS still returns Cloudflare delegation after the panel
+  change, while the `.com` web origins already pass `/api/health`, secure
+  redirect-chain and `/videos/hero.mp4` checks. Keep status `pending` until
+  the `.com.tr` brand origins also pass or securely redirect, and until public
+  DNS propagation is no longer ambiguous.
 
 ## Residual Risk
 
-DNS/Cloudflare/Vercel domain configuration must be corrected outside the code
-repository. The first redirect hop must remain HTTPS, both canonical origins
-must serve the current Vercel app, and `npm run domain:verify:strict` should
-pass before the evidence status is changed to `ready`.
+DNS/Cloudflare/Vercel domain configuration for `.com.tr` must be corrected
+outside the code repository. The `.com` first redirect hop must remain HTTPS,
+all public brand origins must serve the current Vercel app or securely redirect
+to it, and `npm run domain:verify:strict` should pass before the evidence status
+is changed to `ready`.

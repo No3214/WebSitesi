@@ -5,6 +5,9 @@ import { describe, expect, it } from "vitest";
 
 const checkedRoots = ["src", "public", "docs", "brand"];
 const canonicalDomainRoots = ["src", "public", "docs", "README.md"];
+const canonicalDomainEvidenceExceptions = new Set([
+  path.normalize("docs/evidence/canonical-domain.md"),
+]);
 const ignoredDirectories = new Set(["node_modules", ".next", "test-results"]);
 const heritageAgePatterns = [
   /200\s*yıllık\s+bir\s+hikaye/i,
@@ -138,8 +141,11 @@ describe("heritage copy consistency", () => {
     const offenders = canonicalDomainRoots
       .flatMap((root) => listTextFilesFromRoot(root))
       .flatMap((file) => {
+        const relPath = path.relative(process.cwd(), file);
+        if (canonicalDomainEvidenceExceptions.has(path.normalize(relPath))) return [];
+
         const content = fs.readFileSync(file, "utf8");
-        return /kozbeylikonagi\.com\.tr/i.test(content) ? [path.relative(process.cwd(), file)] : [];
+        return /kozbeylikonagi\.com\.tr/i.test(content) ? [relPath] : [];
       });
 
     expect(offenders).toEqual([]);

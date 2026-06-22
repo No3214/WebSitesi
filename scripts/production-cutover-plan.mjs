@@ -29,7 +29,7 @@ const gateActionCatalog = {
   canonical_domain: {
     owner: "Vercel/DNS operator",
     timing: "Before public domain announcement",
-    objective: "Serve the current Vercel deployment on kozbeylikonagi.com and www.kozbeylikonagi.com.",
+    objective: "Serve the current Vercel deployment on the canonical .com and Turkish .com.tr brand domains.",
     diagnostics: [
       "Run npm run domain:verify before DNS edits; it must report preview PASS and canonical origins PASS before this gate is ready.",
       "If domain:verify reports legacy Joomla/Seagull template or legacy HotelRunner hosted landing surface, the canonical domain is still routed to the old host even if Vercel shows an alias.",

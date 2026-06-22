@@ -1,7 +1,7 @@
 # Kozbeyli Konağı — Launch Readiness Denetimi
 
 Master denetim promptunun repo üzerinde çalıştırılmış halidir.
-Son revizyon: 2026-06-20.
+Son revizyon: 2026-06-22.
 Kural: kanıt yoksa "kanıt yok"; belirsizse "belirsiz". Kanıtlar dosya yoluyla verilir.
 
 ## 1. Executive Summary
@@ -69,6 +69,17 @@ doğrulamasında kayıtları DNS-only modda test etmek veya proxy açık kalacak
 `/api/health` yanıtının `service=kozbeyli-konagi` dönmesi ve ana sayfanın
 `/videos/hero.mp4` açılış videosunu göstermesi zorunludur. Public A sorgusu tek
 başına GO kanıtı sayılmaz.
+
+2026-06-22 İsimtescil/Vercel nameserver güncellemesi: İsimtescil
+`Host Name (DNS) Yönetimi` ekranında `.com` nameserver değeri
+`NS1.VERCEL-DNS.COM,NS2.VERCEL-DNS.COM` olarak kaydedildi ve Vercel DNS
+doğrudan kontrollerinde web/mail kayıtları hazır göründü. Canlı public ölçümde
+`kozbeylikonagi.com` ve `www.kozbeylikonagi.com` artık current Vercel app'i
+servis ediyor: `/api/health` `service=kozbeyli-konagi` ve commit
+`f040ea9cc452` döndürüyor, ilk redirect HTTPS kalıyor ve ana sayfada
+`/videos/hero.mp4` var. `domain:verify:strict` yine NO-GO kalır; sebep artık
+`.com` değil, `.com.tr` brand origin'lerinin eski HTML yüzeyinde kalması ve
+production env/evidence kapılarının tamamlanmamış olmasıdır.
 
 2026-06-20 public light theme güncellemesi: koyu public yüzeyler geriye
 alındı. Mobil menü, oda detay rezervasyon kartı, exit-intent rezervasyon paneli
@@ -154,7 +165,7 @@ hero görseli Next optimizer yerine gerçek statik WebP türevleriyle servis
 ediliyor ve geç webfont swap'ı kapatıldı. Sonraki teknik hedef, LCP'yi 2.5s
 altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 
-## 2. Current Score (rev. 2026-06-20)
+## 2. Current Score (rev. 2026-06-22)
 
 - **Repo/Kod Kalite Skoru: 95/100** — iç kalite kapıları yeşil; kalan 5 puan
   gerçek üretim entegrasyonu, canlı analitik doğrulaması ve dış hesap kurulumuna
@@ -188,7 +199,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 - `npm run build` — PASS, 68 routes generated.
 - `npm audit --omit=dev --audit-level=high` — PASS, 0 vulnerabilities.
 - `npm run publish:verify` — PASS: quality + 170 Playwright tests (168 passed / 2 skipped) + publish target inventory.
-- `npm run domain:verify:json` — preview PASS, canonical domain NO-GO; legacy Joomla/HotelRunner signatures detected on both canonical origins.
+- `npm run domain:verify:json` — preview PASS, `.com` canonical origins PASS; `domain:verify:strict` NO-GO because `.com.tr` brand origins still return HTML for `/api/health` and do not expose `/videos/hero.mp4`.
 - Vercel production deploy — READY: `npm run domain:verify` preview kontrolü
   current commit'i `/api/health` üzerinden doğruluyor; production URL
   `https://kozbeyli-konagi.vercel.app`.

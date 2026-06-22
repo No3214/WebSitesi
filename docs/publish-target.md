@@ -1,6 +1,6 @@
 # Kozbeyli Konağı — Publish Target & Gate
 
-Son revizyon: 2026-06-20
+Son revizyon: 2026-06-22
 
 Bu dosya yayın hedefini tek yerde tanımlar. Amaç: "hazır mı?" sorusuna
 ölçülebilir kapılarla cevap vermek ve dış bağımlılıkları kod kalitesiyle
@@ -54,9 +54,12 @@ türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
 - Son doğrulama: `npm run publish:verify` PASS, tam normal Playwright kümesi PASS
   (168 passed / 2 skipped), unit PASS (31 files / 186 tests), build PASS
   (68 routes), `npm audit --omit=dev --audit-level=high` PASS.
-- Canonical domain durumu: Vercel production URL güncel; `kozbeylikonagi.com`
-  ve `www` hâlâ legacy Joomla/HotelRunner host imzası verdiği için
-  `npm run domain:verify:strict` NO-GO.
+- Public domain durumu: Vercel production URL ve `.com` canonical origin'ler
+  güncel; `kozbeylikonagi.com` ve `www` `/api/health` üzerinden current commit
+  `f040ea9cc452` döndürüyor ve `/videos/hero.mp4` açılış videosunu gösteriyor.
+  `npm run domain:verify:strict` hâlâ NO-GO; sebep `.com.tr` brand origin'lerin
+  eski HTML yüzeyinde kalması ve production env/evidence kapılarının eksik
+  olmasıdır.
 - Local production preview: `http://127.0.0.1:3008`.
 
 ## Publish Gate
