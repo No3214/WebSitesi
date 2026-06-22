@@ -92,6 +92,18 @@ function makeRunScopedOutputDir() {
   return path.join(launchSmokeOutputRoot, `${stamp}-${process.pid}`);
 }
 
+function runReadinessPreflight() {
+  const args = liveTarget
+    ? ["scripts/domain-readiness.mjs", "--json"]
+    : ["scripts/commercial-launch-audit.mjs", "--json"];
+  const label = liveTarget
+    ? "live domain readiness"
+    : "local commercial launch audit";
+
+  console.log(`INFO readiness preflight: ${label}`);
+  return run(nodeBin, args);
+}
+
 function main() {
   if (process.argv.includes("--list")) {
     printSpecList();
@@ -108,7 +120,7 @@ function main() {
     process.exit(1);
   }
 
-  const audit = run(nodeBin, ["scripts/commercial-launch-audit.mjs", "--json"]);
+  const audit = runReadinessPreflight();
   if (audit.status !== 0) process.exit(audit.status ?? 1);
 
   if (!fs.existsSync(playwrightCli)) {

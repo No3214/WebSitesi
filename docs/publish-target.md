@@ -93,8 +93,11 @@ Bu üst komut aşağıdaki kapıları sırayla çalıştırır:
 
 `launch:smoke` production build üstünde public rotaları, hero video playback,
 iletişim koordinatı, düğün/organizasyon medyası ve görünür medya kırıklarını
-kontrol eder. CI her push/PR'da release gate manifestini doğrular ve aynı smoke
-gate'i publish verification'dan önce çalıştırır. Canlı Vercel deployment için:
+kontrol eder. Lokal hedefte commercial launch audit'i okur; `PW_BASE_URL` ile
+canlı hedef verildiğinde local `.env` dosyalarından etkilenmemek için preflight
+olarak `domain:verify:json` çalıştırır. CI her push/PR'da release gate
+manifestini doğrular ve aynı smoke gate'i publish verification'dan önce
+çalıştırır. Canlı Vercel deployment için:
 
 ```bash
 npm run launch:smoke:live

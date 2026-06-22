@@ -1065,6 +1065,10 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain('process.env.LAUNCH_SMOKE_WORKERS || "1"');
     expect(launchSmokeScript).toContain('"--workers"');
     expect(launchSmokeScript).toContain("PW_BASE_URL");
+    expect(launchSmokeScript).toContain("runReadinessPreflight");
+    expect(launchSmokeScript).toContain("scripts/domain-readiness.mjs");
+    expect(launchSmokeScript).toContain("scripts/commercial-launch-audit.mjs");
+    expect(launchSmokeScript).toContain("live domain readiness");
     expect(launchSmokeScript).toContain("npm i -g vercel");
     expect(launchSmokeScript).toContain("where.exe");
     expect(launchSmokeScript).toContain("dist\", \"vc.js");

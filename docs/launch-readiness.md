@@ -145,6 +145,10 @@ verir.
 run launch:smoke:live` ile tek komutta çalışır; public rotalar, hero video,
 iletişim koordinatı, organizasyon medyası ve görünür medya kırıkları aynı kapıda
 denetlenir.
+2026-06-22 canlı smoke ayrımı: `launch:smoke:live`, local `.env` dosyalarındaki
+geliştirme URL'lerini commercial launch env kanıtı gibi okumaz; canlı hedefte
+preflight olarak `domain:verify:json` çalıştırır. Böylece `.com` canlı geçiş
+kanıtı ve `.com.tr` blocker'ı local dev ayarlarından ayrı raporlanır.
 2026-06-14 monitoring güncellemesi: Uptime/rollback monitor yüzeyi olarak
 `/api/health` eklendi; cache'siz JSON döner ve secret/private env değeri
 yayınlamaz.
