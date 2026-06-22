@@ -9,6 +9,17 @@ const root = process.cwd();
 const tmpDirs: string[] = [];
 
 type SupabaseSecurityModule = {
+  parseEnvFile: (source: string) => Record<string, string>;
+  loadEnvFileSnapshot: (
+    envFile: string,
+    baseSnapshot?: {
+      env: Record<string, string>;
+      sources: Record<string, string>;
+    },
+  ) => {
+    env: Record<string, string>;
+    sources: Record<string, string>;
+  };
   evaluateSupabaseSecurityReadiness: (args?: {
     envSnapshot?: {
       env: Record<string, string>;
@@ -29,6 +40,10 @@ type SupabaseSecurityModule = {
     evidence: {
       ready: boolean;
       reason: string;
+    };
+    envSources: {
+      DATABASE_URI: string;
+      PAYLOAD_SECRET: string;
     };
     secretBoundary: {
       ready: boolean;
@@ -101,6 +116,23 @@ afterEach(() => {
 });
 
 describe("supabase security readiness", () => {
+  it("parses pulled env files and preserves empty Vercel values for verification", async () => {
+    const securityModule = await loadSupabaseSecurityModule();
+    const parsed = securityModule.parseEnvFile(
+      [
+        "DATABASE_URI=",
+        'PAYLOAD_SECRET=""',
+        "NEXT_PUBLIC_SITE_URL=https://www.kozbeylikonagi.com",
+      ].join("\n"),
+    );
+
+    expect(parsed).toEqual({
+      DATABASE_URI: "",
+      PAYLOAD_SECRET: "",
+      NEXT_PUBLIC_SITE_URL: "https://www.kozbeylikonagi.com",
+    });
+  });
+
   it("blocks localhost DATABASE_URI from being counted as production database evidence", async () => {
     const securityModule = await loadSupabaseSecurityModule();
     const baseDir = makeTmpDir();
@@ -126,6 +158,37 @@ describe("supabase security readiness", () => {
     expect(result.blockers).toContain(
       "DATABASE_URI points to localhost and is not production database evidence",
     );
+  });
+
+  it("uses a pulled Vercel env file as authoritative over local fallback values", async () => {
+    const securityModule = await loadSupabaseSecurityModule();
+    const baseDir = makeTmpDir();
+    writeEvidence(baseDir);
+    const envFile = path.join(baseDir, "vercel-production.env");
+    fs.writeFileSync(envFile, ["DATABASE_URI=", "PAYLOAD_SECRET="].join("\n"));
+
+    const envSnapshot = securityModule.loadEnvFileSnapshot(envFile, {
+      env: {
+        DATABASE_URI:
+          "postgresql://postgres.projectref:password@aws-0-eu-central-1.pooler.supabase.com:6543/postgres",
+        PAYLOAD_SECRET: "local-secret-that-must-not-mask-vercel",
+      },
+      sources: { DATABASE_URI: ".env.local", PAYLOAD_SECRET: ".env.local" },
+    });
+    const result = securityModule.evaluateSupabaseSecurityReadiness({ baseDir, envSnapshot });
+
+    expect(envSnapshot.env.DATABASE_URI).toBe("");
+    expect(envSnapshot.env.PAYLOAD_SECRET).toBe("");
+    expect(result.decision).toBe("SUPABASE PRODUCTION DATABASE BLOCKED");
+    expect(result.envSources).toEqual({
+      DATABASE_URI: "vercel-production.env",
+      PAYLOAD_SECRET: "vercel-production.env",
+    });
+    expect(result.blockers).toEqual(
+      expect.arrayContaining(["DATABASE_URI is missing", "PAYLOAD_SECRET is missing"]),
+    );
+    expect(JSON.stringify(result)).not.toContain("local-secret-that-must-not-mask-vercel");
+    expect(JSON.stringify(result)).not.toContain("postgres.projectref:password");
   });
 
   it("accepts a Supabase pooler DATABASE_URI only when source contracts and evidence are ready", async () => {

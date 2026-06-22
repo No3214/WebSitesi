@@ -42,7 +42,11 @@ kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
 türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
 `supabase:verify`, Payload CMS'in `DATABASE_URI` / `PAYLOAD_SECRET` üretim
 kapısını, local DB kullanımını ve service-role sızıntısı riskini ayrıca
-denetler.
+denetler. Vercel Production değerleri local `.env` ile maskelenmeden
+kanıtlanacaksa temp dosya kullan:
+`vercel env pull %TEMP%\kozbeyli-supabase.env --environment=production` ve
+`node scripts/supabase-security-readiness.mjs --env-file %TEMP%\kozbeyli-supabase.env`.
+Komut değerleri yazdırmaz; işlem sonunda temp dosyayı sil veya önce boşalt.
 `launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
 
 - Canonical domain health + current Vercel commit: `docs/evidence/canonical-domain.md`

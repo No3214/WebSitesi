@@ -8,7 +8,7 @@ const evidencePath = "docs/evidence/production-database.md";
 const sourceDirs = ["src", "payload"];
 const ignoredDirs = new Set(["node_modules", ".next", ".git", "test-results", "playwright-report"]);
 
-function parseEnvFile(source) {
+export function parseEnvFile(source) {
   return Object.fromEntries(
     source
       .split(/\r?\n/)
@@ -21,6 +21,22 @@ function parseEnvFile(source) {
         return [key, value];
       }),
   );
+}
+
+export function loadEnvFileSnapshot(envFile, baseSnapshot = loadEnvSnapshot()) {
+  const parsed = parseEnvFile(fs.readFileSync(envFile, "utf8"));
+  const source = path.basename(envFile);
+
+  return {
+    env: {
+      ...baseSnapshot.env,
+      ...parsed,
+    },
+    sources: {
+      ...baseSnapshot.sources,
+      ...Object.fromEntries(Object.keys(parsed).map((key) => [key, source])),
+    },
+  };
 }
 
 export function loadEnvSnapshot(baseDir = root) {
@@ -313,7 +329,10 @@ export function formatSupabaseSecurityReadiness(result) {
 function main() {
   const json = process.argv.includes("--json");
   const strict = process.argv.includes("--strict");
-  const result = evaluateSupabaseSecurityReadiness();
+  const envFileArgIndex = process.argv.indexOf("--env-file");
+  const envFile = envFileArgIndex >= 0 ? process.argv[envFileArgIndex + 1] : "";
+  const envSnapshot = envFile ? loadEnvFileSnapshot(envFile) : loadEnvSnapshot();
+  const result = evaluateSupabaseSecurityReadiness({ envSnapshot });
   console.log(json ? JSON.stringify(result, null, 2) : formatSupabaseSecurityReadiness(result));
   process.exitCode = strict && result.decision !== "SUPABASE PRODUCTION DATABASE READY" ? 1 : 0;
 }

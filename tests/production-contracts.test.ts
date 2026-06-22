@@ -125,6 +125,7 @@ describe("production readiness contracts", () => {
       scripts?: Record<string, string>;
     };
     const readinessScript = read("scripts/publish-readiness.mjs");
+    const supabaseReadinessScript = read("scripts/supabase-security-readiness.mjs");
 
     expect(readinessScript).toContain('"IYZICO_WEBHOOK_SECRET"');
     expect(readinessScript).toContain('"GARANTI_3D_STORE_KEY"');
@@ -280,6 +281,10 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["supabase:verify:strict"]).toBe(
       "node scripts/supabase-security-readiness.mjs --strict",
     );
+    expect(supabaseReadinessScript).toContain("loadEnvFileSnapshot");
+    expect(supabaseReadinessScript).toContain("parseEnvFile");
+    expect(supabaseReadinessScript).toContain('"--env-file"');
+    expect(supabaseReadinessScript).not.toContain("SUPABASE_SERVICE_ROLE_KEY=");
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
     expect(packageJson.scripts?.["vercel:ops:json"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --json",

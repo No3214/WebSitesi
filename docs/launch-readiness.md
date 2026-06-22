@@ -124,6 +124,10 @@ service-role anahtarının client/source katmanına sızmamasını ve
 `docs/evidence/production-database.md` kanıt durumunu ayrı raporlar. Supabase
 chatbot tarafından oluşturulmuş genel public tablolar, Payload modeliyle
 uyumluluk ve RLS audit'i kanıtlanmadan production akışına bağlanmaz.
+2026-06-22 ek doğrulama: `supabase-security-readiness.mjs --env-file` artık
+Vercel'den çekilmiş geçici env snapshot'ını local `.env` yerine otoriter kabul
+eder. Boş `DATABASE_URI` / `PAYLOAD_SECRET` değerleri local fallback ile
+maskelenmez ve secret değerleri rapora yazılmaz.
 
 2026-06-19 HMS güncellemesi: Rezervasyon CTA'ları resmi HMS engine'e yeni sekme
 handoff olarak gider ve public fallback kodda mevcuttur. Eksik kalan konu URL
