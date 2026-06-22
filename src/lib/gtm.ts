@@ -31,8 +31,13 @@ declare global {
 
 function hasOptionalConsent(category: "analytics" | "marketing") {
   if (typeof window === "undefined") return false;
-  const consent = parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY)) || getDefaultConsent();
-  return consent[category];
+  try {
+    const storedConsent = globalThis.localStorage?.getItem(CONSENT_STORAGE_KEY) ?? null;
+    const consent = parseConsent(storedConsent) || getDefaultConsent();
+    return consent[category];
+  } catch {
+    return false;
+  }
 }
 
 export function pushEvent(event: string, params: Record<string, unknown> = {}) {

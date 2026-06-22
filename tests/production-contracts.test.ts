@@ -105,6 +105,28 @@ describe("production readiness contracts", () => {
     expect(audit).toContain("legacy Railway config kaldırıldı");
   });
 
+  it("keeps core security, analytics and URL helpers under publish-time test coverage", () => {
+    const readinessScript = read("scripts/publish-readiness.mjs");
+    const requiredFiles = [
+      "src/lib/security.ts",
+      "src/lib/gtm.ts",
+      "src/lib/logger.ts",
+      "src/lib/ecc-auth.ts",
+      "src/lib/utils.ts",
+      "tests/security-utils.test.ts",
+      "tests/security-es256.test.ts",
+      "tests/gtm.test.ts",
+      "tests/logger.test.ts",
+      "tests/ecc-auth.test.ts",
+      "tests/utils.test.ts",
+    ];
+
+    for (const file of requiredFiles) {
+      expect(exists(file)).toBe(true);
+      expect(readinessScript).toContain(`"${file}"`);
+    }
+  });
+
   it("keeps cookie banner policy copy readable in Turkish and English", () => {
     const cookieConsent = read("src/components/cookie-consent.tsx");
     const footer = read("src/components/site-footer.tsx");

@@ -1,6 +1,12 @@
-export const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://kozbeylikonagi.com";
+function normalizeSiteUrl(value: string) {
+  return value.trim().replace(/\/+$/, "") || "https://kozbeylikonagi.com";
+}
+
+export const siteUrl = normalizeSiteUrl(
+  process.env.NEXT_PUBLIC_SITE_URL || "https://kozbeylikonagi.com",
+);
 
 export function absoluteUrl(path = "/") {
-  return `${siteUrl}${path}`;
+  const normalizedPath = path ? (path.startsWith("/") ? path : `/${path}`) : "/";
+  return `${siteUrl}${normalizedPath}`;
 }

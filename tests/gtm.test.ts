@@ -78,6 +78,39 @@ describe("GTM and Meta funnel helpers", () => {
     expect(window.dataLayer).toEqual([{ event: "view_item", item_id: "oda-1" }]);
   });
 
+  it("stops pushing analytics events immediately after consent is withdrawn", async () => {
+    const { pushEvent } = await loadGtm({ NEXT_PUBLIC_GTM_ID: "GTM-TEST" });
+
+    setConsent({ analytics: true, marketing: false });
+    pushEvent("view_item", { item_id: "oda-1" });
+
+    setConsent({ analytics: false, marketing: false });
+    pushEvent("begin_checkout", { item_id: "oda-1" });
+
+    expect(window.dataLayer).toEqual([{ event: "view_item", item_id: "oda-1" }]);
+  });
+
+  it("fails closed when browser storage blocks consent reads", async () => {
+    vi.stubGlobal("localStorage", {
+      getItem: () => {
+        throw new Error("storage blocked");
+      },
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+      key: vi.fn(),
+      length: 0,
+    } satisfies Storage);
+    const { fbqTrack, pushEvent } = await loadGtm({ NEXT_PUBLIC_GTM_ID: "GTM-TEST" });
+    window.fbq = vi.fn();
+
+    expect(() => pushEvent("view_item", { item_id: "oda-1" })).not.toThrow();
+    expect(() => fbqTrack("Lead", { content_name: "dugun" })).not.toThrow();
+
+    expect(window.dataLayer).toBeUndefined();
+    expect(window.fbq).not.toHaveBeenCalled();
+  });
+
   it("uses direct gtag fallback when GTM is absent and a public Google tag exists", async () => {
     const { pushEvent } = await loadGtm({
       NEXT_PUBLIC_GTM_ID: "",

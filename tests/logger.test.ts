@@ -49,6 +49,46 @@ describe("logger helpers", () => {
     });
   });
 
+  it("does not throw when log fields contain circular objects, BigInt or Error instances", () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+    const context: Record<string, unknown> = { bookingId: BigInt(123), err: new Error("bad") };
+    context.self = context;
+
+    expect(() => logEvent("info", "booking.audit", context)).not.toThrow();
+
+    expect(JSON.parse(logSpy.mock.calls[0][0])).toMatchObject({
+      level: "info",
+      event: "booking.audit",
+      bookingId: "123",
+      err: "Error: bad",
+      self: {
+        bookingId: "123",
+        err: "Error: bad",
+        self: "[Circular]",
+      },
+    });
+  });
+
+  it("falls back to a minimal structured entry when field serialization throws", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+    expect(() =>
+      logEvent("warn", "booking.audit", {
+        bad: {
+          toJSON() {
+            throw new Error("broken toJSON");
+          },
+        },
+      }),
+    ).not.toThrow();
+
+    expect(JSON.parse(warnSpy.mock.calls[0][0])).toMatchObject({
+      level: "warn",
+      event: "booking.audit",
+      log_serialization_error: "Error: broken toJSON",
+    });
+  });
+
   it("reduces unknown errors to safe string fields", () => {
     expect(errField(new TypeError("bad payload"))).toBe("TypeError: bad payload");
     expect(errField("plain failure")).toBe("plain failure");

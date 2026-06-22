@@ -96,7 +96,10 @@ describe("consent-gated analytics RUM contracts", () => {
     expect(gtm).toContain("hasOptionalConsent");
     expect(gtm).toContain('hasOptionalConsent("analytics")');
     expect(gtm).toContain('hasOptionalConsent("marketing")');
-    expect(gtm).toContain("parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY))");
+    expect(gtm).toContain("globalThis.localStorage?.getItem(CONSENT_STORAGE_KEY)");
+    expect(gtm).toContain("parseConsent(storedConsent)");
+    expect(gtm).toContain("} catch {");
+    expect(gtm).toContain("return false;");
     expect(gtm).toContain("if (!hasOptionalConsent(\"analytics\")) return;");
     expect(gtm).toContain("if (!hasOptionalConsent(\"marketing\")) return;");
   });

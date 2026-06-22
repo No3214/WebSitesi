@@ -44,7 +44,7 @@ export function logEvent(
     ...fields,
   };
 
-  const line = JSON.stringify(entry);
+  const line = safeJsonStringify(entry);
   if (level === "error") console.error(line);
   else if (level === "warn") console.warn(line);
   else console.log(line);
@@ -53,5 +53,32 @@ export function logEvent(
 /** Hata nesnesini log alanına güvenle indirger (stack prod'da kırpılır). */
 export function errField(err: unknown): string {
   if (err instanceof Error) return `${err.name}: ${err.message}`;
-  return String(err);
+  try {
+    return String(err);
+  } catch {
+    return "Unknown error";
+  }
+}
+
+function safeJsonStringify(entry: Record<string, unknown>): string {
+  const seen = new WeakSet<object>();
+
+  try {
+    return JSON.stringify(entry, (_key, value) => {
+      if (typeof value === "bigint") return value.toString();
+      if (value instanceof Error) return errField(value);
+      if (typeof value === "object" && value !== null) {
+        if (seen.has(value)) return "[Circular]";
+        seen.add(value);
+      }
+      return value;
+    });
+  } catch (err) {
+    return JSON.stringify({
+      ts: entry.ts,
+      level: entry.level,
+      event: entry.event,
+      log_serialization_error: errField(err),
+    });
+  }
 }
