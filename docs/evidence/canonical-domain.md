@@ -54,21 +54,20 @@ As of 2026-06-22, `npm run domain:verify:json` reports this concrete state:
   and `legacy HotelRunner hosted landing surface` on the `.com` origins. That
   historical risk is retained here because the verifier must keep detecting
   stale host regressions, but the current `.com` measurement is now clean.
-- DNS NS/MX can be verified through DNS-over-HTTPS. Current public A/CNAME
-  warnings for the `.com` origins show Cloudflare anycast/proxy-shaped records,
-  but the live `/api/health` and hero-video proof confirms the `.com` web
-  surface is serving the current Vercel app. The `.com.tr` web surface remains
-  the real domain blocker.
+- DNS NS/MX can be verified through DNS-over-HTTPS. When the `.com` nameservers
+  resolve to Vercel DNS and the HTTPS origin is verified, the verifier accepts
+  Vercel-managed A/CNAME flattening instead of requiring one fixed public IP
+  shape. The `.com.tr` web surface remains the real domain blocker.
 - The verifier checks the `.com.tr` brand origins as separate public surfaces,
   requiring the same `/api/health`, current commit, secure redirect and opening
   hero video proof before full public-domain launch is considered ready.
 - The verifier now separates registrar ownership from live DNS authority. A
-  domain may be registered at Isimtescil while live DNS is delegated to
-  Cloudflare nameservers; in that state, Isimtescil DNS-zone edits do not affect
-  public traffic until nameservers are moved.
+  domain may be registered at Isimtescil while public resolvers still return
+  stale or external DNS delegation; in that state, the operator must verify the
+  active Isimtescil nameservers and Vercel Domains state before making changes.
 - The verifier reports `.com` and `.com.tr` DNS zones separately because the
-  canonical and Turkish ccTLD domains may be delegated to different Cloudflare
-  nameserver pairs. Edit each authoritative zone separately during cutover.
+  canonical and Turkish ccTLD domains may have different delegation or redirect
+  states. Verify each domain independently during cutover.
 - The current Vercel cutover target records are reported in the verifier output.
   Vercel DNS uses `A 76.76.21.21` for apex hosts and CNAME records for `www` /
   subdomains. Re-run `vercel domains inspect` or check Project Settings before
@@ -76,25 +75,24 @@ As of 2026-06-22, `npm run domain:verify:json` reports this concrete state:
   ccTLD brand origins must also serve the current app or securely redirect to
   the chosen canonical app. Existing MX/TXT/SPF/DKIM/DMARC records must be
   preserved when changing the authoritative DNS provider.
-- If Cloudflare proxy is enabled, public A lookups can show Cloudflare anycast
-  IPs instead of the Vercel target. The operator should use DNS-only mode for
-  first cutover verification, or keep proxy enabled only after `/api/health`
-  returns `service: "kozbeyli-konagi"` at the current commit and the homepage
-  exposes `/videos/hero.mp4`.
+- If public recursive DNS still shows an external DNS/CDN layer, treat that as
+  resolver or delegation evidence only. The operator should rely on the
+  registrar/Vercel domain state plus `/api/health` returning
+  `service: "kozbeyli-konagi"` at the current commit and the homepage exposing
+  `/videos/hero.mp4`.
 - Current Vercel proof on 2026-06-22: project `kozbeyli-konagi`
   (`prj_lM3tFqaJ5DIv9JaYTUobdTBQlXC8`) is linked to
   `kozbeylikonagi.com` and `www.kozbeylikonagi.com`, and the Vercel preview
   plus both `.com` origins serve `service: "kozbeyli-konagi"` with deployment
   commit reported by `npm run domain:verify:json`.
-- Current public DNS authority on 2026-06-22: recursive DNS still reports
-  `.com` Cloudflare
-  nameservers `anastasia.ns.cloudflare.com` and `theo.ns.cloudflare.com`, so
-  the Isimtescil nameserver update may still be propagating. The `.com.tr`
-  brand zone reports `lucy.ns.cloudflare.com` and `memphis.ns.cloudflare.com`
-  and must be changed or redirected through the authoritative provider that
-  controls that ccTLD.
-- Vercel Project Settings currently presents the Cloudflare manual setup as
-  `CNAME @ dacb3ec12ca81d22.vercel-dns-017.com` with proxy disabled, while
+- Current public DNS authority on 2026-06-22: recursive DNS can still report
+  external/stale nameserver delegation after the Isimtescil change, so
+  resolver disagreement is treated as propagation evidence, not as an instruction
+  to use an unrelated DNS account. The `.com.tr` brand zone must be changed or
+  securely redirected through the authoritative provider that controls that
+  ccTLD.
+- Vercel Project Settings currently presents the manual setup as
+  `CNAME @ dacb3ec12ca81d22.vercel-dns-017.com`, while
   `vercel domains inspect` also reports the older compatible apex fallback
   `A kozbeylikonagi.com 76.76.21.21`. Use the value shown in Project Settings
   at action time and verify with `/api/health`; do not mark the gate ready
@@ -105,13 +103,8 @@ As of 2026-06-22, `npm run domain:verify:json` reports this concrete state:
   record, `_dmarc` TXT, and `default._domainkey` DKIM TXT. Re-check these
   before changing nameservers because mail records are external operational
   state.
-- The Cloudflare API account available to this agent currently lists no zones,
-  so API-based DNS cutover cannot be completed from this session. The operator
-  must use the Cloudflare account that owns the zone or complete the
-  nameserver change in Isimtescil after confirming mail continuity.
 - Isimtescil cutover action on 2026-06-22: in `Host Name (DNS) Yönetimi`, the
-  domain was updated from `THEO.NS.CLOUDFLARE.COM,ANASTASIA.NS.CLOUDFLARE.COM`
-  to `NS1.VERCEL-DNS.COM,NS2.VERCEL-DNS.COM`. The panel reported:
+  domain was updated to `NS1.VERCEL-DNS.COM,NS2.VERCEL-DNS.COM`. The panel reported:
   `Girmiş olduğunuz kayıtlar veritabanımıza kaydedildi. Dns kayıtlarınız
   kaydedici firmada güncellendi.`
 - Isimtescil also created a reusable custom DNS set:
@@ -120,21 +113,20 @@ As of 2026-06-22, `npm run domain:verify:json` reports this concrete state:
   Vercel DNS is ready for the nameserver delegation: `NS ns1/ns2.vercel-dns.com`,
   `MX mx.kozbeylikonagi.com`, `A mx.kozbeylikonagi.com 78.142.208.142`,
   the SPF TXT record, and `A www.kozbeylikonagi.com` Vercel web targets.
-- Public recursive DNS still returns Cloudflare delegation after the panel
-  change, while the `.com` web origins already pass `/api/health`, secure
+- Public recursive DNS can still return stale external delegation after the
+  panel change, while the `.com` web origins already pass `/api/health`, secure
   redirect-chain and `/videos/hero.mp4` checks. Keep status `pending` until
   the `.com.tr` brand origins also pass or securely redirect, and until public
   DNS propagation is no longer ambiguous.
-- `npm run domain:verify` now marks mismatched live DNS record rows with
-  `originVerified=yes` when the corresponding HTTPS origin is already serving
-  the current Vercel deployment. Those rows remain DNS propagation/proxy-state
-  warnings and keep `dnsReady=false`, but they no longer obscure the stronger
-  live web-origin proof for `.com`.
+- `npm run domain:verify` now marks live DNS rows with `managedDnsNote` when
+  Vercel DNS is authoritative and the corresponding HTTPS origin is already
+  serving the current deployment. External resolver mismatches remain warnings
+  only when the origin or DNS authority is not proven.
 
 ## Residual Risk
 
-DNS/Cloudflare/Vercel domain configuration for `.com.tr` must be corrected
-outside the code repository. The `.com` first redirect hop must remain HTTPS,
-all public brand origins must serve the current Vercel app or securely redirect
-to it, and `npm run domain:verify:strict` should pass before the evidence status
-is changed to `ready`.
+Vercel/registrar domain configuration for `.com.tr` must be corrected outside
+the code repository. The `.com` first redirect hop must remain HTTPS, all public
+brand origins must serve the current Vercel app or securely redirect to it, and
+`npm run domain:verify:strict` should pass before the evidence status is changed
+to `ready`.

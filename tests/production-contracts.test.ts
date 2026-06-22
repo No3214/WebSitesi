@@ -735,9 +735,10 @@ describe("production readiness contracts", () => {
     expect(domainScript).toContain("legacy Joomla/Seagull template");
     expect(domainScript).toContain("legacy HotelRunner hosted landing surface");
     expect(domainScript).toContain("serves legacy host surface");
-    expect(domainScript).toContain("CLOUDFLARE_PROXY_CUTOVER_NOTE");
+    expect(domainScript).toContain("EXTERNAL_DNS_RESOLVER_NOTE");
     expect(domainScript).toContain("buildZoneCutoverGuidance");
-    expect(domainScript).toContain("public DNS can show Cloudflare anycast IPs");
+    expect(domainScript).toContain("external DNS/CDN layer");
+    expect(domainScript).toContain("compareDnsResolvers");
     expect(domainScript).toContain("process.exitCode");
     expect(domainScript).not.toContain("process.exit(strict");
     expect(domainScript).toContain("kozbeylikonagi.com");
@@ -752,7 +753,7 @@ describe("production readiness contracts", () => {
 
     expect(launchReadiness).toContain("Son revizyon: 2026-06-22.");
     expect(launchReadiness).toContain("2026-06-20 canonical legacy host güncellemesi");
-    expect(launchReadiness).toContain("2026-06-20 Cloudflare proxy notu");
+    expect(launchReadiness).toContain("2026-06-20 public resolver notu");
     expect(launchReadiness).toContain("2026-06-22 İsimtescil/Vercel nameserver güncellemesi");
     expect(launchReadiness).toContain("2026-06-20 public light theme güncellemesi");
     expect(launchReadiness).toContain("31 files / 186 tests");
@@ -783,11 +784,11 @@ describe("production readiness contracts", () => {
     expect(canonicalEvidence).toContain("commit reported by");
     expect(canonicalEvidence).toContain("Full public-domain validation is not ready yet");
     expect(canonicalEvidence).toContain("DNS NS/MX can be verified through DNS-over-HTTPS");
-    expect(canonicalEvidence).toContain("public A lookups can show Cloudflare anycast");
+    expect(canonicalEvidence).toContain("Vercel-managed A/CNAME flattening");
+    expect(canonicalEvidence).toContain("managedDnsNote");
     expect(canonicalEvidence).toContain("with deployment");
-    expect(canonicalEvidence).toContain("anastasia.ns.cloudflare.com");
-    expect(canonicalEvidence).toContain("theo.ns.cloudflare.com");
-    expect(canonicalEvidence).toContain("Isimtescil nameserver update may still be propagating");
+    expect(canonicalEvidence).toContain("external/stale nameserver delegation");
+    expect(canonicalEvidence).toContain("resolver disagreement is treated as propagation evidence");
     expect(canonicalEvidence).toContain("dacb3ec12ca81d22.vercel-dns-017.com");
     expect(canonicalEvidence).toContain("mail-continuity records");
     expect(canonicalEvidence).toContain("NS1.VERCEL-DNS.COM,NS2.VERCEL-DNS.COM");
@@ -834,8 +835,8 @@ describe("production readiness contracts", () => {
     expect(cutover).toContain("VERCEL_AUTH_COMMANDS");
     expect(cutover).toContain("vercel whoami");
     expect(cutover).toContain("npm run hms:verify:strict");
-    expect(cutover).toContain("If Cloudflare proxy is enabled");
-    expect(cutover).toContain("For first verification on Cloudflare");
+    expect(cutover).toContain("external DNS/CDN layer");
+    expect(cutover).toContain("For first verification");
     expect(vercelOps).toContain("PASS_WITH_WARNINGS");
     expect(vercelOps).toContain("npm i -g vercel");
     expect(vercelOps).toContain("APPDATA");
@@ -1112,9 +1113,9 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("Remove old Joomla/Seagull and HotelRunner hosted landing routing");
     expect(cutoverPlan).toContain("no legacy host signatures");
     expect(cutoverPlan).toContain("Treat NS/MX DNS PASS separately from web serving readiness");
-    expect(cutoverPlan).toContain("verify and edit each authoritative zone separately");
+    expect(cutoverPlan).toContain("verify each domain independently");
     expect(cutoverPlan).toContain("A records for apex hosts and CNAME records for www/subdomains");
-    expect(cutoverPlan).toContain("subdomain CNAME records shown by vercel domains inspect");
+    expect(cutoverPlan).toContain("subdomain CNAME records shown by Vercel Project Settings");
     expect(cutoverPlan).toContain("Turkish ccTLD brand origins");
     expect(cutoverPlan).toContain("remove the bad override to use the official code fallback");
     expect(cutoverPlan).toContain("Run npm run hms:verify:strict");

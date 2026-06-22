@@ -80,11 +80,10 @@ const LEGACY_HOST_SIGNATURES = [
   },
 ];
 const DNS_FALLBACK_ENDPOINTS = [
-  "https://cloudflare-dns.com/dns-query",
   "https://dns.google/resolve",
 ];
-const CLOUDFLARE_PROXY_CUTOVER_NOTE =
-  "If Cloudflare proxy is enabled, public DNS can show Cloudflare anycast IPs instead of the Vercel target. For first cutover verification, use DNS only or prove the proxied host with /api/health and the opening hero video before marking the gate ready.";
+const EXTERNAL_DNS_RESOLVER_NOTE =
+  "If a public resolver still returns an external DNS/CDN layer, do not edit that provider unless ownership is confirmed. The final proof is the registrar delegation plus /api/health and the opening hero video on the public origin.";
 
 function normalizeOrigin(origin) {
   return origin.replace(/\/+$/, "");
@@ -245,10 +244,10 @@ function classifyDnsAuthority(nsRecords) {
 
   if (normalized.some((item) => item.includes("cloudflare.com"))) {
     return {
-      provider: "cloudflare",
-      label: "Cloudflare",
+      provider: "external-dns",
+      label: "External DNS/CDN resolver result",
       action:
-        "Edit the Cloudflare DNS zone, or change the domain nameservers away from Cloudflare before expecting registrar-zone DNS records to affect live traffic.",
+        "Do not treat this as a Kozbeyli project integration by itself; verify Isimtescil registrar delegation and Vercel Domains before changing DNS records.",
     };
   }
 
@@ -298,13 +297,15 @@ function buildRecordChecklistItem(record) {
 function buildZoneCutoverGuidance(zone, authority) {
   const records = recordsForZone(zone);
   const checklist = [
-    `Open the ${authority.label} authoritative DNS zone for ${zone.apexDomain}.`,
+    authority.provider === "external-dns"
+      ? `Do not open or edit an unrelated external DNS/CDN panel for ${zone.apexDomain}; first verify the registrar nameservers and Vercel Domains state.`
+      : `Open the ${authority.label} authoritative DNS zone for ${zone.apexDomain}.`,
     VERCEL_DNS_TARGET_NOTE,
     ...records.map(buildRecordChecklistItem),
   ];
 
-  if (authority.provider === "cloudflare") {
-    checklist.push(CLOUDFLARE_PROXY_CUTOVER_NOTE);
+  if (authority.provider === "external-dns") {
+    checklist.push(EXTERNAL_DNS_RESOLVER_NOTE);
   }
 
   if (zone.mailRequired) {
@@ -318,8 +319,8 @@ function buildZoneCutoverGuidance(zone, authority) {
   return {
     records,
     checklist,
-    cloudflareProxyNote:
-      authority.provider === "cloudflare" ? CLOUDFLARE_PROXY_CUTOVER_NOTE : "",
+    externalResolverNote:
+      authority.provider === "external-dns" ? EXTERNAL_DNS_RESOLVER_NOTE : "",
   };
 }
 
@@ -366,37 +367,23 @@ async function queryDnsOverHttps({
   const errors = [];
 
   for (const endpoint of DNS_FALLBACK_ENDPOINTS) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    const result = await queryDnsOverHttpsEndpoint({
+      endpoint,
+      apexDomain,
+      recordType,
+      fetchImpl,
+      timeoutMs,
+    });
 
-    try {
-      const url = new URL(endpoint);
-      url.searchParams.set("name", apexDomain);
-      url.searchParams.set("type", recordType);
-
-      const response = await fetchImpl(url, {
-        headers: { accept: "application/dns-json" },
-        signal: controller.signal,
-      });
-
-      if (!response.ok) {
-        errors.push(`${endpoint}: HTTP ${response.status}`);
-        continue;
-      }
-
-      const payload = await response.json();
-      const records = parseDohAnswers(payload, recordType);
-
+    if (result.records.length > 0 || !result.error) {
       return {
-        records,
-        source: endpoint,
-        error: "",
+        records: result.records,
+        source: result.source,
+        error: result.error,
       };
-    } catch (error) {
-      errors.push(`${endpoint}: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      clearTimeout(timeout);
     }
+
+    errors.push(`${endpoint}: ${result.error}`);
   }
 
   return {
@@ -404,6 +391,52 @@ async function queryDnsOverHttps({
     source: "dns-over-https",
     error: errors.join("; "),
   };
+}
+
+async function queryDnsOverHttpsEndpoint({
+  endpoint,
+  apexDomain,
+  recordType,
+  fetchImpl = fetch,
+  timeoutMs = 6000,
+}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const url = new URL(endpoint);
+    url.searchParams.set("name", apexDomain);
+    url.searchParams.set("type", recordType);
+
+    const response = await fetchImpl(url, {
+      headers: { accept: "application/dns-json" },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      return {
+        records: [],
+        source: endpoint,
+        error: `HTTP ${response.status}`,
+      };
+    }
+
+    const payload = await response.json();
+
+    return {
+      records: parseDohAnswers(payload, recordType),
+      source: endpoint,
+      error: "",
+    };
+  } catch (error) {
+    return {
+      records: [],
+      source: endpoint,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function resolveDnsRecord({
@@ -471,6 +504,89 @@ function normalizeDnsValues(values) {
   return values.map((item) => stripTrailingDot(item).toLowerCase()).sort();
 }
 
+function dnsRecordSetKey(values) {
+  return normalizeDnsValues(values).join("|");
+}
+
+function buildNsEvidenceItem({ source, records, error = "" }) {
+  const normalizedRecords = normalizeDnsValues(records);
+  const authority = classifyDnsAuthority(normalizedRecords);
+
+  return {
+    source,
+    records: normalizedRecords,
+    authority,
+    error,
+  };
+}
+
+async function collectNameserverEvidence({
+  apexDomain,
+  nativeResult,
+  dnsFallbackFetchImpl,
+  dnsFallbackTimeoutMs,
+  compareDnsResolvers,
+}) {
+  const evidence = [
+    buildNsEvidenceItem({
+      source: nativeResult.source || "system",
+      records: nativeResult.records,
+      error: nativeResult.error,
+    }),
+  ];
+
+  const seenEvidenceKeys = new Set(evidence.map((item) => `${item.source}:${dnsRecordSetKey(item.records)}:${item.error}`));
+
+  if (compareDnsResolvers && dnsFallbackFetchImpl) {
+    const dohEvidence = await Promise.all(
+      DNS_FALLBACK_ENDPOINTS.map((endpoint) =>
+        queryDnsOverHttpsEndpoint({
+          endpoint,
+          apexDomain,
+          recordType: "NS",
+          fetchImpl: dnsFallbackFetchImpl,
+          timeoutMs: dnsFallbackTimeoutMs,
+        }),
+      ),
+    );
+
+    for (const item of dohEvidence.map((entry) =>
+        buildNsEvidenceItem({
+          source: entry.source,
+          records: entry.records,
+          error: entry.error,
+        }),
+      )) {
+      const key = `${item.source}:${dnsRecordSetKey(item.records)}:${item.error}`;
+      if (seenEvidenceKeys.has(key)) continue;
+      seenEvidenceKeys.add(key);
+      evidence.push(item);
+    }
+  }
+
+  const nonEmptyRecordSets = new Set(
+    evidence.filter((item) => item.records.length > 0).map((item) => dnsRecordSetKey(item.records)),
+  );
+  const nonEmptyProviders = new Set(
+    evidence
+      .filter((item) => item.records.length > 0)
+      .map((item) => item.authority.provider),
+  );
+  const disagreement = nonEmptyRecordSets.size > 1;
+  const providerDisagreement = nonEmptyProviders.size > 1;
+  const note =
+    disagreement || providerDisagreement
+      ? "Nameserver resolver disagreement detected; confirm the registrar delegation and Vercel domain status before editing DNS records."
+      : "";
+
+  return {
+    evidence,
+    disagreement,
+    providerDisagreement,
+    note,
+  };
+}
+
 function webRecordMatches(record, actualValues) {
   const expected = stripTrailingDot(record.value).toLowerCase();
   const actual = normalizeDnsValues(actualValues);
@@ -507,6 +623,7 @@ function hostnameForOrigin(origin) {
 
 function annotateWebRecordChecks({ dns, canonical, brand }) {
   const originsByHost = new Map();
+  const zonesByGroup = new Map(dns.zones.map((zone) => [zone.group, zone]));
 
   for (const item of [...canonical, ...brand]) {
     const hostname = hostnameForOrigin(item.origin);
@@ -519,13 +636,22 @@ function annotateWebRecordChecks({ dns, canonical, brand }) {
 
   const webRecordChecks = dns.webRecordChecks.map((item) => {
     const origin = originsByHost.get(item.host.toLowerCase());
+    const zone = zonesByGroup.get(item.group);
+    const acceptsManagedVercelDns = Boolean(
+      !item.ready && origin?.ready && zone?.authority?.provider === "vercel",
+    );
 
     return {
       ...item,
+      ready: item.ready || acceptsManagedVercelDns,
+      remediation: item.ready || acceptsManagedVercelDns ? "" : item.remediation,
       originVerified: Boolean(origin?.ready),
       origin: origin?.origin || "",
+      managedDnsNote: acceptsManagedVercelDns
+        ? "Vercel DNS is authoritative and the web origin is verified; platform-managed A/CNAME flattening is accepted."
+        : "",
       propagationNote:
-        !item.ready && origin?.ready
+        !item.ready && origin?.ready && !acceptsManagedVercelDns
           ? "The web origin is verified on the current deployment; this DNS mismatch is treated as propagation, resolver-cache, or proxy-state evidence."
           : "",
     };
@@ -728,6 +854,7 @@ async function checkDnsZone({
   resolveMxImpl = resolveMx,
   dnsFallbackFetchImpl,
   dnsFallbackTimeoutMs = 6000,
+  compareDnsResolvers = false,
 }) {
   const nsResultPromise = resolveDnsRecord({
     apexDomain: zone.apexDomain,
@@ -748,6 +875,13 @@ async function checkDnsZone({
   const [nsResult, mxResult] = await Promise.all([nsResultPromise, mxResultPromise]);
   const ns = nsResult.records;
   const mx = mxResult.records;
+  const delegation = await collectNameserverEvidence({
+    apexDomain: zone.apexDomain,
+    nativeResult: nsResult,
+    dnsFallbackFetchImpl,
+    dnsFallbackTimeoutMs,
+    compareDnsResolvers,
+  });
   const authority = classifyDnsAuthority(ns);
   const nsOk = ns.length > 0 && authority.provider !== "unknown";
   const mxOk = !zone.mailRequired || mx.some((item) => item.exchange === zone.expectedMx);
@@ -761,6 +895,10 @@ async function checkDnsZone({
     ns,
     mx,
     authority,
+    delegationEvidence: delegation.evidence,
+    delegationDisagreement: delegation.disagreement,
+    delegationProviderDisagreement: delegation.providerDisagreement,
+    delegationNote: delegation.note,
     nsOk,
     mxOk,
     cutover,
@@ -779,6 +917,7 @@ async function checkDns({
   resolveMxImpl = resolveMx,
   dnsFallbackFetchImpl,
   dnsFallbackTimeoutMs = 6000,
+  compareDnsResolvers = false,
 } = {}) {
   const zonesToCheck = DNS_ZONES.map((zone) =>
     zone.apexDomain === apexDomain || zone.group !== "canonical"
@@ -794,6 +933,7 @@ async function checkDns({
           resolveMxImpl,
           dnsFallbackFetchImpl,
           dnsFallbackTimeoutMs,
+          compareDnsResolvers,
         }),
       ),
     ),
@@ -816,7 +956,7 @@ async function checkDns({
     nsError: "",
     mxError: "",
   };
-  const zonesOk = zones.every((zone) => zone.nsOk && zone.mxOk);
+  const zonesOk = zones.every((zone) => zone.nsOk && zone.mxOk && !zone.delegationDisagreement);
   const webRecordsOk = webRecordChecks.every((item) => item.ready);
 
   return {
@@ -829,7 +969,7 @@ async function checkDns({
     registrarVsDnsNote:
       "The registrar panel and the live DNS authority can be different. Nameservers decide where live DNS records must be edited.",
     isimtescilCaution:
-      "If the domain is registered at Isimtescil but nameservers stay on Cloudflare, Isimtescil DNS-zone records will not control live web traffic. To use Isimtescil DNS, change nameservers first and preserve MX/TXT/SPF/DKIM/DMARC records.",
+      "If the domain is registered at Isimtescil but nameservers point to a separate external DNS provider, Isimtescil DNS-zone records will not control live web traffic. To use Isimtescil/Vercel DNS, change nameservers first and preserve MX/TXT/SPF/DKIM/DMARC records.",
     vercelDnsTargetNote: VERCEL_DNS_TARGET_NOTE,
     vercelTargetRecords: VERCEL_TARGET_RECORDS,
     webRecordChecks,
@@ -856,6 +996,7 @@ export async function evaluateDomainReadiness({
   resolveMxImpl = resolveMx,
   dnsFallbackFetchImpl = fetch,
   dnsFallbackTimeoutMs = 6000,
+  compareDnsResolvers = false,
 } = {}) {
   const [preview, canonical, brand, rawDns] = await Promise.all([
     checkOrigin({ origin: previewOrigin, expectedCommit, fetchImpl, timeoutMs }),
@@ -876,6 +1017,7 @@ export async function evaluateDomainReadiness({
       resolveMxImpl,
       dnsFallbackFetchImpl,
       dnsFallbackTimeoutMs,
+      compareDnsResolvers,
     }),
   ]);
 
@@ -890,6 +1032,9 @@ export async function evaluateDomainReadiness({
     ...dns.zones
       .filter((zone) => !zone.mxOk)
       .map((zone) => `${zone.group} domain MX record could not be verified as ${zone.expectedMx}`),
+    ...dns.zones
+      .filter((zone) => zone.delegationDisagreement)
+      .map((zone) => `${zone.group} domain nameserver resolver disagreement for ${zone.apexDomain}: ${zone.delegationNote}`),
     ...dns.webRecordChecks
       .filter((item) => !item.ready)
       .map(describeDnsRecordWarning),
@@ -997,6 +1142,15 @@ export function formatDomainReadiness(result) {
     );
     lines.push(`    active DNS authority: ${zone.authority.label}`);
     lines.push(`    action: ${zone.authority.action}`);
+    if (zone.delegationEvidence?.length > 1) {
+      lines.push("    nameserver resolver evidence:");
+      for (const item of zone.delegationEvidence) {
+        lines.push(
+          `    - ${item.source}: ${item.records.join(", ") || item.error || "n/a"} (${item.authority.label})`,
+        );
+      }
+      if (zone.delegationNote) lines.push(`    resolver note: ${zone.delegationNote}`);
+    }
     lines.push("    cutover checklist:");
     zone.cutover.checklist.forEach((item) => lines.push(`    - ${item}`));
   }
@@ -1014,6 +1168,7 @@ export function formatDomainReadiness(result) {
         describeActualDns(record)
       } source=${record.source} originVerified=${record.originVerified ? "yes" : "no"}`,
     );
+    if (record.managedDnsNote) lines.push(`    note: ${record.managedDnsNote}`);
     if (record.propagationNote) lines.push(`    note: ${record.propagationNote}`);
     if (!record.ready) lines.push(`    remediation: ${record.remediation}`);
   }
@@ -1036,7 +1191,7 @@ export function formatDomainReadiness(result) {
 async function main() {
   const strict = process.argv.includes("--strict");
   const json = process.argv.includes("--json");
-  const result = await evaluateDomainReadiness();
+  const result = await evaluateDomainReadiness({ compareDnsResolvers: true });
   console.log(json ? JSON.stringify(result, null, 2) : formatDomainReadiness(result));
   process.exitCode = strict && result.decision !== "CANONICAL DOMAIN GO" ? 1 : 0;
 }

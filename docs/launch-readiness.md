@@ -44,17 +44,17 @@ artık eski host yüzeyini ayrıca sınıflandırır. Canlı ölçümde Vercel p
 preview `c272d59b344c` commit'iyle sağlıklı, DNS NS/MX kayıtları doğrulanabilir,
 fakat `kozbeylikonagi.com` ve `www` hâlâ `legacy Joomla/Seagull template` ve
 `legacy HotelRunner hosted landing surface` imzası veriyor. Bu, Vercel deploy
-ve alias başarılı olsa bile Cloudflare/DNS veya eski host yönlendirmesi
+ve alias başarılı olsa bile DNS delegasyonu veya eski host yönlendirmesi
 düzelmeden canonical gate'in NO-GO kalacağını kanıtlar.
 
 2026-06-20 DNS yetki güncellemesi: `npm run domain:verify` artık registrar ile
 aktif DNS yetkilisini ayrı gösterir. Domain İsimtescil panelinde kayıtlı olsa
-bile nameserver Cloudflare ise canlı A/TXT/MX kayıtları Cloudflare zone'unda
-değişmelidir; İsimtescil DNS zone kayıtları nameserver değişmeden canlı trafiği
-etkilemez. `npm run domain:verify` artık `.com` ve `.com.tr` DNS zone'larını
-ayrı raporlar; bu domainler farklı Cloudflare nameserver çiftlerine delege
-edilebilir, bu yüzden her authoritative zone ayrı kontrol edilmelidir. Vercel
-hedef kayıtları raporda açıkça listelenir. Vercel DNS apex hostlar için
+bile public resolver'lar farklı/harici delegasyon gösterebilir; İsimtescil DNS
+zone kayıtları nameserver değişmeden canlı trafiği etkilemez. `npm run
+domain:verify` artık `.com` ve `.com.tr` DNS zone'larını ayrı raporlar; bu
+domainler farklı delegation veya redirect durumunda olabilir, bu yüzden her
+domain ayrı kontrol edilmelidir. Vercel hedef kayıtları raporda açıkça listelenir.
+Vercel DNS apex hostlar için
 `A 76.76.21.21`, `www` ve diğer subdomainler için CNAME kaydı kullanır; DNS
 düzenlemesinden hemen önce inspect komutu tekrar çalıştırılmalı veya Project
 Settings kontrol edilmeli, çünkü Vercel proje bazlı CNAME değerleri
@@ -63,12 +63,11 @@ gate'e dahildir; güncel uygulamayı servis etmeli veya seçilen canonical origi
 güvenli şekilde yönlenmelidir. Nameserver sağlayıcısı değiştirilecekse
 MX/TXT/SPF/DKIM/DMARC kayıtları korunmadan geçiş yapılmamalıdır.
 
-2026-06-20 Cloudflare proxy notu: Cloudflare proxy açıkken public DNS sorguları
-Vercel hedefi yerine Cloudflare anycast IP'lerini gösterebilir. İlk cutover
-doğrulamasında kayıtları DNS-only modda test etmek veya proxy açık kalacaksa
-`/api/health` yanıtının `service=kozbeyli-konagi` dönmesi ve ana sayfanın
-`/videos/hero.mp4` açılış videosunu göstermesi zorunludur. Public A sorgusu tek
-başına GO kanıtı sayılmaz.
+2026-06-20 public resolver notu: public DNS sorguları, registrar/Vercel tarafı
+güncellense bile eski veya harici DNS/CDN kayıtlarını gösterebilir. İlk cutover
+doğrulamasında `/api/health` yanıtının `service=kozbeyli-konagi` dönmesi ve ana
+sayfanın `/videos/hero.mp4` açılış videosunu göstermesi zorunludur. Public A
+sorgusu tek başına GO kanıtı sayılmaz.
 
 2026-06-22 İsimtescil/Vercel nameserver güncellemesi: İsimtescil
 `Host Name (DNS) Yönetimi` ekranında `.com` nameserver değeri
@@ -85,8 +84,9 @@ production env/evidence kapılarının tamamlanmamış olmasıdır.
 origin doğrulamasını DNS kayıt şekli uyarısından ayrı gösterir. `.com`
 origin'leri `/api/health`, current commit, güvenli redirect ve
 `/videos/hero.mp4` kontrollerinden geçiyorsa live record satırında
-`originVerified=yes` görünür. Resolver cache veya Cloudflare/Vercel proxy
-durumundan gelen eski A/CNAME cevapları yine `dnsReady=false` uyarısı üretir,
+`originVerified=yes` görünür. Vercel DNS authoritative ve web origin doğrulanmışsa
+Vercel-managed A/CNAME flattening `managedDnsNote` ile kabul edilir. Harici DNS/CDN
+durumundan gelen eski A/CNAME cevapları ise yine `dnsReady=false` uyarısı üretir,
 ama `.com` web hazır sinyalini bastırmaz. Tam GO için `.com.tr` brand origin'leri
 de güncel uygulamayı servis etmeli veya güvenli canonical yönlendirmeye
 alınmalıdır.
@@ -262,7 +262,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 - Garanti Sanal POS: kaynak sözleşmeleri `npm run garanti:verify` ile denetleniyor; bankadan bilgiler ve redacted sandbox kanıtı gelmedi → init/callback akışı YAZILAMADI/test edilemedi
 - purchase / booking_complete ölçümü: engine olmadan doğrulanamaz
 - Google Business Profile, Hotel Center / free booking links, Search Console, Apple Business Connect: kanıt yok (operasyonel kurulum)
-- WAF/CDN katmanı: kanıt yok (Vercel mi, önüne Cloudflare mi — karar belirsiz)
+- WAF/CDN katmanı: kanıt yok (Vercel-native korumalar mı, ayrı bir onaylı katman mı — karar belirsiz)
 - Backup + restore testi: hosting/DB sağlayıcı tarafı — kanıt yok
 - RUM/CrUX saha verisi: site yayında olmadığından yok
 - Vendor DPA listesi + yurtdışı veri aktarımı değerlendirmesi: kanıt yok (hukuk danışmanı gerekli)
@@ -285,7 +285,7 @@ Kod tarafı bu kanıtları üretmez; kanıt gelince strict launch gate yeşile d
 5. HMS webhook'tan server-side purchase/booking_complete ölçümünü gerçek event ile doğrula — KOD+DIŞ
 6. Search Console, GBP, Hotel Center ve Apple Business Connect doğrulamalarını tamamla — DIŞ
 7. Vendor DPA, yurtdışı veri aktarımı ve KVKK metinlerini hukukçuya onaylat — HUKUK
-8. CDN/WAF kararını netleştir; Vercel korumaları veya Cloudflare kural seti kanıtını ekle — DIŞ/KOD
+8. CDN/WAF kararını netleştir; Vercel-native korumalar veya onaylı ayrı koruma katmanı kanıtını ekle — DIŞ/KOD
 9. Canlı küçük tutarlı rezervasyon, iptal/iade ve stok düşümü UAT'sini kayıt altına al — DIŞ/KOD
 10. Lansman sonrası RUM/CrUX ve Looker Studio dashboard'unu aç — DIŞ/KOD
 

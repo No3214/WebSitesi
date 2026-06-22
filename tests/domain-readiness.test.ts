@@ -15,6 +15,7 @@ type DomainReadinessModule = {
     resolveNsImpl?: (host: string) => Promise<string[]>;
     resolveMxImpl?: (host: string) => Promise<Array<{ exchange: string; preference: number }>>;
     dnsFallbackFetchImpl?: typeof fetch;
+    compareDnsResolvers?: boolean;
   }) => Promise<{
     previewReady: boolean;
     canonicalReady: boolean;
@@ -34,13 +35,26 @@ type DomainReadinessModule = {
         mx: Array<{ exchange: string; preference: number }>;
         nsOk: boolean;
         mxOk: boolean;
-        authority: {
-          provider: string;
-          label: string;
-          action: string;
-        };
-        cutover: {
-          records: Array<{
+          authority: {
+            provider: string;
+            label: string;
+            action: string;
+          };
+          delegationEvidence?: Array<{
+            source: string;
+            records: string[];
+            authority: {
+              provider: string;
+              label: string;
+              action: string;
+            };
+            error: string;
+          }>;
+          delegationDisagreement?: boolean;
+          delegationProviderDisagreement?: boolean;
+          delegationNote?: string;
+          cutover: {
+            records: Array<{
             group: string;
             type: string;
             host: string;
@@ -48,7 +62,7 @@ type DomainReadinessModule = {
             purpose: string;
           }>;
           checklist: string[];
-          cloudflareProxyNote: string;
+          externalResolverNote: string;
         };
       }>;
       zonesOk: boolean;
@@ -77,6 +91,7 @@ type DomainReadinessModule = {
         remediation: string;
         originVerified: boolean;
         origin: string;
+        managedDnsNote: string;
         propagationNote: string;
       }>;
     };
@@ -202,8 +217,8 @@ describe("domain readiness", () => {
     expect(result.canonicalReady).toBe(false);
     expect(result.decision).toBe("CANONICAL DOMAIN NO-GO");
     expect(result.dns.authority).toMatchObject({
-      provider: "cloudflare",
-      label: "Cloudflare",
+      provider: "external-dns",
+      label: "External DNS/CDN resolver result",
     });
     expect(result.dns.zones).toEqual(
       expect.arrayContaining([
@@ -212,14 +227,14 @@ describe("domain readiness", () => {
           apexDomain: "kozbeylikonagi.com",
           nsOk: true,
           mxOk: true,
-          authority: expect.objectContaining({ provider: "cloudflare" }),
+          authority: expect.objectContaining({ provider: "external-dns" }),
           cutover: expect.objectContaining({
-            cloudflareProxyNote: expect.stringContaining("Cloudflare proxy"),
+            externalResolverNote: expect.stringContaining("external DNS/CDN layer"),
             checklist: expect.arrayContaining([
               expect.stringContaining("Use A records for apex domains and CNAME records for subdomains"),
               "Set A kozbeylikonagi.com to 76.76.21.21.",
               expect.stringContaining("Set CNAME www.kozbeylikonagi.com to cname.vercel-dns.com"),
-              expect.stringContaining("DNS only"),
+              expect.stringContaining("public resolver"),
               expect.stringContaining("Preserve MX mx.kozbeylikonagi.com"),
             ]),
           }),
@@ -230,9 +245,10 @@ describe("domain readiness", () => {
           mailRequired: false,
           nsOk: true,
           mxOk: true,
-          authority: expect.objectContaining({ provider: "cloudflare" }),
+          authority: expect.objectContaining({ provider: "external-dns" }),
           cutover: expect.objectContaining({
             checklist: expect.arrayContaining([
+              expect.stringContaining("Do not open or edit an unrelated external DNS/CDN panel"),
               expect.stringContaining("Use A records for apex domains and CNAME records for subdomains"),
               "Set A kozbeylikonagi.com.tr to 76.76.21.21.",
               expect.stringContaining("Set CNAME www.kozbeylikonagi.com.tr to cname.vercel-dns.com"),
@@ -364,14 +380,14 @@ describe("domain readiness", () => {
           group: "canonical",
           apexDomain: "kozbeylikonagi.com",
           ns: ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
-          authority: expect.objectContaining({ provider: "cloudflare" }),
+          authority: expect.objectContaining({ provider: "external-dns" }),
         }),
         expect.objectContaining({
           group: "brand",
           apexDomain: "kozbeylikonagi.com.tr",
           ns: ["lucy.ns.cloudflare.com", "memphis.ns.cloudflare.com"],
           mailRequired: false,
-          authority: expect.objectContaining({ provider: "cloudflare" }),
+          authority: expect.objectContaining({ provider: "external-dns" }),
         }),
       ]),
     );
@@ -511,6 +527,7 @@ describe("domain readiness", () => {
       actualValues: ["203.0.113.10"],
       originVerified: true,
       origin: "https://kozbeylikonagi.com",
+      managedDnsNote: "",
       propagationNote: expect.stringContaining("web origin is verified"),
     });
     expect(result.dns.webRecordChecks.find((record) => record.host === "www.kozbeylikonagi.com")).toMatchObject({
@@ -519,6 +536,54 @@ describe("domain readiness", () => {
       origin: "",
       propagationNote: "",
     });
+  });
+
+  it("accepts Vercel-managed DNS records when Vercel DNS is authoritative and the origin is verified", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"],
+      brandOrigins: [],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      resolve4Impl: async (host: string) =>
+        host.endsWith(".com.tr") ? ["76.76.21.21"] : ["216.198.79.1", "64.29.17.65"],
+      resolveCnameImpl: async (host: string) => {
+        if (host.endsWith(".com.tr")) return ["cname.vercel-dns.com"];
+        throw new Error("queryCname ENODATA");
+      },
+      dnsFallbackFetchImpl: async () => {
+        throw new Error("dns-over-https disabled in this test");
+      },
+      fetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
+        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
+      },
+      resolveNsImpl: async () => ["ns1.vercel-dns.com", "ns2.vercel-dns.com"],
+      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
+    });
+
+    expect(result.decision).toBe("CANONICAL DOMAIN GO");
+    expect(result.dnsReady).toBe(true);
+    expect(result.warnings).toEqual([]);
+    expect(result.dns.webRecordChecks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          host: "kozbeylikonagi.com",
+          ready: true,
+          originVerified: true,
+          managedDnsNote: expect.stringContaining("Vercel DNS is authoritative"),
+          remediation: "",
+        }),
+        expect.objectContaining({
+          host: "www.kozbeylikonagi.com",
+          ready: true,
+          originVerified: true,
+          managedDnsNote: expect.stringContaining("Vercel DNS is authoritative"),
+          remediation: "",
+        }),
+      ]),
+    );
   });
 
   it("keeps DNS lookup failures as warnings instead of blocking a verified web deployment", async () => {
@@ -595,10 +660,71 @@ describe("domain readiness", () => {
     expect(result.dnsReady).toBe(true);
     expect(result.dns.ns).toEqual(["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"]);
     expect(result.dns.mx).toEqual([{ exchange: "mx.kozbeylikonagi.com", preference: 0 }]);
-    expect(result.dns.authority.provider).toBe("cloudflare");
+    expect(result.dns.authority.provider).toBe("external-dns");
     expect(result.dns.nsSource).toContain("dns");
     expect(result.dns.mxSource).toContain("dns");
     expect(result.warnings).toEqual([]);
+  });
+
+  it("reports nameserver resolver disagreement without treating external DNS as a project integration", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://kozbeylikonagi.com"],
+      brandOrigins: [],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      ...vercelWebRecordResolvers(),
+      compareDnsResolvers: true,
+      fetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
+        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
+      },
+      resolveNsImpl: async () => ["ns1.vercel-dns.com", "ns2.vercel-dns.com"],
+      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
+      dnsFallbackFetchImpl: async (url: string | URL | Request) => {
+        const href = String(url);
+        const recordType = new URL(href).searchParams.get("type");
+
+        if (recordType === "NS") {
+          return jsonResponse({
+            Answer: [
+              { data: "anastasia.ns.cloudflare.com." },
+              { data: "theo.ns.cloudflare.com." },
+            ],
+          });
+        }
+
+        return jsonResponse({ Answer: [] });
+      },
+    });
+
+    const canonicalZone = result.dns.zones.find((zone) => zone.group === "canonical");
+
+    expect(result.decision).toBe("CANONICAL DOMAIN GO");
+    expect(result.dnsReady).toBe(false);
+    expect(canonicalZone?.authority.provider).toBe("vercel");
+    expect(canonicalZone?.delegationDisagreement).toBe(true);
+    expect(canonicalZone?.delegationProviderDisagreement).toBe(true);
+    expect(canonicalZone?.delegationEvidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "system",
+          records: ["ns1.vercel-dns.com", "ns2.vercel-dns.com"],
+          authority: expect.objectContaining({ provider: "vercel" }),
+        }),
+        expect.objectContaining({
+          source: "https://dns.google/resolve",
+          records: ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
+          authority: expect.objectContaining({ provider: "external-dns" }),
+        }),
+      ]),
+    );
+    expect(canonicalZone?.delegationNote).toContain("confirm the registrar delegation and Vercel domain status");
+    expect(canonicalZone?.authority.action).not.toContain("Cloudflare");
+    expect(result.warnings).toContain(
+      "canonical domain nameserver resolver disagreement for kozbeylikonagi.com: Nameserver resolver disagreement detected; confirm the registrar delegation and Vercel domain status before editing DNS records.",
+    );
   });
 
   it("classifies Isimtescil/Natro nameservers as the active DNS authority", async () => {

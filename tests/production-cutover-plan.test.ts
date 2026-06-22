@@ -212,16 +212,16 @@ describe("production cutover plan", () => {
       "Treat NS/MX DNS PASS separately from web serving readiness; mail/nameserver success does not clear a legacy host surface.",
     );
     expect(canonical?.diagnostics).toContain(
-      "Registrar ownership is not the same as live DNS authority. If nameservers are Cloudflare, edit Cloudflare DNS records; Isimtescil DNS-zone records will not affect traffic until nameservers move to Isimtescil/Natro.",
+      "Registrar ownership is not the same as live DNS authority. Verify the active nameservers at Isimtescil and Vercel Domains before changing records; do not use an unrelated external DNS panel as the project source of truth.",
     );
     expect(canonical?.diagnostics).toContain(
-      "The .com and .com.tr domains can be delegated to different DNS zones or nameserver pairs; verify and edit each authoritative zone separately before assuming a single DNS panel controls both.",
+      "The .com and .com.tr domains can be delegated separately; verify each domain independently before assuming a single DNS panel controls both.",
     );
     expect(canonical?.diagnostics).toContain(
       "Vercel DNS uses A records for apex hosts and CNAME records for www/subdomains; re-run vercel domains inspect or check Project Settings before editing DNS because Vercel can return project-specific values.",
     );
     expect(canonical?.diagnostics).toContain(
-      "If Cloudflare proxy is enabled, public DNS lookups can show Cloudflare anycast IPs instead of the Vercel target; the final proof is /api/health plus the opening hero video on the public origin.",
+      "If public recursive DNS still shows an external DNS/CDN layer, treat it as resolver or delegation evidence only; the final proof is /api/health plus the opening hero video on the public origin.",
     );
     expect(canonical?.diagnostics).toContain(
       "The active Turkish ccTLD brand origins are part of the public launch gate; they must serve the current app or securely redirect to the chosen canonical app without stale menu/legacy content.",
@@ -233,13 +233,13 @@ describe("production cutover plan", () => {
       "Confirm active nameservers before editing DNS; make changes at the authoritative DNS provider, not just the registrar panel.",
     );
     expect(canonical?.checklist).toContain(
-      "Check the canonical .com and Turkish ccTLD .com.tr zones independently; do not assume both domains use the same Cloudflare zone or nameserver pair.",
+      "Check the canonical .com and Turkish ccTLD .com.tr domains independently; do not assume both domains use the same DNS authority or Vercel alias state.",
     );
     expect(canonical?.checklist).toContain(
-      "For first verification on Cloudflare, use DNS-only records or rerun npm run domain:verify:strict after enabling proxy to prove the proxied origin still serves the current app.",
+      "For first verification, rerun npm run domain:verify:strict and prove the public origin serves the current app before marking evidence ready.",
     );
     expect(canonical?.checklist).toContain(
-      "If choosing Isimtescil DNS instead of Cloudflare, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding the Vercel apex A and subdomain CNAME records shown by vercel domains inspect.",
+      "If choosing Isimtescil DNS, first change nameservers and copy existing MX/TXT/SPF/DKIM/DMARC records before adding the Vercel apex A and subdomain CNAME records shown by Vercel Project Settings.",
     );
     expect(canonical?.commands).toContain("npm run domain:verify");
     expect(canonical?.commands).toContain("npm run domain:verify:strict");
