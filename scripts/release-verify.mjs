@@ -15,6 +15,10 @@ export const gates = [
     label: "Commercial evidence redaction scan",
   },
   {
+    script: "brand:verify:json",
+    label: "Brand integrity and public-copy truthfulness diagnosis",
+  },
+  {
     script: "evidence:handoff:json",
     label: "Commercial evidence handoff manifest",
   },

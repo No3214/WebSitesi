@@ -28,7 +28,7 @@ export const LLMContextGenerator = {
           "pool resort",
           "bungalow concept",
           "jacuzzi concept",
-          "budget motel"
+          "roadside lodging positioning"
         ],
         operating_notes: {
           check_in: "14:00",

@@ -44,6 +44,9 @@ jobs:
       - name: Evidence redaction scan
         run: npm run evidence:scan
 
+      - name: Brand integrity diagnosis
+        run: npm run brand:verify:json
+
       - name: Hero media audit
         run: npm run media:hero:json
 
