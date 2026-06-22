@@ -406,5 +406,7 @@ describe("production cutover plan", () => {
     expect(plan.finalVerificationCommands).toContain("npm run supabase:verify:strict");
     expect(plan.finalVerificationCommands).toContain("npm run hms:verify:strict");
     expect(plan.finalVerificationCommands).toContain("npm run launch:audit:strict");
+    expect(plan.finalVerificationCommands).toContain("npm run release:verify");
+    expect(plan.finalVerificationCommands).toContain("npm run release:verify:commercial");
   });
 });

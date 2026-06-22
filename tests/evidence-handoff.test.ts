@@ -234,6 +234,7 @@ describe("evidence handoff", () => {
     expect(result.currentScore).toBe(100);
     expect(result.files).toEqual([]);
     expect(result.finalVerificationCommands).toContain("npm run release:verify");
+    expect(result.finalVerificationCommands).toContain("npm run release:verify:commercial");
   });
 
   it("formats a readable handoff for non-technical owners", async () => {

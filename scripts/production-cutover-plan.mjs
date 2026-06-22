@@ -317,6 +317,7 @@ export function buildProductionCutoverPlan({
       "npm run launch:smoke:live",
       "npm run launch:audit:strict",
       "npm run release:verify",
+      "npm run release:verify:commercial",
     ],
   };
 }

@@ -1208,6 +1208,7 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("npm run supabase:verify:strict");
     expect(cutoverPlan).toContain("npm run hms:verify:strict");
     expect(cutoverPlan).toContain("npm run launch:audit:strict");
+    expect(cutoverPlan).toContain("npm run release:verify:commercial");
 
     const exitIntent = read("src/components/exit-intent.tsx");
     expect(exitIntent).toContain("getConfiguredBookingEngineHref");
