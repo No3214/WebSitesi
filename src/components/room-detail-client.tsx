@@ -13,12 +13,16 @@ import { getLocalizedRoom, rooms as fallbackRooms } from "@/data/rooms";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
 
-export function RoomDetailClient({ slug }: { slug: string }) {
+export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string; initialLocale?: "tr" | "en" }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
   const [activeImg, setActiveImg] = useState(0);
   const pathname = usePathname();
-  const locale = pathname === "/en" || Boolean(pathname?.startsWith("/en/")) ? "en" : "tr";
+  const locale = pathname
+    ? pathname === "/en" || pathname.startsWith("/en/")
+      ? "en"
+      : "tr"
+    : initialLocale;
   const baseRoom = fallbackRooms.find((item) => item.slug === slug);
   const room = baseRoom ? getLocalizedRoom(baseRoom, locale) : undefined;
   const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL, {

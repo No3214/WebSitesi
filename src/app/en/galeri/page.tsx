@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Page from "@/app/galeri/page";
+import { GalleryPageContent } from "@/components/gallery-page-content";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -14,4 +14,6 @@ export const metadata: Metadata = {
   },
 };
 
-export default Page;
+export default function EnglishGalleryPage() {
+  return <GalleryPageContent locale="en" />;
+}

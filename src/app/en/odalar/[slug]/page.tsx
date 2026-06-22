@@ -92,7 +92,7 @@ export default async function EnglishRoomDetailPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <RoomViewTracker slug={room.slug} title={room.title} />
-      <RoomDetailClient slug={slug} />
+      <RoomDetailClient slug={slug} initialLocale="en" />
     </>
   );
 }

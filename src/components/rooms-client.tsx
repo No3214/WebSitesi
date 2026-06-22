@@ -25,7 +25,11 @@ export function RoomsClient({ initialDict, initialLocale = "tr" }: RoomsClientPr
   const pathname = usePathname();
 
   useEffect(() => {
-    const current = pathname === "/en" || Boolean(pathname?.startsWith("/en/")) ? "en" : "tr";
+    const current = pathname
+      ? pathname === "/en" || pathname.startsWith("/en/")
+        ? "en"
+        : "tr"
+      : initialLocale;
     setLocale(current);
     if (current === initialLocale && initialDict) return;
     getDictionary(current).then(setDict);

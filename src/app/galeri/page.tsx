@@ -1,10 +1,6 @@
-/* eslint-disable @next/next/no-img-element -- The full gallery serves approved public assets directly to avoid image optimizer contention during heavy parallel release checks. */
 import { Metadata } from "next";
 
-import { PageHero } from "@/components/page-hero";
-import { SiteHeader } from "@/components/site-header";
-import { FadeIn } from "@/components/animations";
-import { galleryExtended } from "@/data/gallery";
+import { GalleryPageContent } from "@/components/gallery-page-content";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -21,51 +17,5 @@ export const metadata: Metadata = {
 };
 
 export default function GalleryPage() {
-  const eagerImageSources = new Set(["/images/galeri/tas-firin-pide.jpg"]);
-  const imageGalleryJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ImageGallery",
-    name: "Kozbeyli Konağı Galeri",
-    url: absoluteUrl("/galeri"),
-    image: galleryExtended.map((shot) => absoluteUrl(shot.src)),
-  };
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGalleryJsonLd) }}
-      />
-      <SiteHeader />
-      <main>
-        <PageHero
-          eyebrow="KONAKTAN KARELER"
-          title="Taşın ve Işığın Günlüğü"
-          text="Andezit taş duvarlar, sabah güneşiyle uyanan avlu ve Ege'nin sofra kültürü. Konağın gündelik ritmini fotoğraflarla gezin."
-        />
-
-        <section className="section">
-          <div className="container" style={{ width: "min(1400px, 100%)" }}>
-            <FadeIn>
-              <div className="gallery-grid">
-                {galleryExtended.map((shot, i) => (
-                  <figure key={shot.src} className="gallery-grid-item" style={{ margin: 0 }}>
-                    <img
-                      src={shot.src}
-                      alt={shot.caption.tr}
-                      className="object-cover"
-                      loading={i < 4 || eagerImageSources.has(shot.src) ? "eager" : "lazy"}
-                      decoding="async"
-                      fetchPriority={i < 4 || eagerImageSources.has(shot.src) ? "high" : "auto"}
-                    />
-                    <figcaption>{shot.caption.tr}</figcaption>
-                  </figure>
-                ))}
-              </div>
-            </FadeIn>
-          </div>
-        </section>
-      </main>
-    </>
-  );
+  return <GalleryPageContent locale="tr" />;
 }

@@ -1402,15 +1402,15 @@ describe("production readiness contracts", () => {
   });
 
   it("keeps the full gallery from blocking visible image decode on optimizer or lazy-load work", () => {
-    const galleryPage = read("src/app/galeri/page.tsx");
+    const galleryPageContent = read("src/components/gallery-page-content.tsx");
     const globals = read("src/app/globals.css");
 
-    expect(galleryPage).not.toContain('from "next/image"');
-    expect(galleryPage).toContain("<img");
-    expect(galleryPage).toContain('const eagerImageSources = new Set(["/images/galeri/tas-firin-pide.jpg"])');
-    expect(galleryPage).toContain('loading={i < 4 || eagerImageSources.has(shot.src) ? "eager" : "lazy"}');
-    expect(galleryPage).toContain('decoding="async"');
-    expect(galleryPage).toContain('fetchPriority={i < 4 || eagerImageSources.has(shot.src) ? "high" : "auto"}');
+    expect(galleryPageContent).not.toContain('from "next/image"');
+    expect(galleryPageContent).toContain("<img");
+    expect(galleryPageContent).toContain('const eagerImageSources = new Set(["/images/galeri/tas-firin-pide.jpg"])');
+    expect(galleryPageContent).toContain('loading={i < 4 || eagerImageSources.has(shot.src) ? "eager" : "lazy"}');
+    expect(galleryPageContent).toContain('decoding="async"');
+    expect(galleryPageContent).toContain('fetchPriority={i < 4 || eagerImageSources.has(shot.src) ? "high" : "auto"}');
     expect(globals).toContain(".gallery-grid-item img {\n    width: 100%;\n    height: 100%;\n    display: block;");
   });
 
