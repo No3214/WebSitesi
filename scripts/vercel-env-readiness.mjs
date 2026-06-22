@@ -43,6 +43,7 @@ function expectedValueKeys(gate) {
 function valueValidationCommand(gateId) {
   return {
     canonical_domain: "npm run domain:verify:strict",
+    production_database: "npm run supabase:verify:strict",
     hms_booking_engine: "npm run hms:verify:strict",
     analytics_purchase: "npm run analytics:verify:strict",
   }[gateId] ?? "npm run launch:audit:strict";

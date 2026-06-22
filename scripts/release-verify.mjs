@@ -39,6 +39,10 @@ export const gates = [
     label: "Garanti POS readiness diagnosis",
   },
   {
+    script: "supabase:verify:json",
+    label: "Supabase/Payload database security diagnosis",
+  },
+  {
     script: "hms:verify:json",
     label: "HMS booking target readiness diagnosis",
   },

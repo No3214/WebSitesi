@@ -239,23 +239,6 @@ describe("domain readiness", () => {
             ]),
           }),
         }),
-        expect.objectContaining({
-          group: "brand",
-          apexDomain: "kozbeylikonagi.com.tr",
-          mailRequired: false,
-          nsOk: true,
-          mxOk: true,
-          authority: expect.objectContaining({ provider: "external-dns" }),
-          cutover: expect.objectContaining({
-            checklist: expect.arrayContaining([
-              expect.stringContaining("Do not open or edit an unrelated external DNS/CDN panel"),
-              expect.stringContaining("Use A records for apex domains and CNAME records for subdomains"),
-              "Set A kozbeylikonagi.com.tr to 76.76.21.21.",
-              expect.stringContaining("Set CNAME www.kozbeylikonagi.com.tr to cname.vercel-dns.com"),
-              "Do not change mail records unless a separate mail migration is approved.",
-            ]),
-          }),
-        }),
       ]),
     );
     expect(result.dns.registrarVsDnsNote).toContain("Nameservers decide");
@@ -271,18 +254,6 @@ describe("domain readiness", () => {
         group: "canonical",
         type: "CNAME",
         host: "www.kozbeylikonagi.com",
-        value: "cname.vercel-dns.com",
-      }),
-      expect.objectContaining({
-        group: "brand",
-        type: "A",
-        host: "kozbeylikonagi.com.tr",
-        value: "76.76.21.21",
-      }),
-      expect.objectContaining({
-        group: "brand",
-        type: "CNAME",
-        host: "www.kozbeylikonagi.com.tr",
         value: "cname.vercel-dns.com",
       }),
     ]);
@@ -323,77 +294,6 @@ describe("domain readiness", () => {
     expect(result.blockers).toContain(
       "https://www.kozbeylikonagi.com serves legacy host surface: legacy Joomla/Seagull template, legacy HotelRunner hosted landing surface",
     );
-  });
-
-  it("keeps com.tr brand domains in the public launch gate so split legacy surfaces cannot pass", async () => {
-    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
-    const result = await evaluateDomainReadiness({
-      canonicalOrigins: ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"],
-      brandOrigins: ["https://www.kozbeylikonagi.com.tr"],
-      previewOrigin: "https://kozbeyli-konagi.vercel.app",
-      expectedCommit: "abc123def456",
-      ...vercelWebRecordResolvers(),
-      fetchImpl: async (url: string | URL | Request) => {
-        const href = String(url);
-        if (href.includes("kozbeylikonagi.com.tr")) return legacyHostResponse();
-        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
-        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
-      },
-      resolveNsImpl: async () => ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
-      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
-    });
-
-    expect(result.previewReady).toBe(true);
-    expect(result.canonicalReady).toBe(true);
-    expect(result.brandReady).toBe(false);
-    expect(result.decision).toBe("CANONICAL DOMAIN NO-GO");
-    expect(result.brand[0]?.legacyHost.detected).toBe(true);
-    expect(result.blockers).toContain(
-      "https://www.kozbeylikonagi.com.tr serves legacy host surface: legacy Joomla/Seagull template, legacy HotelRunner hosted landing surface",
-    );
-  });
-
-  it("reports the brand ccTLD DNS authority separately from the canonical .com zone", async () => {
-    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
-    const result = await evaluateDomainReadiness({
-      canonicalOrigins: ["https://kozbeylikonagi.com"],
-      brandOrigins: ["https://www.kozbeylikonagi.com.tr"],
-      previewOrigin: "https://kozbeyli-konagi.vercel.app",
-      expectedCommit: "abc123def456",
-      ...vercelWebRecordResolvers(),
-      fetchImpl: async (url: string | URL | Request) => {
-        const href = String(url);
-        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
-        return appShellResponse(href.includes(".com.tr") ? "Brand" : "Canonical");
-      },
-      resolveNsImpl: async (host: string) =>
-        host.endsWith(".com.tr")
-          ? ["lucy.ns.cloudflare.com", "memphis.ns.cloudflare.com"]
-          : ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
-      resolveMxImpl: async () => [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }],
-    });
-
-    expect(result.decision).toBe("CANONICAL DOMAIN GO");
-    expect(result.dns.zones).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          group: "canonical",
-          apexDomain: "kozbeylikonagi.com",
-          ns: ["anastasia.ns.cloudflare.com", "theo.ns.cloudflare.com"],
-          authority: expect.objectContaining({ provider: "external-dns" }),
-        }),
-        expect.objectContaining({
-          group: "brand",
-          apexDomain: "kozbeylikonagi.com.tr",
-          ns: ["lucy.ns.cloudflare.com", "memphis.ns.cloudflare.com"],
-          mailRequired: false,
-          authority: expect.objectContaining({ provider: "external-dns" }),
-        }),
-      ]),
-    );
-    expect(result.dns.zonesOk).toBe(true);
-    expect(result.dnsReady).toBe(true);
-    expect(result.warnings).toEqual([]);
   });
 
   it("returns NO-GO when app health is current but the homepage is not the opening video shell", async () => {
@@ -545,10 +445,8 @@ describe("domain readiness", () => {
       brandOrigins: [],
       previewOrigin: "https://kozbeyli-konagi.vercel.app",
       expectedCommit: "abc123def456",
-      resolve4Impl: async (host: string) =>
-        host.endsWith(".com.tr") ? ["76.76.21.21"] : ["216.198.79.1", "64.29.17.65"],
-      resolveCnameImpl: async (host: string) => {
-        if (host.endsWith(".com.tr")) return ["cname.vercel-dns.com"];
+      resolve4Impl: async () => ["216.198.79.1", "64.29.17.65"],
+      resolveCnameImpl: async () => {
         throw new Error("queryCname ENODATA");
       },
       dnsFallbackFetchImpl: async () => {

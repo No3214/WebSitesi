@@ -21,6 +21,13 @@ const runtimeGates: RuntimeGate[] = [
     },
   },
   {
+    id: "production_database",
+    requiredEnv: ["DATABASE_URI", "PAYLOAD_SECRET"],
+    expected: {
+      DATABASE_URI: /^postgres(?:ql)?:\/\/(?!(?:[^@/]+@)?(?:localhost|127(?:\.\d{1,3}){3}|\[?::1\]?)(?::|\/|$)).+/i,
+    },
+  },
+  {
     id: "production_abuse_controls",
     requiredEnv: [
       "NEXT_PUBLIC_TURNSTILE_SITE_KEY",

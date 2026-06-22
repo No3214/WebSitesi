@@ -27,6 +27,7 @@ this repository.
 | File | Required proof |
 | --- | --- |
 | `docs/evidence/canonical-domain.md` | Canonical `kozbeylikonagi.com` and `www` health endpoint proof, current Vercel commit match, DNS cutover note. |
+| `docs/evidence/production-database.md` | Payload CMS managed Postgres env proof, strong Payload secret, backup/restore policy, restricted dashboard access, redacted persistence UAT. |
 | `docs/evidence/production-abuse-controls.md` | Production Turnstile lead-form proof plus Upstash shared rate-limit/replay backend proof. |
 | `docs/evidence/hms-booking-engine.md` | Approved HMS handoff URL, new-tab redirect decision, successful booking UAT, cancellation/refund note, stock sync note. |
 | `docs/evidence/garanti-pos.md` | Garanti Sanal POS test environment, successful 3DS sandbox payment, failed payment case, callback verification, refund/cancel note. |

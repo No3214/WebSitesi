@@ -31,10 +31,20 @@ const launchGates: LaunchGate[] = [
     title: "Public domain cutover",
     owner: "Vercel / DNS operator",
     timing: "Before public domain announcement",
-    status: "action_required",
+    status: "verified",
     command: "npm run domain:verify:strict",
     evidence: "docs/evidence/canonical-domain.md",
-    kpi: "The .com and .com.tr public origins return the current app health endpoint, expose the opening video, or securely redirect to the chosen canonical origin.",
+    kpi: "The .com apex and www public origins return the current app health endpoint, expose the opening video, or securely redirect to the chosen canonical origin.",
+  },
+  {
+    id: "production_database",
+    title: "Payload database proof",
+    owner: "Platform / CMS operator",
+    timing: "Before relying on Payload admin or lead persistence",
+    status: "operator_required",
+    command: "npm run supabase:verify:strict",
+    evidence: "docs/evidence/production-database.md",
+    kpi: "Managed Postgres, Payload secret, backup policy and redacted persistence UAT are source-referenced.",
   },
   {
     id: "production_abuse_controls",
@@ -174,7 +184,7 @@ export function GrowthDashboardClient() {
               </div>
             </div>
             <p className="mt-5 text-sm leading-6 text-[#6b6254]">
-              Hedef: public domain, HMS rezervasyon, POS, analytics, local SEO ve hukuk kanitlari tamamlanmadan
+              Hedef: HMS rezervasyon, POS, analytics, local SEO, database, abuse-control ve hukuk kanitlari tamamlanmadan
               100/100 veya production ready iddiasi kullanilmamali.
             </p>
           </div>

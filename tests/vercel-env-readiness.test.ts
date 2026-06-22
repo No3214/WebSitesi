@@ -117,6 +117,13 @@ describe("Vercel production env readiness", () => {
         ),
       ]),
     );
+    expect(result.gateResults.find((gate) => gate.id === "production_database")).toMatchObject({
+      namesReady: true,
+      ready: false,
+      configuredEnv: ["DATABASE_URI", "PAYLOAD_SECRET"],
+      valueValidationKeys: ["DATABASE_URI"],
+      valueValidationCommand: "npm run supabase:verify:strict",
+    });
     expect(result.blockers).toEqual(
       expect.arrayContaining([
         "production_abuse_controls: NEXT_PUBLIC_TURNSTILE_SITE_KEY is missing from Vercel Production env",

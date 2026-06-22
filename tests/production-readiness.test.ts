@@ -5,6 +5,8 @@ import { getRuntimeReadiness } from "../src/lib/production-readiness";
 const readyEnv = {
   NODE_ENV: "production",
   NEXT_PUBLIC_SITE_URL: "https://kozbeylikonagi.com",
+  DATABASE_URI: "postgresql://postgres:password@db.supabase.co:6543/postgres",
+  PAYLOAD_SECRET: "payload-secret-long-random-value",
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: "0x4AA-real-site-key",
   TURNSTILE_SECRET_KEY: "turnstile-secret",
   UPSTASH_REDIS_REST_URL: "https://upstash.kozbeylikonagi.com",
@@ -37,11 +39,13 @@ describe("runtime production readiness", () => {
     expect(result.ready).toBe(false);
     expect(result.status).toBe("blocked");
     expect(result.blockedGates).toContain("canonical_domain");
+    expect(result.blockedGates).toContain("production_database");
     expect(result.blockedGates).toContain("production_abuse_controls");
     expect(result.blockedGates).not.toContain("hms_booking_engine");
 
     const hmsCheck = result.checks.find((check) => check.id === "hms_booking_engine");
     const canonicalCheck = result.checks.find((check) => check.id === "canonical_domain");
+    const databaseCheck = result.checks.find((check) => check.id === "production_database");
     const abuseCheck = result.checks.find((check) => check.id === "production_abuse_controls");
 
     expect(canonicalCheck).toMatchObject({
@@ -51,6 +55,14 @@ describe("runtime production readiness", () => {
       missingCount: 0,
       fallbackApplied: false,
       configurationSource: "invalid",
+    });
+    expect(databaseCheck).toMatchObject({
+      ready: false,
+      configuredCount: 1,
+      missingCount: 1,
+      invalidCount: 0,
+      fallbackApplied: false,
+      configurationSource: "partial",
     });
     expect(abuseCheck).toMatchObject({
       ready: false,
@@ -89,12 +101,31 @@ describe("runtime production readiness", () => {
     expect(result.blockedGates).toEqual([]);
     expect(result.configuredGates).toEqual([
       "canonical_domain",
+      "production_database",
       "production_abuse_controls",
       "hms_booking_engine",
       "garanti_pos",
       "analytics_purchase",
       "search_local_seo",
     ]);
+  });
+
+  it("rejects localhost DATABASE_URI as production database configuration", () => {
+    const result = getRuntimeReadiness({
+      ...readyEnv,
+      DATABASE_URI: "postgresql://postgres:password@localhost:5432/kozbeyli",
+    } as NodeJS.ProcessEnv);
+    const databaseCheck = result.checks.find((check) => check.id === "production_database");
+
+    expect(result.ready).toBe(false);
+    expect(result.blockedGates).toContain("production_database");
+    expect(databaseCheck).toMatchObject({
+      ready: false,
+      configuredCount: 2,
+      missingCount: 0,
+      invalidCount: 1,
+      configurationSource: "invalid",
+    });
   });
 
   it("blocks HMS when an explicit booking engine env value is invalid", () => {
@@ -126,7 +157,15 @@ describe("runtime production readiness", () => {
 
     const posCheck = result.checks.find((check) => check.id === "garanti_pos");
     const analyticsCheck = result.checks.find((check) => check.id === "analytics_purchase");
+    const databaseCheck = result.checks.find((check) => check.id === "production_database");
 
+    expect(databaseCheck).toMatchObject({
+      ready: false,
+      configuredCount: 0,
+      missingCount: 2,
+      placeholderCount: 0,
+      configurationSource: "missing",
+    });
     expect(posCheck).toMatchObject({
       ready: false,
       configuredCount: 0,

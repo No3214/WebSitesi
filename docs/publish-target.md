@@ -25,6 +25,8 @@ npm run launch:cutover
 npm run launch:cutover:json
 npm run media:hero
 npm run launch:audit:strict
+npm run supabase:verify
+npm run supabase:verify:strict
 npm run domain:verify
 ```
 
@@ -38,9 +40,13 @@ eksiklerinden ayırır.
 kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
 `media:hero`, açılış videosunun onaylı hash, çözünürlük, süre, bitrate, poster
 türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
+`supabase:verify`, Payload CMS'in `DATABASE_URI` / `PAYLOAD_SECRET` üretim
+kapısını, local DB kullanımını ve service-role sızıntısı riskini ayrıca
+denetler.
 `launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
 
 - Canonical domain health + current Vercel commit: `docs/evidence/canonical-domain.md`
+- Payload CMS managed Postgres + secret controls: `docs/evidence/production-database.md`
 - Turnstile + Upstash production abuse-control kanıtı: `docs/evidence/production-abuse-controls.md`
 - HMS booking engine handoff + canlı booking UAT: `docs/evidence/hms-booking-engine.md`
 - Garanti Sanal POS sandbox/callback/refund kanıtı: `docs/evidence/garanti-pos.md`
@@ -60,9 +66,8 @@ türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
 - Public domain durumu: Vercel production URL ve `.com` canonical origin'ler
   güncel; `kozbeylikonagi.com` ve `www` `/api/health` üzerinden current commit
   döndürüyor ve `/videos/hero.mp4` açılış videosunu gösteriyor.
-  `npm run domain:verify:strict` hâlâ NO-GO; sebep `.com.tr` brand origin'lerin
-  eski HTML yüzeyinde kalması ve production env/evidence kapılarının eksik
-  olmasıdır.
+  `.com.tr` bu projenin launch hedefi değildir. Production env/evidence
+  kapıları tamamlanmadığı için tam ticari publish hâlâ NO-GO durumundadır.
 - Local production preview: `http://127.0.0.1:3008`.
 
 ## Publish Gate
@@ -81,6 +86,7 @@ Bu üst komut aşağıdaki kapıları sırayla çalıştırır:
 - Lokal launch smoke (`npm run launch:smoke`)
 - Monkey/chaos stres testleri (`npm run test:stress`)
 - Makine okunur commercial launch audit (`npm run launch:audit:json`)
+- Supabase/Payload database security diagnostic (`npm run supabase:verify:json`)
 - Makine okunur commercial cutover planı (`npm run launch:cutover:json`)
 
 `publish:verify` içinde aşağıdaki işler kalır:
@@ -141,6 +147,8 @@ Aşağıdakilerin tamamı sağlanırsa site marketing yayınına çıkarılabili
   yayında erişilebilir.
 - `/api/health` 200 JSON döner, `Cache-Control: no-store` taşır ve secret/env
   değeri sızdırmaz.
+- Payload CMS için production `DATABASE_URI` ve güçlü `PAYLOAD_SECRET` Vercel
+  env içinde tanımlı, managed Postgres backup/restore kanıtı hazır.
 - Lead formunda Turnstile production anahtarları, rate-limit/replay için Upstash
   REST production değerleri tanımlıdır.
 

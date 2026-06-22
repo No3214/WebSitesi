@@ -24,7 +24,7 @@ export const GrowthEngine = {
         cutover_plan: "npm run launch:cutover:json",
       },
       alerts: [
-        "Do not mark production ready until external DNS, HMS, POS, analytics, SEO and legal evidence is ready.",
+        "Do not mark full commercial production ready until database, HMS, POS, analytics, SEO, abuse-control and legal evidence is ready.",
       ],
     };
   },

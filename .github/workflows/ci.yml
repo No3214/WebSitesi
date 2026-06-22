@@ -53,6 +53,7 @@ jobs:
           npm run analytics:verify:json
           npm run search:verify:json
           npm run garanti:verify:json
+          npm run supabase:verify:json
           npm run hms:verify:json
           npm run domain:verify:json
 

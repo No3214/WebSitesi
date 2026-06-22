@@ -3,7 +3,7 @@ import { resolve4, resolveCname, resolveMx, resolveNs } from "node:dns/promises"
 import { pathToFileURL } from "node:url";
 
 const DEFAULT_CANONICAL_ORIGINS = ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"];
-const DEFAULT_BRAND_ORIGINS = ["https://kozbeylikonagi.com.tr", "https://www.kozbeylikonagi.com.tr"];
+const DEFAULT_BRAND_ORIGINS = [];
 const DEFAULT_PREVIEW_ORIGIN = "https://kozbeyli-konagi.vercel.app";
 const EXPECTED_SERVICE = "kozbeyli-konagi";
 const EXPECTED_HERO_VIDEO_SRC = "/videos/hero.mp4";
@@ -28,21 +28,6 @@ export const VERCEL_TARGET_RECORDS = [
     acceptedPattern: VERCEL_SUBDOMAIN_CNAME_PATTERN,
     purpose: "WWW subdomain should point to the project-specific Vercel CNAME target.",
   },
-  {
-    group: "brand",
-    type: "A",
-    host: "kozbeylikonagi.com.tr",
-    value: VERCEL_APEX_A_VALUE,
-    purpose: "Brand apex domain should serve or securely redirect to the current Vercel app.",
-  },
-  {
-    group: "brand",
-    type: "CNAME",
-    host: "www.kozbeylikonagi.com.tr",
-    value: VERCEL_SUBDOMAIN_CNAME_FALLBACK,
-    acceptedPattern: VERCEL_SUBDOMAIN_CNAME_PATTERN,
-    purpose: "Brand WWW subdomain should serve or securely redirect through the project-specific Vercel CNAME target.",
-  },
 ];
 const DNS_ZONES = [
   {
@@ -50,12 +35,6 @@ const DNS_ZONES = [
     apexDomain: "kozbeylikonagi.com",
     mailRequired: true,
     expectedMx: "mx.kozbeylikonagi.com",
-  },
-  {
-    group: "brand",
-    apexDomain: "kozbeylikonagi.com.tr",
-    mailRequired: false,
-    expectedMx: "",
   },
 ];
 const LEGACY_HOST_SIGNATURES = [

@@ -136,6 +136,8 @@ function makeReadyEnv(audit: CommercialLaunchModule) {
         key,
         key === "NEXT_PUBLIC_SITE_URL"
           ? "https://kozbeylikonagi.com"
+          : key === "DATABASE_URI"
+            ? "postgresql://postgres:password@db.supabase.co:6543/postgres"
           : key === "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"
             ? "https://kozbeyli-konagi.hmshotel.net/bv3/search"
             : key === "NEXT_PUBLIC_GTM_ID"
@@ -176,11 +178,12 @@ describe("production cutover plan", () => {
     });
 
     expect(plan.decision).toBe("CUTOVER_ACTION_REQUIRED");
-    expect(plan.currentScore).toBe(82);
-    expect(plan.blockedPoints).toBe(18);
+    expect(plan.currentScore).toBe(80);
+    expect(plan.blockedPoints).toBe(20);
     expect(plan.vercelCliInstallCommand).toBe("npm i -g vercel");
     expect(plan.nextGateOrder).toEqual([
       "canonical_domain",
+      "production_database",
       "production_abuse_controls",
       "hms_booking_engine",
       "garanti_pos",
@@ -203,7 +206,7 @@ describe("production cutover plan", () => {
       "Remove old Joomla/Seagull and HotelRunner hosted landing routing from the canonical web origin.",
     );
     expect(canonical?.checklist).toContain(
-      "Remove any HTTPS-to-HTTP first-hop redirect on canonical or brand origins before marking the domain gate ready.",
+      "Remove any HTTPS-to-HTTP first-hop redirect on canonical origins before marking the domain gate ready.",
     );
     expect(canonical?.diagnostics).toContain(
       "If domain:verify reports legacy Joomla/Seagull template or legacy HotelRunner hosted landing surface, the canonical domain is still routed to the old host even if Vercel shows an alias.",
@@ -215,25 +218,16 @@ describe("production cutover plan", () => {
       "Registrar ownership is not the same as live DNS authority. Verify the active nameservers at Isimtescil and Vercel Domains before changing records; do not use an unrelated external DNS panel as the project source of truth.",
     );
     expect(canonical?.diagnostics).toContain(
-      "The .com and .com.tr domains can be delegated separately; verify each domain independently before assuming a single DNS panel controls both.",
-    );
-    expect(canonical?.diagnostics).toContain(
       "Vercel DNS uses A records for apex hosts and CNAME records for www/subdomains; re-run vercel domains inspect or check Project Settings before editing DNS because Vercel can return project-specific values.",
     );
     expect(canonical?.diagnostics).toContain(
       "If public recursive DNS still shows an external DNS/CDN layer, treat it as resolver or delegation evidence only; the final proof is /api/health plus the opening hero video on the public origin.",
     );
-    expect(canonical?.diagnostics).toContain(
-      "The active Turkish ccTLD brand origins are part of the public launch gate; they must serve the current app or securely redirect to the chosen canonical app without stale menu/legacy content.",
-    );
     expect(canonical?.checklist).toContain(
-      "Attach the canonical and Turkish ccTLD brand domains to the kozbeyli-konagi Vercel project, or explicitly redirect the brand domains to the chosen canonical origin.",
+      "Attach kozbeylikonagi.com and www.kozbeylikonagi.com to the kozbeyli-konagi Vercel project.",
     );
     expect(canonical?.checklist).toContain(
       "Confirm active nameservers before editing DNS; make changes at the authoritative DNS provider, not just the registrar panel.",
-    );
-    expect(canonical?.checklist).toContain(
-      "Check the canonical .com and Turkish ccTLD .com.tr domains independently; do not assume both domains use the same DNS authority or Vercel alias state.",
     );
     expect(canonical?.checklist).toContain(
       "For first verification, rerun npm run domain:verify:strict and prove the public origin serves the current app before marking evidence ready.",
@@ -265,23 +259,32 @@ describe("production cutover plan", () => {
           acceptedPattern: "^[a-z0-9-]+\\.vercel-dns(?:-\\d+)?\\.com$",
           expectedDescription: expect.stringContaining("project-specific Vercel CNAME"),
         }),
-        expect.objectContaining({
-          group: "brand",
-          type: "A",
-          host: "kozbeylikonagi.com.tr",
-          value: "76.76.21.21",
-        }),
-        expect.objectContaining({
-          group: "brand",
-          type: "CNAME",
-          host: "www.kozbeylikonagi.com.tr",
-          value: "cname.vercel-dns.com",
-        }),
       ]),
     );
     expect(canonical?.kpiAndReviewLoop).toContain("/api/health");
     expect(canonical?.kpiAndReviewLoop).toContain("no legacy host signatures");
-    expect(canonical?.kpiAndReviewLoop).toContain("Canonical and brand origins");
+    expect(canonical?.kpiAndReviewLoop).toContain("Canonical apex and www origins");
+
+    const database = plan.gateSteps.find((step) => step.id === "production_database");
+    expect(database?.owner).toBe("Platform / CMS operator");
+    expect(database?.missingEnv).toEqual(["DATABASE_URI", "PAYLOAD_SECRET"]);
+    expect(database?.diagnostics).toContain(
+      "The app uses @payloadcms/db-postgres; production runtime requires DATABASE_URI and PAYLOAD_SECRET.",
+    );
+    expect(database?.diagnostics).toContain(
+      "Supabase is suitable as the managed Postgres provider when using the project pooler connection string as DATABASE_URI.",
+    );
+    expect(database?.checklist).toContain(
+      "Use the Supabase pooled Postgres connection string, not a public anon key, as Vercel DATABASE_URI.",
+    );
+    expect(database?.commands).toEqual(
+      expect.arrayContaining([
+        "vercel env add DATABASE_URI production",
+        "vercel env add PAYLOAD_SECRET production",
+        "npm run supabase:verify",
+      ]),
+    );
+    expect(database?.kpiAndReviewLoop).toContain("managed Postgres");
 
     const abuseControls = plan.gateSteps.find((step) => step.id === "production_abuse_controls");
     expect(abuseControls?.commands).toEqual(
@@ -318,7 +321,7 @@ describe("production cutover plan", () => {
     expect(formatted).toContain("fallback=yes");
     expect(formatted).toContain("DNS target records:");
     expect(formatted).toContain("[canonical] CNAME www.kozbeylikonagi.com");
-    expect(formatted).toContain("[brand] CNAME www.kozbeylikonagi.com.tr");
+    expect(formatted).not.toContain("www.kozbeylikonagi.com.tr");
     expect(formatted).toContain("Final verification commands:");
   });
 
@@ -400,6 +403,7 @@ describe("production cutover plan", () => {
     expect(plan.blockedPoints).toBe(0);
     expect(plan.gateSteps).toEqual([]);
     expect(plan.finalVerificationCommands).toContain("npm run vercel:env:strict");
+    expect(plan.finalVerificationCommands).toContain("npm run supabase:verify:strict");
     expect(plan.finalVerificationCommands).toContain("npm run hms:verify:strict");
     expect(plan.finalVerificationCommands).toContain("npm run launch:audit:strict");
   });

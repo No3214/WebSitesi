@@ -5,7 +5,7 @@ import { pathToFileURL } from "node:url";
 import { scanEvidenceSource } from "./evidence-redaction-scan.mjs";
 
 const root = process.cwd();
-const BASE_COMMERCIAL_SCORE = 82;
+const BASE_COMMERCIAL_SCORE = 80;
 const OFFICIAL_HMS_BOOKING_ENGINE_HOST = "kozbeyli-konagi\\.hmshotel\\.net";
 const OFFICIAL_HMS_BOOKING_ENGINE_URL =
   "https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine";
@@ -14,7 +14,7 @@ export const commercialLaunchGates = [
   {
     id: "canonical_domain",
     points: 2,
-    label: "Public .com and .com.tr domains serve current Vercel production health",
+    label: "Public .com and www domains serve current Vercel production health",
     env: ["NEXT_PUBLIC_SITE_URL"],
     expectedEnv: {
       NEXT_PUBLIC_SITE_URL: {
@@ -23,6 +23,19 @@ export const commercialLaunchGates = [
       },
     },
     evidence: ["docs/evidence/canonical-domain.md"],
+  },
+  {
+    id: "production_database",
+    points: 2,
+    label: "Payload CMS production Postgres database and secret controls",
+    env: ["DATABASE_URI", "PAYLOAD_SECRET"],
+    expectedEnv: {
+      DATABASE_URI: {
+        pattern: "^postgres(?:ql)?://(?!(?:[^@/]+@)?(?:localhost|127(?:\\.\\d{1,3}){3}|\\[?::1\\]?)(?::|/|$)).+",
+        label: "production Postgres/Supabase connection string, not localhost",
+      },
+    },
+    evidence: ["docs/evidence/production-database.md"],
   },
   {
     id: "production_abuse_controls",
@@ -317,7 +330,7 @@ function gateProgressNotes(gate, envState, missingEvidence) {
 
   if (gate.id === "canonical_domain") {
     notes.push(
-      "live validation lane: use npm run domain:verify:json; .com can be verified while .com.tr keeps the full gate blocked",
+      "live validation lane: use npm run domain:verify:json; .com apex and www must serve the current Vercel app, opening hero video and health endpoint",
     );
   }
 

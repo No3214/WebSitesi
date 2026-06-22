@@ -150,6 +150,8 @@ function makeReadyEnv(audit: CommercialLaunchModule) {
                 ? "G-ABCDE12345"
                 : key === "NEXT_PUBLIC_GOOGLE_ADS_ID"
                   ? "AW-800024713"
+                  : key === "DATABASE_URI"
+                    ? "postgresql://postgres:password@db.supabase.co:6543/postgres"
                   : `live_${key}`,
       ]),
     ),
@@ -175,9 +177,9 @@ describe("evidence handoff", () => {
     const result = handoff.buildEvidenceHandoff({ launchResult, cutoverPlan });
 
     expect(result.decision).toBe("EVIDENCE_HANDOFF_ACTION_REQUIRED");
-    expect(result.currentScore).toBe(82);
-    expect(result.blockedPoints).toBe(18);
-    expect(result.files).toHaveLength(7);
+    expect(result.currentScore).toBe(80);
+    expect(result.blockedPoints).toBe(20);
+    expect(result.files).toHaveLength(8);
 
     const canonical = result.files.find((file) => file.path === "docs/evidence/canonical-domain.md");
     expect(canonical).toMatchObject({
@@ -193,6 +195,15 @@ describe("evidence handoff", () => {
     );
     expect(canonical?.requiredSections).toContain("source_refs: <redacted-source-ids>");
     expect(canonical?.sourceRefsPolicy).toContain("never raw credentials");
+
+    const database = result.files.find((file) => file.path === "docs/evidence/production-database.md");
+    expect(database).toMatchObject({
+      gateId: "production_database",
+      reason: "missing",
+      pointsBlocked: 2,
+      owner: "Platform / CMS operator",
+    });
+    expect(database?.missingEnv).toEqual(["DATABASE_URI", "PAYLOAD_SECRET"]);
 
     const hms = result.files.find((file) => file.path === "docs/evidence/hms-booking-engine.md");
     expect(hms?.missingEnv).toEqual([]);

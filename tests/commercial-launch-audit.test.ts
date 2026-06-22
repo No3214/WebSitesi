@@ -89,6 +89,8 @@ function makeReadyEnv(audit: CommercialLaunchModule) {
         key,
         key === "GARANTI_POS_MODE"
           ? "production"
+          : key === "DATABASE_URI"
+            ? "postgresql://postgres:password@db.supabase.co:6543/postgres"
           : key === "NEXT_PUBLIC_SITE_URL"
             ? "https://kozbeylikonagi.com"
             : key === "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"
@@ -112,13 +114,13 @@ afterEach(() => {
 });
 
 describe("commercial launch audit", () => {
-  it("starts from 82/100 when no external environment or evidence is present", async () => {
+  it("starts from 80/100 when no external environment or evidence is present", async () => {
     const audit = await loadAuditModule();
     const baseDir = makeTmpDir();
     const result = audit.evaluateCommercialLaunch({ env: {}, baseDir });
 
-    expect(result.baseScore).toBe(82);
-    expect(result.score).toBe(82);
+    expect(result.baseScore).toBe(80);
+    expect(result.score).toBe(80);
     expect(result.decision).toBe("NO-GO for full booking/payment launch");
     expect(result.gateResults).toHaveLength(audit.commercialLaunchGates.length);
     expect(result.gateResults.every((gate) => !gate.ready)).toBe(true);
@@ -144,6 +146,7 @@ describe("commercial launch audit", () => {
     });
 
     const canonicalGate = result.gateResults.find((gate) => gate.id === "canonical_domain");
+    const databaseGate = result.gateResults.find((gate) => gate.id === "production_database");
     expect(canonicalGate).toMatchObject({
       configurationSource: "missing",
       requiredEnvCount: 1,
@@ -154,9 +157,16 @@ describe("commercial launch audit", () => {
     expect(canonicalGate?.progressNotes).toEqual(
       expect.arrayContaining([
         expect.stringContaining("domain:verify:json"),
-        expect.stringContaining(".com.tr keeps the full gate blocked"),
+        expect.stringContaining(".com apex and www"),
       ]),
     );
+    expect(databaseGate).toMatchObject({
+      configurationSource: "missing",
+      requiredEnvCount: 2,
+      configuredEnvCount: 0,
+      missingEnvCount: 2,
+      fallbackApplied: false,
+    });
   });
 
   it("reaches 100/100 only when every required env group or official fallback and evidence file is ready", async () => {
@@ -201,6 +211,30 @@ describe("commercial launch audit", () => {
     expect(hmsGate?.missingEnv).toEqual([]);
     expect(hmsGate?.configurationSource).toBe("code_fallback");
     expect(hmsGate?.fallbackApplied).toBe(true);
+  });
+
+  it("does not count a localhost DATABASE_URI as production database configuration", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+    env.DATABASE_URI = "postgresql://postgres:password@localhost:5432/kozbeyli";
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const result = audit.evaluateCommercialLaunch({ env, baseDir });
+    const databaseGate = result.gateResults.find((gate) => gate.id === "production_database");
+
+    expect(result.score).toBe(98);
+    expect(databaseGate).toMatchObject({
+      ready: false,
+      configurationSource: "invalid",
+      invalidEnvCount: 1,
+    });
+    expect(databaseGate?.missingEnv).toEqual([
+      "DATABASE_URI (expected production Postgres/Supabase connection string, not localhost)",
+    ]);
   });
 
   it("blocks an explicit invalid HMS env value even though the code fallback exists", async () => {

@@ -156,6 +156,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"garanti:verify"');
     expect(readinessScript).toContain('"garanti:verify:json"');
     expect(readinessScript).toContain('"garanti:verify:strict"');
+    expect(readinessScript).toContain('"supabase:verify"');
+    expect(readinessScript).toContain('"supabase:verify:json"');
+    expect(readinessScript).toContain('"supabase:verify:strict"');
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
@@ -248,6 +251,15 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["garanti:verify:strict"]).toBe(
       "node scripts/garanti-pos-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["supabase:verify"]).toBe(
+      "node scripts/supabase-security-readiness.mjs",
+    );
+    expect(packageJson.scripts?.["supabase:verify:json"]).toBe(
+      "node scripts/supabase-security-readiness.mjs --json",
+    );
+    expect(packageJson.scripts?.["supabase:verify:strict"]).toBe(
+      "node scripts/supabase-security-readiness.mjs --strict",
+    );
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
     expect(packageJson.scripts?.["vercel:ops:json"]).toBe(
       "node scripts/vercel-ops-readiness.mjs --json",
@@ -331,6 +343,7 @@ describe("production readiness contracts", () => {
       "analytics:verify:json",
       "search:verify:json",
       "garanti:verify:json",
+      "supabase:verify:json",
       "hms:verify:json",
       "domain:verify:json",
       "vercel:ops:json",
@@ -351,6 +364,7 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("Analytics purchase readiness diagnosis");
     expect(releaseScript).toContain("Search and local SEO readiness diagnosis");
     expect(releaseScript).toContain("Garanti POS readiness diagnosis");
+    expect(releaseScript).toContain("Supabase/Payload database security diagnosis");
     expect(releaseScript).toContain("HMS booking target readiness diagnosis");
     expect(releaseScript).toContain("Canonical domain readiness diagnosis");
     expect(releaseScript).toContain("Vercel project and CLI operations diagnosis");
@@ -371,6 +385,7 @@ describe("production readiness contracts", () => {
       "analytics:verify:json",
       "search:verify:json",
       "garanti:verify:json",
+      "supabase:verify:json",
       "hms:verify:json",
       "domain:verify:json",
     ]) {
@@ -414,22 +429,30 @@ describe("production readiness contracts", () => {
     expect(evidenceReadme).toContain("source_refs:");
     expect(evidenceReadme).toContain("Ready evidence must include redacted source-system references");
 
-    for (const gate of [
+    const pendingEvidence = [
       "hms-booking-engine.md",
-      "canonical-domain.md",
       "production-abuse-controls.md",
       "garanti-pos.md",
       "analytics-purchase.md",
       "search-local-seo.md",
       "legal-dpa.md",
-    ]) {
+    ];
+
+    for (const gate of ["canonical-domain.md", ...pendingEvidence]) {
       expect(auditScript).toContain(gate);
       expect(evidenceReadme).toContain(gate);
       const evidenceFile = read(`docs/evidence/${gate}`);
       expect(evidenceFile.length, `${gate} should be a real evidence template`).toBeGreaterThan(300);
-      expect(evidenceFile, `${gate} must not be marked ready without source-system proof`).toMatch(
-        /status:\s*pending/i,
-      );
+      if (gate === "canonical-domain.md") {
+        expect(evidenceFile, `${gate} must be marked ready only with source-system proof`).toMatch(
+          /status:\s*ready/i,
+        );
+        expect(evidenceFile).toMatch(/^source_refs:\s*\S+/im);
+      } else {
+        expect(evidenceFile, `${gate} must not be marked ready without source-system proof`).toMatch(
+          /status:\s*pending/i,
+        );
+      }
       expect(evidenceFile).toContain("## Residual Risk");
     }
   });
@@ -773,28 +796,19 @@ describe("production readiness contracts", () => {
     expect(publishTarget).toContain("31 files / 186 tests");
     expect(publishTarget).toContain("68 routes");
     expect(publishTarget).toContain("`.com` canonical origin'ler");
-    expect(publishTarget).toContain("`.com.tr` brand origin'lerin");
+    expect(publishTarget).toContain("`.com.tr` bu projenin launch hedefi değildir");
     expect(publishTarget).not.toContain("113 passed / 2 skipped");
     expect(publishTarget).not.toContain("http://127.0.0.1:3010");
 
     expect(canonicalEvidence).toContain("date: 2026-06-22");
     expect(canonicalEvidence).toContain("legacy Joomla/Seagull template");
     expect(canonicalEvidence).toContain("legacy HotelRunner hosted landing surface");
-    expect(canonicalEvidence).toContain("Canonical `.com` validation is now live");
+    expect(canonicalEvidence).toContain("The production web target for this project");
     expect(canonicalEvidence).toContain("commit reported by");
-    expect(canonicalEvidence).toContain("Full public-domain validation is not ready yet");
-    expect(canonicalEvidence).toContain("DNS NS/MX can be verified through DNS-over-HTTPS");
-    expect(canonicalEvidence).toContain("Vercel-managed A/CNAME flattening");
-    expect(canonicalEvidence).toContain("managedDnsNote");
-    expect(canonicalEvidence).toContain("with deployment");
-    expect(canonicalEvidence).toContain("external/stale nameserver delegation");
-    expect(canonicalEvidence).toContain("resolver disagreement is treated as propagation evidence");
-    expect(canonicalEvidence).toContain("dacb3ec12ca81d22.vercel-dns-017.com");
+    expect(canonicalEvidence).toContain("DNS diagnostics preserve existing mail continuity checks");
     expect(canonicalEvidence).toContain("mail-continuity records");
     expect(canonicalEvidence).toContain("NS1.VERCEL-DNS.COM,NS2.VERCEL-DNS.COM");
-    expect(canonicalEvidence).toContain("1328792, ns1.vercel-dns.com, ns2.vercel-dns.com");
-    expect(canonicalEvidence).toContain("Direct checks against `ns1.vercel-dns.com`");
-    expect(canonicalEvidence).toContain("Keep status");
+    expect(canonicalEvidence).toContain("out of scope for this launch gate");
   });
 
   it("keeps Vercel operational prerequisites visible without hiding the global CLI requirement", () => {
@@ -898,7 +912,12 @@ describe("production readiness contracts", () => {
 
     expect(growthDashboard).toContain("Kozbeyli Commercial Launch Control");
     expect(growthDashboard).toContain("82/100");
+    expect(growthDashboard).toContain(">18<");
     expect(growthDashboard).toContain("docs/evidence/canonical-domain.md");
+    expect(growthDashboard).toContain("docs/evidence/production-database.md");
+    expect(growthDashboard).toContain("Payload database proof");
+    expect(growthDashboard).toContain("npm run supabase:verify:strict");
+    expect(growthEngine).toContain("database");
     expect(growthDashboard).toContain("npm run release:verify");
     expect(growthDashboard).toContain("npm run launch:cutover:json");
     expect(growthDashboard).toContain("No secrets in repo evidence");
@@ -1113,16 +1132,16 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("Remove old Joomla/Seagull and HotelRunner hosted landing routing");
     expect(cutoverPlan).toContain("no legacy host signatures");
     expect(cutoverPlan).toContain("Treat NS/MX DNS PASS separately from web serving readiness");
-    expect(cutoverPlan).toContain("verify each domain independently");
     expect(cutoverPlan).toContain("A records for apex hosts and CNAME records for www/subdomains");
     expect(cutoverPlan).toContain("subdomain CNAME records shown by Vercel Project Settings");
-    expect(cutoverPlan).toContain("Turkish ccTLD brand origins");
+    expect(cutoverPlan).toContain("kozbeylikonagi.com and www.kozbeylikonagi.com");
     expect(cutoverPlan).toContain("remove the bad override to use the official code fallback");
     expect(cutoverPlan).toContain("Run npm run hms:verify:strict");
     expect(cutoverPlan).toContain("Verify the public reservation CTA opens the approved HTTPS HMS engine");
     expect(cutoverPlan).toContain("vercel env add NEXT_PUBLIC_GA4_MEASUREMENT_ID production");
     expect(cutoverPlan).toContain("vercel env add NEXT_PUBLIC_GOOGLE_ADS_ID production");
     expect(cutoverPlan).toContain("npm run domain:verify:strict");
+    expect(cutoverPlan).toContain("npm run supabase:verify:strict");
     expect(cutoverPlan).toContain("npm run hms:verify:strict");
     expect(cutoverPlan).toContain("npm run launch:audit:strict");
 
@@ -1358,6 +1377,10 @@ describe("production readiness contracts", () => {
     expect(healthRoute).toContain('service: "kozbeyli-konagi"');
     expect(healthRoute).toContain("getRuntimeReadiness");
     expect(productionReadiness).toContain("canonical_domain");
+    expect(productionReadiness).toContain("production_database");
+    expect(productionReadiness).toContain("DATABASE_URI");
+    expect(productionReadiness).toContain("PAYLOAD_SECRET");
+    expect(productionReadiness).toContain("localhost");
     expect(productionReadiness).toContain("production_abuse_controls");
     expect(productionReadiness).toContain("hms_booking_engine");
     expect(productionReadiness).toContain("OFFICIAL_HMS_BOOKING_ENGINE_URL");
@@ -1368,6 +1391,7 @@ describe("production readiness contracts", () => {
     expect(productionReadiness).toContain("partial");
     expect(commercialAudit).toContain("configuredEnvCount");
     expect(commercialAudit).toContain("invalidEnvCount");
+    expect(commercialAudit).toContain("production Postgres/Supabase connection string, not localhost");
     expect(commercialAudit).toContain("placeholderEnvCount");
     expect(commercialAudit).toContain("fallbackApplied");
     expect(read("scripts/production-cutover-plan.mjs")).toContain("envDiagnostics");
