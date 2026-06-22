@@ -27,6 +27,7 @@ const CONTRACT_FILES = {
   gtm: "src/lib/gtm.ts",
   ga4Server: "src/lib/ga4-server.ts",
   hotelrunnerWebhook: "src/app/api/webhook/hotelrunner/route.ts",
+  iyzicoWebhook: "src/app/api/webhook/iyzico/route.ts",
   leadForm: "src/components/lead-form.tsx",
   bookingEmbed: "src/components/hms-booking-embed.tsx",
   roomViewTracker: "src/components/room-view-tracker.tsx",
@@ -148,6 +149,7 @@ function sourceContracts(baseDir) {
   const gtm = read(baseDir, CONTRACT_FILES.gtm);
   const ga4Server = read(baseDir, CONTRACT_FILES.ga4Server);
   const hotelrunnerWebhook = read(baseDir, CONTRACT_FILES.hotelrunnerWebhook);
+  const iyzicoWebhook = read(baseDir, CONTRACT_FILES.iyzicoWebhook);
   const leadForm = read(baseDir, CONTRACT_FILES.leadForm);
   const bookingEmbed = read(baseDir, CONTRACT_FILES.bookingEmbed);
   const roomViewTracker = read(baseDir, CONTRACT_FILES.roomViewTracker);
@@ -259,6 +261,19 @@ function sourceContracts(baseDir) {
         ? "PASS"
         : "FAIL",
       CONTRACT_FILES.hotelrunnerWebhook,
+    ),
+    fileCheck(
+      "iyzico_purchase_hook",
+      "Iyzico payment webhook sends GA4 purchase only for matched successful payment confirmations without PII",
+      iyzicoWebhook.includes("sendGa4Purchase") &&
+        iyzicoWebhook.includes("reservationFound && paymentSucceeded") &&
+        iyzicoWebhook.includes("isSuccessfulPaymentStatus") &&
+        iyzicoWebhook.includes("transactionId: bookingId") &&
+        iyzicoWebhook.includes('itemName: "Konaklama Rezervasyonu"') &&
+        !/guest_(email|phone|first_name|last_name)|normalizedEmail|normalizedPhone/i.test(iyzicoWebhook)
+        ? "PASS"
+        : "FAIL",
+      CONTRACT_FILES.iyzicoWebhook,
     ),
     fileCheck(
       "public_private_env_boundary",

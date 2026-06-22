@@ -41,6 +41,7 @@ const contractFiles = [
   "src/lib/gtm.ts",
   "src/lib/ga4-server.ts",
   "src/app/api/webhook/hotelrunner/route.ts",
+  "src/app/api/webhook/iyzico/route.ts",
   "src/components/lead-form.tsx",
   "src/components/hms-booking-embed.tsx",
   "src/components/room-view-tracker.tsx",
@@ -156,6 +157,9 @@ describe("analytics purchase readiness", () => {
     ]);
     expect(result.sourceContracts.ready).toBe(true);
     expect(result.sourceContracts.checks.every((check) => check.status === "PASS")).toBe(true);
+    expect(result.sourceContracts.checks.find((check) => check.id === "iyzico_purchase_hook")).toMatchObject({
+      status: "PASS",
+    });
   });
 
   it("passes only when env, source contracts and redacted analytics evidence are ready", async () => {

@@ -77,4 +77,17 @@ describe("webhook audit redaction", () => {
     expect(joined).not.toContain("payloadJson: body");
     expect(joined).not.toContain("raw: bodyText");
   });
+
+  it("keeps Iyzico GA4 purchase calls scoped to non-PII payment fields", () => {
+    const iyzicoRoute = read("src/app/api/webhook/iyzico/route.ts");
+    const callStart = iyzicoRoute.indexOf("sendGa4Purchase({");
+    const callEnd = iyzicoRoute.indexOf("});", callStart);
+    const purchaseCall = iyzicoRoute.slice(callStart, callEnd);
+
+    expect(callStart).toBeGreaterThan(0);
+    expect(purchaseCall).toContain("transactionId: bookingId");
+    expect(purchaseCall).toContain("value: Number(body.price) || 0");
+    expect(purchaseCall).toContain('itemName: "Konaklama Rezervasyonu"');
+    expect(purchaseCall).not.toMatch(/guest|email|phone|normalized/i);
+  });
 });

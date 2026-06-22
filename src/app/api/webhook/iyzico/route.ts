@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
+import { sendGa4Purchase } from "@/lib/ga4-server";
 import { getPayloadClient } from "@/lib/payload";
 import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
@@ -14,6 +15,7 @@ type IyzicoWebhookBody = {
   paymentId?: string;
   merchantOrderId?: string; // corresponds to our bookingId
   price?: string | number;
+  currency?: string;
   iyziCommissionRateAmount?: string | number;
   iyziCommissionFeeType?: string;
   signature?: string;
@@ -21,6 +23,7 @@ type IyzicoWebhookBody = {
 
 // Audit T4: yerel Map yerine paylaşımlı replay store (lib/rate-limit).
 const REPLAY_TTL_MS = 6 * 60 * 60 * 1000;
+const SUCCESSFUL_IYZICO_STATUSES = new Set(["success", "successful", "succeeded", "paid", "approved", "captured"]);
 
 function markReplay(messageUid: string) {
   return markSeen(`iyzico:${messageUid}`, REPLAY_TTL_MS);
@@ -38,6 +41,10 @@ function safeCompare(a: string, b: string) {
   const left = crypto.createHash("sha256").update(a, "utf8").digest();
   const right = crypto.createHash("sha256").update(b, "utf8").digest();
   return crypto.timingSafeEqual(left, right);
+}
+
+function isSuccessfulPaymentStatus(status?: string) {
+  return SUCCESSFUL_IYZICO_STATUSES.has(safeText(status || "", 50).trim().toLowerCase());
 }
 
 async function writeAuditLog(data: Record<string, unknown>) {
@@ -158,6 +165,7 @@ export async function POST(req: Request) {
 
   // 4. Update the reservation status in the Database
   const targetDedupeHash = crypto.createHash("sha256").update(`booking:${bookingId}`).digest("hex");
+  const paymentSucceeded = isSuccessfulPaymentStatus(body.status);
   const queryResult = await payload.find({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     collection: "organization-leads" as any,
@@ -174,6 +182,9 @@ export async function POST(req: Request) {
   if (queryResult.docs && queryResult.docs.length > 0) {
     reservationFound = true;
     const lead = queryResult.docs[0];
+    const statusLine = paymentSucceeded
+      ? "Ödeme iyzico ağ geçidinden başarıyla çekilmiştir."
+      : `Iyzico ödeme bildirimi alındı; durum başarılı değil: ${safeText(body.status || "bilinmiyor", 50)}.`;
     
     // Update booking status detail
     await payload.update({
@@ -181,7 +192,7 @@ export async function POST(req: Request) {
       collection: "organization-leads" as any,
       id: lead.id,
       data: {
-        message: `${lead.message}\n\n[IYZICO WEBHOOK CONFIRMATION]: Ödeme iyzico ağ geçidinden başarıyla çekilmiştir.\nÖdeme ID: ${safeText(body.paymentId || "bilinmiyor", 100)}\nTutar: ${safeText(String(body.price || "-"), 30)} TRY\nZaman damgası: ${receivedAt}`,
+        message: `${lead.message}\n\n[IYZICO WEBHOOK CONFIRMATION]: ${statusLine}\nÖdeme ID: ${safeText(body.paymentId || "bilinmiyor", 100)}\nTutar: ${safeText(String(body.price || "-"), 30)} ${safeText(body.currency || "TRY", 10)}\nZaman damgası: ${receivedAt}`,
       },
       overrideAccess: true,
     });
@@ -195,9 +206,25 @@ export async function POST(req: Request) {
     status: "processed",
     signatureValid: true,
     payloadJson: redactWebhookPayload(body),
-    errorMessage: reservationFound ? undefined : "Webhook signature validated, but booking reference was not found in leads",
+    errorMessage: !reservationFound
+      ? "Webhook signature validated, but booking reference was not found in leads"
+      : paymentSucceeded
+        ? undefined
+        : "Iyzico payment status was not successful; no purchase event emitted",
     receivedAt,
   });
+
+  // GA4 server-side purchase: Iyzico callbacks can be the only reliable proof
+  // that a site-originated pre-reservation payment finished. Never include
+  // guest PII; GA4 env absence is a safe no-op inside sendGa4Purchase.
+  if (reservationFound && paymentSucceeded) {
+    await sendGa4Purchase({
+      transactionId: bookingId,
+      value: Number(body.price) || 0,
+      currency: safeText(body.currency || "TRY", 10),
+      itemName: "Konaklama Rezervasyonu",
+    });
+  }
 
   await markReplay(messageUid);
 
