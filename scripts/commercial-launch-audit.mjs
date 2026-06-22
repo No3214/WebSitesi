@@ -284,12 +284,65 @@ function evidenceState(relPath, baseDir) {
   return { path: relPath, ready: true, reason: "present" };
 }
 
+function gateProgressNotes(gate, envState, missingEvidence) {
+  const notes = [];
+
+  if (envState.configurationSource === "not_applicable") {
+    notes.push("env lane: not applicable for this gate");
+  } else if (envState.missingEnv.length === 0) {
+    notes.push(
+      envState.fallbackApplied
+        ? "env/fallback lane: covered by approved code fallback; source-system evidence is still required"
+        : "env lane: configured for this local snapshot",
+    );
+  } else if (envState.configurationSource === "partial") {
+    notes.push(
+      `env lane: partial (${envState.configuredEnvCount}/${envState.requiredEnvCount}); missing ${envState.missingEnv.join(", ")}`,
+    );
+  } else if (envState.configurationSource === "invalid") {
+    notes.push(`env lane: invalid or placeholder configuration for ${envState.missingEnv.join(", ")}`);
+  } else if (envState.missingEnv.length > 0) {
+    notes.push(`env lane: missing ${envState.missingEnv.join(", ")}`);
+  }
+
+  if (missingEvidence.length === 0) {
+    notes.push("evidence lane: redacted evidence file is ready");
+  } else {
+    notes.push(
+      `evidence lane: ${missingEvidence
+        .map((item) => `${item.path} (${item.reason})`)
+        .join(", ")}`,
+    );
+  }
+
+  if (gate.id === "canonical_domain") {
+    notes.push(
+      "live validation lane: use npm run domain:verify:json; .com can be verified while .com.tr keeps the full gate blocked",
+    );
+  }
+
+  if (gate.id === "hms_booking_engine") {
+    notes.push(
+      "live validation lane: use npm run hms:verify:json; reachable booking handoff is not the same as completed booking UAT",
+    );
+  }
+
+  if (gate.id === "analytics_purchase") {
+    notes.push(
+      "live validation lane: public analytics IDs can be names-present while GA4_API_SECRET and purchase evidence remain blocked",
+    );
+  }
+
+  return notes;
+}
+
 export function evaluateCommercialLaunch({ env = loadEnvSnapshot(), baseDir = root } = {}) {
   const gateResults = commercialLaunchGates.map((gate) => {
     const envState = envRequirementState(gate, env);
     const evidence = gate.evidence.map((file) => evidenceState(file, baseDir));
     const missingEvidence = evidence.filter((item) => !item.ready);
     const ready = envState.missingEnv.length === 0 && missingEvidence.length === 0;
+    const progressNotes = gateProgressNotes(gate, envState, missingEvidence);
 
     return {
       ...gate,
@@ -297,6 +350,7 @@ export function evaluateCommercialLaunch({ env = loadEnvSnapshot(), baseDir = ro
       awardedPoints: ready ? gate.points : 0,
       ...envState,
       missingEvidence,
+      progressNotes,
     };
   });
 
@@ -335,6 +389,11 @@ export function formatCommercialLaunchReport(result) {
           .map((item) => `${item.path} (${item.reason})`)
           .join(", ")}`,
       );
+    }
+    if (gate.progressNotes?.length > 0) {
+      for (const note of gate.progressNotes) {
+        lines.push(`  progress: ${note}`);
+      }
     }
   }
 

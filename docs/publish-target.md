@@ -30,7 +30,10 @@ npm run domain:verify
 
 `launch:audit` mevcut commercial launch skorunu ve eksik kanıtları listeler.
 `launch:audit:json`, aynı sonucu CI, dashboard veya ajan denetimleri için
-makine okunur JSON olarak verir.
+makine okunur JSON olarak verir. Her gate ayrıca `progressNotes` üretir; bu
+notlar skor değiştirmez, fakat canlı `.com` doğrulaması, HMS handoff reachability
+ve analytics public-ID kurulumu gibi tamamlanmış alt adımları evidence/secret
+eksiklerinden ayırır.
 `launch:cutover`, eksik ticari kapıları sahip, zamanlama, komut, kanıt ve KPI
 kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
 `media:hero`, açılış videosunun onaylı hash, çözünürlük, süre, bitrate, poster
@@ -107,6 +110,11 @@ npm run domain:verify:strict
 Not: `release:verify` lokal repo/release yeşil kapısıdır ve `launch:audit:json`
 çıktısını raporlar; domain/commercial strict gate'leri dış kanıtlar hazır olana
 kadar bilinçli olarak ayrı kırmızı kapı halinde tutulur.
+
+`publish:target`, commercial launch blocker listesinin yanında kısa
+`commercial launch progress notes` satırı da basar. Bu satır, kanıtı eksik olduğu
+için puan almayan ama kod/canlı doğrulama tarafında ilerlemiş gate'leri görünür
+kılar; tam GO kararı için yine strict evidence gate'leri esas alınır.
 
 Ek genişletilmiş yerel kapılar:
 

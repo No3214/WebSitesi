@@ -300,6 +300,8 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/github-ci-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/local-preview-verify.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
+    expect(readinessScript).toContain("commercial launch progress notes");
+    expect(readinessScript).toContain("live validation lane");
   });
 
   it("keeps local preview verification browser-free and guarded against cross-project content", () => {

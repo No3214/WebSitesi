@@ -37,6 +37,7 @@ type CommercialLaunchModule = {
       invalidEnvCount: number;
       placeholderEnvCount: number;
       fallbackApplied: boolean;
+      progressNotes: string[];
     }>;
   };
 };
@@ -127,6 +128,12 @@ describe("commercial launch audit", () => {
     const hmsGate = result.gateResults.find((gate) => gate.id === "hms_booking_engine");
     expect(hmsGate?.missingEnv).toEqual([]);
     expect(hmsGate?.configurationSource).toBe("code_fallback");
+    expect(hmsGate?.progressNotes).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("env/fallback lane"),
+        expect.stringContaining("hms:verify:json"),
+      ]),
+    );
     expect(hmsGate).toMatchObject({
       requiredEnvCount: 1,
       configuredEnvCount: 1,
@@ -144,6 +151,12 @@ describe("commercial launch audit", () => {
       missingEnvCount: 1,
       fallbackApplied: false,
     });
+    expect(canonicalGate?.progressNotes).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("domain:verify:json"),
+        expect.stringContaining(".com.tr keeps the full gate blocked"),
+      ]),
+    );
   });
 
   it("reaches 100/100 only when every required env group or official fallback and evidence file is ready", async () => {
@@ -260,6 +273,12 @@ describe("commercial launch audit", () => {
     expect(result.score).toBeLessThan(100);
     expect(hmsGate?.ready).toBe(false);
     expect(hmsGate?.missingEnv).toEqual([]);
+    expect(hmsGate?.progressNotes).toEqual(
+      expect.arrayContaining([
+        "env lane: configured for this local snapshot",
+        "evidence lane: docs/evidence/hms-booking-engine.md (pending status)",
+      ]),
+    );
     expect(hmsGate?.missingEvidence).toEqual([
       {
         path: "docs/evidence/hms-booking-engine.md",
@@ -390,5 +409,10 @@ describe("commercial launch audit", () => {
     });
     expect(serialized).not.toContain("replace_with_real_mode");
     expect(serialized).not.toContain("0x4AA-real-site-key");
+    expect(abuseGate?.progressNotes).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("env lane: partial (1/4)"),
+      ]),
+    );
   });
 });

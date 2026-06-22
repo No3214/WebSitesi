@@ -228,6 +228,13 @@ const fatal = [...missingFiles, ...missingEnvExampleKeys, ...missingScripts, ...
 const commercialLaunch = evaluateCommercialLaunch();
 const blockedCommercialGates = commercialLaunch.gateResults.filter((gate) => !gate.ready);
 const externalGoLiveBlockers = blockedCommercialGates.map((gate) => gate.label);
+const commercialProgressNotes = blockedCommercialGates
+  .flatMap((gate) =>
+    (gate.progressNotes || [])
+      .filter((note) => note.startsWith("live validation lane") || note.startsWith("env/fallback lane"))
+      .map((note) => `${gate.id}: ${note}`),
+  )
+  .slice(0, 6);
 
 const report = [
   "Kozbeyli Konagi publish readiness",
@@ -242,6 +249,7 @@ const report = [
   `INFO commercial launch blocked gates: ${
     blockedCommercialGates.length === 0 ? "none" : blockedCommercialGates.map((gate) => gate.id).join(", ")
   }`,
+  `INFO commercial launch progress notes: ${commercialProgressNotes.join("; ") || "none"}`,
   `INFO external blockers before full commercial launch: ${externalGoLiveBlockers.join("; ") || "none"}`,
   fatal.length === 0
     ? "RESULT marketing publish gate inventory PASS"
