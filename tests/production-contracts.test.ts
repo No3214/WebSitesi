@@ -775,12 +775,16 @@ describe("production readiness contracts", () => {
     expect(canonicalEvidence).toContain("legacy HotelRunner hosted landing surface");
     expect(canonicalEvidence).toContain("DNS NS/MX can be verified through DNS-over-HTTPS");
     expect(canonicalEvidence).toContain("public A lookups can show Cloudflare anycast");
-    expect(canonicalEvidence).toContain("8e7d19e942ac");
+    expect(canonicalEvidence).toContain("deployment commit reported by");
     expect(canonicalEvidence).toContain("anastasia.ns.cloudflare.com");
     expect(canonicalEvidence).toContain("theo.ns.cloudflare.com");
     expect(canonicalEvidence).toContain("Isimtescil DNS-zone edits alone will not change public traffic");
     expect(canonicalEvidence).toContain("dacb3ec12ca81d22.vercel-dns-017.com");
     expect(canonicalEvidence).toContain("mail-continuity records");
+    expect(canonicalEvidence).toContain("NS1.VERCEL-DNS.COM,NS2.VERCEL-DNS.COM");
+    expect(canonicalEvidence).toContain("1328792, ns1.vercel-dns.com, ns2.vercel-dns.com");
+    expect(canonicalEvidence).toContain("Direct checks against `ns1.vercel-dns.com`");
+    expect(canonicalEvidence).toContain("Keep status");
   });
 
   it("keeps Vercel operational prerequisites visible without hiding the global CLI requirement", () => {

@@ -78,8 +78,9 @@ As of 2026-06-22, `npm run domain:verify:json` reports these concrete blockers:
 - Current Vercel proof on 2026-06-22: project `kozbeyli-konagi`
   (`prj_lM3tFqaJ5DIv9JaYTUobdTBQlXC8`) is linked to
   `kozbeylikonagi.com` and `www.kozbeylikonagi.com`, and the Vercel preview
-  at `https://kozbeyli-konagi.vercel.app` serves deployment commit
-  `8e7d19e942ac` with `service: "kozbeyli-konagi"`.
+  at `https://kozbeyli-konagi.vercel.app` serves `service:
+  "kozbeyli-konagi"` with the deployment commit reported by
+  `npm run domain:verify:json`.
 - Current DNS authority on 2026-06-22: `.com` still uses Cloudflare
   nameservers `anastasia.ns.cloudflare.com` and `theo.ns.cloudflare.com`, so
   Isimtescil DNS-zone edits alone will not change public traffic while that
@@ -101,6 +102,21 @@ As of 2026-06-22, `npm run domain:verify:json` reports these concrete blockers:
   so API-based DNS cutover cannot be completed from this session. The operator
   must use the Cloudflare account that owns the zone or complete the
   nameserver change in Isimtescil after confirming mail continuity.
+- Isimtescil cutover action on 2026-06-22: in `Host Name (DNS) Yönetimi`, the
+  domain was updated from `THEO.NS.CLOUDFLARE.COM,ANASTASIA.NS.CLOUDFLARE.COM`
+  to `NS1.VERCEL-DNS.COM,NS2.VERCEL-DNS.COM`. The panel reported:
+  `Girmiş olduğunuz kayıtlar veritabanımıza kaydedildi. Dns kayıtlarınız
+  kaydedici firmada güncellendi.`
+- Isimtescil also created a reusable custom DNS set:
+  `1328792, ns1.vercel-dns.com, ns2.vercel-dns.com`.
+- Direct checks against `ns1.vercel-dns.com` after the Isimtescil update showed
+  Vercel DNS is ready for the nameserver delegation: `NS ns1/ns2.vercel-dns.com`,
+  `MX mx.kozbeylikonagi.com`, `A mx.kozbeylikonagi.com 78.142.208.142`,
+  the SPF TXT record, and `A www.kozbeylikonagi.com` Vercel web targets.
+- Public recursive DNS and `vercel domains inspect` still returned the old
+  Cloudflare delegation immediately after the panel change. Keep status
+  `pending` until public NS delegation, `/api/health`, secure redirect chain
+  and `/videos/hero.mp4` all pass from public DNS.
 
 ## Residual Risk
 
