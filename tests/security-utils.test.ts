@@ -83,7 +83,7 @@ describe("security utils", () => {
 
   describe("enforceRateLimit", () => {
     it("should call rateLimit", async () => {
-      vi.mocked(rateLimit).mockResolvedValue(true as any);
+      vi.mocked(rateLimit).mockResolvedValue(true as unknown as void);
       await enforceRateLimit("test-key", 10, 1000);
       expect(rateLimit).toHaveBeenCalledWith("test-key", 10, 1000);
     });

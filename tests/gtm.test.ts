@@ -26,7 +26,7 @@ describe("gtm utils", () => {
 
     // Polyfill window and localStorage if not present
     if (typeof window === 'undefined') {
-      global.window = {} as any;
+      global.window = {} as unknown as Window & typeof globalThis;
     }
     if (typeof localStorage === 'undefined') {
       const store: Record<string, string> = {};
@@ -59,11 +59,10 @@ describe("gtm utils", () => {
 
     it("should not push if window is undefined", () => {
       const originalWindow = global.window;
-      // @ts-ignore
-      delete global.window;
+      // @ts-expect-error global.window cannot be deleted strictly but this simulates it
+      delete (global as Partial<typeof global>).window;
       localStorage.setItem("consent_test", "analytics");
       pushEvent("test_event");
-      // @ts-ignore
       global.window = originalWindow;
     });
   });
