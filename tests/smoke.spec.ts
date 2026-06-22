@@ -16,7 +16,7 @@ test("odalar sayfası açılıyor", async ({ page }) => {
 
 test("menü sayfası açılıyor", async ({ page }) => {
   await page.goto("/menu");
-  await expect(page.getByText("Doğadan Tabağa Ege Lezzetleri", { exact: false })).toBeVisible();
+  await expect(page.locator(".menu-book")).toBeVisible();
 });
 
 test("organizasyonlar sayfası açılıyor", async ({ page }) => {
