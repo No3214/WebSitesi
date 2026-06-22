@@ -879,7 +879,10 @@ describe("production readiness contracts", () => {
     expect(vercelEnv).toContain("VERCEL PRODUCTION ENV INCOMPLETE");
     expect(vercelEnv).toContain("VERCEL ENV INVENTORY UNAVAILABLE");
     expect(vercelEnv).toContain("Production env names configured");
-    expect(vercelEnv).toContain("values are not read or validated");
+    expect(vercelEnv).toContain("parseVercelEnvFile");
+    expect(vercelEnv).toContain("--env-file");
+    expect(vercelEnv).toContain("secret values are never printed");
+    expect(vercelEnv).toContain("empty, placeholder or unavailable");
     expect(vercelEnv).toContain("valueValidation: \"not_performed\"");
     expect(vercelEnv).not.toContain("process.env.");
     expect(cutover).toContain("VERCEL_AUTH_COMMANDS");

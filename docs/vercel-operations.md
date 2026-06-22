@@ -37,6 +37,20 @@ subdomains use the project-specific Vercel CNAME shown in Project Settings or
 ls`. It never prints values. Use it to distinguish local `.env.local` readiness
 from the real Vercel Production inventory before marking any launch gate ready.
 
+When an operator needs to prove that configured production env names also have
+non-empty values, pull a temporary production snapshot outside the repository
+and feed it to the same gate:
+
+```bash
+vercel env pull %TEMP%\kozbeyli-vercel-production.env --environment=production
+node scripts/vercel-env-readiness.mjs --env-file %TEMP%\kozbeyli-vercel-production.env
+del %TEMP%\kozbeyli-vercel-production.env
+```
+
+The report validates required value shapes without printing secret values. If
+the deletion step fails, overwrite the temp file with an empty file before
+retrying deletion.
+
 For a strict handoff gate, run:
 
 ```bash

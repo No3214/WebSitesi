@@ -1,9 +1,11 @@
+import fs from "node:fs";
 import { pathToFileURL } from "node:url";
 
 import { commercialLaunchGates } from "./commercial-launch-audit.mjs";
 import { getVercelCliCandidates, runVercelCandidate } from "./vercel-ops-readiness.mjs";
 
 const PRODUCTION_ENV = "Production";
+const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
 
 function unique(values) {
   return [...new Set(values.filter(Boolean))];
@@ -28,6 +30,28 @@ export function parseVercelEnvList(output) {
   return rows;
 }
 
+export function parseVercelEnvFile(source) {
+  const env = {};
+
+  for (const line of source.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) continue;
+
+    const index = trimmed.indexOf("=");
+    const key = trimmed.slice(0, index).trim();
+    let value = trimmed.slice(index + 1).trim();
+    if (!/^[A-Z][A-Z0-9_]*$/.test(key)) continue;
+
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+
+    env[key] = value;
+  }
+
+  return env;
+}
+
 function isProductionConfigured(rows, key) {
   return rows.some((row) => row.name === key && row.environments.includes(PRODUCTION_ENV));
 }
@@ -49,7 +73,74 @@ function valueValidationCommand(gateId) {
   }[gateId] ?? "npm run launch:audit:strict";
 }
 
-function gateEnvState(gate, rows) {
+function hasMeaningfulValue(value) {
+  return Boolean(value && value.trim() && !placeholderPattern.test(value));
+}
+
+function validateExpectedValue(gate, key, value) {
+  const expected = gate.expectedEnv?.[key];
+  if (!expected) return "";
+  return new RegExp(expected.pattern).test(value) ? "" : `${key} must match ${expected.label}`;
+}
+
+function valueValidationState(gate, rows, valueEnv) {
+  const validationKeys = expectedValueKeys(gate).filter((key) => isProductionConfigured(rows, key));
+  const configuredRequiredKeys = gate.env.filter((key) => isProductionConfigured(rows, key));
+  const configuredAlternativeKeys = (gate.envAnyOf ?? []).flatMap((group) =>
+    group.keys.filter((key) => isProductionConfigured(rows, key)),
+  );
+
+  if (!valueEnv) {
+    return {
+      keys: validationKeys,
+      status: validationKeys.length > 0 ? "required_not_performed" : "not_required",
+      issues: [],
+    };
+  }
+
+  const issues = [];
+
+  if (configuredRequiredKeys.length === 0 && configuredAlternativeKeys.length === 0) {
+    return {
+      keys: [],
+      status: "not_required",
+      issues: [],
+    };
+  }
+
+  for (const key of configuredRequiredKeys) {
+    const value = valueEnv[key] ?? "";
+    if (!hasMeaningfulValue(value)) {
+      issues.push(`${key} is empty, placeholder or unavailable in the pulled Vercel Production env snapshot`);
+      continue;
+    }
+
+    const expectedIssue = validateExpectedValue(gate, key, value);
+    if (expectedIssue) issues.push(expectedIssue);
+  }
+
+  for (const group of gate.envAnyOf ?? []) {
+    const configuredKeys = group.keys.filter((key) => isProductionConfigured(rows, key));
+    if (configuredKeys.length === 0) continue;
+
+    const validAlternatives = configuredKeys.filter((key) => {
+      const value = valueEnv[key] ?? "";
+      return hasMeaningfulValue(value) && !validateExpectedValue(gate, key, value);
+    });
+
+    if (validAlternatives.length === 0) {
+      issues.push(`${configuredKeys.join(" or ")} has no valid non-empty ${group.label} value in the pulled Vercel Production env snapshot`);
+    }
+  }
+
+  return {
+    keys: unique([...configuredRequiredKeys, ...validationKeys]),
+    status: issues.length > 0 ? "performed_failed" : "performed_pass",
+    issues,
+  };
+}
+
+function gateEnvState(gate, rows, valueEnv) {
   const missingEnv = [];
   const configuredEnv = [];
   const fallbackEnv = [];
@@ -83,9 +174,8 @@ function gateEnvState(gate, rows) {
   const requiredCount = gate.env.length + (gate.envAnyOf?.length ?? 0);
   const configuredCount = configuredEnv.length + fallbackEnv.length + configuredAnyOf.length;
   const namesReady = missingEnv.length === 0 && missingAnyOf.length === 0;
-  const valueValidationKeys = expectedValueKeys(gate).filter((key) => isProductionConfigured(rows, key));
-  const valueValidationStatus = valueValidationKeys.length > 0 ? "required_not_performed" : "not_required";
-  const ready = namesReady && valueValidationStatus !== "required_not_performed";
+  const valueValidation = valueValidationState(gate, rows, valueEnv);
+  const ready = namesReady && valueValidation.status !== "required_not_performed" && valueValidation.status !== "performed_failed";
 
   return {
     id: gate.id,
@@ -99,9 +189,10 @@ function gateEnvState(gate, rows) {
     configuredAnyOf,
     missingAnyOf,
     namesReady,
-    valueValidationKeys,
-    valueValidationStatus,
-    valueValidationCommand: valueValidationKeys.length > 0 ? valueValidationCommand(gate.id) : "",
+    valueValidationKeys: valueValidation.keys,
+    valueValidationStatus: valueValidation.status,
+    valueValidationIssues: valueValidation.issues,
+    valueValidationCommand: valueValidation.keys.length > 0 ? valueValidationCommand(gate.id) : "",
     ready,
   };
 }
@@ -130,7 +221,7 @@ function runVercelEnvList() {
   };
 }
 
-export function evaluateVercelEnvReadiness({ output, available = true, candidate = "fixture", errors = [] } = {}) {
+export function evaluateVercelEnvReadiness({ output, available = true, candidate = "fixture", errors = [], valueEnv } = {}) {
   if (!available) {
     return {
       decision: "VERCEL ENV INVENTORY UNAVAILABLE",
@@ -153,12 +244,13 @@ export function evaluateVercelEnvReadiness({ output, available = true, candidate
     .filter((row) => row.environments.includes(PRODUCTION_ENV))
     .map((row) => row.name)
     .sort();
-  const gateResults = commercialLaunchGates.map((gate) => gateEnvState(gate, rows));
+  const gateResults = commercialLaunchGates.map((gate) => gateEnvState(gate, rows, valueEnv));
   const blockers = gateResults.flatMap((gate) => [
     ...gate.missingEnv.map((key) => `${gate.id}: ${key} is missing from Vercel Production env`),
     ...gate.missingAnyOf.map(
       (group) => `${gate.id}: ${group.keys.join(" or ")} is missing from Vercel Production env (${group.label})`,
     ),
+    ...gate.valueValidationIssues.map((issue) => `${gate.id}: ${issue}`),
   ]);
   const warnings = gateResults
     .filter((gate) => gate.valueValidationStatus === "required_not_performed")
@@ -176,8 +268,8 @@ export function evaluateVercelEnvReadiness({ output, available = true, candidate
 
   return {
     decision,
-    scope: "vercel-production-env-names-only",
-    valueValidation: "not_performed",
+    scope: valueEnv ? "vercel-production-env-names-and-pulled-values" : "vercel-production-env-names-only",
+    valueValidation: valueEnv ? "performed_without_value_output" : "not_performed",
     candidate,
     productionEnvNames,
     configuredProductionCount: productionEnvNames.length,
@@ -192,7 +284,7 @@ export function formatVercelEnvReadiness(result) {
   const lines = [
     "Kozbeyli Konagi Vercel production env readiness",
     `Decision: ${result.decision}`,
-    `Scope: ${result.scope}; values are not read or validated`,
+    `Scope: ${result.scope}; secret values are never printed`,
     `CLI candidate: ${result.candidate || "unavailable"}`,
     `Production env names configured: ${result.configuredProductionCount}`,
     "",
@@ -215,6 +307,9 @@ export function formatVercelEnvReadiness(result) {
       lines.push(
         `  value validation required: ${gate.valueValidationKeys.join(", ")} (${gate.valueValidationCommand})`,
       );
+    }
+    if (gate.valueValidationIssues?.length > 0) {
+      lines.push(`  value validation blockers: ${gate.valueValidationIssues.join("; ")}`);
     }
     if (gate.configuredAnyOf.length > 0) {
       lines.push(
@@ -250,8 +345,11 @@ export function formatVercelEnvReadiness(result) {
 function main() {
   const strict = process.argv.includes("--strict");
   const json = process.argv.includes("--json");
+  const envFileArgIndex = process.argv.indexOf("--env-file");
+  const envFile = envFileArgIndex >= 0 ? process.argv[envFileArgIndex + 1] : "";
   const inventory = runVercelEnvList();
-  const result = evaluateVercelEnvReadiness(inventory);
+  const valueEnv = envFile ? parseVercelEnvFile(fs.readFileSync(envFile, "utf8")) : undefined;
+  const result = evaluateVercelEnvReadiness({ ...inventory, valueEnv });
 
   console.log(json ? JSON.stringify(result, null, 2) : formatVercelEnvReadiness(result));
   process.exitCode = strict && result.decision !== "VERCEL PRODUCTION ENV PASS" ? 1 : 0;

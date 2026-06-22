@@ -7,11 +7,13 @@ const root = process.cwd();
 
 type VercelEnvModule = {
   parseVercelEnvList: (output: string) => Array<{ name: string; environments: string[] }>;
+  parseVercelEnvFile: (source: string) => Record<string, string>;
   evaluateVercelEnvReadiness: (args?: {
     output?: string;
     available?: boolean;
     candidate?: string;
     errors?: string[];
+    valueEnv?: Record<string, string>;
   }) => {
     decision: string;
     scope: string;
@@ -30,6 +32,7 @@ type VercelEnvModule = {
       missingAnyOf: Array<{ label: string; keys: string[] }>;
       valueValidationKeys: string[];
       valueValidationStatus: string;
+      valueValidationIssues: string[];
       valueValidationCommand: string;
     }>;
   };
@@ -89,6 +92,23 @@ describe("Vercel production env readiness", () => {
     ]);
   });
 
+  it("parses pulled Vercel env files without requiring callers to print secret values", async () => {
+    const mod = await loadEnvModule();
+    const env = mod.parseVercelEnvFile(
+      [
+        "DATABASE_URI='postgresql://postgres:secret@db.supabase.co:6543/postgres'",
+        'PAYLOAD_SECRET="payload-secret-value"',
+        "NEXT_PUBLIC_SITE_URL=https://www.kozbeylikonagi.com",
+      ].join("\n"),
+    );
+
+    expect(env).toMatchObject({
+      DATABASE_URI: "postgresql://postgres:secret@db.supabase.co:6543/postgres",
+      PAYLOAD_SECRET: "payload-secret-value",
+      NEXT_PUBLIC_SITE_URL: "https://www.kozbeylikonagi.com",
+    });
+  });
+
   it("reports the current Vercel production env gaps without leaking values", async () => {
     const mod = await loadEnvModule();
     const result = mod.evaluateVercelEnvReadiness({
@@ -146,6 +166,93 @@ describe("Vercel production env readiness", () => {
     const serialized = JSON.stringify(result);
     expect(serialized).not.toContain("Encrypted");
     expect(serialized).not.toContain("secret-value");
+  });
+
+  it("blocks empty or invalid pulled production env values even when Vercel env names exist", async () => {
+    const mod = await loadEnvModule();
+    const result = mod.evaluateVercelEnvReadiness({
+      candidate: "fixture",
+      output: makeEnvList([
+        "NEXT_PUBLIC_SITE_URL",
+        "DATABASE_URI",
+        "PAYLOAD_SECRET",
+        "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL",
+      ]),
+      valueEnv: {
+        NEXT_PUBLIC_SITE_URL: "https://www.kozbeylikonagi.com",
+        DATABASE_URI: "",
+        PAYLOAD_SECRET: "",
+        NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: "https://kozbeyli-konagi.hmshotel.net/bv3/search",
+      },
+    });
+
+    const databaseGate = result.gateResults.find((gate) => gate.id === "production_database");
+    expect(result.decision).toBe("VERCEL PRODUCTION ENV INCOMPLETE");
+    expect(result.scope).toBe("vercel-production-env-names-and-pulled-values");
+    expect(result.valueValidation).toBe("performed_without_value_output");
+    expect(databaseGate).toMatchObject({
+      namesReady: true,
+      ready: false,
+      valueValidationStatus: "performed_failed",
+    });
+    expect(databaseGate?.valueValidationIssues).toEqual(
+      expect.arrayContaining([
+        "DATABASE_URI is empty, placeholder or unavailable in the pulled Vercel Production env snapshot",
+        "PAYLOAD_SECRET is empty, placeholder or unavailable in the pulled Vercel Production env snapshot",
+      ]),
+    );
+    expect(result.blockers).toEqual(
+      expect.arrayContaining([
+        "production_database: DATABASE_URI is empty, placeholder or unavailable in the pulled Vercel Production env snapshot",
+        "production_database: PAYLOAD_SECRET is empty, placeholder or unavailable in the pulled Vercel Production env snapshot",
+      ]),
+    );
+
+    const serialized = JSON.stringify(result);
+    expect(serialized).not.toContain("payload-secret-value");
+    expect(serialized).not.toContain("postgres:secret");
+  });
+
+  it("passes value validation only when pulled production env values are non-empty and valid", async () => {
+    const mod = await loadEnvModule();
+    const audit = await loadAuditModule();
+    const keys = [
+      ...new Set(
+        audit.commercialLaunchGates.flatMap((gate) => [
+          ...gate.env,
+          ...(gate.envAnyOf ?? []).map((group) => group.keys[0]),
+        ]),
+      ),
+    ];
+    const valueEnv = Object.fromEntries(
+      keys.map((key) => [
+        key,
+        key === "DATABASE_URI"
+          ? "postgresql://postgres:secret@db.supabase.co:6543/postgres"
+          : key === "NEXT_PUBLIC_SITE_URL"
+            ? "https://www.kozbeylikonagi.com"
+            : key === "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"
+              ? "https://kozbeyli-konagi.hmshotel.net/bv3/search"
+              : key === "NEXT_PUBLIC_GTM_ID"
+                ? "GTM-KCG6B4MJ"
+                : key === "NEXT_PUBLIC_GA4_MEASUREMENT_ID" || key === "GA4_MEASUREMENT_ID"
+                  ? "G-V3R66C3MEF"
+                  : key === "NEXT_PUBLIC_GOOGLE_ADS_ID"
+                    ? "AW-800024713"
+                    : `live-${key.toLowerCase()}`,
+      ]),
+    );
+
+    const result = mod.evaluateVercelEnvReadiness({
+      output: makeEnvList(keys),
+      valueEnv,
+    });
+
+    expect(result.decision).toBe("VERCEL PRODUCTION ENV PASS");
+    expect(result.blockers).toEqual([]);
+    expect(result.warnings).toEqual([]);
+    expect(result.gateResults.every((gate) => gate.ready)).toBe(true);
+    expect(JSON.stringify(result)).not.toContain("postgres:secret");
   });
 
   it("accepts the approved HMS fallback when the Vercel env override is absent", async () => {
