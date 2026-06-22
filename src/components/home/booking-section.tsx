@@ -21,7 +21,7 @@ export function BookingSection({ locale, eyebrow }: Props) {
                 : "Dates, guests and room selection open in the official HMS booking screen; our team remains available by WhatsApp and phone."
             }
           />
-          <WeatherRibbon />
+          <WeatherRibbon locale={locale} />
           <HMSBookingEmbed locale={locale} />
         </FadeIn>
       </div>

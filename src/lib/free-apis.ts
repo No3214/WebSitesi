@@ -94,18 +94,31 @@ export async function getKozbeyliWeather(): Promise<WeatherData | null> {
   };
 }
 
-/** WMO weather code → TR etiket + emoji (Open-Meteo standardı) */
-export function describeWeather(code: number): { label: string; icon: string } {
-  if (code === 0) return { label: "Açık", icon: "☀️" };
-  if (code <= 2) return { label: "Az bulutlu", icon: "🌤️" };
-  if (code === 3) return { label: "Parçalı bulutlu", icon: "⛅" };
-  if (code <= 48) return { label: "Sisli", icon: "🌫️" };
-  if (code <= 57) return { label: "Çisenti", icon: "🌦️" };
-  if (code <= 67) return { label: "Yağmurlu", icon: "🌧️" };
-  if (code <= 77) return { label: "Karlı", icon: "🌨️" };
-  if (code <= 82) return { label: "Sağanak", icon: "🌧️" };
-  if (code <= 99) return { label: "Gök gürültülü", icon: "⛈️" };
-  return { label: "Değişken", icon: "🌤️" };
+/** WMO weather code → localized label + emoji (Open-Meteo standardı) */
+export function describeWeather(code: number, locale: "tr" | "en" = "tr"): { label: string; icon: string } {
+  const labels = {
+    clear: locale === "en" ? "Clear" : "Açık",
+    mainlyClear: locale === "en" ? "Mainly clear" : "Az bulutlu",
+    partlyCloudy: locale === "en" ? "Partly cloudy" : "Parçalı bulutlu",
+    fog: locale === "en" ? "Foggy" : "Sisli",
+    drizzle: locale === "en" ? "Drizzle" : "Çisenti",
+    rain: locale === "en" ? "Rainy" : "Yağmurlu",
+    snow: locale === "en" ? "Snowy" : "Karlı",
+    showers: locale === "en" ? "Showers" : "Sağanak",
+    thunder: locale === "en" ? "Thunderstorms" : "Gök gürültülü",
+    variable: locale === "en" ? "Variable" : "Değişken",
+  };
+
+  if (code === 0) return { label: labels.clear, icon: "☀️" };
+  if (code <= 2) return { label: labels.mainlyClear, icon: "🌤️" };
+  if (code === 3) return { label: labels.partlyCloudy, icon: "⛅" };
+  if (code <= 48) return { label: labels.fog, icon: "🌫️" };
+  if (code <= 57) return { label: labels.drizzle, icon: "🌦️" };
+  if (code <= 67) return { label: labels.rain, icon: "🌧️" };
+  if (code <= 77) return { label: labels.snow, icon: "🌨️" };
+  if (code <= 82) return { label: labels.showers, icon: "🌧️" };
+  if (code <= 99) return { label: labels.thunder, icon: "⛈️" };
+  return { label: labels.variable, icon: "🌤️" };
 }
 
 /* ------------------------------ Gün batımı ------------------------------- */

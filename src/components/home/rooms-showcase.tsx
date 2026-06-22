@@ -5,11 +5,13 @@ import Image from "next/image";
 
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
-import { rooms } from "@/data/rooms";
+import { getLocalizedRooms } from "@/data/rooms";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
 export function RoomsShowcase({ locale, eyebrow }: Props) {
+  const localizedRooms = getLocalizedRooms(locale);
+
   return (
     <section className="section" id="konaklama" style={{ paddingTop: 0 }}>
       <div className="container">
@@ -26,9 +28,9 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
         </FadeIn>
         <StaggerContainer delay={0.15}>
           <div className="card-grid">
-            {rooms.slice(0, 6).map((room) => (
+            {localizedRooms.slice(0, 6).map((room) => (
               <FadeIn key={room.slug}>
-                <Link href={`/odalar/${room.slug}`} className="card">
+                <Link href={`${locale === "en" ? "/en" : ""}/odalar/${room.slug}`} className="card">
                   <div className="card-media">
                     <Image
                       src={room.images[0]}
@@ -57,7 +59,7 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
         </StaggerContainer>
         <FadeIn delay={0.2}>
           <div style={{ textAlign: "center", marginTop: 56 }}>
-            <Link href="/odalar" className="button secondary">
+            <Link href={locale === "en" ? "/en/odalar" : "/odalar"} className="button secondary">
               {locale === "tr" ? "Tüm Odaları Gör" : "View All Rooms"}
             </Link>
           </div>

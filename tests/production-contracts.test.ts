@@ -1379,10 +1379,15 @@ describe("production readiness contracts", () => {
 
   it("keeps below-fold homepage videos from preloading on first paint", () => {
     const gastronomyEditorial = read("src/components/home/gastronomy-editorial.tsx");
+    const globals = read("src/app/globals.css");
 
     expect(gastronomyEditorial).toContain("function LazyEditorialVideo");
     expect(gastronomyEditorial).toContain("IntersectionObserver");
     expect(gastronomyEditorial).toContain('preload="none"');
+    expect(gastronomyEditorial).toContain("controls={playbackBlocked}");
+    expect(gastronomyEditorial).toContain("setPlaybackBlocked(true)");
+    expect(gastronomyEditorial).toContain("editorial-video-control");
+    expect(globals).toContain(".editorial-video-control");
     expect(gastronomyEditorial).not.toContain('preload="metadata"');
   });
 
@@ -1661,6 +1666,18 @@ describe("production readiness contracts", () => {
     expect(leadForm).not.toContain("Lead submission failed");
     expect(leadForm).not.toContain("console.error");
     expect(leadForm).not.toContain("console.warn");
+  });
+
+  it("keeps client error boundaries from dumping raw errors to the browser console", () => {
+    const appError = read("src/app/error.tsx");
+    const componentErrorBoundary = read("src/components/error-boundary.tsx");
+
+    expect(appError).toContain('console.error("app_error_boundary")');
+    expect(appError).not.toContain("console.error(error)");
+    expect(componentErrorBoundary).toContain('console.error("client_error_boundary")');
+    expect(componentErrorBoundary).not.toContain("Uncaught error:");
+    expect(componentErrorBoundary).not.toContain("console.error(\"Uncaught error:\", error, errorInfo)");
+    expect(componentErrorBoundary).not.toContain("errorInfo)");
   });
 
   it("publishes a dedicated location route with schema, hreflang and inventory coverage", () => {

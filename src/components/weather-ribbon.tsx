@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import type { LocalPulse } from "@/lib/free-apis";
 import { describeWeather } from "@/lib/free-apis";
 
-function formatTime(iso: string) {
+function formatTime(iso: string, locale: "tr" | "en") {
   try {
-    return new Intl.DateTimeFormat("tr-TR", {
+    return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "tr-TR", {
       hour: "2-digit",
       minute: "2-digit",
       timeZone: "Europe/Istanbul",
@@ -21,7 +21,7 @@ function formatTime(iso: string) {
  * Kozbeyli "yerel nabız" şeridi — hava, gün batımı, kur ve yaklaşan tatil.
  * Tamamen ücretsiz API'lerden beslenir; veri yoksa sessizce gizlenir.
  */
-export function WeatherRibbon() {
+export function WeatherRibbon({ locale = "tr" }: { locale?: "tr" | "en" }) {
   const [pulse, setPulse] = useState<LocalPulse | null>(null);
 
   useEffect(() => {
@@ -42,10 +42,13 @@ export function WeatherRibbon() {
   const items: { icon: string; text: string }[] = [];
 
   if (pulse.weather?.now) {
-    const w = describeWeather(pulse.weather.now.weatherCode);
+    const w = describeWeather(pulse.weather.now.weatherCode, locale);
     items.push({
       icon: w.icon,
-      text: `Kozbeyli'de şu an ${pulse.weather.now.temperature}°C, ${w.label.toLowerCase()}`,
+      text:
+        locale === "en"
+          ? `Current weather in Kozbeyli: ${pulse.weather.now.temperature}°C, ${w.label.toLowerCase()}`
+          : `Kozbeyli'de şu an ${pulse.weather.now.temperature}°C, ${w.label.toLowerCase()}`,
     });
     const weekend = pulse.weather.daily.slice(0, 7).filter((d) => {
       const day = new Date(`${d.date}T12:00:00+03:00`).getDay();
@@ -53,27 +56,42 @@ export function WeatherRibbon() {
     });
     if (weekend.length > 0) {
       const max = Math.max(...weekend.map((d) => d.tMax));
-      items.push({ icon: "📅", text: `Hafta sonu ${max}°C bekleniyor` });
+      items.push({
+        icon: "📅",
+        text: locale === "en" ? `Weekend forecast: up to ${max}°C` : `Hafta sonu ${max}°C bekleniyor`,
+      });
     }
   }
 
   if (pulse.sun?.sunset) {
-    const t = formatTime(pulse.sun.sunset);
-    if (t) items.push({ icon: "🌅", text: `Bugün gün batımı ${t}` });
+    const t = formatTime(pulse.sun.sunset, locale);
+    if (t) {
+      items.push({
+        icon: "🌅",
+        text: locale === "en" ? `Sunset today ${t}` : `Bugün gün batımı ${t}`,
+      });
+    }
   }
 
   if (pulse.nextHoliday && pulse.nextHoliday.daysAway <= 30) {
     items.push({
       icon: "✨",
       text:
-        pulse.nextHoliday.daysAway === 0
-          ? `Bugün ${pulse.nextHoliday.localName}`
-          : `${pulse.nextHoliday.localName} için ${pulse.nextHoliday.daysAway} gün`,
+        locale === "en"
+          ? pulse.nextHoliday.daysAway === 0
+            ? "Public holiday today"
+            : `Public holiday in ${pulse.nextHoliday.daysAway} days`
+          : pulse.nextHoliday.daysAway === 0
+            ? `Bugün ${pulse.nextHoliday.localName}`
+            : `${pulse.nextHoliday.localName} için ${pulse.nextHoliday.daysAway} gün`,
     });
   }
 
   if (pulse.fx.eurTry) {
-    items.push({ icon: "💶", text: `1 € ≈ ${pulse.fx.eurTry.toLocaleString("tr-TR")} ₺` });
+    items.push({
+      icon: "💶",
+      text: `1 € ≈ ${pulse.fx.eurTry.toLocaleString(locale === "en" ? "en-US" : "tr-TR")} ₺`,
+    });
   }
 
   if (items.length === 0) return null;

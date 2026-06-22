@@ -1,7 +1,8 @@
 "use client";
 
+import { Play } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
@@ -10,11 +11,31 @@ type LazyEditorialVideoProps = {
   src: string;
   poster: string;
   label: string;
+  playLabel: string;
 };
 
-function LazyEditorialVideo({ src, poster, label }: LazyEditorialVideoProps) {
+function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [shouldPlay, setShouldPlay] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackBlocked, setPlaybackBlocked] = useState(false);
+
+  const start = useCallback(async () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    try {
+      video.defaultMuted = true;
+      video.muted = true;
+      video.playsInline = true;
+      await video.play();
+      setIsPlaying(!video.paused);
+      setPlaybackBlocked(false);
+    } catch {
+      setIsPlaying(false);
+      setPlaybackBlocked(true);
+    }
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -40,22 +61,51 @@ function LazyEditorialVideo({ src, poster, label }: LazyEditorialVideoProps) {
 
   useEffect(() => {
     if (!shouldPlay) return;
-    void videoRef.current?.play().catch(() => {});
-  }, [shouldPlay]);
+    void start();
+  }, [shouldPlay, start]);
 
   return (
-    <video
-      ref={videoRef}
-      poster={poster}
-      autoPlay={shouldPlay}
-      muted
-      loop
-      playsInline
-      preload="none"
-      aria-label={label}
-    >
-      <source src={src} type="video/mp4" />
-    </video>
+    <>
+      <video
+        ref={videoRef}
+        poster={poster}
+        autoPlay={shouldPlay}
+        muted
+        loop
+        playsInline
+        controls={playbackBlocked}
+        preload="none"
+        aria-label={label}
+        onCanPlay={() => {
+          if (shouldPlay) void start();
+        }}
+        onPlaying={() => {
+          setIsPlaying(true);
+          setPlaybackBlocked(false);
+        }}
+        onPause={() => setIsPlaying(false)}
+        onError={() => {
+          setIsPlaying(false);
+          setPlaybackBlocked(true);
+        }}
+      >
+        <source src={src} type="video/mp4" />
+      </video>
+      {!isPlaying ? (
+        <button
+          type="button"
+          className="editorial-video-control"
+          data-state={playbackBlocked ? "blocked" : "paused"}
+          aria-label={playLabel}
+          onClick={() => {
+            setShouldPlay(true);
+            void start();
+          }}
+        >
+          <Play aria-hidden size={22} strokeWidth={2.2} />
+        </button>
+      ) : null}
+    </>
   );
 }
 
@@ -83,6 +133,7 @@ export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
                   src="/videos/kahvalti.mp4"
                   poster="/videos/kahvalti-poster.jpg"
                   label={locale === "tr" ? "Serpme köy kahvaltısı videosu" : "Village breakfast video"}
+                  playLabel={locale === "tr" ? "Kahvaltı videosunu oynat" : "Play breakfast video"}
                 />
                 <span className="media-frame" aria-hidden />
               </div>
@@ -113,6 +164,7 @@ export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
                   src="/videos/mihlama.mp4"
                   poster="/videos/mihlama-poster.jpg"
                   label={locale === "tr" ? "Ocakta hazırlanan yöresel lezzet videosu" : "Regional dish on the stove video"}
+                  playLabel={locale === "tr" ? "Mıhlama videosunu oynat" : "Play mıhlama video"}
                 />
                 <span className="media-frame" aria-hidden />
               </div>

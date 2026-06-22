@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { rooms as fallbackRooms } from "@/data/rooms";
+import { getLocalizedRooms } from "@/data/rooms";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -35,6 +35,7 @@ export function RoomsClient({ initialDict, initialLocale = "tr" }: RoomsClientPr
 
   const t = dict.Rooms;
   const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
+  const localizedRooms = getLocalizedRooms(locale);
 
   return (
     <>
@@ -45,7 +46,7 @@ export function RoomsClient({ initialDict, initialLocale = "tr" }: RoomsClientPr
         <div className="container">
           <StaggerContainer delay={0.1}>
             <div className="card-grid">
-              {fallbackRooms.map((room, index) => (
+              {localizedRooms.map((room, index) => (
                 <FadeIn key={room.slug}>
                   <Link href={`${locale === "en" ? "/en" : ""}/odalar/${room.slug}`} className="card room-card">
                     <div className="card-media">

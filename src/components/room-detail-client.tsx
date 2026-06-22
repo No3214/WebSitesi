@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
 import { WeatherRibbon } from "@/components/weather-ribbon";
-import { rooms as fallbackRooms } from "@/data/rooms";
+import { getLocalizedRoom, rooms as fallbackRooms } from "@/data/rooms";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
 
@@ -17,16 +17,54 @@ export function RoomDetailClient({ slug }: { slug: string }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
   const [activeImg, setActiveImg] = useState(0);
-  const room = fallbackRooms.find((item) => item.slug === slug);
   const pathname = usePathname();
+  const locale = pathname === "/en" || Boolean(pathname?.startsWith("/en/")) ? "en" : "tr";
+  const baseRoom = fallbackRooms.find((item) => item.slug === slug);
+  const room = baseRoom ? getLocalizedRoom(baseRoom, locale) : undefined;
   const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL, {
     roomSlug: slug,
   });
+  const copy = locale === "en"
+    ? {
+        gallery: "Room gallery",
+        image: "image",
+        badge: "HERITAGE STONE ROOM",
+        size: "Size",
+        capacity: "Capacity",
+        view: "View",
+        experience: "Room Experience",
+        bookingEyebrow: "DIRECT BOOKING ADVANTAGE",
+        bookingMain: "Choose dates on the official booking screen",
+        trustLabel: "Booking trust notes",
+        trust: [
+          "Official HMS booking screen",
+          "Card details are not stored on this website",
+          "WhatsApp support remains available",
+        ],
+        cta: "CHECK AVAILABILITY",
+      }
+    : {
+        gallery: "Oda galerisi",
+        image: "görsel",
+        badge: "MÜHÜRLÜ TAŞ KONAK",
+        size: "Büyüklük",
+        capacity: "Kapasite",
+        view: "Manzara",
+        experience: "Oda Deneyimi",
+        bookingEyebrow: "DİREKT REZERVASYON AVANTAJI",
+        bookingMain: "Lütfen Tarih Seçiniz",
+        trustLabel: "Rezervasyon güven notları",
+        trust: [
+          "Resmi HMS rezervasyon ekranı",
+          "Kart bilgisi bu sitede saklanmaz",
+          "WhatsApp destek açık kalır",
+        ],
+        cta: "EN İYİ FİYATLA YERİNİZİ AYIRIN",
+      };
 
   useEffect(() => {
-    const locale = pathname === "/en" || Boolean(pathname?.startsWith("/en/")) ? "en" : "tr";
     getDictionary(locale).then(setDict);
-  }, [pathname]);
+  }, [locale]);
 
   if (!room) notFound();
   if (!dict) return <div className="loading-screen" />;
@@ -51,7 +89,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                       >
                         <Image
                           src={room.images[activeImg] ?? room.images[0]}
-                          alt={`${room.title} — görsel ${activeImg + 1}`}
+                          alt={`${room.title} - ${copy.image} ${activeImg + 1}`}
                           fill
                           sizes="(max-width: 1200px) 100vw, 55vw"
                           className="object-cover"
@@ -65,14 +103,14 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                     </span>
                  </div>
                  {room.images.length > 1 && (
-                   <div className="image-strip" role="group" aria-label="Oda galerisi">
+                   <div className="image-strip" role="group" aria-label={copy.gallery}>
                      {room.images.map((img, i) => (
                        <button
                          type="button"
                          key={i}
                          className={`strip-item hover-scale ${i === activeImg ? "active" : ""}`}
                          onClick={() => setActiveImg(i)}
-                         aria-label={`${room.title} görsel ${i + 1}`}
+                         aria-label={`${room.title} ${copy.image} ${i + 1}`}
                          aria-pressed={i === activeImg}
                        >
                          <Image
@@ -92,30 +130,30 @@ export function RoomDetailClient({ slug }: { slug: string }) {
 
             <FadeIn direction="right" delay={0.2}>
               <div className="detail-content">
-                <div className="premium-badge">MÜHÜRLÜ TAŞ KONAK</div>
+                <div className="premium-badge">{copy.badge}</div>
                 <h1 className="serif h1-premium">{room.title}</h1>
                 <p className="description-premium">{room.description}</p>
 
                 <div className="specs-row">
                   <div className="spec-card">
                     <div className="spec-icon">📏</div>
-                    <span className="spec-label">Büyüklük</span>
+                    <span className="spec-label">{copy.size}</span>
                     <span className="spec-value">{room.size}</span>
                   </div>
                   <div className="spec-card">
                     <div className="spec-icon">👥</div>
-                    <span className="spec-label">Kapasite</span>
+                    <span className="spec-label">{copy.capacity}</span>
                     <span className="spec-value">{room.capacity}</span>
                   </div>
                   <div className="spec-card">
                     <div className="spec-icon">🪟</div>
-                    <span className="spec-label">Manzara</span>
+                    <span className="spec-label">{copy.view}</span>
                     <span className="spec-value">{room.view}</span>
                   </div>
                 </div>
 
                 <div className="amenities-grid-premium">
-                  <h3 className="serif text-xl mb-4">Oda Deneyimi</h3>
+                  <h3 className="serif text-xl mb-4">{copy.experience}</h3>
                   <div className="amenities-list">
                     {room.amenities.map((item, i) => (
                       <div key={i} className="amenity-item-premium">
@@ -126,16 +164,16 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                   </div>
                 </div>
 
-                <WeatherRibbon />
+                <WeatherRibbon locale={locale} />
                 <div className="booking-card-premium">
                   <div className="price-stack">
-                    <span className="price-eyebrow">DİREKT REZERVASYON AVANTAJI</span>
-                    <span className="price-main">Lütfen Tarih Seçiniz</span>
+                    <span className="price-eyebrow">{copy.bookingEyebrow}</span>
+                    <span className="price-main">{copy.bookingMain}</span>
                   </div>
-                  <ul className="room-booking-trust" aria-label="Rezervasyon güven notları">
-                    <li>Resmi HMS rezervasyon ekranı</li>
-                    <li>Kart bilgisi bu sitede saklanmaz</li>
-                    <li>WhatsApp destek açık kalır</li>
+                  <ul className="room-booking-trust" aria-label={copy.trustLabel}>
+                    {copy.trust.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
                   </ul>
                   <a
                     href={bookingHref}
@@ -144,7 +182,7 @@ export function RoomDetailClient({ slug }: { slug: string }) {
                     rel="noopener noreferrer"
                     data-event="booking_engine_open"
                   >
-                    EN İYİ FİYATLA YERİNİZİ AYIRIN
+                    {copy.cta}
                   </a>
                 </div>
               </div>
