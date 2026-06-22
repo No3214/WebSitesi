@@ -1,3 +1,4 @@
+import { sanitizeJsonLd } from "@/lib/security";
 import type { ReactNode } from "react";
 import type { Viewport } from "next";
 import { Suspense } from "react";
@@ -35,7 +36,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelSchema()) }}
+          dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(hotelSchema()) }}
         />
         <ErrorBoundary>
           <CSPostHogProvider>

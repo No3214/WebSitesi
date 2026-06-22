@@ -116,3 +116,16 @@ export async function verifyEs256Signature(
     return false;
   }
 }
+
+/**
+ * Sanitizes an object to safely embed it within a script tag as JSON-LD.
+ * Prevents XSS attacks by escaping `<` `>` and `&` characters.
+ * @param data The object to stringify
+ * @returns Sanitized JSON string
+ */
+export function sanitizeJsonLd(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+}
