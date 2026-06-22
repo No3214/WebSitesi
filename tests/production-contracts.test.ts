@@ -147,6 +147,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"admin:verify"');
     expect(readinessScript).toContain('"admin:verify:json"');
     expect(readinessScript).toContain('"admin:verify:strict"');
+    expect(readinessScript).toContain('"webhook:verify"');
+    expect(readinessScript).toContain('"webhook:verify:json"');
+    expect(readinessScript).toContain('"webhook:verify:strict"');
     expect(readinessScript).toContain('"abuse:verify"');
     expect(readinessScript).toContain('"abuse:verify:json"');
     expect(readinessScript).toContain('"abuse:verify:strict"');
@@ -233,6 +236,13 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["admin:verify:strict"]).toBe(
       "node scripts/admin-surface-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["webhook:verify"]).toBe("node scripts/webhook-surface-readiness.mjs");
+    expect(packageJson.scripts?.["webhook:verify:json"]).toBe(
+      "node scripts/webhook-surface-readiness.mjs --json",
+    );
+    expect(packageJson.scripts?.["webhook:verify:strict"]).toBe(
+      "node scripts/webhook-surface-readiness.mjs --strict",
+    );
     expect(packageJson.scripts?.["abuse:verify"]).toBe("node scripts/abuse-controls-readiness.mjs");
     expect(packageJson.scripts?.["abuse:verify:json"]).toBe(
       "node scripts/abuse-controls-readiness.mjs --json",
@@ -299,11 +309,14 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/clean-next-build.mjs"');
     expect(readinessScript).toContain('"src/app/api/health/route.ts"');
     expect(readinessScript).toContain('"src/lib/production-readiness.ts"');
+    expect(readinessScript).toContain('"src/lib/webhook-body-limit.ts"');
     expect(readinessScript).toContain('"tests/agentic-helper-safety.test.ts"');
     expect(readinessScript).toContain('"tests/abuse-controls-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/analytics-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/garanti-pos-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/admin-surface-readiness.test.ts"');
+    expect(readinessScript).toContain('"tests/webhook-body-limit.test.ts"');
+    expect(readinessScript).toContain('"tests/webhook-surface-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/search-local-seo-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"tests/production-readiness.test.ts"');
@@ -314,6 +327,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
     expect(readinessScript).toContain('"scripts/admin-surface-readiness.mjs"');
+    expect(readinessScript).toContain('"scripts/webhook-surface-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/abuse-controls-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/analytics-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/garanti-pos-readiness.mjs"');
@@ -352,6 +366,7 @@ describe("production readiness contracts", () => {
       "evidence:handoff:json",
       "media:hero:json",
       "admin:verify:json",
+      "webhook:verify:json",
       "abuse:verify:json",
       "analytics:verify:json",
       "search:verify:json",
@@ -374,6 +389,7 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("Commercial evidence redaction scan");
     expect(releaseScript).toContain("Commercial evidence handoff manifest");
     expect(releaseScript).toContain("Admin-only growth dashboard access diagnosis");
+    expect(releaseScript).toContain("Webhook signature, replay and body-limit diagnosis");
     expect(releaseScript).toContain("Production abuse-control readiness diagnosis");
     expect(releaseScript).toContain("Analytics purchase readiness diagnosis");
     expect(releaseScript).toContain("Search and local SEO readiness diagnosis");
@@ -395,6 +411,8 @@ describe("production readiness contracts", () => {
     expect(ciWorkflow).toContain("npm run media:hero:json");
     expect(ciWorkflow).toContain("Admin surface diagnosis");
     expect(ciWorkflow).toContain("npm run admin:verify:json");
+    expect(ciWorkflow).toContain("Webhook surface diagnosis");
+    expect(ciWorkflow).toContain("npm run webhook:verify:json");
     expect(ciWorkflow).toContain("Commercial readiness diagnostics");
     for (const diagnostic of [
       "abuse:verify:json",

@@ -6,6 +6,7 @@ import { getPayloadClient } from "@/lib/payload";
 import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
 import { safeText } from "@/lib/security";
+import { readLimitedWebhookBody } from "@/lib/webhook-body-limit";
 
 type IyzicoWebhookBody = {
   status?: string;
@@ -89,7 +90,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, duplicate: true }, { status: 200 });
   }
 
-  const bodyText = await req.text();
+  const bodyResult = await readLimitedWebhookBody(req);
+  if (!bodyResult.ok) return bodyResult.response;
+  const bodyText = bodyResult.bodyText;
 
   // 3. Iyzico webhooks use their own HMAC secret. Do not couple this provider
   // to HMS ES256 keys; enabling HMS signing must not break Iyzico callbacks.

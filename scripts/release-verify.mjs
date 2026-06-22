@@ -35,6 +35,10 @@ export const gates = [
     label: "Admin-only growth dashboard access diagnosis",
   },
   {
+    script: "webhook:verify:json",
+    label: "Webhook signature, replay and body-limit diagnosis",
+  },
+  {
     script: "abuse:verify:json",
     label: "Production abuse-control readiness diagnosis",
   },

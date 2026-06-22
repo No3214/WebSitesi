@@ -56,6 +56,9 @@ jobs:
       - name: Admin surface diagnosis
         run: npm run admin:verify:json
 
+      - name: Webhook surface diagnosis
+        run: npm run webhook:verify:json
+
       - name: Commercial readiness diagnostics
         run: |
           npm run abuse:verify:json

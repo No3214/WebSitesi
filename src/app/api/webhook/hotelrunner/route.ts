@@ -7,6 +7,7 @@ import { getPayloadClient } from "@/lib/payload";
 import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
 import { safeText, verifyEs256Signature } from "@/lib/security";
+import { readLimitedWebhookBody } from "@/lib/webhook-body-limit";
 
 type ReservationBody = {
   reservation?: {
@@ -97,7 +98,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, duplicate: true }, { status: 200 });
   }
 
-  const bodyText = await req.text();
+  const bodyResult = await readLimitedWebhookBody(req);
+  if (!bodyResult.ok) return bodyResult.response;
+  const bodyText = bodyResult.bodyText;
 
   // İmza doğrulama çatallaması:
   // - HMS_WEBHOOK_ES256_PUBLIC_KEY DOLU ise ECC (ES256) modu: ham bodyText'i
