@@ -8,24 +8,24 @@ const experiences = [
     no: "01",
     title: { tr: "Antakya & Ege Gastronomisi", en: "Antakya & Aegean Gastronomy" },
     text: {
-      tr: "İnci Hanım'ın özel reçeteleri, sac kavurma ve 180 yıllık taş dibekte dövülen taze kahve.",
-      en: "İnci Hanım's special recipes, sac kavurma, and fresh coffee ground in a 180-year-old stone dibek.",
+      tr: "İnci Hanım'ın aile reçeteleri, Ege ürünleri ve taş dibekte hazırlanan kahve ritüeli.",
+      en: "İnci Hanım's family recipes, Aegean produce and the coffee ritual prepared in a stone dibek.",
     },
   },
   {
     no: "02",
-    title: { tr: "Transfer & Varış Planlama", en: "Transfer & Arrival Planning" },
+    title: { tr: "Varış & Konaklama Planlama", en: "Arrival & Stay Planning" },
     text: {
-      tr: "İzmir Havalimanı transferi, varış saati ve oda tercihlerinizi misafir ilişkileri ekibimizle planlayın.",
-      en: "Coordinate airport transfer, arrival time and room preferences with our guest relations team.",
+      tr: "Varış saatinizi, oda tercihlerinizi ve özel ihtiyaçlarınızı misafir ilişkileri ekibimizle paylaşın.",
+      en: "Share your arrival time, room preferences and special requirements with our guest relations team.",
     },
   },
   {
     no: "03",
-    title: { tr: "Küratörlü Foça Kaçamağı", en: "Curated Foça Escape" },
+    title: { tr: "Foça Rotası", en: "Foça Route" },
     text: {
-      tr: "Tekne turu, köy rotası ve gastronomi deneyimi tek pakette.",
-      en: "Boat tour, village route, and gastronomy experience in one package.",
+      tr: "Köy rotaları, sahil önerileri ve gastronomi durakları için ekibimizden güncel öneriler alın.",
+      en: "Ask our team for current recommendations on village routes, coastal stops and local gastronomy.",
     },
   },
 ];
@@ -37,19 +37,21 @@ export function ExperiencesSection({ locale }: { locale: "tr" | "en" }) {
         <FadeIn>
           <SectionTitle
             eyebrow={locale === "tr" ? "MİSAFİR DENEYİMİ" : "GUEST EXPERIENCE"}
-            title={locale === "tr" ? "Premium Deneyim Paketleri" : "Premium Experience Packages"}
+            title={locale === "tr" ? "Konağın Deneyimleri" : "Experiences at the Mansion"}
             text={
               locale === "tr"
-                ? "Sadece konaklama değil; ömür boyu hatırlanacak anılar biriktirmeniz için tasarlanmış özel servisler."
-                : "Not just a stay; specially designed services for you to collect memories that last a lifetime."
+                ? "Konaklama, gastronomi ve Foça keşfini kendi seyahat ritminize göre planlayın."
+                : "Plan your stay, gastronomy and exploration of Foça around your own travel rhythm."
             }
           />
         </FadeIn>
         <div className="feature-grid">
-          {experiences.map((item, idx) => (
-            <FadeIn key={idx} delay={idx * 0.12}>
+          {experiences.map((item, index) => (
+            <FadeIn key={item.no} delay={index * 0.12}>
               <div className="feature-box">
-                <span className="feature-no" aria-hidden>{item.no}</span>
+                <span className="feature-no" aria-hidden>
+                  {item.no}
+                </span>
                 <h3>{item.title[locale]}</h3>
                 <p>{item.text[locale]}</p>
               </div>
