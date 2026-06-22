@@ -9,7 +9,7 @@ describe("URL utilities", () => {
   });
 
   it("keeps siteUrl available as the canonical public origin", () => {
-    expect(siteUrl).toMatch(/^https:\/\/.+/);
+    expect(siteUrl).toBe("https://www.kozbeylikonagi.com");
     expect(siteUrl).not.toMatch(/\/$/);
   });
 

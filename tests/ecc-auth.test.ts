@@ -26,9 +26,9 @@ describe("ECC auth helpers", () => {
     expect(verifyEccSignature({ payload, signature, publicKeyPem })).toBe(true);
   });
 
-  it("rejects tampered payloads and malformed keys without throwing", () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
-    const payload = "booking-payload";
+  it("rejects tampered payloads and malformed keys without leaking payload or key material", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const payload = "booking-payload-guest-secret-token";
     const { publicKeyPem, signature } = createSignedPayload(payload);
 
     expect(
@@ -45,10 +45,18 @@ describe("ECC auth helpers", () => {
         publicKeyPem: "not-a-pem",
       }),
     ).toBe(false);
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "[ECC Auth] Signature verification failed:",
-      expect.any(Error),
-    );
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    const logLine = warnSpy.mock.calls[0][0];
+    expect(JSON.parse(logLine)).toMatchObject({
+      level: "warn",
+      event: "ecc_auth.signature_verification_failed",
+      reason: expect.any(String),
+    });
+    expect(logLine).not.toContain(payload);
+    expect(logLine).not.toContain(signature);
+    expect(logLine).not.toContain("not-a-pem");
+    expect(logLine).not.toContain(publicKeyPem.split("\n")[1]);
   });
 
   it("extracts a request payload from a clone so downstream code can still read the body", async () => {

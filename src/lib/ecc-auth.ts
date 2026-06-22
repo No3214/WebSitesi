@@ -1,5 +1,7 @@
 import crypto from 'node:crypto';
 
+import { logEvent } from "@/lib/logger";
+
 export interface VerifySignatureParams {
   payload: string;
   signature: string; // Base64 encoded signature
@@ -24,7 +26,9 @@ export function verifyEccSignature({ payload, signature, publicKeyPem }: VerifyS
       Buffer.from(signature, 'base64')
     );
   } catch (error) {
-    console.error('[ECC Auth] Signature verification failed:', error);
+    logEvent("warn", "ecc_auth.signature_verification_failed", {
+      reason: error instanceof Error ? error.name : "UnknownError",
+    });
     return false;
   }
 }
