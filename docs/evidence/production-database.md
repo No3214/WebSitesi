@@ -11,6 +11,14 @@ Kozbeyli Konağı uses Payload CMS with `@payloadcms/db-postgres`; production
 runtime therefore requires a managed Postgres database through `DATABASE_URI`
 and a strong `PAYLOAD_SECRET`.
 
+Latest verification on 2026-06-22: Vercel production contains the environment
+variable names `DATABASE_URI` and `PAYLOAD_SECRET`, but a redacted
+`vercel env pull --environment=production` check returned both values as empty.
+This is not acceptable for production Payload persistence, so the gate remains
+blocked until the real Supabase or managed Postgres connection string and
+Payload secret are set in Vercel Production and verified without exposing
+secrets.
+
 Supabase can be used for this gate when the project Postgres pooler connection
 string is stored only in Vercel production environment variables. The Supabase
 MCP server is optional developer tooling and is not a production dependency.
