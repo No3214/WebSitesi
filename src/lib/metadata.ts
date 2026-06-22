@@ -17,28 +17,26 @@ const verification = {
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {
-    default: "Kozbeyli Konağı | Taş Butik Otel & Restoran | Foça",
+    default: "Kozbeyli Konağı | Tarihi Taş Butik Otel & Restoran | Foça",
     template: "%s | Kozbeyli Konağı",
   },
   description:
-    "Foça Kozbeyli’de beş asırlık köy dokusu içinde 19. yüzyıl tescilli taş konak, butik konaklama ve gurme restoran deneyimi.",
+    "Foça Kozbeyli'de 19. yüzyıl tescilli taş konakta butik konaklama, Ege ve Antakya mutfağı ile özel davet deneyimi.",
   keywords: [
     "kozbeyli konağı",
     "foça butik otel",
-    "izmir butik oteller",
+    "izmir butik otel",
     "tarihi taş butik otel",
     "tarihi taş konak",
     "kozbeyli kahvaltı",
     "kozbeyli köyü serpme kahvaltı",
     "kozbeyli dibek kahvesi",
-    "yetişkin oteli foça",
     "taş ev konaklama izmir",
-    "ege mutfağı gurme restoran",
+    "ege mutfağı restoran",
     "antakya mutfağı izmir",
-    "evcil hayvan dostu taş otel",
-    "horasan harçlı mimari otel",
+    "kozbeyli düğün mekanı",
   ],
-  authors: [{ name: "Kozbeyli Konağı Team" }],
+  authors: [{ name: "Kozbeyli Konağı" }],
   creator: "Kozbeyli Konağı",
   publisher: "Kozbeyli Konağı",
   formatDetection: {
@@ -49,7 +47,6 @@ export const defaultMetadata: Metadata = {
   verification,
   alternates: {
     canonical: "/",
-    // hreflang: TR kök, EN /en (T16)
     languages: {
       tr: "/",
       en: "/en",
@@ -61,9 +58,9 @@ export const defaultMetadata: Metadata = {
     locale: "tr_TR",
     url: absoluteUrl("/"),
     siteName: "Kozbeyli Konağı",
-    title: "Kozbeyli Konağı | Lüks Taş Butik Otel & Gurme Restoran | Foça",
+    title: "Kozbeyli Konağı | Tarihi Taş Butik Otel & Restoran | Foça",
     description:
-      "Tarihin kalbinde, lüks ve konforun buluşma noktası. Taş mimari odalar, ödüllü mutfak ve Ege'nin en huzurlu köyü Kozbeyli'de sizi bekliyoruz.",
+      "Kozbeyli Köyü'nde 19. yüzyıl tescilli taş konakta butik konaklama, Ege ve Antakya mutfağı ile özel davetler.",
     images: [
       {
         url: absoluteUrl("/images/hero.jpg"),
@@ -73,10 +70,8 @@ export const defaultMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@kozbeylikonagi",
-    creator: "@kozbeylikonagi",
-    title: "Kozbeyli Konağı | Foça'nın En Prestijli Butik Oteli",
-    description: "Taş mimari, gurme lezzetler ve eşsiz bir Ege köyü hikayesi.",
+    title: "Kozbeyli Konağı | Tarihi Taş Butik Otel & Restoran | Foça",
+    description: "Kozbeyli'de taş konaklama, yerel gastronomi ve özel davet deneyimi.",
     images: [absoluteUrl("/images/hero.jpg")],
   },
   category: "travel",
