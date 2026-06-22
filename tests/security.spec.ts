@@ -120,6 +120,19 @@ test.describe("Security Audit Test", () => {
     expect(response.status()).toBe(401);
   });
 
+  test("webhook endpoints should not expose active status over GET", async ({ request, baseURL }) => {
+    const url = baseURL || "http://localhost:3006";
+    for (const path of ["/api/webhook/hotelrunner", "/api/webhook/iyzico"]) {
+      const response = await request.get(`${url}${path}`);
+      const body = await response.text();
+
+      expect([404, 405]).toContain(response.status());
+      expect(response.headers()["cache-control"] || "").toContain("no-store");
+      expect(body).not.toContain("active");
+      expect(body).not.toContain("iyzico");
+    }
+  });
+
   test("hotelrunner webhook should accept valid signature", async ({ request, baseURL }) => {
     const url = baseURL || "http://localhost:3006";
     test.skip(true, "PostgreSQL database not running in this environment");

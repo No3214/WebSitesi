@@ -565,6 +565,8 @@ describe("production readiness contracts", () => {
     expect(ga4Server).toContain("https://www.google-analytics.com/mp/collect");
     expect(hotelrunnerWebhook).toContain("sendGa4Purchase");
     expect(hotelrunnerWebhook).toContain("if (!isCancelled)");
+    expect(hotelrunnerWebhook).toContain("return notFound();");
+    expect(hotelrunnerWebhook).not.toContain('status: "active"');
     expect(publicEnv).not.toContain("GA4_API_SECRET");
   });
 
@@ -927,6 +929,8 @@ describe("production readiness contracts", () => {
     const iyzicoRoute = read("src/app/api/webhook/iyzico/route.ts");
 
     expect(iyzicoRoute).toContain("createDigest(bodyText)");
+    expect(iyzicoRoute).toContain("return notFound();");
+    expect(iyzicoRoute).not.toContain('status: "active"');
     expect(iyzicoRoute).not.toContain("HMS_WEBHOOK_ES256_PUBLIC_KEY");
     expect(iyzicoRoute).not.toContain("verifyEs256Signature");
   });

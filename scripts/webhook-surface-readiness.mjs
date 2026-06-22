@@ -17,6 +17,10 @@ const providerContracts = [
     id: "hotelrunner",
     path: files.hotelrunner,
     requiredSignals: [
+      "function notFound()",
+      "export function GET()",
+      "return notFound();",
+      "status: 404",
       "readLimitedWebhookBody",
       "if (!bodyResult.ok) return bodyResult.response;",
       "const bodyText = bodyResult.bodyText;",
@@ -30,6 +34,7 @@ const providerContracts = [
       "x-message-delivery",
     ],
     forbiddenSignals: [
+      'status: "active"',
       "const bodyText = await req.text();",
       "timingSafeEqual(Buffer.from(a), Buffer.from(b))",
     ],
@@ -38,6 +43,10 @@ const providerContracts = [
     id: "iyzico",
     path: files.iyzico,
     requiredSignals: [
+      "function notFound()",
+      "export function GET()",
+      "return notFound();",
+      "status: 404",
       "readLimitedWebhookBody",
       "if (!bodyResult.ok) return bodyResult.response;",
       "const bodyText = bodyResult.bodyText;",
@@ -50,6 +59,7 @@ const providerContracts = [
       "x-message-delivery",
     ],
     forbiddenSignals: [
+      'status: "active"',
       "const bodyText = await req.text();",
       "HMS_WEBHOOK_ES256_PUBLIC_KEY",
       "timingSafeEqual(Buffer.from(a), Buffer.from(b))",

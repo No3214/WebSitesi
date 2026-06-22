@@ -51,8 +51,15 @@ async function writeAuditLog(data: Record<string, unknown>) {
   });
 }
 
-export async function GET() {
-  return NextResponse.json({ status: "active", provider: "iyzico" });
+function notFound() {
+  return NextResponse.json(
+    { error: "Not found" },
+    { status: 404, headers: { "Cache-Control": "no-store, max-age=0" } },
+  );
+}
+
+export function GET() {
+  return notFound();
 }
 
 export async function POST(req: Request) {

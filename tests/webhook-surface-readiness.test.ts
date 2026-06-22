@@ -100,4 +100,19 @@ describe("webhook surface readiness", () => {
     expect(result.decision).toBe("WEBHOOK SURFACE BLOCKED");
     expect(result.blockers.join("\n")).toContain("64 KB webhook payload ceiling");
   });
+
+  it("blocks public active-status GET probes on webhook routes", async () => {
+    const webhookSurface = await loadWebhookSurfaceModule();
+    const dir = copyRequiredProjectFiles();
+    const iyzico = readTmp(dir, "src/app/api/webhook/iyzico/route.ts")
+      .replace("return notFound();", 'return NextResponse.json({ status: "active", provider: "iyzico" });')
+      .replace("status: 404", "status: 200");
+    writeTmp(dir, "src/app/api/webhook/iyzico/route.ts", iyzico);
+
+    const result = webhookSurface.evaluateWebhookSurfaceReadiness({ baseDir: dir });
+
+    expect(result.decision).toBe("WEBHOOK SURFACE BLOCKED");
+    expect(result.blockers.join("\n")).toContain('status: "active"');
+    expect(result.blockers.join("\n")).toContain("return notFound();");
+  });
 });
