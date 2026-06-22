@@ -116,3 +116,11 @@ export async function verifyEs256Signature(
     return false;
   }
 }
+
+/**
+ * Sanitizes JSON-LD data for safe injection into a script tag.
+ * Replaces < and > with their unicode escapes to prevent XSS.
+ */
+export function sanitizeJsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+}

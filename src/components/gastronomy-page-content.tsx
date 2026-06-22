@@ -3,6 +3,7 @@
 import { SiteHeader } from "@/components/site-header";
 import { StoryHero, StorySegment } from "@/components/storytelling";
 import { absoluteUrl } from "@/lib/utils";
+import { sanitizeJsonLd } from "@/lib/security";
 
 type Locale = "tr" | "en";
 
@@ -97,7 +98,7 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
     <main className="min-h-screen gastronomy-story-page" style={{ background: "var(--ivory)" }}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(restaurantJsonLd) }}
       />
       <SiteHeader variant="solid" />
 

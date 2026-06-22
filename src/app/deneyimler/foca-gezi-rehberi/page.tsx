@@ -5,6 +5,7 @@ import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
 import { absoluteUrl } from "@/lib/utils";
+import { sanitizeJsonLd } from "@/lib/security";
 
 export const metadata: Metadata = {
   title: "Foça Gezi Rehberi",
@@ -102,7 +103,7 @@ export default function FocaTravelGuidePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(breadcrumbJsonLd) }}
       />
       <SiteHeader />
       <main>

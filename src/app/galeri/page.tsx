@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
 import { galleryExtended } from "@/data/gallery";
 import { absoluteUrl } from "@/lib/utils";
+import { sanitizeJsonLd } from "@/lib/security";
 
 export const metadata: Metadata = {
   title: "Galeri | Taş, Işık ve Sofra Kareleri",
@@ -33,7 +34,7 @@ export default function GalleryPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGalleryJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(imageGalleryJsonLd) }}
       />
       <SiteHeader />
       <main>
