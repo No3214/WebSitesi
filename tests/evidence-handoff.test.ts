@@ -28,7 +28,13 @@ type CommercialLaunchModule = {
       awardedPoints: number;
       label: string;
       missingEnv: string[];
-      missingEvidence: Array<{ path: string; ready: boolean; reason: string }>;
+      missingEvidence: Array<{
+        path: string;
+        ready: boolean;
+        reason: string;
+        redactionFindingCount?: number;
+        redactionCategories?: string[];
+      }>;
     }>;
   };
 };
@@ -71,6 +77,10 @@ type EvidenceHandoffModule = {
       timing: string;
       missingEnv: string[];
       commands: string[];
+      redactionFindingCount: number;
+      redactionCategories: string[];
+      redactionSummary: string;
+      redactionAction: string;
       requiredSections: string[];
       sourceRefsPolicy: string;
     }>;
@@ -241,6 +251,51 @@ describe("evidence handoff", () => {
     expect(result.files).toEqual([]);
     expect(result.finalVerificationCommands).toContain("npm run release:verify");
     expect(result.finalVerificationCommands).toContain("npm run release:verify:commercial");
+  });
+
+  it("carries redaction findings into the safe operator handoff", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const handoff = await loadHandoffModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const garantiPath = path.join(baseDir, "docs/evidence/garanti-pos.md");
+    fs.writeFileSync(
+      garantiPath,
+      [
+        fs.readFileSync(garantiPath, "utf8"),
+        `masked regression fixture: 4242 ${"4242"} 4242 4242`,
+      ].join("\n"),
+    );
+
+    const launchResult = audit.evaluateCommercialLaunch({ env, baseDir });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const result = handoff.buildEvidenceHandoff({ launchResult, cutoverPlan });
+    const garanti = result.files.find((file) => file.path === "docs/evidence/garanti-pos.md");
+    const formatted = handoff.formatEvidenceHandoff(result);
+
+    expect(result.decision).toBe("EVIDENCE_HANDOFF_ACTION_REQUIRED");
+    expect(garanti).toMatchObject({
+      gateId: "garanti_pos",
+      reason: "redaction findings",
+      redactionFindingCount: 1,
+      redactionCategories: ["payment_card"],
+      redactionSummary: "redaction categories: payment_card; count: 1",
+    });
+    expect(garanti?.redactionAction).toContain("npm run evidence:scan");
+    expect(garanti?.redactionAction).toContain("npm run launch:audit");
+    expect(formatted).toContain("redaction: redaction categories: payment_card; count: 1");
+    expect(formatted).toContain("redaction action:");
+    expect(JSON.stringify(result)).not.toContain("4242");
+    expect(formatted).not.toContain("4242");
   });
 
   it("formats a readable handoff for non-technical owners", async () => {

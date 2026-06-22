@@ -215,19 +215,58 @@ function unique(values) {
   return [...new Set(values.filter(Boolean))];
 }
 
+function redactionSummary(evidence) {
+  return evidence.redactionCategories?.length > 0
+    ? `redaction categories: ${evidence.redactionCategories.join(", ")}; count: ${evidence.redactionFindingCount || 0}`
+    : "";
+}
+
+function redactionAction(evidence) {
+  return evidence.redactionCategories?.length > 0
+    ? "Remove or redact evidence categories in the source system, then rerun npm run evidence:scan and npm run launch:audit before marking evidence ready."
+    : "";
+}
+
+function normalizeMissingEvidence(evidenceItems = []) {
+  return evidenceItems.map((evidence) => ({
+    ...evidence,
+    redactionFindingCount: evidence.redactionFindingCount || 0,
+    redactionCategories: [...(evidence.redactionCategories || [])],
+    redactionSummary: redactionSummary(evidence),
+    redactionAction: redactionAction(evidence),
+  }));
+}
+
+function formatEvidenceIssue(item) {
+  const summary = item.redactionSummary ? `; ${item.redactionSummary}` : "";
+
+  return `${item.path} (${item.reason}${summary})`;
+}
+
 function hasEnvIssue(gate, envKey) {
   return gate.missingEnv.some((item) => item.startsWith(envKey));
 }
 
 function resolveGateChecklist(gate, catalog) {
-  if (gate.id !== "hms_booking_engine") return catalog.actions;
+  const redactionCategories = unique(
+    (gate.missingEvidence || []).flatMap((evidence) => evidence.redactionCategories || []),
+  );
+  const redactionChecklist =
+    redactionCategories.length > 0
+      ? [
+          `Remove or redact evidence categories (${redactionCategories.join(", ")}) in the source system, then rerun npm run evidence:scan and npm run launch:audit before marking evidence ready.`,
+        ]
+      : [];
+
+  if (gate.id !== "hms_booking_engine") return [...redactionChecklist, ...catalog.actions];
 
   if (!hasEnvIssue(gate, "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL")) {
-    return catalog.actions;
+    return [...redactionChecklist, ...catalog.actions];
   }
 
   return [
     "Fix NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL in Vercel production so it is the approved HTTPS HMS URL, or remove the bad override to use the official code fallback.",
+    ...redactionChecklist,
     ...catalog.actions,
   ];
 }
@@ -275,7 +314,7 @@ function buildGateStep(gate) {
       fallbackApplied: Boolean(gate.fallbackApplied),
     },
     missingEnv: gate.missingEnv,
-    missingEvidence: gate.missingEvidence,
+    missingEvidence: normalizeMissingEvidence(gate.missingEvidence),
     diagnostics: catalog.diagnostics || [],
     checklist: resolveGateChecklist(gate, catalog),
     commands: resolveGateCommands(gate, catalog),
@@ -359,7 +398,7 @@ export function formatProductionCutoverPlan(plan) {
       if (step.missingEvidence.length > 0) {
         lines.push(
           `  missing evidence: ${step.missingEvidence
-            .map((item) => `${item.path} (${item.reason})`)
+            .map(formatEvidenceIssue)
             .join(", ")}`,
         );
       }

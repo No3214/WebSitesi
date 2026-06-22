@@ -25,6 +25,18 @@ function indexSteps(plan) {
   return new Map((plan.gateSteps || []).map((step) => [step.id, step]));
 }
 
+function redactionSummary(evidence) {
+  return evidence.redactionCategories?.length > 0
+    ? `redaction categories: ${evidence.redactionCategories.join(", ")}; count: ${evidence.redactionFindingCount || 0}`
+    : "";
+}
+
+function redactionAction(evidence) {
+  return evidence.redactionCategories?.length > 0
+    ? "Remove or redact the listed evidence categories in the source system, then rerun npm run evidence:scan and npm run launch:audit."
+    : "";
+}
+
 export function buildEvidenceHandoff({
   launchResult = evaluateCommercialLaunch(),
   cutoverPlan = buildProductionCutoverPlan({ launchResult }),
@@ -44,6 +56,10 @@ export function buildEvidenceHandoff({
       missingEnv: [...(gate.missingEnv || [])],
       commands: [...(step?.commands || ["npm run launch:audit"])],
       kpiAndReviewLoop: step?.kpiAndReviewLoop || "Gate passes in npm run launch:audit.",
+      redactionFindingCount: evidence.redactionFindingCount || 0,
+      redactionCategories: [...(evidence.redactionCategories || [])],
+      redactionSummary: redactionSummary(evidence),
+      redactionAction: redactionAction(evidence),
       requiredSections: [...requiredEvidenceSections],
       sourceRefsPolicy:
         "source_refs must contain redacted operational IDs or dashboard references, never raw credentials, database URLs, access tokens, contracts, card data or customer PII.",
@@ -90,6 +106,8 @@ export function formatEvidenceHandoff(result) {
       lines.push(`${file.path} (${file.gateId}, +${file.pointsBlocked} pts blocked)`);
       lines.push(`  gate: ${file.gateLabel}`);
       lines.push(`  reason: ${file.reason}`);
+      if (file.redactionSummary) lines.push(`  redaction: ${file.redactionSummary}`);
+      if (file.redactionAction) lines.push(`  redaction action: ${file.redactionAction}`);
       lines.push(`  owner: ${file.owner}`);
       lines.push(`  timing: ${file.timing}`);
       if (file.missingEnv.length > 0) lines.push(`  missing env names: ${file.missingEnv.join(", ")}`);

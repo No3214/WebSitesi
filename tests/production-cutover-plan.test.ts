@@ -30,7 +30,13 @@ type CommercialLaunchModule = {
       env: string[];
       evidence: string[];
       missingEnv: string[];
-      missingEvidence: Array<{ path: string; ready: boolean; reason: string }>;
+      missingEvidence: Array<{
+        path: string;
+        ready: boolean;
+        reason: string;
+        redactionFindingCount?: number;
+        redactionCategories?: string[];
+      }>;
     }>;
   };
 };
@@ -64,6 +70,15 @@ type CutoverModule = {
         placeholderCount: number;
         fallbackApplied: boolean;
       };
+      missingEvidence: Array<{
+        path: string;
+        ready: boolean;
+        reason: string;
+        redactionFindingCount: number;
+        redactionCategories: string[];
+        redactionSummary: string;
+        redactionAction: string;
+      }>;
       commands: string[];
       checklist: string[];
       dnsTargetNote: string;
@@ -408,5 +423,56 @@ describe("production cutover plan", () => {
     expect(plan.finalVerificationCommands).toContain("npm run launch:audit:strict");
     expect(plan.finalVerificationCommands).toContain("npm run release:verify");
     expect(plan.finalVerificationCommands).toContain("npm run release:verify:commercial");
+  });
+
+  it("carries evidence redaction blockers into the cutover checklist without leaking values", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const garantiPath = path.join(baseDir, "docs/evidence/garanti-pos.md");
+    fs.writeFileSync(
+      garantiPath,
+      [
+        fs.readFileSync(garantiPath, "utf8"),
+        `masked regression fixture: 4242 ${"4242"} 4242 4242`,
+      ].join("\n"),
+    );
+
+    const launchResult = audit.evaluateCommercialLaunch({ env, baseDir });
+    const plan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const garanti = plan.gateSteps.find((step) => step.id === "garanti_pos");
+    const formatted = cutover.formatProductionCutoverPlan(plan);
+
+    expect(plan.decision).toBe("CUTOVER_ACTION_REQUIRED");
+    expect(plan.nextGateOrder).toEqual(["garanti_pos"]);
+    expect(garanti?.missingEvidence).toEqual([
+      expect.objectContaining({
+        path: "docs/evidence/garanti-pos.md",
+        ready: false,
+        reason: "redaction findings",
+        redactionFindingCount: 1,
+        redactionCategories: ["payment_card"],
+        redactionSummary: "redaction categories: payment_card; count: 1",
+      }),
+    ]);
+    expect(garanti?.missingEvidence[0]?.redactionAction).toContain("npm run evidence:scan");
+    expect(garanti?.missingEvidence[0]?.redactionAction).toContain("npm run launch:audit");
+    expect(garanti?.checklist).toContain(
+      "Remove or redact evidence categories (payment_card) in the source system, then rerun npm run evidence:scan and npm run launch:audit before marking evidence ready.",
+    );
+    expect(formatted).toContain(
+      "missing evidence: docs/evidence/garanti-pos.md (redaction findings; redaction categories: payment_card; count: 1)",
+    );
+    expect(JSON.stringify(plan)).not.toContain("4242");
+    expect(formatted).not.toContain("4242");
   });
 });
