@@ -34,7 +34,8 @@ export function GalleryStrip({ locale }: { locale: "tr" | "en" }) {
                   fill
                   sizes="(max-width: 640px) 70vw, 400px"
                   className="object-cover"
-                  loading="lazy"
+                  loading={i < 3 ? "eager" : "lazy"}
+                  unoptimized
                 />
                 <figcaption>{shot.caption[locale]}</figcaption>
               </figure>

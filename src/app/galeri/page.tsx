@@ -53,9 +53,9 @@ export default function GalleryPage() {
                       src={shot.src}
                       alt={shot.caption.tr}
                       className="object-cover"
-                      loading={i === 0 ? "eager" : "lazy"}
+                      loading="eager"
                       decoding="async"
-                      fetchPriority={i === 0 ? "high" : "auto"}
+                      fetchPriority={i < 4 ? "high" : "auto"}
                     />
                     <figcaption>{shot.caption.tr}</figcaption>
                   </figure>

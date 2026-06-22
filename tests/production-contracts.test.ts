@@ -1329,14 +1329,15 @@ describe("production readiness contracts", () => {
     expect(globals).not.toContain(".editorial.reverse {\n    direction: rtl;");
   });
 
-  it("keeps the full gallery from blocking first load on image optimizer work", () => {
+  it("keeps the full gallery from blocking visible image decode on optimizer or lazy-load work", () => {
     const galleryPage = read("src/app/galeri/page.tsx");
     const globals = read("src/app/globals.css");
 
     expect(galleryPage).not.toContain('from "next/image"');
     expect(galleryPage).toContain("<img");
-    expect(galleryPage).toContain('loading={i === 0 ? "eager" : "lazy"}');
+    expect(galleryPage).toContain('loading="eager"');
     expect(galleryPage).toContain('decoding="async"');
+    expect(galleryPage).toContain('fetchPriority={i < 4 ? "high" : "auto"}');
     expect(globals).toContain(".gallery-grid-item img {\n    width: 100%;\n    height: 100%;\n    display: block;");
   });
 
