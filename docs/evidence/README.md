@@ -5,6 +5,9 @@ This folder is the evidence inbox for the 100/100 commercial go-live gate.
 Do not add secrets, card data, customer PII, private contracts, or raw payment
 credentials. Store redacted screenshots, ticket IDs, approval notes, test
 summaries, and links to the source systems.
+Guest email addresses and phone numbers must stay in the source systems; only
+redacted guest/contact references belong in these evidence files. Public
+Kozbeyli Konağı contact channels are allowlisted for context.
 
 `npm run launch:audit` checks these files together with the relevant production
 environment variables. `npm run launch:audit:json` returns the same result as

@@ -124,6 +124,28 @@ describe("evidence redaction scan", () => {
     expect(JSON.stringify(findings)).not.toContain("10000000146");
   });
 
+  it("flags guest contact details while allowing public hotel email domains", async () => {
+    const scanner = await loadScanner();
+    const guestEmail = `guest.${"person"}@example.org`;
+    const guestPhone = `+90 532 ${"123"} 45 67`;
+    const findings = scanner.scanEvidenceSource(
+      [
+        "source_refs: OPS-1234",
+        "Public contact: info@kozbeylikonagi.com",
+        "Public legacy contact: info@kozbeylikonagi.com.tr",
+        "Public phone: +90 532 234 26 86",
+        "Public landline: +90 232 826 11 12",
+        `Guest email: ${guestEmail}`,
+        `Guest phone: ${guestPhone}`,
+      ].join("\n"),
+      "docs/evidence/contact-leak.md",
+    );
+
+    expect(findings.map((finding) => finding.category)).toEqual(["guest_email", "guest_phone"]);
+    expect(JSON.stringify(findings)).not.toContain("example.org");
+    expect(JSON.stringify(findings)).not.toContain("532");
+  });
+
   it("scans evidence docs relative to the provided base directory", async () => {
     const scanner = await loadScanner();
     const baseDir = makeTmpDir();

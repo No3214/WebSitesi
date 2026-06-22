@@ -5,6 +5,8 @@ import { pathToFileURL } from "node:url";
 const root = process.cwd();
 const evidenceDir = "docs/evidence";
 const placeholderPattern = /^(|<.*>|replace_with.*|changeme|change-me|dummy|example|todo|tbd|test|test_only|redacted|\[redacted\])$/i;
+const allowedPublicEmailDomains = new Set(["kozbeylikonagi.com", "kozbeylikonagi.com.tr"]);
+const allowedPublicPhoneNumbers = new Set(["902328261112", "905322342686"]);
 
 const tokenPatterns = [
   {
@@ -99,6 +101,22 @@ function hasMeaningfulSecretAssignment(line) {
   return !placeholderPattern.test(value);
 }
 
+function allowedPublicEmail(value) {
+  const domain = value.split("@").pop()?.toLowerCase();
+  return Boolean(domain && allowedPublicEmailDomains.has(domain));
+}
+
+function normalizePhone(value) {
+  const digits = value.replace(/\D/g, "");
+  if (digits.length === 10) return `90${digits}`;
+  if (digits.length === 11 && digits.startsWith("0")) return `9${digits}`;
+  return digits;
+}
+
+function allowedPublicPhone(value) {
+  return allowedPublicPhoneNumbers.has(normalizePhone(value));
+}
+
 export function scanEvidenceSource(source, file = "inline.md") {
   const findings = [];
 
@@ -133,6 +151,22 @@ export function scanEvidenceSource(source, file = "inline.md") {
     if (validTurkishIdentityNumber(match[0])) {
       findings.push(
         finding(file, source, match.index ?? 0, "turkish_identity_number", "TCKN values must be redacted from launch evidence."),
+      );
+    }
+  }
+
+  for (const match of source.matchAll(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi)) {
+    if (!allowedPublicEmail(match[0])) {
+      findings.push(
+        finding(file, source, match.index ?? 0, "guest_email", "Guest or non-public email addresses must be redacted from launch evidence."),
+      );
+    }
+  }
+
+  for (const match of source.matchAll(/\b(?:\+?90[\s.-]*)?(?:0[\s.-]*)?(?:[235]\d{2}[\s.-]*)\d{3}[\s.-]?\d{2}[\s.-]?\d{2}\b/g)) {
+    if (!allowedPublicPhone(match[0])) {
+      findings.push(
+        finding(file, source, match.index ?? 0, "guest_phone", "Guest or non-public phone numbers must be redacted from launch evidence."),
       );
     }
   }
