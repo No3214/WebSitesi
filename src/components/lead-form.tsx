@@ -152,8 +152,7 @@ export function LeadForm({ locale = "tr" }: { locale?: LeadFormLocale }) {
           }
         }
       }
-    } catch (err) {
-      console.error('Lead submission failed:', err);
+    } catch {
       setStatus('error');
     }
   };

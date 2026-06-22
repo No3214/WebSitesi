@@ -1653,6 +1653,16 @@ describe("production readiness contracts", () => {
     expect(leadRoute).not.toContain("errField(error)");
   });
 
+  it("keeps the client lead form from dumping submission errors to the browser console", () => {
+    const leadForm = read("src/components/lead-form.tsx");
+
+    expect(leadForm).toContain("} catch {");
+    expect(leadForm).toContain("setStatus('error');");
+    expect(leadForm).not.toContain("Lead submission failed");
+    expect(leadForm).not.toContain("console.error");
+    expect(leadForm).not.toContain("console.warn");
+  });
+
   it("publishes a dedicated location route with schema, hreflang and inventory coverage", () => {
     const trLocation = read("src/app/lokasyon/page.tsx");
     const enLocation = read("src/app/en/lokasyon/page.tsx");
