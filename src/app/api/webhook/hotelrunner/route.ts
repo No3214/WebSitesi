@@ -7,6 +7,7 @@ import { getPayloadClient } from "@/lib/payload";
 import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
 import { safeText, verifyEs256Signature } from "@/lib/security";
+import { invalidWebhookPayloadSnapshot, redactWebhookPayload } from "@/lib/webhook-audit";
 import { readLimitedWebhookBody } from "@/lib/webhook-body-limit";
 
 type ReservationBody = {
@@ -140,7 +141,7 @@ export async function POST(req: Request) {
       status: "rejected",
       signatureValid: true,
       errorMessage: "Invalid JSON",
-      payloadJson: { raw: bodyText },
+      payloadJson: invalidWebhookPayloadSnapshot(bodyText),
       receivedAt,
     });
 
@@ -155,7 +156,7 @@ export async function POST(req: Request) {
       status: "rejected",
       signatureValid: true,
       errorMessage: "Unsupported payload structure",
-      payloadJson: body,
+      payloadJson: redactWebhookPayload(body),
       receivedAt,
     });
 
@@ -185,7 +186,10 @@ export async function POST(req: Request) {
       reservationId,
       status: "processed",
       signatureValid: true,
-      payloadJson: { ...body, note: "Duplicate reservation ID detected" },
+      payloadJson: {
+        ...(redactWebhookPayload(body) as Record<string, unknown>),
+        auditNote: "Duplicate reservation ID detected",
+      },
       receivedAt,
     });
     return NextResponse.json({ ok: true, duplicate: true });
@@ -225,7 +229,7 @@ export async function POST(req: Request) {
     reservationId,
     status: "processed",
     signatureValid: true,
-    payloadJson: body,
+    payloadJson: redactWebhookPayload(body),
     receivedAt,
   });
 

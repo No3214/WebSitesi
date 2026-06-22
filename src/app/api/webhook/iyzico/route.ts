@@ -6,6 +6,7 @@ import { getPayloadClient } from "@/lib/payload";
 import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
 import { safeText } from "@/lib/security";
+import { invalidWebhookPayloadSnapshot, redactWebhookPayload } from "@/lib/webhook-audit";
 import { readLimitedWebhookBody } from "@/lib/webhook-body-limit";
 
 type IyzicoWebhookBody = {
@@ -128,7 +129,7 @@ export async function POST(req: Request) {
       status: "rejected",
       signatureValid: true,
       errorMessage: "Invalid JSON format in body",
-      payloadJson: { raw: bodyText },
+      payloadJson: invalidWebhookPayloadSnapshot(bodyText),
       receivedAt,
     });
 
@@ -143,7 +144,7 @@ export async function POST(req: Request) {
       status: "rejected",
       signatureValid: true,
       errorMessage: "Missing merchantOrderId/bookingId reference",
-      payloadJson: body,
+      payloadJson: redactWebhookPayload(body),
       receivedAt,
     });
 
@@ -193,7 +194,7 @@ export async function POST(req: Request) {
     reservationId: bookingId,
     status: "processed",
     signatureValid: true,
-    payloadJson: body,
+    payloadJson: redactWebhookPayload(body),
     errorMessage: reservationFound ? undefined : "Webhook signature validated, but booking reference was not found in leads",
     receivedAt,
   });
