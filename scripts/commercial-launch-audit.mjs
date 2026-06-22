@@ -291,10 +291,25 @@ function evidenceState(relPath, baseDir) {
 
   const redactionFindings = scanEvidenceSource(content, relPath);
   if (redactionFindings.length > 0) {
-    return { path: relPath, ready: false, reason: "redaction findings" };
+    return {
+      path: relPath,
+      ready: false,
+      reason: "redaction findings",
+      redactionFindingCount: redactionFindings.length,
+      redactionCategories: [...new Set(redactionFindings.map((finding) => finding.category))],
+    };
   }
 
   return { path: relPath, ready: true, reason: "present" };
+}
+
+function formatEvidenceIssue(item) {
+  const redactionSummary =
+    item.redactionCategories?.length > 0
+      ? `; redaction categories: ${item.redactionCategories.join(", ")}; count: ${item.redactionFindingCount}`
+      : "";
+
+  return `${item.path} (${item.reason}${redactionSummary})`;
 }
 
 function gateProgressNotes(gate, envState, missingEvidence) {
@@ -323,7 +338,7 @@ function gateProgressNotes(gate, envState, missingEvidence) {
   } else {
     notes.push(
       `evidence lane: ${missingEvidence
-        .map((item) => `${item.path} (${item.reason})`)
+        .map(formatEvidenceIssue)
         .join(", ")}`,
     );
   }
@@ -399,7 +414,7 @@ export function formatCommercialLaunchReport(result) {
     if (gate.missingEvidence.length > 0) {
       lines.push(
         `  missing evidence: ${gate.missingEvidence
-          .map((item) => `${item.path} (${item.reason})`)
+          .map(formatEvidenceIssue)
           .join(", ")}`,
       );
     }

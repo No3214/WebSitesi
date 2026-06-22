@@ -29,7 +29,13 @@ type CommercialLaunchModule = {
       id: string;
       ready: boolean;
       missingEnv: string[];
-      missingEvidence: Array<{ path: string; ready: boolean; reason: string }>;
+      missingEvidence: Array<{
+        path: string;
+        ready: boolean;
+        reason: string;
+        redactionFindingCount?: number;
+        redactionCategories?: string[];
+      }>;
       configurationSource?: string;
       requiredEnvCount: number;
       configuredEnvCount: number;
@@ -40,6 +46,9 @@ type CommercialLaunchModule = {
       progressNotes: string[];
     }>;
   };
+  formatCommercialLaunchReport: (
+    result: ReturnType<CommercialLaunchModule["evaluateCommercialLaunch"]>,
+  ) => string;
 };
 
 async function loadAuditModule() {
@@ -371,16 +380,23 @@ describe("commercial launch audit", () => {
 
     const result = audit.evaluateCommercialLaunch({ env, baseDir });
     const garantiGate = result.gateResults.find((gate) => gate.id === "garanti_pos");
+    const formatted = audit.formatCommercialLaunchReport(result);
 
     expect(result.score).toBeLessThan(100);
     expect(garantiGate?.ready).toBe(false);
-    expect(garantiGate?.missingEvidence).toEqual([
-      {
-        path: "docs/evidence/garanti-pos.md",
-        ready: false,
-        reason: "redaction findings",
-      },
-    ]);
+    expect(garantiGate?.missingEvidence[0]).toMatchObject({
+      path: "docs/evidence/garanti-pos.md",
+      ready: false,
+      reason: "redaction findings",
+      redactionFindingCount: 1,
+      redactionCategories: ["payment_card"],
+    });
+    expect(garantiGate?.progressNotes).toContain(
+      "evidence lane: docs/evidence/garanti-pos.md (redaction findings; redaction categories: payment_card; count: 1)",
+    );
+    expect(formatted).toContain("redaction categories: payment_card; count: 1");
+    expect(JSON.stringify(result)).not.toContain("4242");
+    expect(formatted).not.toContain("4242");
   });
 
   it("blocks the canonical domain gate when NEXT_PUBLIC_SITE_URL is not the public domain", async () => {
