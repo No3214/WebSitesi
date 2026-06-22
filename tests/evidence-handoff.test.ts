@@ -195,6 +195,8 @@ describe("evidence handoff", () => {
     );
     expect(canonical?.requiredSections).toContain("source_refs: <redacted-source-ids>");
     expect(canonical?.sourceRefsPolicy).toContain("never raw credentials");
+    expect(canonical?.sourceRefsPolicy).toContain("database URLs");
+    expect(canonical?.sourceRefsPolicy).toContain("access tokens");
 
     const database = result.files.find((file) => file.path === "docs/evidence/production-database.md");
     expect(database).toMatchObject({
@@ -209,6 +211,10 @@ describe("evidence handoff", () => {
     expect(hms?.missingEnv).toEqual([]);
     expect(hms?.commands).toContain("npm run hms:verify:strict");
     expect(result.safeEvidenceRules.join(" ")).toContain("Do not commit secrets");
+    expect(result.safeEvidenceRules.join(" ")).toContain("database URLs");
+    expect(result.safeEvidenceRules.join(" ")).toContain("JWT/access tokens");
+    expect(result.safeEvidenceRules.join(" ")).toContain("service-role keys");
+    expect(result.safeEvidenceRules.join(" ")).toContain("raw callback/log dumps");
     expect(JSON.stringify(result)).not.toContain("super-secret-value");
   });
 
@@ -255,6 +261,8 @@ describe("evidence handoff", () => {
 
     expect(text).toContain("Kozbeyli Konagi evidence handoff");
     expect(text).toContain("Required safe evidence rules");
+    expect(text).toContain("database URLs");
+    expect(text).toContain("JWT/access tokens");
     expect(text).toContain("docs/evidence/hms-booking-engine.md");
     expect(text).toContain("missing env names:");
     expect(text).not.toContain("super-secret-value");
