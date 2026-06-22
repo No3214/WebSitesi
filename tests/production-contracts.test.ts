@@ -913,11 +913,62 @@ describe("production readiness contracts", () => {
 
   it("keeps generative design guidance out of product media placement", () => {
     const designSkill = read("agent/growth-engine/sub-skills/design-agent/SKILL.md");
+    const contentSkill = read("agent/growth-engine/sub-skills/content-architect/SKILL.md");
     const mediaAudit = read("docs/media-placement-audit.md");
 
     expect(designSkill.toLowerCase()).toContain("concept exploration only");
     expect(designSkill).toContain("never product media");
+    expect(contentSkill).toContain("Do not add Stable Diffusion, Midjourney or generated-image prompts");
+    expect(contentSkill).not.toContain("[VISUAL_PROMPT");
+    expect(contentSkill).not.toContain("Magic-MCP");
     expect(mediaAudit).toContain("Any generated or hallucinated image");
+  });
+
+  it("removes legacy external AI, mock reputation and autonomous lead-hunter helpers", () => {
+    const growthSkill = read("agent/growth-engine/SKILL.md");
+    const guestRelations = read("agent/guest-relations-agent/SKILL.md");
+    const layout = read("src/app/layout.tsx");
+
+    for (const relPath of [
+      "src/components/reputation-ribbon.tsx",
+      "src/lib/ai/ads-optimizer.ts",
+      "src/lib/ai/client.ts",
+      "src/lib/ai/config.ts",
+      "src/lib/ai/content-agent.ts",
+      "src/lib/ai/content-architect.ts",
+      "src/lib/ai/design-agent.ts",
+      "src/lib/ai/reputation-intelligence.ts",
+      "src/lib/ai/turkey-data.ts",
+      "agent/growth-engine/scripts/audit-runner.mjs",
+      "agent/growth-engine/scripts/audit-runner.ts",
+      "agent/growth-engine/scripts/auto-pilot.mjs",
+      "agent/growth-engine/scripts/event-hunter.mjs",
+      "agent/growth-engine/scripts/lead-hunter.mjs",
+      "agent/growth-engine/scripts/lead-hunter.ts",
+    ]) {
+      expect(exists(relPath), `${relPath} should stay removed`).toBe(false);
+    }
+
+    const combined = [growthSkill, guestRelations, layout].join("\n");
+
+    for (const forbidden of [
+      "OPENROUTER_API_KEY",
+      "openrouter.ai",
+      "chat/completions",
+      "conversion_rate_sim",
+      "performance_score: 98",
+      "GlobalTech Solutions",
+      "NOTIFICATION SENT",
+      "best rate guarantee",
+      "dominate the hospitality market",
+    ]) {
+      expect(combined, `legacy autonomous/generative helper text must not contain ${forbidden}`).not.toContain(forbidden);
+    }
+
+    expect(growthSkill).toContain("evidence-gated growth coordinator");
+    expect(growthSkill).toContain("Never claim production readiness");
+    expect(guestRelations).toContain("Treat availability as unconfirmed");
+    expect(layout).toContain("Eski reputation ribbon");
   });
 
   it("keeps growth and SEO helper scripts evidence-based and read-only", () => {

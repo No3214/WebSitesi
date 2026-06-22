@@ -9,6 +9,10 @@ function read(relPath: string) {
   return fs.readFileSync(path.join(root, relPath), "utf8");
 }
 
+function exists(relPath: string) {
+  return fs.existsSync(path.join(root, relPath));
+}
+
 describe("public light theme contract", () => {
   it("keeps inner page heroes on the light stone theme by default", () => {
     const pageHero = read("src/components/page-hero.tsx");
@@ -42,7 +46,6 @@ describe("public light theme contract", () => {
   it("keeps legacy cinematic widgets on light stone surfaces", () => {
     const globals = read("src/app/globals.css");
     const atmospheric = read("src/components/atmospheric-immersion.tsx");
-    const reputation = read("src/components/reputation-ribbon.tsx");
     const heritage = read("src/components/heritage-archive.tsx");
     const floatingContact = read("src/components/floating-contact.tsx");
     const exitIntent = read("src/components/exit-intent.tsx");
@@ -58,7 +61,6 @@ describe("public light theme contract", () => {
 
     const combined = [
       atmospheric,
-      reputation,
       heritage,
       floatingContact,
       exitIntent,
@@ -70,7 +72,7 @@ describe("public light theme contract", () => {
     expect(combined).not.toContain("border-zinc-900");
     expect(combined).not.toContain("rgba(20, 22, 26");
     expect(combined).toContain("bg-[#fffcf6]/95");
-    expect(reputation).toContain("bg-[#fbf7ed]/95");
+    expect(exists("src/components/reputation-ribbon.tsx")).toBe(false);
     expect(heritage).toContain("bg-[#fffcf6]/90");
     expect(exitIntent).toContain("bg-[rgba(61,74,59,0.38)]");
   });

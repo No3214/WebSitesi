@@ -45,8 +45,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             <Suspense fallback={null}>
               <LoadingBar />
             </Suspense>
-            {/* Görsel QA (2026-06-10): ReputationRibbon fixed header'la üst üste
-                biniyordu; AtmosphericImmersion tam-ekran perdesi hero'yu örtüyordu;
+            {/* Görsel QA (2026-06-10): Eski reputation ribbon fixed header'la
+                üst üste biniyordu; AtmosphericImmersion tam-ekran perdesi hero'yu örtüyordu;
                 ConversionVelocity/Motivators uydurma aciliyet üretiyordu (sahte
                 "%92 dolu" / "5 rezervasyon" — güven riski). Dördü de kaldırıldı. */}
             <TrackingScripts />
