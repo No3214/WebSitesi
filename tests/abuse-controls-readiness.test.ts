@@ -41,7 +41,6 @@ const contractFiles = [
   "src/lib/production-readiness.ts",
   "src/lib/public-env.ts",
   ".env.example",
-  "src/services/lead.ts",
 ];
 
 async function loadModule() {
@@ -144,14 +143,18 @@ describe("production abuse-control readiness", () => {
     expect(result.blockers).toEqual([]);
   });
 
-  it("blocks insecure Upstash URLs and legacy Turnstile env aliases", async () => {
+  it("blocks insecure Upstash URLs and legacy lead-service regressions", async () => {
     const mod = await loadModule();
     const baseDir = makeTmpDir();
     copyContractFiles(baseDir);
     writeEvidence(baseDir, "ready");
 
     const legacyService = path.join(baseDir, "src/services/lead.ts");
-    fs.appendFileSync(legacyService, "\n// regression: CLOUDFLARE_TURNSTILE_SECRET_KEY\n");
+    fs.mkdirSync(path.dirname(legacyService), { recursive: true });
+    fs.writeFileSync(
+      legacyService,
+      "export const legacy = process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY;\n",
+    );
 
     const result = mod.evaluateAbuseControlsReadiness({
       env: { ...readyEnv, UPSTASH_REDIS_REST_URL: "http://upstash.local" },
@@ -161,7 +164,7 @@ describe("production abuse-control readiness", () => {
     expect(result.decision).toBe("PRODUCTION ABUSE CONTROLS BLOCKED");
     expect(result.env.invalid).toContain("UPSTASH_REDIS_REST_URL must use HTTPS");
     expect(result.sourceContracts.ready).toBe(false);
-    expect(result.sourceContracts.checks.find((check) => check.id === "legacy_env_name_removed")).toMatchObject({
+    expect(result.sourceContracts.checks.find((check) => check.id === "legacy_lead_service_removed")).toMatchObject({
       status: "FAIL",
     });
   });

@@ -413,7 +413,6 @@ describe("production readiness contracts", () => {
     };
     const abuseReadiness = read("scripts/abuse-controls-readiness.mjs");
     const leadRoute = read("src/app/api/lead/route.ts");
-    const legacyLeadService = read("src/services/lead.ts");
     const leadForm = read("src/components/lead-form.tsx");
     const trackingScripts = read("src/components/tracking-scripts.tsx");
 
@@ -424,13 +423,14 @@ describe("production readiness contracts", () => {
     expect(abuseReadiness).toContain("production_abuse_controls");
     expect(abuseReadiness).toContain("docs/evidence/production-abuse-controls.md");
     expect(abuseReadiness).toContain("UPSTASH_REDIS_REST_URL must use HTTPS");
-    expect(abuseReadiness).toContain("legacy_env_name_removed");
+    expect(abuseReadiness).toContain("legacy_lead_service_removed");
+    expect(abuseReadiness).toContain("legacy_booking_service_removed");
     expect(abuseReadiness).toContain("process.exitCode");
     expect(abuseReadiness).not.toContain("process.exit(strict");
     expect(leadRoute).toContain("env.TURNSTILE_SECRET_KEY");
     expect(leadRoute).toContain("if (!token) return false");
-    expect(legacyLeadService).toContain("process.env.TURNSTILE_SECRET_KEY");
-    expect(legacyLeadService).not.toContain("process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY");
+    expect(exists("src/services/lead.ts")).toBe(false);
+    expect(exists("src/services/booking.ts")).toBe(false);
     expect(leadForm).toContain("cf-turnstile");
     expect(leadForm).toContain("NEXT_PUBLIC_TURNSTILE_SITE_KEY");
     expect(trackingScripts).toContain("https://challenges.cloudflare.com/turnstile/v0/api.js");

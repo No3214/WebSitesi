@@ -21,7 +21,6 @@ const CONTRACT_FILES = {
   productionReadiness: "src/lib/production-readiness.ts",
   publicEnv: "src/lib/public-env.ts",
   envExample: ".env.example",
-  legacyLeadService: "src/services/lead.ts",
 };
 
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
@@ -76,7 +75,8 @@ function sourceContracts(baseDir) {
   const productionReadiness = read(baseDir, CONTRACT_FILES.productionReadiness);
   const publicEnv = read(baseDir, CONTRACT_FILES.publicEnv);
   const envExample = read(baseDir, CONTRACT_FILES.envExample);
-  const legacyLeadService = read(baseDir, CONTRACT_FILES.legacyLeadService);
+  const legacyLeadPath = path.join(baseDir, "src/services/lead.ts");
+  const legacyBookingPath = path.join(baseDir, "src/services/booking.ts");
   const rateLimitCallIndex = leadRoute.indexOf("const rateLimit = await enforceRateLimit(");
   const turnstileCallIndex = leadRoute.indexOf("const turnstileOk = await verifyTurnstile(");
   const payloadCreateIndex = leadRoute.indexOf("await payload.create(");
@@ -171,12 +171,21 @@ function sourceContracts(baseDir) {
       CONTRACT_FILES.envExample,
     ),
     fileCheck(
-      "legacy_env_name_removed",
-      "Legacy Cloudflare Turnstile env alias is not used in lead code",
-      ![leadRoute, legacyLeadService, envExample, productionReadiness, publicEnv].join("\n").includes("CLOUDFLARE_TURNSTILE_SECRET_KEY")
+      "legacy_lead_service_removed",
+      "Legacy lead service is removed so only the guarded API route writes leads",
+      !fs.existsSync(legacyLeadPath) &&
+        ![leadRoute, envExample, productionReadiness, publicEnv].join("\n").includes("CLOUDFLARE_TURNSTILE_SECRET_KEY")
         ? "PASS"
         : "FAIL",
       "lead sources",
+    ),
+    fileCheck(
+      "legacy_booking_service_removed",
+      "Legacy booking service is removed so HotelRunner writes use the guarded webhook route",
+      !fs.existsSync(legacyBookingPath)
+        ? "PASS"
+        : "FAIL",
+      "booking sources",
     ),
   ];
 
