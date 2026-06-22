@@ -88,6 +88,13 @@ function sourceContracts(baseDir) {
   const paymentDecision = read(baseDir, CONTRACT_FILES.paymentDecision);
   const checkoutContract = read(baseDir, CONTRACT_FILES.checkoutContract);
   const paymentUiSource = [wizardHook, paymentStep, wizardTypes].join("\n");
+  const evidenceReadmeSafety = [
+    "Do not add secrets",
+    "database URLs",
+    "JWT/access tokens",
+    "card data",
+    "customer PII",
+  ].every((text) => evidenceReadme.includes(text));
 
   const checks = [
     fileCheck(
@@ -155,7 +162,7 @@ function sourceContracts(baseDir) {
       "evidence_policy_card_safe",
       "Evidence inbox forbids raw credentials, card data, guest PII and bank portal dumps",
       evidenceReadme.includes("garanti-pos.md") &&
-        evidenceReadme.includes("Do not add secrets, card data, customer PII") &&
+        evidenceReadmeSafety &&
         /Do not paste raw credentials, card numbers, customer PII|No credentials, card data|No credentials, card numbers/i.test(evidence) &&
         evidence.includes("3D Secure") &&
         /Callback|callback/.test(evidence)

@@ -39,6 +39,31 @@ const tokenPatterns = [
     pattern: /\bAIza[0-9A-Za-z_-]{20,}\b/,
     message: "Google API keys must be redacted from launch evidence.",
   },
+  {
+    id: "vercel_token",
+    pattern: /\bvercel_[A-Za-z0-9]{20,}\b/,
+    message: "Vercel tokens must be redacted from launch evidence.",
+  },
+  {
+    id: "npm_token",
+    pattern: /\bnpm_[A-Za-z0-9]{20,}\b/,
+    message: "npm tokens must be redacted from launch evidence.",
+  },
+  {
+    id: "jwt_token",
+    pattern: /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/,
+    message: "JWT-style access tokens must be redacted from launch evidence.",
+  },
+  {
+    id: "database_connection_string",
+    pattern: /\b(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?):\/\/[^\s`'"<>:]+:[^\s`'"<>@]+@[^\s`'"<>]+/i,
+    message: "Database connection strings must be redacted from launch evidence.",
+  },
+  {
+    id: "basic_auth_url",
+    pattern: /\bhttps?:\/\/[^\s`'"<>:@/]+:[^\s`'"<>@/]+@[^\s`'"<>]+/i,
+    message: "URLs containing embedded credentials must be redacted from launch evidence.",
+  },
 ];
 
 function listMarkdownFiles(baseDir, dir) {

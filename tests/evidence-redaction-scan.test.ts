@@ -84,6 +84,11 @@ describe("evidence redaction scan", () => {
     const slackLikeToken = `xox${"b"}-123456789012-abcdefghijklmnopqrst`;
     const awsLikeKey = `AKIA${"IOSFODNN7EXAMPLE"}`;
     const googleLikeKey = `AI${"za"}SyA1234567890abcdefghijklmnop`;
+    const vercelLikeToken = `vercel_${"abcdefghijklmnopqrstuvwx123456"}`;
+    const npmLikeToken = `npm_${"abcdefghijklmnopqrstuvwx123456"}`;
+    const jwtLikeToken = `eyJ${"hbGciOiJIUzI1NiJ9"}.${"eyJyb2xlIjoic2VydmljZSJ9"}.${"c2lnbmF0dXJlX3NlY3JldA"}`;
+    const databaseUri = `postgresql://postgres:${"live_db_password"}@db.supabase.co:6543/postgres`;
+    const basicAuthUrl = `https://ops:${"panel_password"}@secure.example.com/report`;
     const ibanLikeValue = `TR${"86"} 0001 0003 4454 7464 5450 08`;
     const cardLikeValue = `4242 ${"4242"} 4242 4242`;
     const tcknLikeValue = `100000${"00146"}`;
@@ -94,6 +99,11 @@ describe("evidence redaction scan", () => {
       slackLikeToken,
       awsLikeKey,
       googleLikeKey,
+      vercelLikeToken,
+      npmLikeToken,
+      jwtLikeToken,
+      `DATABASE_URI: ${databaseUri}`,
+      `panel: ${basicAuthUrl}`,
       `IBAN: ${ibanLikeValue}`,
       `card: ${cardLikeValue}`,
       "cvv: 123",
@@ -112,6 +122,11 @@ describe("evidence redaction scan", () => {
         "slack_token",
         "aws_access_key",
         "google_api_key",
+        "vercel_token",
+        "npm_token",
+        "jwt_token",
+        "database_connection_string",
+        "basic_auth_url",
         "iban",
         "payment_card",
         "card_security_code",
@@ -120,6 +135,9 @@ describe("evidence redaction scan", () => {
       ]),
     );
     expect(JSON.stringify(findings)).not.toContain("actual_live_secret_value");
+    expect(JSON.stringify(findings)).not.toContain("live_db_password");
+    expect(JSON.stringify(findings)).not.toContain("panel_password");
+    expect(JSON.stringify(findings)).not.toContain("service");
     expect(JSON.stringify(findings)).not.toContain("4242");
     expect(JSON.stringify(findings)).not.toContain("10000000146");
   });

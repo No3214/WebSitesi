@@ -2,9 +2,9 @@
 
 This folder is the evidence inbox for the 100/100 commercial go-live gate.
 
-Do not add secrets, card data, customer PII, private contracts, or raw payment
-credentials. Store redacted screenshots, ticket IDs, approval notes, test
-summaries, and links to the source systems.
+Do not add secrets, database URLs, JWT/access tokens, card data, customer PII,
+private contracts, or raw payment credentials. Store redacted screenshots,
+ticket IDs, approval notes, test summaries, and links to the source systems.
 Guest email addresses and phone numbers must stay in the source systems; only
 redacted guest/contact references belong in these evidence files. Public
 Kozbeyli Konağı contact channels are allowlisted for context.
@@ -22,8 +22,8 @@ evidence:handoff:json` emits the same handoff as machine-readable JSON.
 
 Ready evidence must include redacted source-system references, such as ticket
 IDs, dashboard permalink IDs, approval note IDs, or UAT run IDs. Do not paste
-raw contracts, credentials, card data, customer PII, or private guest data into
-this repository.
+raw contracts, credentials, database connection strings, access tokens, card
+data, customer PII, or private guest data into this repository.
 
 ## Required Evidence Files
 
