@@ -157,6 +157,18 @@ export function scanEvidenceSource(source, file = "inline.md") {
     );
   }
 
+  for (const match of source.matchAll(/\b(?:hesap\s*(?:no|numarasi|numarası)|account\s*(?:no|number))\s*[:=]?\s*(?:\d[ -]?){6,26}\b/gi)) {
+    findings.push(
+      finding(file, source, match.index ?? 0, "bank_account_number", "Bank account numbers must be redacted from launch evidence."),
+    );
+  }
+
+  for (const match of source.matchAll(/\b(?:hesap\s*sahibi|account\s*holder)\s*[:=]\s*[^\r\n`|]{2,80}/gi)) {
+    findings.push(
+      finding(file, source, match.index ?? 0, "bank_account_holder", "Bank account holder names must be redacted from launch evidence."),
+    );
+  }
+
   for (const match of source.matchAll(/\b(?:\d[ -]?){13,19}\b/g)) {
     const candidate = match[0].replace(/\D/g, "");
     if (candidate.length >= 13 && candidate.length <= 19 && luhnValid(candidate)) {

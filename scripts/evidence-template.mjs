@@ -97,7 +97,7 @@ function buildTemplateMarkdown(template) {
     markdownList(template.safeEvidenceRules),
     "",
     "## Summary",
-    "<Write a short redacted summary. Do not paste secrets, raw logs, guest PII, card data or private contracts.>",
+    "<Write a short redacted summary. Do not paste secrets, raw logs, guest PII, card data, bank account details or private contracts.>",
     "",
     "## Proof",
     ...template.requiredProofSignals.map(

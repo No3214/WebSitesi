@@ -96,7 +96,7 @@ function writeEvidence(baseDir: string, status = "ready") {
       "Successful 3D Secure, failed payment, callback signature and refund/cancel sandbox cases are referenced outside the repository.",
       "",
       "## Residual Risk",
-      "No credentials, card data, bank portal dumps, customer PII or raw callback payloads are stored in this fixture.",
+      "Do not paste raw credentials, card numbers, bank account details, customer PII, full bank portal screenshots or raw callback payloads into this fixture.",
     ].join("\n"),
   );
 }

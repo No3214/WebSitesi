@@ -289,6 +289,7 @@ describe("evidence handoff", () => {
     expect(result.safeEvidenceRules.join(" ")).toContain("database URLs");
     expect(result.safeEvidenceRules.join(" ")).toContain("JWT/access tokens");
     expect(result.safeEvidenceRules.join(" ")).toContain("service-role keys");
+    expect(result.safeEvidenceRules.join(" ")).toContain("bank account details");
     expect(result.safeEvidenceRules.join(" ")).toContain("raw callback/log dumps");
     expect(JSON.stringify(result)).not.toContain("super-secret-value");
   });

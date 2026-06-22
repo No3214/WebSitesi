@@ -112,6 +112,7 @@ describe("evidence templates", () => {
     expect(formatted).toContain("Do not commit secrets");
     expect(formatted).toContain("database URLs");
     expect(formatted).toContain("card data");
+    expect(formatted).toContain("bank account details");
     expect(formatted).not.toContain("status: ready");
     expect(formatted).not.toContain("super-secret-value");
   });

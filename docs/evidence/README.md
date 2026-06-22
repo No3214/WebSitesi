@@ -2,12 +2,12 @@
 
 This folder is the evidence inbox for the 100/100 commercial go-live gate.
 
-Do not add secrets, database URLs, JWT/access tokens, card data, customer PII,
-private contracts, or raw payment credentials. Store redacted screenshots,
-ticket IDs, approval notes, test summaries, and links to the source systems.
-Guest email addresses and phone numbers must stay in the source systems; only
-redacted guest/contact references belong in these evidence files. Public
-Kozbeyli Konağı contact channels are allowlisted for context.
+Do not add secrets, database URLs, JWT/access tokens, card data, bank account
+details, customer PII, private contracts, or raw payment credentials. Store
+redacted screenshots, ticket IDs, approval notes, test summaries, and links to
+the source systems. Guest email addresses and phone numbers must stay in the
+source systems; only redacted guest/contact references belong in these evidence
+files. Public Kozbeyli Konağı contact channels are allowlisted for context.
 
 `npm run launch:audit` checks these files together with the relevant production
 environment variables. `npm run launch:audit:json` returns the same result as
@@ -29,7 +29,8 @@ evidence:templates -- --gate hms_booking_engine` for one gate.
 Ready evidence must include redacted source-system references, such as ticket
 IDs, dashboard permalink IDs, approval note IDs, or UAT run IDs. Do not paste
 raw contracts, credentials, database connection strings, access tokens, card
-data, customer PII, or private guest data into this repository.
+data, bank account numbers, bank account holder names, customer PII, or private
+guest data into this repository.
 
 The launch audit rejects `ready` evidence that has no `date: YYYY-MM-DD`, no
 named `owner`, or placeholder source references such as `pending`, `todo`,

@@ -733,7 +733,9 @@ describe("production readiness contracts", () => {
     expect(checkoutContract).toContain("Kart alanı gönderilirse 400 ile reddedilir");
     expect(checkoutContract).toContain("cardNumber");
     expect(evidence).toContain("npm run garanti:verify");
-    expect(evidence).toContain("Do not paste raw credentials, card numbers, customer PII");
+    expect(evidence).toContain("Do not paste raw credentials, card numbers");
+    expect(evidence).toContain("bank account details");
+    expect(evidence).toContain("customer PII");
     expect(paymentDecision).toContain("kart bilgisi ASLA istemez");
     expect(paymentDecision).toContain("Garanti BBVA Sanal POS'un 3D Secure");
     expect(paymentDecision).toContain("SAQ-A");

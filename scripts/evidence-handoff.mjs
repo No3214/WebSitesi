@@ -14,7 +14,7 @@ export const requiredEvidenceSections = [
 ];
 
 export const safeEvidenceRules = [
-  "Do not commit secrets, raw credentials, database URLs, JWT/access tokens, service-role keys, card data, customer PII, private contracts, bank portal dumps or private guest data.",
+  "Do not commit secrets, raw credentials, database URLs, JWT/access tokens, service-role keys, card data, bank account details, customer PII, private contracts, bank portal dumps or private guest data.",
   "Use redacted ticket IDs, dashboard permalink IDs, approval note IDs, UAT run IDs or source-system references.",
   "Keep source screenshots, contracts, payment portal details, raw callback/log dumps and guest records in the source system; store only redacted summaries and references here.",
 ];
@@ -65,7 +65,7 @@ export function buildEvidenceHandoff({
       missingEvidenceSignals: [...(evidence.missingEvidenceSignals || [])],
       requiredSections: [...requiredEvidenceSections],
       sourceRefsPolicy:
-        "source_refs must contain redacted operational IDs or dashboard references, never raw credentials, database URLs, access tokens, contracts, card data or customer PII.",
+        "source_refs must contain redacted operational IDs or dashboard references, never raw credentials, database URLs, access tokens, contracts, card data, bank account details or customer PII.",
     }));
   });
 

@@ -33,6 +33,6 @@ evidence.
 
 ## Residual Risk
 
-Do not paste raw credentials, card numbers, customer PII, or full bank portal
-screenshots into this file. Use redacted screenshots, ticket IDs, and concise
-test summaries.
+Do not paste raw credentials, card numbers, bank account details, customer PII,
+or full bank portal screenshots into this file. Use redacted screenshots,
+ticket IDs, and concise test summaries.

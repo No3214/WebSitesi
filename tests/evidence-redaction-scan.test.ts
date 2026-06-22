@@ -90,6 +90,8 @@ describe("evidence redaction scan", () => {
     const databaseUri = `postgresql://postgres:${"live_db_password"}@db.supabase.co:6543/postgres`;
     const basicAuthUrl = `https://ops:${"panel_password"}@secure.example.com/report`;
     const ibanLikeValue = `TR${"86"} 0001 0003 4454 7464 5450 08`;
+    const bankAccountNumber = `4454 ${"7464"} 5450 08`;
+    const accountHolder = `Varol ${"Oruk"}`;
     const cardLikeValue = `4242 ${"4242"} 4242 4242`;
     const tcknLikeValue = `100000${"00146"}`;
     const secretSource = [
@@ -105,6 +107,8 @@ describe("evidence redaction scan", () => {
       `DATABASE_URI: ${databaseUri}`,
       `panel: ${basicAuthUrl}`,
       `IBAN: ${ibanLikeValue}`,
+      `Hesap No: ${bankAccountNumber}`,
+      `Hesap Sahibi: ${accountHolder}`,
       `card: ${cardLikeValue}`,
       "cvv: 123",
       `TCKN: ${tcknLikeValue}`,
@@ -128,6 +132,8 @@ describe("evidence redaction scan", () => {
         "database_connection_string",
         "basic_auth_url",
         "iban",
+        "bank_account_number",
+        "bank_account_holder",
         "payment_card",
         "card_security_code",
         "turkish_identity_number",
@@ -140,6 +146,8 @@ describe("evidence redaction scan", () => {
     expect(JSON.stringify(findings)).not.toContain("service");
     expect(JSON.stringify(findings)).not.toContain("4242");
     expect(JSON.stringify(findings)).not.toContain("10000000146");
+    expect(JSON.stringify(findings)).not.toContain("7464");
+    expect(JSON.stringify(findings)).not.toContain("Oruk");
   });
 
   it("flags guest contact details while allowing public hotel email domains", async () => {
