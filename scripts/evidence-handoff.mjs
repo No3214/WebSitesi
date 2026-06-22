@@ -62,6 +62,7 @@ export function buildEvidenceHandoff({
       redactionCategories: [...(evidence.redactionCategories || [])],
       redactionSummary: redactionSummary(evidence),
       redactionAction: redactionAction(evidence),
+      missingEvidenceSignals: [...(evidence.missingEvidenceSignals || [])],
       requiredSections: [...requiredEvidenceSections],
       sourceRefsPolicy:
         "source_refs must contain redacted operational IDs or dashboard references, never raw credentials, database URLs, access tokens, contracts, card data or customer PII.",
@@ -110,6 +111,9 @@ export function formatEvidenceHandoff(result) {
       lines.push(`  reason: ${file.reason}`);
       if (file.redactionSummary) lines.push(`  redaction: ${file.redactionSummary}`);
       if (file.redactionAction) lines.push(`  redaction action: ${file.redactionAction}`);
+      if (file.missingEvidenceSignals.length > 0) {
+        lines.push(`  missing proof signals: ${file.missingEvidenceSignals.join(", ")}`);
+      }
       lines.push(`  owner: ${file.owner}`);
       lines.push(`  timing: ${file.timing}`);
       if (file.missingEnv.length > 0) lines.push(`  missing env names: ${file.missingEnv.join(", ")}`);

@@ -35,6 +35,7 @@ type CommercialLaunchModule = {
         reason: string;
         redactionFindingCount?: number;
         redactionCategories?: string[];
+        missingEvidenceSignals?: string[];
       }>;
       configurationSource?: string;
       requiredEnvCount: number;
@@ -63,6 +64,68 @@ function makeTmpDir() {
   return dir;
 }
 
+function evidenceProofText(relPath: string) {
+  const proofByPath: Record<string, string[]> = {
+    "docs/evidence/canonical-domain.md": [
+      "The current production deployment commit is verified through /api/health with service: \"kozbeyli-konagi\".",
+      "The approved opening hero video /videos/hero.mp4 is visible on apex and www.",
+      "Vercel DNS and secure redirect behavior are verified for the canonical domain.",
+    ],
+    "docs/evidence/production-database.md": [
+      "Managed Supabase Postgres pooler DATABASE_URI and pooling mode are verified.",
+      "PAYLOAD_SECRET is stored as a strong secret in production.",
+      "Backup/PITR restore policy is confirmed.",
+      "Restricted dashboard MFA access is confirmed for the database operator.",
+      "Payload admin and lead persistence UAT completed without repository PII.",
+    ],
+    "docs/evidence/production-abuse-controls.md": [
+      "Cloudflare Turnstile production keys are validated.",
+      "Upstash Redis REST provides shared rate-limit and shared replay checks.",
+      "A successful human lead submission is recorded.",
+      "A blocked missing/invalid Turnstile token request is recorded.",
+      "rateLimitBackend() reports upstash in production.",
+    ],
+    "docs/evidence/hms-booking-engine.md": [
+      "The approved HTTPS HMS host kozbeyli-konagi.hmshotel.net is used.",
+      "/rezervasyon and /en/rezervasyon CTAs open in a new tab.",
+      "Live booking UAT covers date, guest, room and rate selection.",
+      "Cancellation, refund and modification handling is confirmed.",
+      "Room/rate availability sync and stale stock ownership are documented.",
+    ],
+    "docs/evidence/garanti-pos.md": [
+      "GARANTI_POS_MODE and required POS environment names are configured in the source system.",
+      "Successful 3D Secure payment proof is referenced.",
+      "Failed/declined payment proof is referenced.",
+      "Callback webhook signature verification is confirmed.",
+      "Refund cancel handling is documented.",
+    ],
+    "docs/evidence/analytics-purchase.md": [
+      "Production GTM, GA4, Google Ads and Meta Pixel IDs are verified.",
+      "Consent mode and consent-gated behavior are validated before consent.",
+      "GA4 Measurement Protocol sends server-side purchase booking_complete proof.",
+      "Meta Event Manager production event proof is referenced.",
+      "Test traffic is labeled and filtered.",
+    ],
+    "docs/evidence/search-local-seo.md": [
+      "Search Console ownership and GOOGLE_SITE_VERIFICATION are confirmed.",
+      "Production sitemap submitted and accepted.",
+      "Google Business Profile ownership is verified.",
+      "Google Hotel Center free booking links and hotel distribution are reviewed.",
+    ],
+    "docs/evidence/legal-dpa.md": [
+      "Vendor DPA data-processing review is approved.",
+      "KVKK cross-border transfer review is complete.",
+      "Cookie tracking vendor inventory and consent behavior are approved.",
+      "Cancellation payment refund and event proposal terms are approved.",
+      "Final approval owner and date are recorded.",
+    ],
+  };
+
+  return proofByPath[relPath] ?? [
+    "Redacted operational evidence confirms this launch gate was validated in the source system.",
+  ];
+}
+
 function writeEvidence(baseDir: string, relPath: string, status = "ready") {
   const fullPath = path.join(baseDir, relPath);
   fs.mkdirSync(path.dirname(fullPath), { recursive: true });
@@ -80,6 +143,7 @@ function writeEvidence(baseDir: string, relPath: string, status = "ready") {
       "Redacted operational evidence confirms this launch gate was validated in the source system.",
       "",
       "## Proof",
+      ...evidenceProofText(relPath),
       "Ticket, screenshot and UAT references are stored outside the repository without secrets or PII.",
       "",
       "## Residual Risk",
@@ -433,6 +497,59 @@ describe("commercial launch audit", () => {
         reason: "missing owner",
       },
     ]);
+  });
+
+  it("blocks ready evidence that omits gate-specific proof signals", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const garantiPath = path.join(baseDir, "docs/evidence/garanti-pos.md");
+    fs.writeFileSync(
+      garantiPath,
+      [
+        "# Evidence",
+        "",
+        "status: ready",
+        "date: 2026-06-22",
+        "owner: finance-ops",
+        "source_refs: GARANTI-UAT-123",
+        "",
+        "## Summary",
+        "A generic launch note says the payment gate has been reviewed.",
+        "",
+        "## Proof",
+        "The source system stores redacted references outside the repository.",
+        "",
+        "## Residual Risk",
+        "No raw credentials or card data are included.",
+      ].join("\n"),
+    );
+
+    const result = audit.evaluateCommercialLaunch({ env, baseDir });
+    const garantiGate = result.gateResults.find((gate) => gate.id === "garanti_pos");
+    const formatted = audit.formatCommercialLaunchReport(result);
+
+    expect(result.score).toBeLessThan(100);
+    expect(garantiGate?.ready).toBe(false);
+    expect(garantiGate?.missingEvidence[0]).toMatchObject({
+      path: "docs/evidence/garanti-pos.md",
+      ready: false,
+      reason: expect.stringContaining("missing evidence signals:"),
+      missingEvidenceSignals: expect.arrayContaining([
+        "POS environment proof",
+        "successful 3DS payment proof",
+        "failed payment proof",
+        "callback verification proof",
+        "refund or cancel proof",
+      ]),
+    });
+    expect(formatted).toContain("missing evidence signals:");
+    expect(formatted).not.toContain("GARANTI-UAT-123");
   });
 
   it("blocks ready evidence that contains redaction findings", async () => {

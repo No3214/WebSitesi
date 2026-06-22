@@ -34,6 +34,7 @@ type CommercialLaunchModule = {
         reason: string;
         redactionFindingCount?: number;
         redactionCategories?: string[];
+        missingEvidenceSignals?: string[];
       }>;
     }>;
   };
@@ -81,6 +82,7 @@ type EvidenceHandoffModule = {
       redactionCategories: string[];
       redactionSummary: string;
       redactionAction: string;
+      missingEvidenceSignals: string[];
       requiredSections: string[];
       sourceRefsPolicy: string;
     }>;
@@ -117,6 +119,68 @@ function makeTmpDir() {
   return dir;
 }
 
+function evidenceProofText(relPath: string) {
+  const proofByPath: Record<string, string[]> = {
+    "docs/evidence/canonical-domain.md": [
+      "The current production deployment commit is verified through /api/health with service: \"kozbeyli-konagi\".",
+      "The approved opening hero video /videos/hero.mp4 is visible on apex and www.",
+      "Vercel DNS and secure redirect behavior are verified for the canonical domain.",
+    ],
+    "docs/evidence/production-database.md": [
+      "Managed Supabase Postgres pooler DATABASE_URI and pooling mode are verified.",
+      "PAYLOAD_SECRET is stored as a strong secret in production.",
+      "Backup/PITR restore policy is confirmed.",
+      "Restricted dashboard MFA access is confirmed for the database operator.",
+      "Payload admin and lead persistence UAT completed without repository PII.",
+    ],
+    "docs/evidence/production-abuse-controls.md": [
+      "Cloudflare Turnstile production keys are validated.",
+      "Upstash Redis REST provides shared rate-limit and shared replay checks.",
+      "A successful human lead submission is recorded.",
+      "A blocked missing/invalid Turnstile token request is recorded.",
+      "rateLimitBackend() reports upstash in production.",
+    ],
+    "docs/evidence/hms-booking-engine.md": [
+      "The approved HTTPS HMS host kozbeyli-konagi.hmshotel.net is used.",
+      "/rezervasyon and /en/rezervasyon CTAs open in a new tab.",
+      "Live booking UAT covers date, guest, room and rate selection.",
+      "Cancellation, refund and modification handling is confirmed.",
+      "Room/rate availability sync and stale stock ownership are documented.",
+    ],
+    "docs/evidence/garanti-pos.md": [
+      "GARANTI_POS_MODE and required POS environment names are configured in the source system.",
+      "Successful 3D Secure payment proof is referenced.",
+      "Failed/declined payment proof is referenced.",
+      "Callback webhook signature verification is confirmed.",
+      "Refund cancel handling is documented.",
+    ],
+    "docs/evidence/analytics-purchase.md": [
+      "Production GTM, GA4, Google Ads and Meta Pixel IDs are verified.",
+      "Consent mode and consent-gated behavior are validated before consent.",
+      "GA4 Measurement Protocol sends server-side purchase booking_complete proof.",
+      "Meta Event Manager production event proof is referenced.",
+      "Test traffic is labeled and filtered.",
+    ],
+    "docs/evidence/search-local-seo.md": [
+      "Search Console ownership and GOOGLE_SITE_VERIFICATION are confirmed.",
+      "Production sitemap submitted and accepted.",
+      "Google Business Profile ownership is verified.",
+      "Google Hotel Center free booking links and hotel distribution are reviewed.",
+    ],
+    "docs/evidence/legal-dpa.md": [
+      "Vendor DPA data-processing review is approved.",
+      "KVKK cross-border transfer review is complete.",
+      "Cookie tracking vendor inventory and consent behavior are approved.",
+      "Cancellation payment refund and event proposal terms are approved.",
+      "Final approval owner and date are recorded.",
+    ],
+  };
+
+  return proofByPath[relPath] ?? [
+    "Redacted operational evidence confirms this launch gate was validated in the source system.",
+  ];
+}
+
 function writeEvidence(baseDir: string, relPath: string) {
   const fullPath = path.join(baseDir, relPath);
   fs.mkdirSync(path.dirname(fullPath), { recursive: true });
@@ -134,6 +198,7 @@ function writeEvidence(baseDir: string, relPath: string) {
       "Redacted operational evidence confirms this launch gate was validated in the source system.",
       "",
       "## Proof",
+      ...evidenceProofText(relPath),
       "Ticket, screenshot and UAT references are stored outside the repository without secrets or PII.",
       "",
       "## Residual Risk",
@@ -296,6 +361,60 @@ describe("evidence handoff", () => {
     expect(formatted).toContain("redaction action:");
     expect(JSON.stringify(result)).not.toContain("4242");
     expect(formatted).not.toContain("4242");
+  });
+
+  it("carries missing gate-specific proof signals into the operator handoff", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const handoff = await loadHandoffModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const hmsPath = path.join(baseDir, "docs/evidence/hms-booking-engine.md");
+    fs.writeFileSync(
+      hmsPath,
+      [
+        "# Evidence",
+        "",
+        "status: ready",
+        "date: 2026-06-22",
+        "owner: reservations-ops",
+        "source_refs: HMS-UAT-123",
+        "",
+        "## Summary",
+        "A generic reservation evidence note was added.",
+        "",
+        "## Proof",
+        "The source system stores redacted references outside the repository.",
+        "",
+        "## Residual Risk",
+        "No raw guest data is included.",
+      ].join("\n"),
+    );
+
+    const launchResult = audit.evaluateCommercialLaunch({ env, baseDir });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const result = handoff.buildEvidenceHandoff({ launchResult, cutoverPlan });
+    const hms = result.files.find((file) => file.path === "docs/evidence/hms-booking-engine.md");
+    const formatted = handoff.formatEvidenceHandoff(result);
+
+    expect(hms?.reason).toContain("missing evidence signals:");
+    expect(hms?.missingEvidenceSignals).toEqual(
+      expect.arrayContaining([
+        "approved HMS host proof",
+        "new-tab CTA proof",
+        "live booking UAT proof",
+      ]),
+    );
+    expect(formatted).toContain("missing proof signals:");
+    expect(formatted).not.toContain("HMS-UAT-123");
   });
 
   it("formats a readable handoff for non-technical owners", async () => {

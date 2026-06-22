@@ -29,6 +29,10 @@ The launch audit rejects `ready` evidence that has no `date: YYYY-MM-DD`, no
 named `owner`, or placeholder source references such as `pending`, `todo`,
 `tbd`, `none`, `draft` or `<redacted-source-ids>`.
 
+Each `ready` file must also mention the gate-specific proof topics in the table
+below. Generic statements such as "validated in the source system" are not
+enough to clear a commercial launch gate.
+
 ## Required Evidence Files
 
 | File | Required proof |

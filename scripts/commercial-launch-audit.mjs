@@ -23,6 +23,20 @@ export const commercialLaunchGates = [
       },
     },
     evidence: ["docs/evidence/canonical-domain.md"],
+    evidenceSignals: [
+      {
+        label: "current health and commit proof",
+        pattern: "/api/health|health endpoint|current (?:production )?deployment commit|service:\\s*[\"']kozbeyli-konagi[\"']",
+      },
+      {
+        label: "opening hero video proof",
+        pattern: "/videos/hero\\.mp4|opening hero video|approved opening video",
+      },
+      {
+        label: "canonical DNS and redirect proof",
+        pattern: "Vercel DNS|nameserver|DNS|HTTPS redirect|secure redirect",
+      },
+    ],
   },
   {
     id: "production_database",
@@ -36,6 +50,28 @@ export const commercialLaunchGates = [
       },
     },
     evidence: ["docs/evidence/production-database.md"],
+    evidenceSignals: [
+      {
+        label: "managed Postgres or Supabase pooler proof",
+        pattern: "managed Postgres|Supabase|pooler|pooling mode|DATABASE_URI",
+      },
+      {
+        label: "Payload secret proof",
+        pattern: "PAYLOAD_SECRET|Payload secret|strong secret",
+      },
+      {
+        label: "backup or restore policy proof",
+        pattern: "backup|PITR|restore",
+      },
+      {
+        label: "restricted dashboard access proof",
+        pattern: "restricted dashboard|dashboard access|MFA|operator access",
+      },
+      {
+        label: "Payload persistence UAT proof",
+        pattern: "Payload admin|lead persistence|persistence UAT|content writes",
+      },
+    ],
   },
   {
     id: "production_abuse_controls",
@@ -48,6 +84,28 @@ export const commercialLaunchGates = [
       "UPSTASH_REDIS_REST_TOKEN",
     ],
     evidence: ["docs/evidence/production-abuse-controls.md"],
+    evidenceSignals: [
+      {
+        label: "production Turnstile proof",
+        pattern: "Turnstile",
+      },
+      {
+        label: "shared Upstash proof",
+        pattern: "Upstash|shared rate-limit|shared replay",
+      },
+      {
+        label: "successful human lead UAT proof",
+        pattern: "successful human lead|valid human|human lead submission",
+      },
+      {
+        label: "blocked invalid token proof",
+        pattern: "blocked missing|blocked invalid|missing/invalid Turnstile",
+      },
+      {
+        label: "production rate-limit backend proof",
+        pattern: "rateLimitBackend\\(\\).*upstash|reports `?upstash`?|backend.*upstash",
+      },
+    ],
   },
   {
     id: "hms_booking_engine",
@@ -62,6 +120,28 @@ export const commercialLaunchGates = [
       },
     },
     evidence: ["docs/evidence/hms-booking-engine.md"],
+    evidenceSignals: [
+      {
+        label: "approved HMS host proof",
+        pattern: "kozbeyli-konagi\\.hmshotel\\.net|approved HTTPS HMS",
+      },
+      {
+        label: "new-tab CTA proof",
+        pattern: "new tab|yeni sekme|/rezervasyon|/en/rezervasyon",
+      },
+      {
+        label: "live booking UAT proof",
+        pattern: "booking UAT|live booking|date.*guest|room.*rate",
+      },
+      {
+        label: "cancellation refund modification proof",
+        pattern: "cancellation|refund|modification|cancel",
+      },
+      {
+        label: "room or rate sync ownership proof",
+        pattern: "availability sync|room/rate|rate availability|stock sync|stale stock",
+      },
+    ],
   },
   {
     id: "garanti_pos",
@@ -75,6 +155,28 @@ export const commercialLaunchGates = [
       "GARANTI_3D_STORE_KEY",
     ],
     evidence: ["docs/evidence/garanti-pos.md"],
+    evidenceSignals: [
+      {
+        label: "POS environment proof",
+        pattern: "GARANTI_POS_MODE|GARANTI_MERCHANT_ID|GARANTI_TERMINAL_ID|GARANTI_PROVISION_USER|GARANTI_3D_STORE_KEY",
+      },
+      {
+        label: "successful 3DS payment proof",
+        pattern: "successful 3D Secure|successful 3DS|successful.*payment",
+      },
+      {
+        label: "failed payment proof",
+        pattern: "failed payment|declined payment|failed/declined",
+      },
+      {
+        label: "callback verification proof",
+        pattern: "callback|webhook|signature",
+      },
+      {
+        label: "refund or cancel proof",
+        pattern: "refund|cancel",
+      },
+    ],
   },
   {
     id: "analytics_purchase",
@@ -107,6 +209,28 @@ export const commercialLaunchGates = [
       },
     },
     evidence: ["docs/evidence/analytics-purchase.md"],
+    evidenceSignals: [
+      {
+        label: "production analytics ID proof",
+        pattern: "GTM|GA4|Google Ads|Meta Pixel|production ID",
+      },
+      {
+        label: "consent behavior proof",
+        pattern: "consent mode|consent-gated|consent behavior|before.*consent",
+      },
+      {
+        label: "server-side purchase event proof",
+        pattern: "Measurement Protocol|purchase|booking_complete|server-side",
+      },
+      {
+        label: "Meta Event Manager proof",
+        pattern: "Meta Event Manager|Events Manager|Meta.*event",
+      },
+      {
+        label: "test traffic handling proof",
+        pattern: "test traffic|filtered|labeled",
+      },
+    ],
   },
   {
     id: "search_local_seo",
@@ -114,6 +238,24 @@ export const commercialLaunchGates = [
     label: "Search Console, GBP and Hotel Center verification evidence",
     env: ["GOOGLE_SITE_VERIFICATION"],
     evidence: ["docs/evidence/search-local-seo.md"],
+    evidenceSignals: [
+      {
+        label: "Search Console ownership proof",
+        pattern: "Search Console|GOOGLE_SITE_VERIFICATION",
+      },
+      {
+        label: "sitemap submission proof",
+        pattern: "sitemap.*submitted|submitted.*sitemap|sitemap.*accepted",
+      },
+      {
+        label: "Google Business Profile proof",
+        pattern: "Google Business Profile|GBP",
+      },
+      {
+        label: "Hotel Center or booking links proof",
+        pattern: "Hotel Center|free booking links|hotel distribution",
+      },
+    ],
   },
   {
     id: "legal_dpa",
@@ -121,6 +263,28 @@ export const commercialLaunchGates = [
     label: "Vendor DPA and legal approval evidence",
     env: [],
     evidence: ["docs/evidence/legal-dpa.md"],
+    evidenceSignals: [
+      {
+        label: "vendor DPA review proof",
+        pattern: "Vendor DPA|data-processing|DPA",
+      },
+      {
+        label: "KVKK transfer review proof",
+        pattern: "KVKK|cross-border|transfer|yurtdisi",
+      },
+      {
+        label: "cookie vendor inventory proof",
+        pattern: "Cookie|tracking vendor|vendor inventory|consent",
+      },
+      {
+        label: "commercial terms approval proof",
+        pattern: "Cancellation|payment|refund|event proposal|terms",
+      },
+      {
+        label: "final approval owner proof",
+        pattern: "Final approval|approval owner|owner and date",
+      },
+    ],
   },
 ];
 
@@ -262,7 +426,7 @@ function envRequirementState(gate, env) {
   };
 }
 
-function evidenceState(relPath, baseDir) {
+function evidenceState(relPath, baseDir, gate) {
   const fullPath = path.join(baseDir, relPath);
   if (!fs.existsSync(fullPath)) {
     return { path: relPath, ready: false, reason: "missing" };
@@ -298,6 +462,18 @@ function evidenceState(relPath, baseDir) {
   const sourceRefsMatch = content.match(/^source_refs:\s*(.+)$/im);
   if (!sourceRefsMatch || blockedEvidenceFieldPattern.test(sourceRefsMatch[1].trim())) {
     return { path: relPath, ready: false, reason: "missing source refs" };
+  }
+
+  const missingSignals = (gate.evidenceSignals || [])
+    .filter((signal) => !new RegExp(signal.pattern, "i").test(content))
+    .map((signal) => signal.label);
+  if (missingSignals.length > 0) {
+    return {
+      path: relPath,
+      ready: false,
+      reason: `missing evidence signals: ${missingSignals.join(", ")}`,
+      missingEvidenceSignals: missingSignals,
+    };
   }
 
   const redactionFindings = scanEvidenceSource(content, relPath);
@@ -378,7 +554,7 @@ function gateProgressNotes(gate, envState, missingEvidence) {
 export function evaluateCommercialLaunch({ env = loadEnvSnapshot(), baseDir = root } = {}) {
   const gateResults = commercialLaunchGates.map((gate) => {
     const envState = envRequirementState(gate, env);
-    const evidence = gate.evidence.map((file) => evidenceState(file, baseDir));
+    const evidence = gate.evidence.map((file) => evidenceState(file, baseDir, gate));
     const missingEvidence = evidence.filter((item) => !item.ready);
     const ready = envState.missingEnv.length === 0 && missingEvidence.length === 0;
     const progressNotes = gateProgressNotes(gate, envState, missingEvidence);

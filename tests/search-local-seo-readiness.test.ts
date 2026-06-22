@@ -81,7 +81,7 @@ function writeEvidence(baseDir: string, status = "ready") {
       "Redacted source-system references prove search and local discovery setup.",
       "",
       "## Proof",
-      "Search Console, Google Business Profile and Hotel Center proof lives outside the repo.",
+      "Search Console ownership, sitemap submitted status, Google Business Profile and Hotel Center proof lives outside the repo.",
       "",
       "## Residual Risk",
       "No account screenshots, private listing data or console secrets are stored in this fixture.",
