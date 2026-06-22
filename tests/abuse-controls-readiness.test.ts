@@ -9,6 +9,8 @@ const root = process.cwd();
 const tmpDirs: string[] = [];
 
 type AbuseReadinessModule = {
+  parseEnvFile: (source: string) => Record<string, string>;
+  loadEnvFileSnapshot: (envFile: string, baseEnv?: Record<string, string>) => Record<string, string>;
   evaluateAbuseControlsReadiness: (args?: {
     env?: Record<string, string>;
     baseDir?: string;
@@ -102,6 +104,25 @@ afterEach(() => {
 });
 
 describe("production abuse-control readiness", () => {
+  it("parses pulled env files and keeps empty production values authoritative", async () => {
+    const mod = await loadModule();
+    const parsed = mod.parseEnvFile(
+      [
+        "NEXT_PUBLIC_TURNSTILE_SITE_KEY=",
+        'TURNSTILE_SECRET_KEY=""',
+        "UPSTASH_REDIS_REST_URL=https://example.upstash.io",
+        "UPSTASH_REDIS_REST_TOKEN=''",
+      ].join("\n"),
+    );
+
+    expect(parsed).toEqual({
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: "",
+      TURNSTILE_SECRET_KEY: "",
+      UPSTASH_REDIS_REST_URL: "https://example.upstash.io",
+      UPSTASH_REDIS_REST_TOKEN: "",
+    });
+  });
+
   it("keeps current source contracts passing while external env and evidence are pending", async () => {
     const mod = await loadModule();
     const result = mod.evaluateAbuseControlsReadiness({ env: {}, baseDir: root });
@@ -141,6 +162,40 @@ describe("production abuse-control readiness", () => {
     expect(result.evidence.ready).toBe(true);
     expect(result.sourceContracts.ready).toBe(true);
     expect(result.blockers).toEqual([]);
+  });
+
+  it("uses a pulled Vercel env file over local fallback abuse-control values", async () => {
+    const mod = await loadModule();
+    const baseDir = makeTmpDir();
+    copyContractFiles(baseDir);
+    writeEvidence(baseDir, "ready");
+    const envFile = path.join(baseDir, "vercel-production.env");
+    fs.writeFileSync(
+      envFile,
+      [
+        "NEXT_PUBLIC_TURNSTILE_SITE_KEY=",
+        "TURNSTILE_SECRET_KEY=",
+        "UPSTASH_REDIS_REST_URL=",
+        "UPSTASH_REDIS_REST_TOKEN=",
+      ].join("\n"),
+    );
+
+    const env = mod.loadEnvFileSnapshot(envFile, readyEnv);
+    const result = mod.evaluateAbuseControlsReadiness({ env, baseDir });
+
+    expect(env.NEXT_PUBLIC_TURNSTILE_SITE_KEY).toBe("");
+    expect(env.TURNSTILE_SECRET_KEY).toBe("");
+    expect(env.UPSTASH_REDIS_REST_URL).toBe("");
+    expect(env.UPSTASH_REDIS_REST_TOKEN).toBe("");
+    expect(result.decision).toBe("PRODUCTION ABUSE CONTROLS BLOCKED");
+    expect(result.env.missing).toEqual([
+      "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
+      "TURNSTILE_SECRET_KEY",
+      "UPSTASH_REDIS_REST_URL",
+      "UPSTASH_REDIS_REST_TOKEN",
+    ]);
+    expect(JSON.stringify(result)).not.toContain("turnstile-secret");
+    expect(JSON.stringify(result)).not.toContain("upstash-token");
   });
 
   it("blocks insecure Upstash URLs and legacy lead-service regressions", async () => {

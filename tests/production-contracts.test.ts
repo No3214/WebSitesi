@@ -514,6 +514,11 @@ describe("production readiness contracts", () => {
     expect(abuseReadiness).toContain("UPSTASH_REDIS_REST_URL must use HTTPS");
     expect(abuseReadiness).toContain("legacy_lead_service_removed");
     expect(abuseReadiness).toContain("legacy_booking_service_removed");
+    expect(abuseReadiness).toContain("loadEnvFileSnapshot");
+    expect(abuseReadiness).toContain("parseEnvFile");
+    expect(abuseReadiness).toContain('"--env-file"');
+    expect(abuseReadiness).not.toContain("TURNSTILE_SECRET_KEY=");
+    expect(abuseReadiness).not.toContain("UPSTASH_REDIS_REST_TOKEN=");
     expect(abuseReadiness).toContain("process.exitCode");
     expect(abuseReadiness).not.toContain("process.exit(strict");
     expect(leadRoute).toContain("env.TURNSTILE_SECRET_KEY");

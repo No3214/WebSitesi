@@ -47,6 +47,12 @@ kanıtlanacaksa temp dosya kullan:
 `vercel env pull %TEMP%\kozbeyli-supabase.env --environment=production` ve
 `node scripts/supabase-security-readiness.mjs --env-file %TEMP%\kozbeyli-supabase.env`.
 Komut değerleri yazdırmaz; işlem sonunda temp dosyayı sil veya önce boşalt.
+`abuse:verify` aynı temp snapshot modeliyle production Turnstile/Upstash
+değerlerini local `.env` ile maskelenmeden denetler:
+`vercel env pull %TEMP%\kozbeyli-abuse.env --environment=production` ve
+`node scripts/abuse-controls-readiness.mjs --env-file %TEMP%\kozbeyli-abuse.env`.
+Snapshot içinde boş `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`,
+`UPSTASH_REDIS_REST_URL` veya `UPSTASH_REDIS_REST_TOKEN` varsa gate bloklu kalır.
 `launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
 
 - Canonical domain health + current Vercel commit: `docs/evidence/canonical-domain.md`

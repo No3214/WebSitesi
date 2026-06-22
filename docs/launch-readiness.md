@@ -151,6 +151,10 @@ doğrudan Google tag fallback'i `NEXT_PUBLIC_GA4_MEASUREMENT_ID` ve
 ve Upstash shared rate-limit/replay kanıtını da ister. Kod fallbackleri dev için
 korunur; `docs/evidence/production-abuse-controls.md` hazır olmadan strict
 commercial gate yeşile dönmez.
+2026-06-22 ek doğrulama: `abuse-controls-readiness.mjs --env-file` artık
+Vercel'den çekilmiş geçici production env snapshot'ını local `.env` yerine
+otoriter kabul eder. Boş Turnstile/Upstash değerleri local fallback ile
+maskelenmez ve secret değerleri rapora yazılmaz.
 
 2026-06-14 hedef güncellemesi: Tam ticari yayın artık `npm run launch:audit`
 ile izlenen ayrı bir evidence gate'e bağlıdır. `npm run launch:audit:strict`,
