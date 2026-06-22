@@ -1,7 +1,7 @@
 # Evidence: Canonical Domain
 
 status: pending
-date: 2026-06-20
+date: 2026-06-22
 owner: launch-qa
 
 ## Summary
@@ -36,7 +36,7 @@ and MX results. DNS warnings do not make a stale web deployment ready; the
 health endpoint, current commit, secure redirect chain and hero video checks
 remain the launch blockers.
 
-As of 2026-06-20, `npm run domain:verify:json` reports these concrete blockers:
+As of 2026-06-22, `npm run domain:verify:json` reports these concrete blockers:
 
 - `https://kozbeylikonagi.com` first redirects to insecure HTTP before reaching
   `www`.
@@ -75,6 +75,32 @@ As of 2026-06-20, `npm run domain:verify:json` reports these concrete blockers:
   first cutover verification, or keep proxy enabled only after `/api/health`
   returns `service: "kozbeyli-konagi"` at the current commit and the homepage
   exposes `/videos/hero.mp4`.
+- Current Vercel proof on 2026-06-22: project `kozbeyli-konagi`
+  (`prj_lM3tFqaJ5DIv9JaYTUobdTBQlXC8`) is linked to
+  `kozbeylikonagi.com` and `www.kozbeylikonagi.com`, and the Vercel preview
+  at `https://kozbeyli-konagi.vercel.app` serves deployment commit
+  `8e7d19e942ac` with `service: "kozbeyli-konagi"`.
+- Current DNS authority on 2026-06-22: `.com` still uses Cloudflare
+  nameservers `anastasia.ns.cloudflare.com` and `theo.ns.cloudflare.com`, so
+  Isimtescil DNS-zone edits alone will not change public traffic while that
+  delegation remains. Either edit the actual Cloudflare zone or move the
+  nameservers after preserving mail records.
+- Vercel Project Settings currently presents the Cloudflare manual setup as
+  `CNAME @ dacb3ec12ca81d22.vercel-dns-017.com` with proxy disabled, while
+  `vercel domains inspect` also reports the older compatible apex fallback
+  `A kozbeylikonagi.com 76.76.21.21`. Use the value shown in Project Settings
+  at action time and verify with `/api/health`; do not mark the gate ready
+  from DNS shape alone.
+- Vercel DNS has been preloaded with the observed mail-continuity records for
+  a possible nameserver move: `MX mx.kozbeylikonagi.com`, `A mx`,
+  `A mail`, `A webmail`, `A autodiscover` to `78.142.208.142`, the SPF TXT
+  record, `_dmarc` TXT, and `default._domainkey` DKIM TXT. Re-check these
+  before changing nameservers because mail records are external operational
+  state.
+- The Cloudflare API account available to this agent currently lists no zones,
+  so API-based DNS cutover cannot be completed from this session. The operator
+  must use the Cloudflare account that owns the zone or complete the
+  nameserver change in Isimtescil after confirming mail continuity.
 
 ## Residual Risk
 

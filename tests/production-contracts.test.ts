@@ -176,10 +176,20 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"github:ci:strict"');
     expect(readinessScript).toContain('"launch:smoke"');
     expect(readinessScript).toContain('"launch:smoke:live"');
+    expect(readinessScript).toContain('"preview:verify"');
+    expect(readinessScript).toContain('"preview:verify:json"');
+    expect(readinessScript).toContain('"preview:verify:strict"');
     expect(readinessScript).toContain('"release:verify"');
     expect(packageJson.scripts?.["launch:smoke"]).toBe("node scripts/launch-smoke.mjs");
     expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
       "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/launch-smoke.mjs",
+    );
+    expect(packageJson.scripts?.["preview:verify"]).toBe("node scripts/local-preview-verify.mjs");
+    expect(packageJson.scripts?.["preview:verify:json"]).toBe(
+      "node scripts/local-preview-verify.mjs --json",
+    );
+    expect(packageJson.scripts?.["preview:verify:strict"]).toBe(
+      "node scripts/local-preview-verify.mjs --strict",
     );
     expect(packageJson.scripts?.["hms:verify"]).toBe("node scripts/hms-booking-readiness.mjs");
     expect(packageJson.scripts?.["hms:verify:json"]).toBe(
@@ -288,7 +298,22 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/vercel-ops-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/vercel-env-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/github-ci-readiness.mjs"');
+    expect(readinessScript).toContain('"scripts/local-preview-verify.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
+  });
+
+  it("keeps local preview verification browser-free and guarded against cross-project content", () => {
+    const localPreview = read("scripts/local-preview-verify.mjs");
+
+    expect(localPreview).toContain("LOCAL PREVIEW BLOCKED");
+    expect(localPreview).toContain("kozbeyli-konagi");
+    expect(localPreview).toContain("/videos/hero.mp4");
+    expect(localPreview).toContain("Ela");
+    expect(localPreview).toContain("Ebe");
+    expect(localPreview).toContain("fetchWithTimeout");
+    expect(localPreview).not.toContain("Start-Process");
+    expect(localPreview).not.toContain("playwright");
+    expect(localPreview).not.toContain("page.goto");
   });
 
   it("keeps release verification orchestrating the full local release gate", () => {
@@ -745,11 +770,17 @@ describe("production readiness contracts", () => {
     expect(publishTarget).not.toContain("113 passed / 2 skipped");
     expect(publishTarget).not.toContain("http://127.0.0.1:3010");
 
-    expect(canonicalEvidence).toContain("date: 2026-06-20");
+    expect(canonicalEvidence).toContain("date: 2026-06-22");
     expect(canonicalEvidence).toContain("legacy Joomla/Seagull template");
     expect(canonicalEvidence).toContain("legacy HotelRunner hosted landing surface");
     expect(canonicalEvidence).toContain("DNS NS/MX can be verified through DNS-over-HTTPS");
     expect(canonicalEvidence).toContain("public A lookups can show Cloudflare anycast");
+    expect(canonicalEvidence).toContain("8e7d19e942ac");
+    expect(canonicalEvidence).toContain("anastasia.ns.cloudflare.com");
+    expect(canonicalEvidence).toContain("theo.ns.cloudflare.com");
+    expect(canonicalEvidence).toContain("Isimtescil DNS-zone edits alone will not change public traffic");
+    expect(canonicalEvidence).toContain("dacb3ec12ca81d22.vercel-dns-017.com");
+    expect(canonicalEvidence).toContain("mail-continuity records");
   });
 
   it("keeps Vercel operational prerequisites visible without hiding the global CLI requirement", () => {
