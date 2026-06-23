@@ -253,6 +253,7 @@ const requiredScripts = [
   "github:ci:json",
   "github:ci:strict",
   "launch:smoke",
+  "launch:smoke:preview",
   "launch:smoke:live",
   "preview:verify",
   "preview:verify:json",

@@ -210,6 +210,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"github:ci:json"');
     expect(readinessScript).toContain('"github:ci:strict"');
     expect(readinessScript).toContain('"launch:smoke"');
+    expect(readinessScript).toContain('"launch:smoke:preview"');
     expect(readinessScript).toContain('"launch:smoke:live"');
     expect(readinessScript).toContain('"preview:verify"');
     expect(readinessScript).toContain('"preview:verify:json"');
@@ -217,8 +218,11 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"release:verify"');
     expect(readinessScript).toContain('"release:verify:commercial"');
     expect(packageJson.scripts?.["launch:smoke"]).toBe("node scripts/launch-smoke.mjs");
-    expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
+    expect(packageJson.scripts?.["launch:smoke:preview"]).toBe(
       "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/launch-smoke.mjs",
+    );
+    expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
+      "cross-env PW_BASE_URL=https://www.kozbeylikonagi.com node scripts/launch-smoke.mjs",
     );
     expect(packageJson.scripts?.["preview:verify"]).toBe("node scripts/local-preview-verify.mjs");
     expect(packageJson.scripts?.["preview:verify:json"]).toBe(
@@ -888,7 +892,8 @@ describe("production readiness contracts", () => {
     expect(launchReadiness).toContain("68 routes generated");
     expect(launchReadiness).toContain("170 Playwright tests (168 passed / 2 skipped)");
     expect(launchReadiness).toContain("current commit'i `/api/health` üzerinden doğruluyor");
-    expect(launchReadiness).toContain("https://kozbeyli-konagi.vercel.app");
+    expect(launchReadiness).toContain("`launch:smoke:live` canonical production domain");
+    expect(launchReadiness).toContain("`launch:smoke:preview` Vercel preview");
     expect(launchReadiness).toContain("legacy Joomla/Seagull template");
     expect(launchReadiness).toContain("`.com` canonical origins PASS");
     expect(launchReadiness).toContain("current production");

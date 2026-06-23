@@ -118,6 +118,10 @@ ready:
   `/videos/hero.mp4`;
 - the Vercel preview remains healthy while the canonical hosts are switched.
 
+`npm run launch:smoke:live` runs the browser smoke suite against
+`https://www.kozbeylikonagi.com`. Use `npm run launch:smoke:preview` only when
+the Vercel preview host needs a separate check.
+
 Only then update `docs/evidence/canonical-domain.md` from `pending` to `ready`.
 
 ## Agentic Vercel operations

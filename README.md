@@ -92,7 +92,8 @@ npm run launch:audit:strict      # Tüm ticari kanıtlar tamamlanmadan fail veri
 npm run domain:verify            # Canonical domainler Vercel health/current commit veriyor mu?
 npm run domain:verify:strict     # Canonical domain hazır değilse fail verir
 npm run launch:smoke             # Lokal production build'e kritik launch smoke
-npm run launch:smoke:live        # Canlı Vercel URL'ye kritik launch smoke
+npm run launch:smoke:preview     # Vercel preview URL'ye kritik launch smoke
+npm run launch:smoke:live        # Canonical www domain üstünde kritik launch smoke
 npm run quality                  # lint + typecheck + unit + build
 npm run release:verify           # Lokal release gate: security + publish + smoke + stress + audit JSON
 npm run release:verify:commercial # 100/100 booking/payment için strict audit + strict cutover gate
@@ -116,7 +117,8 @@ npm run evidence:templates       # Operasyon ekibi için kopyalanabilir güvenli
 npm run media:hero               # Hero video hash, çözünürlük, süre, bitrate ve mobil/desktop sözleşmesi
 npm run domain:verify            # kozbeylikonagi.com ve www domain health/commit kontrolü
 npm run launch:smoke             # Public rota, health, hero video, konum ve medya smoke
-npm run launch:smoke:live        # https://kozbeyli-konagi.vercel.app üzerinde aynı smoke
+npm run launch:smoke:preview     # https://kozbeyli-konagi.vercel.app üzerinde aynı smoke
+npm run launch:smoke:live        # https://www.kozbeylikonagi.com üzerinde aynı smoke
 npm run release:verify           # Lokal final release kapısı (commercial/domain strict ayrı)
 npm run release:verify:commercial # Tam ticari launch iddiası için strict kırmızı/yeşil kapı
 
@@ -195,7 +197,9 @@ npm run launch:smoke:live
 ```
 
 Bu komut public rotaları, ana ekran hero videosunu, düğün/organizasyon medyasını,
-iletişim konumunu ve görünür medya kırıklarını canlı URL üzerinde tekrar kontrol eder.
+iletişim konumunu ve görünür medya kırıklarını canonical production domain
+üzerinde tekrar kontrol eder. Vercel preview hostunu ayrıca kontrol etmek için
+`npm run launch:smoke:preview` kullanılır.
 
 Vercel env/deploy/log kontrolü için Vercel CLI oturumu (`vercel login`) veya
 Vercel panel erişimi gerekir.

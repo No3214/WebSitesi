@@ -173,6 +173,9 @@ denetlenir.
 geliştirme URL'lerini commercial launch env kanıtı gibi okumaz; canlı hedefte
 preflight olarak `domain:verify:json` çalıştırır. Böylece `.com` canlı geçiş
 kanıtı local dev ayarlarından ayrı raporlanır.
+2026-06-23 canlı smoke hedef ayrımı: `launch:smoke:live` canonical production domain
+`https://www.kozbeylikonagi.com` üstünde çalışır; `launch:smoke:preview` Vercel preview
+hostunu ayrıca doğrulamak için ayrılmıştır.
 2026-06-14 monitoring güncellemesi: Uptime/rollback monitor yüzeyi olarak
 `/api/health` eklendi; cache'siz JSON döner ve secret/private env değeri
 yayınlamaz.
@@ -230,7 +233,7 @@ altına indirerek performans bütçesini tekrar 0.85+ seviyesine taşımaktır.
 - `npm run domain:verify:json` — preview PASS, `.com` canonical origins PASS; `.com.tr` is outside this project launch gate unless explicitly configured later.
 - Vercel production deploy — READY: `npm run domain:verify` preview kontrolü
   current commit'i `/api/health` üzerinden doğruluyor; production URL
-  `https://kozbeyli-konagi.vercel.app`.
+  `https://www.kozbeylikonagi.com`.
 - Managed database gate — BLOCKED: `DATABASE_URI` ve `PAYLOAD_SECRET` üretimde
   isim olarak bulunabilir, fakat local `.env` production kanıtı sayılmaz;
   Payload/Supabase Postgres backup, pooling, restricted access ve persistence

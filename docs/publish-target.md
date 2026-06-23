@@ -124,11 +124,17 @@ kontrol eder. Lokal hedefte commercial launch audit'i okur; `PW_BASE_URL` ile
 canlı hedef verildiğinde local `.env` dosyalarından etkilenmemek için preflight
 olarak `domain:verify:json` çalıştırır. CI her push/PR'da release gate
 manifestini doğrular ve aynı smoke gate'i publish verification'dan önce
-çalıştırır. Canlı Vercel deployment için:
+çalıştırır. Canonical production domain için:
 
 ```bash
 npm run launch:smoke:live
 npm run domain:verify:strict
+```
+
+Vercel preview hostu ayrıca kontrol edilecekse:
+
+```bash
+npm run launch:smoke:preview
 ```
 
 Not: `release:verify` lokal repo/release yeşil kapısıdır ve `launch:audit:json`
