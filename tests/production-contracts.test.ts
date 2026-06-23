@@ -370,6 +370,7 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["github:ci:strict"]).toBe(
       "node scripts/github-ci-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.typecheck).toBe("tsc --noEmit --incremental false");
     expect(packageJson.scripts?.quality).toBe("npm run lint && npm run typecheck && npm run test:unit && npm run build");
     expect(packageJson.scripts?.["test:e2e"]).toBe("playwright test");
     expect(packageJson.scripts?.["security:audit"]).toBe("npm audit --omit=dev --audit-level=high");

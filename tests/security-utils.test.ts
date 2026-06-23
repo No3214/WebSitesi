@@ -30,6 +30,11 @@ describe("security helpers", () => {
     expect(safeText("Kozbeyli Konağı", 8)).toBe("Kozbeyli");
   });
 
+  it("removes bidirectional control characters that can spoof operational logs", () => {
+    expect(safeText("invoice\u202Ecod.exe", 80)).toBe("invoicecod.exe");
+    expect(safeText("\u2066Rezervasyon\u2069 \u200fNo: 42", 80)).toBe("Rezervasyon No: 42");
+  });
+
   it("validates same-origin state-changing requests fail-closed", () => {
     expect(
       validateSameOrigin(

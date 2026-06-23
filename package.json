@@ -13,7 +13,7 @@
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit --incremental false",
     "test:unit": "vitest run --project unit",
     "test:e2e": "playwright test",
     "test:monkey": "playwright test tests/monkey.spec.ts --reporter=line",
