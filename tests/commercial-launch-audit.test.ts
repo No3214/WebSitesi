@@ -39,6 +39,7 @@ type CommercialLaunchModule = {
     };
     runtimeSource?: string;
     runtimeReadinessError?: string;
+    currentDate?: string | Date;
   }) => {
     baseScore: number;
     score: number;
@@ -683,6 +684,59 @@ describe("commercial launch audit", () => {
         path: "docs/evidence/search-local-seo.md",
         ready: false,
         reason: "missing owner",
+      },
+    ]);
+  });
+
+  it("blocks ready evidence dated in the future or outside the freshness window", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const legalPath = path.join(baseDir, "docs/evidence/legal-dpa.md");
+    fs.writeFileSync(
+      legalPath,
+      fs.readFileSync(legalPath, "utf8").replace(/^date:.*$/m, "date: 2026-06-24"),
+    );
+
+    const futureResult = audit.evaluateCommercialLaunch({
+      env,
+      baseDir,
+      currentDate: "2026-06-23",
+    });
+    const futureGate = futureResult.gateResults.find((gate) => gate.id === "legal_dpa");
+
+    expect(futureGate?.ready).toBe(false);
+    expect(futureGate?.missingEvidence).toEqual([
+      {
+        path: "docs/evidence/legal-dpa.md",
+        ready: false,
+        reason: "future evidence date",
+      },
+    ]);
+
+    fs.writeFileSync(
+      legalPath,
+      fs.readFileSync(legalPath, "utf8").replace(/^date:.*$/m, "date: 2026-04-01"),
+    );
+
+    const staleResult = audit.evaluateCommercialLaunch({
+      env,
+      baseDir,
+      currentDate: "2026-06-23",
+    });
+    const staleGate = staleResult.gateResults.find((gate) => gate.id === "legal_dpa");
+
+    expect(staleGate?.ready).toBe(false);
+    expect(staleGate?.missingEvidence).toEqual([
+      {
+        path: "docs/evidence/legal-dpa.md",
+        ready: false,
+        reason: "stale evidence date",
       },
     ]);
   });

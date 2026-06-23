@@ -292,6 +292,7 @@ export const commercialLaunchGates = [
 const envFiles = [".env.production.local", ".env.production", ".env.local", ".env"];
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
 const requiredReadySections = ["## Summary", "## Proof", "## Residual Risk"];
+const maxReadyEvidenceAgeDays = 45;
 const blockedEvidenceFieldPattern = /^(<.*>|replace_with.*|todo|tbd|none|pending|draft)$/i;
 const sourceRefIdPattern = /^(?:[A-Z][A-Z0-9]{1,24}-[A-Z0-9][A-Z0-9_-]{1,40}|[A-Z]{2,16}:[A-Z0-9][A-Z0-9_-]{1,40})$/;
 const unsafeSourceRefPatterns = [
@@ -357,6 +358,46 @@ function sourceRefsIssue(rawValue) {
   if (refs.some((ref) => !sourceRefIdPattern.test(ref))) {
     return "unsafe source refs";
   }
+
+  return "";
+}
+
+function dateOnlyUtc(value) {
+  if (value instanceof Date) {
+    return Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate());
+  }
+
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return Number.NaN;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const time = Date.UTC(year, month - 1, day);
+  const parsed = new Date(time);
+
+  if (
+    parsed.getUTCFullYear() !== year ||
+    parsed.getUTCMonth() !== month - 1 ||
+    parsed.getUTCDate() !== day
+  ) {
+    return Number.NaN;
+  }
+
+  return time;
+}
+
+function evidenceDateIssue(rawDate, currentDate = new Date()) {
+  const evidenceTime = dateOnlyUtc(rawDate);
+  const currentTime = dateOnlyUtc(currentDate);
+
+  if (!Number.isFinite(evidenceTime) || !Number.isFinite(currentTime)) {
+    return "missing valid date";
+  }
+
+  const ageDays = Math.floor((currentTime - evidenceTime) / 86_400_000);
+  if (ageDays < 0) return "future evidence date";
+  if (ageDays > maxReadyEvidenceAgeDays) return "stale evidence date";
 
   return "";
 }
@@ -451,7 +492,7 @@ function envRequirementState(gate, env) {
   };
 }
 
-function evidenceState(relPath, baseDir, gate) {
+function evidenceState(relPath, baseDir, gate, currentDate) {
   const fullPath = path.join(baseDir, relPath);
   if (!fs.existsSync(fullPath)) {
     return { path: relPath, ready: false, reason: "missing" };
@@ -470,8 +511,10 @@ function evidenceState(relPath, baseDir, gate) {
     return { path: relPath, ready: false, reason: "missing ready status" };
   }
 
-  if (!/^date:\s*\d{4}-\d{2}-\d{2}\s*$/im.test(content)) {
-    return { path: relPath, ready: false, reason: "missing valid date" };
+  const dateMatch = content.match(/^date:\s*(\d{4}-\d{2}-\d{2})\s*$/im);
+  const dateProblem = dateMatch ? evidenceDateIssue(dateMatch[1], currentDate) : "missing valid date";
+  if (dateProblem) {
+    return { path: relPath, ready: false, reason: dateProblem };
   }
 
   const ownerMatch = content.match(/^owner:\s*(.+)$/im);
@@ -642,10 +685,11 @@ export function evaluateCommercialLaunch({
   runtimeReadiness,
   runtimeSource = "not provided",
   runtimeReadinessError,
+  currentDate = new Date(),
 } = {}) {
   const gateResults = commercialLaunchGates.map((gate) => {
     const localEnvState = envRequirementState(gate, env);
-    const evidence = gate.evidence.map((file) => evidenceState(file, baseDir, gate));
+    const evidence = gate.evidence.map((file) => evidenceState(file, baseDir, gate, currentDate));
     const missingEvidence = evidence.filter((item) => !item.ready);
     const runtimeConfiguration = runtimeConfigurationState(gate, runtimeReadiness, runtimeSource);
     const envState = applyRuntimeEnvState(localEnvState, runtimeConfiguration);

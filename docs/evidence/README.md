@@ -49,12 +49,12 @@ credentials, database connection strings, access tokens, card data, bank account
 numbers, bank account holder names, customer PII, or private guest data into
 this repository.
 
-The launch audit rejects `ready` evidence that has no `date: YYYY-MM-DD`, no
-named `owner`, or placeholder source references such as `pending`, `todo`,
-`tbd`, `none`, `draft` or `<redacted-source-ids>`. It also rejects ready
-evidence whose `source_refs` contain raw URLs, local file paths, attachment
-filenames, screenshot/PDF/log references or free-form text instead of redacted
-source-system IDs.
+The launch audit rejects `ready` evidence that has no `date: YYYY-MM-DD`, has a
+future date, is more than 45 days old, has no named `owner`, or uses placeholder
+source references such as `pending`, `todo`, `tbd`, `none`, `draft` or
+`<redacted-source-ids>`. It also rejects ready evidence whose `source_refs`
+contain raw URLs, local file paths, attachment filenames, screenshot/PDF/log
+references or free-form text instead of redacted source-system IDs.
 
 Each `ready` file must also mention the gate-specific proof topics in the table
 below. Generic statements such as "validated in the source system" are not
