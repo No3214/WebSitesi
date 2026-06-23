@@ -38,6 +38,7 @@ const requiredFiles = [
   "scripts/vercel-ops-readiness.mjs",
   "scripts/vercel-env-readiness.mjs",
   "scripts/vercel-production-run.mjs",
+  "scripts/vercel-commercial-verify.mjs",
   "src/app/api/health/route.ts",
   "src/lib/ecc-auth.ts",
   "src/lib/gtm.ts",
@@ -71,6 +72,7 @@ const requiredFiles = [
   "tests/e2e/publish-routes.spec.ts",
   "tests/production-readiness.test.ts",
   "tests/vercel-production-run.test.ts",
+  "tests/vercel-commercial-verify.test.ts",
 ];
 
 const publicRoutes = [
@@ -267,6 +269,8 @@ const requiredScripts = [
   "vercel:garanti:verify",
   "vercel:analytics:verify",
   "vercel:search:verify",
+  "vercel:commercial:verify",
+  "vercel:commercial:verify:json",
   "github:ci",
   "github:ci:json",
   "github:ci:strict",

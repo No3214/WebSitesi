@@ -648,6 +648,7 @@ describe("production cutover plan", () => {
     expect(plan.currentScore).toBe(100);
     expect(plan.blockedPoints).toBe(0);
     expect(plan.gateSteps).toEqual([]);
+    expect(plan.finalVerificationCommands).toContain("npm run vercel:commercial:verify");
     expect(plan.finalVerificationCommands).toContain("npm run vercel:env:values:strict");
     expect(plan.finalVerificationCommands).toContain("npm run vercel:supabase:verify");
     expect(plan.finalVerificationCommands).toContain("npm run vercel:abuse:verify");

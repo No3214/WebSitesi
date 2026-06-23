@@ -433,6 +433,7 @@ export function buildProductionCutoverPlan({
     gateSteps: blockedGates.map((gate) => buildGateStep(gate, vercelOpsResult, { useLiveAudit: hasRuntimeLane })),
     finalVerificationCommands: [
       "npm run vercel:ops:strict",
+      "npm run vercel:commercial:verify",
       "npm run vercel:env:values:strict",
       "npm run domain:verify:strict",
       "npm run vercel:supabase:verify",

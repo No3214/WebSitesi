@@ -95,6 +95,8 @@
     "vercel:garanti:verify": "node scripts/vercel-production-run.mjs garanti",
     "vercel:analytics:verify": "node scripts/vercel-production-run.mjs analytics",
     "vercel:search:verify": "node scripts/vercel-production-run.mjs search",
+    "vercel:commercial:verify": "node scripts/vercel-commercial-verify.mjs",
+    "vercel:commercial:verify:json": "node scripts/vercel-commercial-verify.mjs --json",
     "github:ci": "node scripts/github-ci-readiness.mjs",
     "github:ci:json": "node scripts/github-ci-readiness.mjs --json",
     "github:ci:strict": "node scripts/github-ci-readiness.mjs --strict",

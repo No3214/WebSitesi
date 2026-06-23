@@ -188,6 +188,10 @@ source-system kanıt dosyaları hazır değilse 100/100 commercial puanı vermez
 2026-06-23 live strict commercial gate: `launch:audit:live:strict`, canlı
 production runtime lane'i ile evidence gate'i birlikte kırmızı/yeşil hale getirir.
 `release:verify:commercial` tam ticari imzada bu canlı strict denetimi kullanır.
+2026-06-23 Vercel commercial aggregate gate: `vercel:commercial:verify`, tüm
+no-disk Vercel Production commercial gate'lerini tek raporda çalıştırır ve ilk
+hata sonrası durmaz; `release:verify:commercial` bu toplu raporu kullanarak dış
+env bloklarını eksiksiz gösterir.
 2026-06-14 monitoring güncellemesi: Uptime/rollback monitor yüzeyi olarak
 `/api/health` eklendi; cache'siz JSON döner ve secret/private env değeri
 yayınlamaz.

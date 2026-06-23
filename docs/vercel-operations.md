@@ -67,6 +67,7 @@ For individual strict gates that need production env values, use the same
 no-disk pattern so an empty Vercel value cannot be hidden by local `.env` files:
 
 ```bash
+npm run vercel:commercial:verify
 npm run vercel:supabase:verify
 npm run vercel:abuse:verify
 npm run vercel:hms:verify
@@ -74,6 +75,11 @@ npm run vercel:garanti:verify
 npm run vercel:analytics:verify
 npm run vercel:search:verify
 ```
+
+`vercel:commercial:verify` runs every no-disk commercial Vercel gate and keeps
+going after failures, so operators get one complete blocker report instead of
+only the first failing env/evidence lane. Use the individual commands for
+focused rechecks after fixing a provider or env group.
 
 For a strict handoff gate, run:
 

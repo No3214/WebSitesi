@@ -106,8 +106,8 @@ const baseGates = [
 
 const commercialStrictGateOverrides = {
   "abuse:verify:json": {
-    script: "vercel:abuse:verify",
-    label: "Production abuse-control Vercel env gate",
+    script: "vercel:commercial:verify",
+    label: "Aggregate commercial Vercel env gates",
   },
   "analytics:verify:json": {
     script: "vercel:analytics:verify",

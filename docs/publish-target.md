@@ -30,6 +30,7 @@ npm run launch:cutover:json
 npm run media:hero
 npm run launch:audit:strict
 npm run release:verify:commercial
+npm run vercel:commercial:verify
 npm run vercel:env:values:strict
 npm run vercel:supabase:verify
 npm run vercel:abuse:verify
@@ -66,6 +67,9 @@ kanıt dosyalarına değer veya değer içeren ekran görüntüsü girilmez.
 kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
 `media:hero`, açılış videosunun onaylı hash, çözünürlük, süre, bitrate, poster
 türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
+`vercel:commercial:verify`, Vercel Production process env üzerinden çalışan
+tüm no-disk commercial gate'leri tek raporda toplar ve ilk hatada durmaz; bu
+komut eksik Production env/evidence bloklarını operatöre bir seferde gösterir.
 `vercel:supabase:verify`, Payload CMS'in `DATABASE_URI` / `PAYLOAD_SECRET`
 üretim kapısını, local DB kullanımını ve service-role sızıntısı riskini Vercel
 Production process env üzerinden denetler. Vercel Production değerleri local
@@ -123,6 +127,7 @@ Bu üst komut aşağıdaki kapıları sırayla çalıştırır:
 - Lokal launch smoke (`npm run launch:smoke`)
 - Monkey/chaos stres testleri (`npm run test:stress`)
 - Makine okunur commercial launch audit (`npm run launch:audit:json`)
+- Toplu Vercel commercial gate raporu (`npm run vercel:commercial:verify`)
 - Supabase/Payload database security diagnostic (`npm run vercel:supabase:verify`)
 - Makine okunur commercial cutover planı (`npm run launch:cutover:json`)
 

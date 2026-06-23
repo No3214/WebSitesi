@@ -227,6 +227,8 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"vercel:garanti:verify"');
     expect(readinessScript).toContain('"vercel:analytics:verify"');
     expect(readinessScript).toContain('"vercel:search:verify"');
+    expect(readinessScript).toContain('"vercel:commercial:verify"');
+    expect(readinessScript).toContain('"vercel:commercial:verify:json"');
     expect(readinessScript).toContain('"github:ci"');
     expect(readinessScript).toContain('"github:ci:json"');
     expect(readinessScript).toContain('"github:ci:strict"');
@@ -500,8 +502,8 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("launch:audit:live:strict");
     expect(releaseScript).toContain("launch:cutover:strict");
     expect(releaseScript).toContain("vercel:env:values:strict");
+    expect(releaseScript).toContain("vercel:commercial:verify");
     expect(releaseScript).toContain("vercel:supabase:verify");
-    expect(releaseScript).toContain("vercel:abuse:verify");
     expect(releaseScript).toContain("vercel:hms:verify");
     expect(releaseScript).toContain("vercel:garanti:verify");
     expect(releaseScript).toContain("vercel:analytics:verify");
@@ -1042,6 +1044,12 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["vercel:search:verify"]).toBe(
       "node scripts/vercel-production-run.mjs search",
     );
+    expect(packageJson.scripts?.["vercel:commercial:verify"]).toBe(
+      "node scripts/vercel-commercial-verify.mjs",
+    );
+    expect(packageJson.scripts?.["vercel:commercial:verify:json"]).toBe(
+      "node scripts/vercel-commercial-verify.mjs --json",
+    );
     expect(vercelOps).toContain("Kozbeyli Konagi Vercel operations readiness");
     expect(vercelEnv).toContain("Kozbeyli Konagi Vercel production env readiness");
     expect(vercelEnv).toContain("parseVercelEnvList");
@@ -1392,6 +1400,7 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("vercel env add NEXT_PUBLIC_GA4_MEASUREMENT_ID production");
     expect(cutoverPlan).toContain("vercel env add NEXT_PUBLIC_GOOGLE_ADS_ID production");
     expect(cutoverPlan).toContain("npm run domain:verify:strict");
+    expect(cutoverPlan).toContain("npm run vercel:commercial:verify");
     expect(cutoverPlan).toContain("npm run vercel:env:values:strict");
     expect(cutoverPlan).toContain("npm run vercel:supabase:verify");
     expect(cutoverPlan).toContain("npm run vercel:hms:verify");

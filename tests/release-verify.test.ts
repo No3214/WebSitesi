@@ -67,7 +67,7 @@ describe("release verification runner", () => {
     expect(commercialScripts).toContain("launch:cutover:strict");
     expect(commercialScripts).toContain("vercel:env:values:strict");
     expect(commercialScripts).toContain("vercel:supabase:verify");
-    expect(commercialScripts).toContain("vercel:abuse:verify");
+    expect(commercialScripts).toContain("vercel:commercial:verify");
     expect(commercialScripts).toContain("vercel:hms:verify");
     expect(commercialScripts).toContain("vercel:garanti:verify");
     expect(commercialScripts).toContain("vercel:analytics:verify");
