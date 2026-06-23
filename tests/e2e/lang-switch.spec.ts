@@ -42,6 +42,23 @@ test.describe("Dil degistirici", () => {
     await expect(page.getByRole("heading", { name: "Breakfast", exact: true })).toBeVisible();
   });
 
+  test("EN secimi oda detayinda oda metnini de Ingilizceye tasir", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/odalar/uc-kisilik-oda");
+    await expect(page.locator("header.site-header")).toBeVisible();
+    const enLink = page.locator("header.site-header .lang-switcher").getByRole("link", { name: "EN", exact: true });
+    await expect(enLink).toHaveAttribute("href", "/en/odalar/uc-kisilik-oda");
+
+    await Promise.all([page.waitForURL("**/en/odalar/uc-kisilik-oda"), enLink.click()]);
+
+    await expect(page.getByRole("heading", { name: "Triple Room" })).toBeVisible();
+    await expect(page.getByText("3 Adults")).toBeVisible();
+    await expect(page.getByText("Village & Nature")).toBeVisible();
+    await expect(page.getByText("Üç Kişilik Oda")).toHaveCount(0);
+    await expect(page.getByText("Yetişkin")).toHaveCount(0);
+    await expect(page.getByText("Köy ve Doğa")).toHaveCount(0);
+  });
+
   test("EN header navigasyonu Turkce rotalara dusmez", async ({ page }) => {
     await page.goto("/en");
     await expect(page.locator("header.site-header")).toBeVisible();

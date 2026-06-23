@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { LeadForm } from "@/components/lead-form";
-import { getWhatsAppHref, MAPS_URL, PHONE_DISPLAY, PHONE_E164 } from "@/lib/contact";
+import { ADDRESS_EN, ADDRESS_TR, getWhatsAppHref, MAPS_URL, PHONE_DISPLAY, PHONE_E164 } from "@/lib/contact";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { getDictionary } from "@/lib/dictionary";
 
@@ -16,7 +16,7 @@ const FALLBACK = {
   tr: {
     whatsapp: "WhatsApp Destek",
     whatsappMessage: "Merhaba, web sitesinden ulaşıyorum.",
-    addressLine: "Kozbeyli Köyü Küme Evler No:188, Foça / İzmir",
+    addressLine: ADDRESS_TR,
     addressNote: "Güncel rota ve trafik bilgisi için canlı yol tarifini kullanabilirsiniz.",
     mapTitle: "Kozbeyli Konağı Konum — OpenStreetMap",
     formText:
@@ -25,7 +25,7 @@ const FALLBACK = {
   en: {
     whatsapp: "WhatsApp Support",
     whatsappMessage: "Hello, I am reaching out from the website.",
-    addressLine: "Kozbeyli Village Küme Evler No:188, Foça / İzmir",
+    addressLine: ADDRESS_EN,
     addressNote: "Use live directions for current route and traffic information.",
     mapTitle: "Kozbeyli Konağı Location — OpenStreetMap",
     formText:

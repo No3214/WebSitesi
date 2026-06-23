@@ -53,6 +53,8 @@ test.describe("EN public localization", () => {
     await expect
       .poll(() => page.evaluate(() => document.documentElement.lang))
       .toBe("en");
+    await expect(page.getByRole("link", { name: "Skip to content" })).toHaveAttribute("href", "#icerik");
+    await expect(page.getByRole("link", { name: "İçeriğe atla" })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "In the Heart of History An Elegant Aegean Escape" })).toBeVisible();
     await expect(main.getByText("Tarihin Kalbinde")).toHaveCount(0);
     await expect(main.getByRole("link", { name: "Book Now" })).toHaveAttribute("href", HMS_BOOKING_URL);
@@ -119,6 +121,8 @@ test.describe("EN public localization", () => {
     await expect(page.getByLabel("Estimated budget")).toBeVisible();
     await expect(footer.getByText("All rights reserved.")).toBeVisible();
     await expect(footer.getByText("Stone · Olive · Morning Sun")).toBeVisible();
+    await expect(footer.getByText("Kozbeyli Village, No:188, Foça / Izmir")).toBeVisible();
+    await expect(footer.getByText("Kozbeyli Köyü Küme Evler No:188")).toHaveCount(0);
     await expect(footer.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cerez-politikasi");
     await expect(footer.getByRole("button", { name: "Cookie Preferences" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Open contact options" })).toBeVisible();

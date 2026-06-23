@@ -2,15 +2,21 @@ import { MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
 
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
-import { getPhoneHref, getWhatsAppHref, MAPS_URL, PHONE_DISPLAY, PHONE_E164 } from "@/lib/contact";
+import {
+  ADDRESS_EN,
+  ADDRESS_TR,
+  getPhoneHref,
+  getWhatsAppHref,
+  MAPS_URL,
+  PHONE_DISPLAY,
+  PHONE_E164,
+} from "@/lib/contact";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { absoluteUrl } from "@/lib/utils";
 
 type LocationLocale = "tr" | "en";
 
 const EMAIL = "info@kozbeylikonagi.com";
-const ADDRESS_TR = "Kozbeyli Köyü Küme Evler No:188, Foça / İzmir";
-const ADDRESS_EN = "Kozbeyli Village Küme Evler No:188, Foça / İzmir";
 
 const copy = {
   tr: {

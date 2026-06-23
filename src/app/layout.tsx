@@ -17,6 +17,7 @@ import { LoadingBar } from "@/components/loading-bar";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
 import { DocumentLocaleSync } from "@/components/document-locale-sync";
+import { SkipLink } from "@/components/skip-link";
 
 
 export const metadata = defaultMetadata;
@@ -40,9 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         />
         <ErrorBoundary>
           <CSPostHogProvider>
-            <a href="#icerik" className="skip-link">
-              İçeriğe atla
-            </a>
+            <SkipLink />
             <Suspense fallback={null}>
               <LoadingBar />
             </Suspense>

@@ -65,4 +65,24 @@ describe("English public copy contracts", () => {
     expect(documentLocaleSync).toContain("document.documentElement.lang = locale");
     expect(documentLocaleSync).toContain("document.documentElement.dataset.locale = locale");
   });
+
+  it("keeps global English chrome free from Turkish-only utility copy", () => {
+    const rootLayout = read("src/app/layout.tsx");
+    const skipLink = read("src/components/skip-link.tsx");
+    const footer = read("src/components/site-footer.tsx");
+    const contactClient = read("src/components/contact-client.tsx");
+    const locationPage = read("src/components/location-page-content.tsx");
+    const englishContactPage = read("src/app/en/iletisim/page.tsx");
+    const englishLocationPage = read("src/app/en/lokasyon/page.tsx");
+
+    expect(rootLayout).toContain("<SkipLink />");
+    expect(skipLink).toContain("Skip to content");
+    expect(skipLink).toContain("İçeriğe atla");
+    expect(footer).toContain("ADDRESS_EN");
+    expect(footer).not.toContain("Kozbeyli Köyü Küme Evler No:188, Foça / İzmir");
+    expect(contactClient).toContain("addressLine: ADDRESS_EN");
+    expect(locationPage).toContain("address: ADDRESS_EN");
+    expect(englishContactPage).toContain("ADDRESS_EN");
+    expect(englishLocationPage).toContain("ADDRESS_EN");
+  });
 });

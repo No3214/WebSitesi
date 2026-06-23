@@ -25,6 +25,10 @@ export function getPhoneHref(): string {
   return `tel:${PHONE_E164}`;
 }
 
+/** Public address display copy; schema.org keeps the official Turkish address. */
+export const ADDRESS_TR = "Kozbeyli Köyü Küme Evler No:188, Foça / İzmir";
+export const ADDRESS_EN = "Kozbeyli Village, No:188, Foça / Izmir";
+
 /** Tek doğru harita kaynağı. */
 export const MAPS_URL =
   process.env.NEXT_PUBLIC_GOOGLE_MAPS_URL ||

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { getDictionary } from "@/lib/dictionary";
-import { getPhoneHref, MAPS_URL, PHONE_DISPLAY } from "@/lib/contact";
+import { ADDRESS_EN, ADDRESS_TR, getPhoneHref, MAPS_URL, PHONE_DISPLAY } from "@/lib/contact";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
 import { LogoMark } from "./logo-mark";
 import { CookiePreferencesButton } from "./cookie-preferences-button";
@@ -118,7 +118,7 @@ export function SiteFooter() {
             <div className="contact-item">
               <MapPin size={17} aria-hidden />
               <a href={MAPS_URL} target="_blank" rel="noopener noreferrer">
-                Kozbeyli Köyü Küme Evler No:188, Foça / İzmir
+                {englishPath ? ADDRESS_EN : ADDRESS_TR}
               </a>
             </div>
             <div className="contact-item">

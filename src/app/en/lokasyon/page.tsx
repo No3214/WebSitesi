@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 
 import { LocationPageContent } from "@/components/location-page-content";
+import { ADDRESS_EN } from "@/lib/contact";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Location & Directions",
-  description:
-    "Verified address for Kozbeyli Konağı: Kozbeyli Village Küme Evler No:188, Foça / İzmir. Live directions, phone and transfer planning links.",
+  description: `Verified address for Kozbeyli Konağı: ${ADDRESS_EN}. Live directions, phone and transfer planning links.`,
   alternates: {
     canonical: "/en/lokasyon",
     languages: {
