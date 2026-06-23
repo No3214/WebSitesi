@@ -63,6 +63,20 @@ const turkishRoomLeakPatterns = [
 ];
 
 test.describe("Launch localization smoke", () => {
+  test("mobile English homepage room showcase does not expose Turkish room copy", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/en");
+
+    const main = page.locator("main");
+    await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe("en");
+    await expect(page.getByRole("heading", { name: "Serenity & Comfort" })).toBeVisible();
+    await expect(main.getByRole("heading", { name: "Triple Room", exact: true })).toBeVisible();
+    await expect(main.getByText("3 Adults · Village & Nature")).toBeVisible();
+    await expect(main.getByText("Üç Kişilik Oda")).toHaveCount(0);
+    await expect(main.getByText("3 Yetişkin")).toHaveCount(0);
+    await expect(main.getByText("Köy ve Doğa")).toHaveCount(0);
+  });
+
   test("mobile English room browsing does not expose Turkish room copy", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/en/odalar");
