@@ -27,6 +27,19 @@ npm run vercel:env:json
 npm run launch:cutover:json
 ```
 
+For a dated, local operator artifact that does not contain secret values, write
+the live standup report into the ignored `.codex-artifacts/` folder:
+
+```bash
+npm run launch:standup:live -- --output .codex-artifacts/launch-standup.md
+npm run launch:standup:live:json -- --output .codex-artifacts/launch-standup.json
+```
+
+The output guard rejects paths outside the project, dependency/build folders,
+VCS folders and `.env*` filenames. The report contains owners, blocked gate
+IDs, runtime status, evidence paths, next commands and final verification
+commands, but not environment values.
+
 For the canonical-domain gate, `launch:cutover:json` also emits
 `dnsTargetNote` and `dnsTargetRecords`. Use those machine-readable records as
 the operator handoff source: apex hosts use Vercel A records, while `www` /

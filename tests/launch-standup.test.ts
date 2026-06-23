@@ -237,6 +237,11 @@ type LaunchStandupModule = {
     finalVerificationCommands: string[];
   };
   formatLaunchStandup: (result: ReturnType<LaunchStandupModule["buildLaunchStandup"]>) => string;
+  writeLaunchStandupReport: (
+    result: ReturnType<LaunchStandupModule["buildLaunchStandup"]>,
+    outputPath: string,
+    options?: { json?: boolean; cwd?: string },
+  ) => string;
 };
 
 async function loadAuditModule() {
@@ -496,6 +501,7 @@ describe("launch standup", () => {
 
     const formatted = standup.formatLaunchStandup(result);
     expect(formatted).toContain("Kozbeyli Konagi launch standup");
+    expect(formatted).toContain("Generated:");
     expect(formatted).toContain("Vercel ops: PASS");
     expect(formatted).toContain("Vercel CLI install: npm i -g vercel");
     expect(formatted).toContain("Owner queues:");
@@ -504,6 +510,48 @@ describe("launch standup", () => {
     expect(formatted).toContain("cli fallback: npm i -g vercel; vercel login; vercel whoami");
     expect(formatted).toContain("required proof: current health and commit proof");
     expect(formatted).toContain("Final verification commands:");
+  });
+
+  it("writes a safe local launch standup artifact without leaving the project directory", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const standup = await loadStandupModule();
+    const cwd = makeTmpDir();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {
+        DATABASE_URI: "postgresql://postgres:super-secret-password@db.supabase.co:6543/postgres",
+        PAYLOAD_SECRET: "super-secret-payload-key",
+      },
+      baseDir: makeTmpDir(),
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const result = standup.buildLaunchStandup({ launchResult, cutoverPlan });
+
+    const writtenPath = standup.writeLaunchStandupReport(
+      result,
+      ".codex-artifacts/launch-standup.md",
+      { cwd },
+    );
+    const written = fs.readFileSync(writtenPath, "utf8");
+
+    expect(writtenPath).toBe(path.join(cwd, ".codex-artifacts", "launch-standup.md"));
+    expect(written).toContain("Kozbeyli Konagi launch standup");
+    expect(written).toContain("Generated:");
+    expect(written).toContain("Commercial score:");
+    expect(written).not.toContain("super-secret-password");
+    expect(written).not.toContain("super-secret-payload-key");
+    expect(() => standup.writeLaunchStandupReport(result, "../outside.md", { cwd })).toThrow(
+      /inside the project directory/,
+    );
+    expect(() => standup.writeLaunchStandupReport(result, ".env.production", { cwd })).toThrow(
+      /environment file/,
+    );
+    expect(() =>
+      standup.writeLaunchStandupReport(result, "node_modules/report.md", { cwd }),
+    ).toThrow(/generated, dependency or VCS directories/);
   });
 
   it("surfaces Vercel CLI bootstrap before production env edits when ops tooling is not ready", async () => {

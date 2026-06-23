@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import {
@@ -306,6 +308,7 @@ export function buildLaunchStandup({
 export function formatLaunchStandup(result) {
   const lines = [
     "Kozbeyli Konagi launch standup",
+    `Generated: ${result.generatedAt}`,
     `Decision: ${result.decision}`,
     `Commercial score: ${result.currentScore}/${result.targetScore}`,
     `Blocked points: ${result.blockedPoints}`,
@@ -393,6 +396,37 @@ export function formatLaunchStandup(result) {
   return lines.join("\n");
 }
 
+function resolveSafeOutputPath(outputPath, { cwd = process.cwd() } = {}) {
+  const root = path.resolve(cwd);
+  const resolved = path.resolve(root, outputPath);
+  const relative = path.relative(root, resolved);
+
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    throw new Error("Output path must stay inside the project directory.");
+  }
+
+  const blockedSegments = new Set([".git", ".vercel", "node_modules", ".next"]);
+  if (relative.split(path.sep).some((segment) => blockedSegments.has(segment))) {
+    throw new Error("Output path must not target generated, dependency or VCS directories.");
+  }
+
+  if (path.basename(resolved).startsWith(".env")) {
+    throw new Error("Output path must not look like an environment file.");
+  }
+
+  return resolved;
+}
+
+export function writeLaunchStandupReport(result, outputPath, { json = false, cwd = process.cwd() } = {}) {
+  const resolved = resolveSafeOutputPath(outputPath, { cwd });
+  const body = json ? JSON.stringify(result, null, 2) : formatLaunchStandup(result);
+
+  fs.mkdirSync(path.dirname(resolved), { recursive: true });
+  fs.writeFileSync(resolved, `${body}\n`, "utf8");
+
+  return resolved;
+}
+
 function readArgValue(name) {
   const inline = process.argv.find((arg) => arg.startsWith(`${name}=`));
   if (inline) return inline.slice(name.length + 1);
@@ -423,10 +457,16 @@ async function buildLaunchResultFromArgs() {
 async function main() {
   const json = process.argv.includes("--json");
   const strict = process.argv.includes("--strict");
+  const outputPath = readArgValue("--output");
   const launchResult = await buildLaunchResultFromArgs();
   const result = buildLaunchStandup({ launchResult });
 
-  console.log(json ? JSON.stringify(result, null, 2) : formatLaunchStandup(result));
+  if (outputPath) {
+    const writtenPath = writeLaunchStandupReport(result, outputPath, { json });
+    console.log(`Wrote launch standup report: ${writtenPath}`);
+  } else {
+    console.log(json ? JSON.stringify(result, null, 2) : formatLaunchStandup(result));
+  }
   process.exitCode = strict && result.decision !== "LAUNCH_STANDUP_READY" ? 1 : 0;
 }
 
