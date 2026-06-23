@@ -97,6 +97,7 @@ npm run domain:verify:strict     # Canonical domain hazır değilse fail verir
 npm run launch:smoke             # Lokal production build'e kritik launch smoke
 npm run launch:smoke:preview     # Vercel preview URL'ye kritik launch smoke
 npm run launch:smoke:live        # Canonical www domain üstünde kritik launch smoke
+npm run localization:verify:live # Canonical www domain üstünde EN/TR dil ve mobil bar kontrolü
 npm run quality                  # lint + typecheck + unit + build
 npm run release:verify           # Lokal release gate: security + publish + smoke + stress + audit JSON
 npm run release:verify:commercial # 100/100 booking/payment için strict audit + strict cutover gate
@@ -125,6 +126,7 @@ npm run domain:verify            # kozbeylikonagi.com ve www domain health/commi
 npm run launch:smoke             # Public rota, health, hero video, konum ve medya smoke
 npm run launch:smoke:preview     # https://kozbeyli-konagi.vercel.app üzerinde aynı smoke
 npm run launch:smoke:live        # https://www.kozbeylikonagi.com üzerinde aynı smoke
+npm run localization:verify:live # https://www.kozbeylikonagi.com EN/TR oda ve switcher doğrulaması
 npm run release:verify           # Lokal final release kapısı (commercial/domain strict ayrı)
 npm run release:verify:commercial # Tam ticari launch iddiası için strict kırmızı/yeşil kapı
 

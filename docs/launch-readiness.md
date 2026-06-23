@@ -176,6 +176,11 @@ kanıtı local dev ayarlarından ayrı raporlanır.
 2026-06-23 canlı smoke hedef ayrımı: `launch:smoke:live` canonical production domain
 `https://www.kozbeylikonagi.com` üstünde çalışır; `launch:smoke:preview` Vercel preview
 hostunu ayrıca doğrulamak için ayrılmıştır.
+2026-06-23 localization gate ayrımı: `localization:verify:live`, canlı domainde
+EN/TR oda katalog-detay metinlerini, dil değiştirici rota geçişlerini ve mobil
+alt rezervasyon barı dilini smoke paketinden ayrı çalıştırır. Kullanıcıdan gelen
+mobil EN ekranında Türkçe oda metni görünmesi raporu bu kapıyla tekrar
+üretilebilir hale getirildi.
 2026-06-23 commercial audit runtime ayrımı: `launch:audit:live`, canonical
 production `/api/health` runtime readiness bilgisini audit raporuna ayrı
 `runtime lane` olarak ekler. Bu canlı env durumunu görünür kılar; fakat

@@ -218,6 +218,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"launch:smoke"');
     expect(readinessScript).toContain('"launch:smoke:preview"');
     expect(readinessScript).toContain('"launch:smoke:live"');
+    expect(readinessScript).toContain('"localization:verify"');
+    expect(readinessScript).toContain('"localization:verify:preview"');
+    expect(readinessScript).toContain('"localization:verify:live"');
     expect(readinessScript).toContain('"preview:verify"');
     expect(readinessScript).toContain('"preview:verify:json"');
     expect(readinessScript).toContain('"preview:verify:strict"');
@@ -229,6 +232,13 @@ describe("production readiness contracts", () => {
     );
     expect(packageJson.scripts?.["launch:smoke:live"]).toBe(
       "cross-env PW_BASE_URL=https://www.kozbeylikonagi.com node scripts/launch-smoke.mjs",
+    );
+    expect(packageJson.scripts?.["localization:verify"]).toBe("node scripts/localization-readiness.mjs");
+    expect(packageJson.scripts?.["localization:verify:preview"]).toBe(
+      "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/localization-readiness.mjs",
+    );
+    expect(packageJson.scripts?.["localization:verify:live"]).toBe(
+      "cross-env PW_BASE_URL=https://www.kozbeylikonagi.com node scripts/localization-readiness.mjs",
     );
     expect(packageJson.scripts?.["preview:verify"]).toBe("node scripts/local-preview-verify.mjs");
     expect(packageJson.scripts?.["preview:verify:json"]).toBe(
@@ -1255,6 +1265,23 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("makeRunScopedOutputDir");
     expect(launchSmokeScript).toContain("process.pid");
     expect(launchSmokeScript).toContain("--output");
+  });
+
+  it("keeps localization readiness focused on EN/TR public language regressions", () => {
+    const localizationScript = read("scripts/localization-readiness.mjs");
+
+    expect(localizationScript).toContain("Kozbeyli Konagi localization readiness");
+    expect(localizationScript).toContain("tests/e2e/launch-localization.spec.ts");
+    expect(localizationScript).toContain("tests/e2e/lang-switch.spec.ts");
+    expect(localizationScript).toContain("EN/TR room catalog");
+    expect(localizationScript).toContain("mobile action bar");
+    expect(localizationScript).toContain("PW_BASE_URL");
+    expect(localizationScript).toContain("scripts/domain-readiness.mjs");
+    expect(localizationScript).toContain(".next/BUILD_ID");
+    expect(localizationScript).toContain("node_modules/@playwright/test/cli.js");
+    expect(localizationScript).toContain("test-results\", \"localization-readiness");
+    expect(localizationScript).toContain("process.env.LOCALIZATION_VERIFY_WORKERS || \"1\"");
+    expect(localizationScript).toContain("--output");
   });
 
   it("keeps stress tests reproducible with seeded interaction plans", () => {
