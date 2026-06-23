@@ -399,6 +399,7 @@ describe("evidence handoff", () => {
     expect(hms?.envSetup).toBeUndefined();
     expect(hms?.commands).toContain("npm run hms:verify:strict");
     expect(result.safeEvidenceRules.join(" ")).toContain("Do not commit secrets");
+    expect(result.safeEvidenceRules.join(" ")).toContain("previous 45 days");
     expect(result.safeEvidenceRules.join(" ")).toContain("database URLs");
     expect(result.safeEvidenceRules.join(" ")).toContain("JWT/access tokens");
     expect(result.safeEvidenceRules.join(" ")).toContain("service-role keys");
@@ -598,6 +599,7 @@ describe("evidence handoff", () => {
 
     expect(text).toContain("Kozbeyli Konagi evidence handoff");
     expect(text).toContain("Required safe evidence rules");
+    expect(text).toContain("previous 45 days");
     expect(text).toContain("database URLs");
     expect(text).toContain("JWT/access tokens");
     expect(text).toContain("docs/evidence/hms-booking-engine.md");

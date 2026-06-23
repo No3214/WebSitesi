@@ -165,6 +165,7 @@ describe("evidence templates", () => {
     expect(formatted).toContain("Not checked in this template run");
     expect(formatted).toContain("## Guest-Facing Copy / Fallback");
     expect(formatted).toContain("Do not commit secrets");
+    expect(formatted).toContain("previous 45 days");
     expect(formatted).toContain("database URLs");
     expect(formatted).toContain("card data");
     expect(formatted).toContain("bank account details");

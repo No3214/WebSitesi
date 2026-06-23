@@ -20,6 +20,7 @@ export const requiredEvidenceSections = [
 
 export const safeEvidenceRules = [
   "Do not commit secrets, raw credentials, database URLs, JWT/access tokens, service-role keys, card data, bank account details, customer PII, private contracts, bank portal dumps or private guest data.",
+  "Use a real evidence date from today or the previous 45 days; future dates and evidence older than 45 days are rejected by the launch audit.",
   "Use redacted source-system IDs such as OPS-1234, UAT-5678 or VERCEL:ENV-20260623; do not paste raw dashboard URLs, local file paths, screenshot/PDF names or private artifact links into source_refs.",
   "Keep source screenshots, contracts, payment portal details, raw callback/log dumps and guest records in the source system; store only redacted summaries and references here.",
 ];

@@ -526,6 +526,7 @@ describe("production readiness contracts", () => {
       scripts?: Record<string, string>;
     };
     const auditScript = read("scripts/commercial-launch-audit.mjs");
+    const evidenceHandoff = read("scripts/evidence-handoff.mjs");
     const evidenceReadme = read("docs/evidence/README.md");
 
     expect(packageJson.scripts?.["launch:audit"]).toBe(
@@ -568,6 +569,7 @@ describe("production readiness contracts", () => {
     expect(evidenceReadme).toContain("raw URLs");
     expect(evidenceReadme).toContain("OPS-1234");
     expect(evidenceReadme).toContain("more than 45 days old");
+    expect(evidenceHandoff).toContain("previous 45 days");
 
     const pendingEvidence = [
       "hms-booking-engine.md",
