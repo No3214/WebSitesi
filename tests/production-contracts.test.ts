@@ -1246,6 +1246,7 @@ describe("production readiness contracts", () => {
     expect(launchSmokeScript).toContain("tests/e2e/publish-routes.spec.ts");
     expect(launchSmokeScript).toContain("tests/e2e/health.spec.ts");
     expect(launchSmokeScript).toContain("tests/e2e/hero-video.spec.ts");
+    expect(launchSmokeScript).toContain("tests/e2e/booking-handoff.spec.ts");
     expect(launchSmokeScript).toContain("tests/e2e/contact-location.spec.ts");
     expect(launchSmokeScript).toContain("tests/e2e/launch-localization.spec.ts");
     expect(launchSmokeScript).toContain("tests/e2e/media-assets.spec.ts");
