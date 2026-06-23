@@ -5,10 +5,19 @@ import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
 
+type CommercialTarget = {
+  id: string;
+  command: string;
+  strict?: boolean;
+  gateIds?: string[];
+  nextActions?: string[];
+  evidence?: string[];
+};
+
 type CommercialVerifyModule = {
-  commercialVercelTargets: Array<{ id: string; command: string; strict?: boolean }>;
+  commercialVercelTargets: CommercialTarget[];
   runCommercialVercelVerification: (options?: {
-    targets?: CommercialVerifyModule["commercialVercelTargets"];
+    targets?: CommercialTarget[];
     runTarget?: (targetId: string, options?: { strict?: boolean }) => { ok: boolean; output: string };
   }) => {
     decision: string;
@@ -22,6 +31,9 @@ type CommercialVerifyModule = {
       ok: boolean;
       decision: string;
       summary: string[];
+      gateIds: string[];
+      nextActions: string[];
+      evidence: string[];
     }>;
   };
   summarizeProductionOutput: (output: string) => { decision: string; lines: string[] };
@@ -73,6 +85,14 @@ describe("commercial Vercel verification aggregator", () => {
     expect(result.results.find((item) => item.id === "garanti")?.summary).toContain(
       "Missing env: GARANTI_3D_STORE_KEY",
     );
+    expect(result.results.find((item) => item.id === "garanti")).toMatchObject({
+      gateIds: ["garanti_pos"],
+      nextActions: expect.arrayContaining([
+        "Prove success, declined, callback signature and refund/cancel payment flows with redacted evidence.",
+      ]),
+      evidence: ["docs/evidence/garanti-pos.md"],
+    });
+    expect(result.results.find((item) => item.id === "supabase")?.nextActions).toEqual([]);
   });
 
   it("keeps the aggregate target list aligned with the documented npm commands", async () => {
@@ -86,6 +106,18 @@ describe("commercial Vercel verification aggregator", () => {
       "garanti:npm run vercel:garanti:verify",
       "analytics:npm run vercel:analytics:verify",
       "search:npm run vercel:search:verify",
+    ]);
+    expect(mod.commercialVercelTargets.find((target) => target.id === "env")?.gateIds).toEqual([
+      "canonical_domain",
+      "production_database",
+      "production_abuse_controls",
+      "hms_booking_engine",
+      "garanti_pos",
+      "analytics_purchase",
+      "search_local_seo",
+    ]);
+    expect(mod.commercialVercelTargets.find((target) => target.id === "abuse")?.evidence).toEqual([
+      "docs/evidence/production-abuse-controls.md",
     ]);
   });
 
@@ -104,5 +136,30 @@ describe("commercial Vercel verification aggregator", () => {
     expect(rendered).toContain("TURNSTILE_SECRET_KEY=[redacted]");
     expect(rendered).not.toContain("super-secret-value");
     expect(rendered).not.toContain("user:secret");
+  });
+
+  it("redacts action and evidence hints before rendering failed target guidance", async () => {
+    const mod = await loadModule();
+    const result = mod.runCommercialVercelVerification({
+      targets: [
+        {
+          id: "custom",
+          command: "npm run custom",
+          gateIds: ["garanti_pos"],
+          nextActions: ["Set GARANTI_3D_STORE_KEY=super-secret-value in Vercel Production."],
+          evidence: ["docs/evidence/garanti-pos.md?DATABASE_URI=postgres://user:secret@db.example.com/app"],
+        },
+      ],
+      runTarget: () => ({
+        ok: false,
+        output: "Decision: CUSTOM BLOCKED",
+      }),
+    });
+    const target = result.results[0];
+
+    expect(target.nextActions.join("\n")).toContain("GARANTI_3D_STORE_KEY=[redacted]");
+    expect(target.evidence.join("\n")).toContain("DATABASE_URI=[redacted]");
+    expect(JSON.stringify(result)).not.toContain("super-secret-value");
+    expect(JSON.stringify(result)).not.toContain("user:secret");
   });
 });

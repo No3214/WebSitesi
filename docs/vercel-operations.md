@@ -78,8 +78,10 @@ npm run vercel:search:verify
 
 `vercel:commercial:verify` runs every no-disk commercial Vercel gate and keeps
 going after failures, so operators get one complete blocker report instead of
-only the first failing env/evidence lane. Use the individual commands for
-focused rechecks after fixing a provider or env group.
+only the first failing env/evidence lane. Failed targets include the matching
+commercial gate IDs, the next operator actions and the evidence files that must
+be completed, with secret-looking values redacted. Use the individual commands
+for focused rechecks after fixing a provider or env group.
 
 For a strict handoff gate, run:
 
