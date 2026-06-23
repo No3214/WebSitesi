@@ -42,6 +42,28 @@ test.describe("Dil degistirici", () => {
     await expect(page.getByRole("heading", { name: "Breakfast", exact: true })).toBeVisible();
   });
 
+  test("EN secimi mobil oda katalog kartlarini da Ingilizceye tasir", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/odalar");
+    await expect(page.locator("header.site-header")).toBeVisible();
+    const enLink = page.locator("header.site-header .lang-switcher").getByRole("link", { name: "EN", exact: true });
+    await expect(enLink).toHaveAttribute("href", "/en/odalar");
+
+    await Promise.all([page.waitForURL("**/en/odalar"), enLink.click()]);
+
+    const main = page.locator("main");
+    const mobileActionBar = page.getByTestId("mobile-action-bar");
+    await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe("en");
+    await expect(page.getByRole("heading", { name: "Refined Rooms & Suites" })).toBeVisible();
+    await expect(main.getByRole("heading", { name: "Triple Room", exact: true })).toBeVisible();
+    await expect(main.getByText("3 Adults · Village & Nature")).toBeVisible();
+    await expect(mobileActionBar.getByText("Booking", { exact: true })).toBeVisible();
+    await expect(mobileActionBar.getByText("REZERVASYON", { exact: true })).toHaveCount(0);
+    await expect(main.getByText("Üç Kişilik Oda")).toHaveCount(0);
+    await expect(main.getByText("3 Yetişkin")).toHaveCount(0);
+    await expect(main.getByText("Köy ve Doğa")).toHaveCount(0);
+  });
+
   test("EN secimi oda detayinda oda metnini de Ingilizceye tasir", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/odalar/uc-kisilik-oda");
