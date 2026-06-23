@@ -11,6 +11,7 @@ const tmpDirs: string[] = [];
 type AnalyticsReadinessModule = {
   parseEnvFile: (source: string) => Record<string, string>;
   loadEnvFileSnapshot: (envFile: string, baseEnv?: Record<string, string>) => Record<string, string>;
+  loadProcessEnvSnapshot: (source?: Record<string, string | undefined>) => Record<string, string>;
   evaluateAnalyticsReadiness: (args?: {
     env?: Record<string, string>;
     baseDir?: string;
@@ -214,6 +215,28 @@ describe("analytics purchase readiness", () => {
     ]);
     expect(JSON.stringify(result)).not.toContain("ga4-secret");
     expect(JSON.stringify(result)).not.toContain("GTM-ABCDE1");
+  });
+
+  it("uses process env snapshots as authoritative for Vercel env run checks", async () => {
+    const mod = await loadModule();
+    const env = mod.loadProcessEnvSnapshot({
+      NEXT_PUBLIC_GTM_ID: "",
+      NEXT_PUBLIC_GA4_MEASUREMENT_ID: "",
+      NEXT_PUBLIC_GOOGLE_ADS_ID: "",
+      NEXT_PUBLIC_META_PIXEL_ID: "",
+      GA4_MEASUREMENT_ID: "",
+      GA4_API_SECRET: "",
+      IGNORED_UNDEFINED: undefined,
+    });
+
+    expect(env).toEqual({
+      NEXT_PUBLIC_GTM_ID: "",
+      NEXT_PUBLIC_GA4_MEASUREMENT_ID: "",
+      NEXT_PUBLIC_GOOGLE_ADS_ID: "",
+      NEXT_PUBLIC_META_PIXEL_ID: "",
+      GA4_MEASUREMENT_ID: "",
+      GA4_API_SECRET: "",
+    });
   });
 
   it("blocks invalid IDs and legacy Facebook pixel env aliases", async () => {

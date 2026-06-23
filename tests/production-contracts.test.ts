@@ -312,8 +312,10 @@ describe("production readiness contracts", () => {
       "node scripts/supabase-security-readiness.mjs --strict",
     );
     expect(supabaseReadinessScript).toContain("loadEnvFileSnapshot");
+    expect(supabaseReadinessScript).toContain("loadProcessEnvSnapshot");
     expect(supabaseReadinessScript).toContain("parseEnvFile");
     expect(supabaseReadinessScript).toContain('"--env-file"');
+    expect(supabaseReadinessScript).toContain('"--from-process-env"');
     expect(supabaseReadinessScript).not.toContain("SUPABASE_SERVICE_ROLE_KEY=");
     expect(packageJson.scripts?.["vercel:ops"]).toBe("node scripts/vercel-ops-readiness.mjs");
     expect(packageJson.scripts?.["vercel:ops:json"]).toBe(
@@ -556,8 +558,10 @@ describe("production readiness contracts", () => {
     expect(abuseReadiness).toContain("legacy_lead_service_removed");
     expect(abuseReadiness).toContain("legacy_booking_service_removed");
     expect(abuseReadiness).toContain("loadEnvFileSnapshot");
+    expect(abuseReadiness).toContain("loadProcessEnvSnapshot");
     expect(abuseReadiness).toContain("parseEnvFile");
     expect(abuseReadiness).toContain('"--env-file"');
+    expect(abuseReadiness).toContain('"--from-process-env"');
     expect(abuseReadiness).not.toContain("TURNSTILE_SECRET_KEY=");
     expect(abuseReadiness).not.toContain("UPSTASH_REDIS_REST_TOKEN=");
     expect(abuseReadiness).toContain("process.exitCode");
@@ -599,8 +603,10 @@ describe("production readiness contracts", () => {
     expect(analyticsReadiness).toContain("iyzico_purchase_hook");
     expect(analyticsReadiness).toContain("meta_legacy_key_removed");
     expect(analyticsReadiness).toContain("loadEnvFileSnapshot");
+    expect(analyticsReadiness).toContain("loadProcessEnvSnapshot");
     expect(analyticsReadiness).toContain("parseEnvFile");
     expect(analyticsReadiness).toContain('"--env-file"');
+    expect(analyticsReadiness).toContain('"--from-process-env"');
     expect(analyticsReadiness).not.toContain("GA4_API_SECRET=");
     expect(analyticsReadiness).toContain("process.exitCode");
     expect(analyticsReadiness).not.toContain("process.exit(strict");
@@ -947,6 +953,9 @@ describe("production readiness contracts", () => {
     expect(vercelEnv).toContain("--env-file");
     expect(vercelEnv).toContain("--from-process-env");
     expect(vercelEnv).toContain("vercel env run -e production -- npm run vercel:env -- --from-process-env");
+    expect(vercelEnv).toContain("vercel env run -e production -- npm run supabase:verify:strict -- --from-process-env");
+    expect(vercelEnv).toContain("vercel env run -e production -- npm run hms:verify:strict");
+    expect(vercelEnv).toContain("vercel env run -e production -- npm run analytics:verify:strict -- --from-process-env");
     expect(vercelEnv).toContain("secret values are never printed");
     expect(vercelEnv).toContain("empty, placeholder or unavailable");
     expect(vercelEnv).toContain("valueValidation: \"not_performed\"");
@@ -977,6 +986,9 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("never prints values");
     expect(runbook).toContain("no-disk `env run`");
     expect(runbook).toContain("vercel env run -e production -- npm run vercel:env -- --from-process-env");
+    expect(runbook).toContain("vercel env run -e production -- npm run supabase:verify:strict -- --from-process-env");
+    expect(runbook).toContain("vercel env run -e production -- npm run abuse:verify:strict -- --from-process-env");
+    expect(runbook).toContain("vercel env run -e production -- npm run analytics:verify:strict -- --from-process-env");
     expect(runbook).toContain("npm run launch:cutover");
     expect(runbook).toContain("KPI and review loop");
     expect(runbook).toContain("npm run vercel:ops:strict");

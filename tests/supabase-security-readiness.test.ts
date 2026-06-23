@@ -20,6 +20,10 @@ type SupabaseSecurityModule = {
     env: Record<string, string>;
     sources: Record<string, string>;
   };
+  loadProcessEnvSnapshot: (source?: Record<string, string | undefined>) => {
+    env: Record<string, string>;
+    sources: Record<string, string>;
+  };
   evaluateSupabaseSecurityReadiness: (args?: {
     envSnapshot?: {
       env: Record<string, string>;
@@ -189,6 +193,26 @@ describe("supabase security readiness", () => {
     );
     expect(JSON.stringify(result)).not.toContain("local-secret-that-must-not-mask-vercel");
     expect(JSON.stringify(result)).not.toContain("postgres.projectref:password");
+  });
+
+  it("uses process env snapshots as authoritative for Vercel env run checks", async () => {
+    const securityModule = await loadSupabaseSecurityModule();
+    const snapshot = securityModule.loadProcessEnvSnapshot({
+      DATABASE_URI: "",
+      PAYLOAD_SECRET: "",
+      LOCAL_ONLY: "kept-as-process-input",
+      UNDEFINED_VALUE: undefined,
+    });
+
+    expect(snapshot.env.DATABASE_URI).toBe("");
+    expect(snapshot.env.PAYLOAD_SECRET).toBe("");
+    expect(snapshot.env.LOCAL_ONLY).toBe("kept-as-process-input");
+    expect(snapshot.env).not.toHaveProperty("UNDEFINED_VALUE");
+    expect(snapshot.sources).toMatchObject({
+      DATABASE_URI: "process-env",
+      PAYLOAD_SECRET: "process-env",
+      LOCAL_ONLY: "process-env",
+    });
   });
 
   it("accepts a Supabase pooler DATABASE_URI only when source contracts and evidence are ready", async () => {

@@ -59,6 +59,15 @@ The repository also ignores common production snapshot filenames as a guardrail,
 but operators should still avoid pulling secrets into the repo root. If deletion
 fails, overwrite the temp file with an empty file before retrying deletion.
 
+For individual strict gates that need production env values, use the same
+no-disk pattern so an empty Vercel value cannot be hidden by local `.env` files:
+
+```bash
+vercel env run -e production -- npm run supabase:verify:strict -- --from-process-env
+vercel env run -e production -- npm run abuse:verify:strict -- --from-process-env
+vercel env run -e production -- npm run analytics:verify:strict -- --from-process-env
+```
+
 For a strict handoff gate, run:
 
 ```bash

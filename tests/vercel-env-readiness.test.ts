@@ -180,7 +180,8 @@ describe("Vercel production env readiness", () => {
       ready: false,
       configuredEnv: ["DATABASE_URI", "PAYLOAD_SECRET"],
       valueValidationKeys: ["DATABASE_URI"],
-      valueValidationCommand: "npm run supabase:verify:strict",
+      valueValidationCommand:
+        "vercel env run -e production -- npm run supabase:verify:strict -- --from-process-env",
     });
     expect(result.blockers).toEqual(
       expect.arrayContaining([
@@ -198,7 +199,7 @@ describe("Vercel production env readiness", () => {
     expect(hmsGate).toMatchObject({
       valueValidationKeys: ["NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"],
       valueValidationStatus: "required_not_performed",
-      valueValidationCommand: "npm run hms:verify:strict",
+      valueValidationCommand: "vercel env run -e production -- npm run hms:verify:strict",
     });
 
     const serialized = JSON.stringify(result);

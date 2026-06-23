@@ -11,6 +11,7 @@ const tmpDirs: string[] = [];
 type AbuseReadinessModule = {
   parseEnvFile: (source: string) => Record<string, string>;
   loadEnvFileSnapshot: (envFile: string, baseEnv?: Record<string, string>) => Record<string, string>;
+  loadProcessEnvSnapshot: (source?: Record<string, string | undefined>) => Record<string, string>;
   evaluateAbuseControlsReadiness: (args?: {
     env?: Record<string, string>;
     baseDir?: string;
@@ -197,6 +198,24 @@ describe("production abuse-control readiness", () => {
     ]);
     expect(JSON.stringify(result)).not.toContain("turnstile-secret");
     expect(JSON.stringify(result)).not.toContain("upstash-token");
+  });
+
+  it("uses process env snapshots as authoritative for Vercel env run checks", async () => {
+    const mod = await loadModule();
+    const env = mod.loadProcessEnvSnapshot({
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: "",
+      TURNSTILE_SECRET_KEY: "",
+      UPSTASH_REDIS_REST_URL: "",
+      UPSTASH_REDIS_REST_TOKEN: "",
+      IGNORED_UNDEFINED: undefined,
+    });
+
+    expect(env).toEqual({
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: "",
+      TURNSTILE_SECRET_KEY: "",
+      UPSTASH_REDIS_REST_URL: "",
+      UPSTASH_REDIS_REST_TOKEN: "",
+    });
   });
 
   it("blocks insecure Upstash URLs and legacy lead-service regressions", async () => {

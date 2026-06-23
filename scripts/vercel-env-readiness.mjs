@@ -85,9 +85,12 @@ function expectedValueKeys(gate) {
 function valueValidationCommand(gateId) {
   return {
     canonical_domain: "npm run domain:verify:strict",
-    production_database: "npm run supabase:verify:strict",
-    hms_booking_engine: "npm run hms:verify:strict",
-    analytics_purchase: "npm run analytics:verify:strict",
+    production_database:
+      "vercel env run -e production -- npm run supabase:verify:strict -- --from-process-env",
+    hms_booking_engine:
+      "vercel env run -e production -- npm run hms:verify:strict",
+    analytics_purchase:
+      "vercel env run -e production -- npm run analytics:verify:strict -- --from-process-env",
   }[gateId] ?? "npm run launch:audit:strict";
 }
 

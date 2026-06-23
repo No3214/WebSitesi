@@ -39,6 +39,19 @@ export function loadEnvFileSnapshot(envFile, baseSnapshot = loadEnvSnapshot()) {
   };
 }
 
+export function loadProcessEnvSnapshot(source = process.env) {
+  const env = {};
+  const sources = {};
+
+  for (const [key, value] of Object.entries(source)) {
+    if (typeof value !== "string") continue;
+    env[key] = value;
+    sources[key] = "process-env";
+  }
+
+  return { env, sources };
+}
+
 export function loadEnvSnapshot(baseDir = root) {
   const snapshot = { ...process.env };
   const sources = {};
@@ -329,9 +342,10 @@ export function formatSupabaseSecurityReadiness(result) {
 function main() {
   const json = process.argv.includes("--json");
   const strict = process.argv.includes("--strict");
+  const fromProcessEnv = process.argv.includes("--from-process-env");
   const envFileArgIndex = process.argv.indexOf("--env-file");
   const envFile = envFileArgIndex >= 0 ? process.argv[envFileArgIndex + 1] : "";
-  const envSnapshot = envFile ? loadEnvFileSnapshot(envFile) : loadEnvSnapshot();
+  const envSnapshot = envFile ? loadEnvFileSnapshot(envFile) : fromProcessEnv ? loadProcessEnvSnapshot() : loadEnvSnapshot();
   const result = evaluateSupabaseSecurityReadiness({ envSnapshot });
   console.log(json ? JSON.stringify(result, null, 2) : formatSupabaseSecurityReadiness(result));
   process.exitCode = strict && result.decision !== "SUPABASE PRODUCTION DATABASE READY" ? 1 : 0;

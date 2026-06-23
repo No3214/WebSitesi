@@ -47,6 +47,12 @@ export function loadEnvFileSnapshot(envFile, baseEnv = loadEnvSnapshot()) {
   };
 }
 
+export function loadProcessEnvSnapshot(source = process.env) {
+  return Object.fromEntries(
+    Object.entries(source).filter((entry) => typeof entry[1] === "string"),
+  );
+}
+
 function read(baseDir, relPath) {
   const fullPath = path.join(baseDir, relPath);
   return fs.existsSync(fullPath) ? fs.readFileSync(fullPath, "utf8") : "";
@@ -267,9 +273,10 @@ export function formatAbuseControlsReadiness(result) {
 function main() {
   const strict = process.argv.includes("--strict");
   const json = process.argv.includes("--json");
+  const fromProcessEnv = process.argv.includes("--from-process-env");
   const envFileArgIndex = process.argv.indexOf("--env-file");
   const envFile = envFileArgIndex >= 0 ? process.argv[envFileArgIndex + 1] : "";
-  const env = envFile ? loadEnvFileSnapshot(envFile) : loadEnvSnapshot();
+  const env = envFile ? loadEnvFileSnapshot(envFile) : fromProcessEnv ? loadProcessEnvSnapshot() : loadEnvSnapshot();
   const result = evaluateAbuseControlsReadiness({ env });
 
   console.log(json ? JSON.stringify(result, null, 2) : formatAbuseControlsReadiness(result));
