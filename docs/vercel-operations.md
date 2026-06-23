@@ -42,6 +42,10 @@ npm run launch:standup:live:write:compact
 npm run launch:standup:live:write:compact:json
 npm run evidence:templates:live:write
 npm run evidence:templates:live:write:json
+npm run evidence:templates:live:compact
+npm run evidence:templates:live:runtime-ready
+npm run evidence:templates:live:write:runtime-ready
+npm run evidence:templates:live:write:runtime-ready:json
 ```
 
 The output guard rejects paths outside the project, dependency/build folders,
@@ -51,6 +55,10 @@ commands, and copy-ready `status: pending` evidence templates, but not environme
 Use the compact standup commands for terminal handoff when the full JSON report
 would be too large for chat or CI logs; they keep owner, gate, env-name,
 evidence-path and command fields while dropping the repeated policy payload.
+Use `evidence:templates:live:runtime-ready` when production runtime already
+reports a gate configured and only redacted source-system proof is missing; it
+filters out env-blocked gates so operators do not re-enter secrets or provider
+values unnecessarily.
 
 For the canonical-domain gate, `launch:cutover:json` also emits
 `dnsTargetNote` and `dnsTargetRecords`. Use those machine-readable records as

@@ -60,13 +60,17 @@ type EvidenceTemplateModule = {
     cutoverPlan?: ReturnType<CutoverModule["buildProductionCutoverPlan"]>;
     gateId?: string;
     includeAll?: boolean;
+    runtimeReadyOnly?: boolean;
   }) => {
     decision: string;
     currentScore: number;
     targetScore: number;
+    runtimeReadyOnly: boolean;
     templates: Array<{
       path: string;
       gateId: string;
+      pointsBlocked: number;
+      currentReason: string;
       owner: string;
       timing: string;
       requiredProofSignals: string[];
@@ -90,10 +94,12 @@ type EvidenceTemplateModule = {
   formatEvidenceTemplates: (
     result: ReturnType<EvidenceTemplateModule["buildEvidenceTemplates"]>,
   ) => string;
+  buildCompactEvidenceTemplates: (result: ReturnType<EvidenceTemplateModule["buildEvidenceTemplates"]>) => Record<string, unknown>;
+  formatCompactEvidenceTemplates: (result: Record<string, unknown>) => string;
   writeEvidenceTemplateReport: (
     result: ReturnType<EvidenceTemplateModule["buildEvidenceTemplates"]>,
     outputPath: string,
-    options?: { json?: boolean; cwd?: string },
+    options?: { json?: boolean; compact?: boolean; cwd?: string },
   ) => string;
 };
 
@@ -393,6 +399,82 @@ describe("evidence templates", () => {
     expect(formatted).toContain("Production runtime reports this gate configured");
     expect(formatted).toContain("npm run evidence:handoff:live");
     expect(formatted).not.toContain("vercel env add DATABASE_URI production");
+  });
+
+  it("filters compact live templates to runtime-ready evidence-only gates", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const templates = await loadTemplateModule();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir: makeTmpDir(),
+      runtimeReadiness: makeRuntimeReadyEvidenceFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+
+    const result = templates.buildEvidenceTemplates({
+      launchResult,
+      cutoverPlan,
+      runtimeReadyOnly: true,
+    });
+    const compact = templates.buildCompactEvidenceTemplates(result);
+    const formatted = templates.formatCompactEvidenceTemplates(compact);
+    const serialized = JSON.stringify(compact);
+
+    expect(result.runtimeReadyOnly).toBe(true);
+    expect(result.templates.map((template) => template.gateId)).toEqual([
+      "production_database",
+      "hms_booking_engine",
+    ]);
+    expect(serialized).toContain("docs/evidence/production-database.md");
+    expect(serialized).toContain("docs/evidence/hms-booking-engine.md");
+    expect(serialized).not.toContain("production_abuse_controls");
+    expect(serialized).not.toContain("safeEvidenceRules");
+    expect(serialized).not.toContain("sourceRefsPolicy");
+    expect(formatted).toContain("Kozbeyli Konagi compact evidence templates");
+    expect(formatted).toContain("Runtime-ready only: yes");
+    expect(formatted).toContain("production_database: docs/evidence/production-database.md");
+    expect(formatted).toContain("hms_booking_engine: docs/evidence/hms-booking-engine.md");
+    expect(formatted).not.toContain("vercel env add DATABASE_URI production");
+  });
+
+  it("writes compact evidence templates without verbose policy payload", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const templates = await loadTemplateModule();
+    const cwd = makeTmpDir();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir: makeTmpDir(),
+      runtimeReadiness: makeRuntimeReadyEvidenceFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const result = templates.buildEvidenceTemplates({
+      launchResult,
+      cutoverPlan,
+      runtimeReadyOnly: true,
+    });
+
+    const writtenPath = templates.writeEvidenceTemplateReport(
+      result,
+      ".codex-artifacts/evidence-templates-runtime-ready.json",
+      { cwd, json: true, compact: true },
+    );
+    const written = fs.readFileSync(writtenPath, "utf8");
+
+    expect(writtenPath).toBe(path.join(cwd, ".codex-artifacts", "evidence-templates-runtime-ready.json"));
+    expect(written).toContain('"runtimeReadyOnly": true');
+    expect(written).toContain('"templateCount": 2');
+    expect(written).not.toContain("safeEvidenceRules");
+    expect(written).not.toContain("sourceRefsPolicy");
   });
 
   it("narrows partial analytics environment guidance to the actual missing secret", async () => {

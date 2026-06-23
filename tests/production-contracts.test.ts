@@ -177,8 +177,16 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"evidence:templates:json"');
     expect(readinessScript).toContain('"evidence:templates:live"');
     expect(readinessScript).toContain('"evidence:templates:live:json"');
+    expect(readinessScript).toContain('"evidence:templates:live:compact"');
+    expect(readinessScript).toContain('"evidence:templates:live:compact:json"');
+    expect(readinessScript).toContain('"evidence:templates:live:runtime-ready"');
+    expect(readinessScript).toContain('"evidence:templates:live:runtime-ready:json"');
     expect(readinessScript).toContain('"evidence:templates:live:write"');
     expect(readinessScript).toContain('"evidence:templates:live:write:json"');
+    expect(readinessScript).toContain('"evidence:templates:live:write:compact"');
+    expect(readinessScript).toContain('"evidence:templates:live:write:compact:json"');
+    expect(readinessScript).toContain('"evidence:templates:live:write:runtime-ready"');
+    expect(readinessScript).toContain('"evidence:templates:live:write:runtime-ready:json"');
     expect(readinessScript).toContain('"media:hero"');
     expect(readinessScript).toContain('"media:hero:json"');
     expect(readinessScript).toContain('"media:hero:strict"');
@@ -320,11 +328,35 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["evidence:templates:live:json"]).toBe(
       "node scripts/evidence-template.mjs --json --live-runtime",
     );
+    expect(packageJson.scripts?.["evidence:templates:live:compact"]).toBe(
+      "node scripts/evidence-template.mjs --live-runtime --compact",
+    );
+    expect(packageJson.scripts?.["evidence:templates:live:compact:json"]).toBe(
+      "node scripts/evidence-template.mjs --json --live-runtime --compact",
+    );
+    expect(packageJson.scripts?.["evidence:templates:live:runtime-ready"]).toBe(
+      "node scripts/evidence-template.mjs --live-runtime --runtime-ready-only --compact",
+    );
+    expect(packageJson.scripts?.["evidence:templates:live:runtime-ready:json"]).toBe(
+      "node scripts/evidence-template.mjs --json --live-runtime --runtime-ready-only --compact",
+    );
     expect(packageJson.scripts?.["evidence:templates:live:write"]).toBe(
       "node scripts/evidence-template.mjs --live-runtime --output .codex-artifacts/evidence-templates.md",
     );
     expect(packageJson.scripts?.["evidence:templates:live:write:json"]).toBe(
       "node scripts/evidence-template.mjs --json --live-runtime --output .codex-artifacts/evidence-templates.json",
+    );
+    expect(packageJson.scripts?.["evidence:templates:live:write:compact"]).toBe(
+      "node scripts/evidence-template.mjs --live-runtime --compact --output .codex-artifacts/evidence-templates-compact.md",
+    );
+    expect(packageJson.scripts?.["evidence:templates:live:write:compact:json"]).toBe(
+      "node scripts/evidence-template.mjs --json --live-runtime --compact --output .codex-artifacts/evidence-templates-compact.json",
+    );
+    expect(packageJson.scripts?.["evidence:templates:live:write:runtime-ready"]).toBe(
+      "node scripts/evidence-template.mjs --live-runtime --runtime-ready-only --compact --output .codex-artifacts/evidence-templates-runtime-ready.md",
+    );
+    expect(packageJson.scripts?.["evidence:templates:live:write:runtime-ready:json"]).toBe(
+      "node scripts/evidence-template.mjs --json --live-runtime --runtime-ready-only --compact --output .codex-artifacts/evidence-templates-runtime-ready.json",
     );
     expect(packageJson.scripts?.["media:hero"]).toBe("node scripts/hero-media-audit.mjs");
     expect(packageJson.scripts?.["media:hero:json"]).toBe(
@@ -1195,6 +1227,11 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("npm run launch:standup:live:write:compact:json");
     expect(runbook).toContain("npm run evidence:templates:live:write");
     expect(runbook).toContain("npm run evidence:templates:live:write:json");
+    expect(runbook).toContain("npm run evidence:templates:live:compact");
+    expect(runbook).toContain("npm run evidence:templates:live:runtime-ready");
+    expect(runbook).toContain("npm run evidence:templates:live:write:runtime-ready");
+    expect(runbook).toContain("npm run evidence:templates:live:write:runtime-ready:json");
+    expect(runbook).toContain("only redacted source-system proof is missing");
     expect(runbook).toContain("copy-ready `status: pending` evidence templates");
     expect(runbook).toContain("not environment values");
     expect(runbook).toContain("KPI and review loop");

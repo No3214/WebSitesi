@@ -211,6 +211,7 @@ export function buildEvidenceTemplates({
   cutoverPlan = buildProductionCutoverPlan({ launchResult }),
   gateId = "",
   includeAll = false,
+  runtimeReadyOnly = false,
 } = {}) {
   const stepsById = indexSteps(cutoverPlan);
   const catalogById = indexGateCatalog();
@@ -223,7 +224,8 @@ export function buildEvidenceTemplates({
       return missingEvidenceForGate(gate, includeAll).map((evidence) =>
         buildTemplate({ gate, catalogGate, evidence, step }),
       );
-    });
+    })
+    .filter((template) => !runtimeReadyOnly || Boolean(template.runtimeStatus?.ready));
 
   return {
     generatedAt: new Date().toISOString(),
@@ -232,6 +234,7 @@ export function buildEvidenceTemplates({
     targetScore: launchResult.target,
     includeAll,
     gateId,
+    runtimeReadyOnly,
     templates,
   };
 }
@@ -258,8 +261,75 @@ export function formatEvidenceTemplates(result) {
   return lines.join("\n");
 }
 
-export function writeEvidenceTemplateReport(result, outputPath, { json = false, cwd = process.cwd() } = {}) {
-  const body = json ? JSON.stringify(result, null, 2) : formatEvidenceTemplates(result);
+export function buildCompactEvidenceTemplates(result) {
+  return {
+    generatedAt: result.generatedAt,
+    decision: result.decision,
+    currentScore: result.currentScore,
+    targetScore: result.targetScore,
+    includeAll: Boolean(result.includeAll),
+    gateId: result.gateId,
+    runtimeReadyOnly: Boolean(result.runtimeReadyOnly),
+    templateCount: result.templates.length,
+    templates: result.templates.map((template) => ({
+      path: template.path,
+      gateId: template.gateId,
+      pointsBlocked: template.pointsBlocked,
+      owner: template.owner,
+      timing: template.timing,
+      currentReason: template.currentReason,
+      runtimeReady: Boolean(template.runtimeStatus?.ready),
+      runtimeStatusText: template.runtimeStatusText,
+      envNames: [...(template.envSetup?.envNames || [])],
+      requiredProofSignals: [...template.requiredProofSignals],
+      commands: [...template.commands],
+    })),
+  };
+}
+
+export function formatCompactEvidenceTemplates(result) {
+  const lines = [
+    "Kozbeyli Konagi compact evidence templates",
+    `Generated: ${result.generatedAt}`,
+    `Decision: ${result.decision}`,
+    `Commercial score: ${result.currentScore}/${result.targetScore}`,
+    `Template count: ${result.templateCount}`,
+    result.gateId
+      ? `Gate filter: ${result.gateId}`
+      : `Gate filter: ${result.includeAll ? "all" : "pending"}`,
+    `Runtime-ready only: ${result.runtimeReadyOnly ? "yes" : "no"}`,
+    "",
+  ];
+
+  if (result.templates.length === 0) {
+    lines.push("No evidence templates matched the filters.");
+    return lines.join("\n");
+  }
+
+  for (const template of result.templates) {
+    lines.push(`${template.gateId}: ${template.path} (+${template.pointsBlocked} pts)`);
+    lines.push(`  owner: ${template.owner}`);
+    lines.push(`  timing: ${template.timing}`);
+    lines.push(`  runtime: ${template.runtimeStatusText}`);
+    if (template.envNames.length > 0) lines.push(`  env names: ${template.envNames.join(", ")}`);
+    lines.push(`  proof: ${template.requiredProofSignals.join("; ") || "redacted source-system proof"}`);
+    lines.push(`  commands: ${template.commands.join(" && ")}`);
+  }
+
+  return lines.join("\n");
+}
+
+export function writeEvidenceTemplateReport(
+  result,
+  outputPath,
+  { json = false, compact = false, cwd = process.cwd() } = {},
+) {
+  const outputResult = compact ? buildCompactEvidenceTemplates(result) : result;
+  const body = json
+    ? JSON.stringify(outputResult, null, 2)
+    : compact
+      ? formatCompactEvidenceTemplates(outputResult)
+      : formatEvidenceTemplates(outputResult);
 
   return writeSafeReportOutput(outputPath, body, { cwd });
 }
@@ -294,16 +364,25 @@ async function buildLaunchResultFromArgs() {
 async function main() {
   const json = process.argv.includes("--json");
   const includeAll = process.argv.includes("--all");
+  const compact = process.argv.includes("--compact");
+  const runtimeReadyOnly = process.argv.includes("--runtime-ready-only");
   const gateId = readArgValue("--gate");
   const outputPath = readArgValue("--output");
   const launchResult = await buildLaunchResultFromArgs();
-  const result = buildEvidenceTemplates({ launchResult, gateId, includeAll });
+  const result = buildEvidenceTemplates({ launchResult, gateId, includeAll, runtimeReadyOnly });
+  const outputResult = compact ? buildCompactEvidenceTemplates(result) : result;
 
   if (outputPath) {
-    const writtenPath = writeEvidenceTemplateReport(result, outputPath, { json });
+    const writtenPath = writeEvidenceTemplateReport(result, outputPath, { json, compact });
     console.log(`Wrote evidence template report: ${writtenPath}`);
   } else {
-    console.log(json ? JSON.stringify(result, null, 2) : formatEvidenceTemplates(result));
+    console.log(
+      json
+        ? JSON.stringify(outputResult, null, 2)
+        : compact
+          ? formatCompactEvidenceTemplates(outputResult)
+          : formatEvidenceTemplates(result),
+    );
   }
 }
 
