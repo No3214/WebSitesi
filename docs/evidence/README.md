@@ -19,12 +19,18 @@ gate is blocked.
 operator checklist with the evidence file, owner, timing, safe source reference
 rules, missing environment key names and verification commands. `npm run
 evidence:handoff:json` emits the same handoff as machine-readable JSON.
+`npm run evidence:handoff:live` adds canonical production `/api/health` runtime
+context to the same checklist, so operators can see which gates are production
+configured but still missing redacted proof.
 
 `npm run evidence:templates` prints copy-ready `status: pending` evidence
 templates for the currently blocked gates. Use `npm run evidence:templates:json`
 for dashboard or agent workflows. Use `npm run evidence:templates -- --all` to
 print reference templates for every commercial launch gate, or `npm run
 evidence:templates -- --gate hms_booking_engine` for one gate.
+`npm run evidence:templates:live` adds the same production runtime context to
+the generated templates. Runtime context is diagnostic only; it never replaces
+source-system references and does not make a pending evidence file ready.
 
 Ready evidence must include redacted source-system references, such as ticket
 IDs, dashboard permalink IDs, approval note IDs, or UAT run IDs. Do not paste

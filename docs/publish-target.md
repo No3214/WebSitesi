@@ -22,6 +22,8 @@ Tam ticari yayın hedefi artık çalıştırılabilir bir gate ile izlenir:
 npm run launch:audit
 npm run launch:audit:json
 npm run launch:audit:live
+npm run evidence:handoff:live
+npm run evidence:templates:live
 npm run launch:cutover
 npm run launch:cutover:json
 npm run media:hero
@@ -42,6 +44,10 @@ eksiklerinden ayırır.
 çıktısını aynı rapora ayrı bir tanı katmanı olarak ekler. Bu canlı env durumunu
 netleştirir, ancak redakte edilmiş kanıt dosyaları tamamlanmadan commercial
 puan artırmaz.
+`evidence:handoff:live` ve `evidence:templates:live`, aynı runtime tanısını
+operasyon ekibine verilecek kanıt listesi ve şablonlarına taşır. Böylece
+source-system kanıtı eksik ama production runtime hazır olan kapılar, gerçekten
+env eksik olan kapılardan ayrılır.
 `launch:cutover`, eksik ticari kapıları sahip, zamanlama, komut, kanıt ve KPI
 kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
 `media:hero`, açılış videosunun onaylı hash, çözünürlük, süre, bitrate, poster

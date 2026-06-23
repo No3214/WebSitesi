@@ -18,6 +18,24 @@ type CommercialLaunchModule = {
   evaluateCommercialLaunch: (args?: {
     env?: Record<string, string>;
     baseDir?: string;
+    runtimeReadiness?: {
+      status: string;
+      ready: boolean;
+      configuredGates: string[];
+      blockedGates: string[];
+      checks: Array<{
+        id: string;
+        ready: boolean;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+        configurationSource: string;
+      }>;
+    };
+    runtimeSource?: string;
   }) => {
     score: number;
     target: number;
@@ -36,6 +54,17 @@ type CommercialLaunchModule = {
         redactionCategories?: string[];
         missingEvidenceSignals?: string[];
       }>;
+      runtimeConfiguration?: {
+        source: string;
+        ready: boolean;
+        configurationSource: string;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+      };
     }>;
   };
 };
@@ -77,6 +106,18 @@ type EvidenceHandoffModule = {
       owner: string;
       timing: string;
       missingEnv: string[];
+      runtimeStatus?: {
+        source: string;
+        ready: boolean;
+        configurationSource: string;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+      };
+      runtimeAction: string;
       commands: string[];
       redactionFindingCount: number;
       redactionCategories: string[];
@@ -233,6 +274,50 @@ function makeReadyEnv(audit: CommercialLaunchModule) {
   );
 }
 
+function makeRuntimeReadinessFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["production_database", "hms_booking_engine"],
+    blockedGates: ["production_abuse_controls"],
+    checks: [
+      {
+        id: "production_database",
+        ready: true,
+        requiredCount: 2,
+        configuredCount: 2,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+      {
+        id: "production_abuse_controls",
+        ready: false,
+        requiredCount: 4,
+        configuredCount: 0,
+        missingCount: 4,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "missing",
+      },
+      {
+        id: "hms_booking_engine",
+        ready: true,
+        requiredCount: 1,
+        configuredCount: 1,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+    ],
+  };
+}
+
 afterEach(() => {
   for (const dir of tmpDirs.splice(0)) {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -317,6 +402,45 @@ describe("evidence handoff", () => {
     expect(result.files).toEqual([]);
     expect(result.finalVerificationCommands).toContain("npm run release:verify");
     expect(result.finalVerificationCommands).toContain("npm run release:verify:commercial");
+  });
+
+  it("adds live runtime context to pending evidence handoff without exposing values", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const handoff = await loadHandoffModule();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir: makeTmpDir(),
+      runtimeReadiness: makeRuntimeReadinessFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS_WITH_WARNINGS", warnings: [] },
+    });
+    const result = handoff.buildEvidenceHandoff({ launchResult, cutoverPlan });
+    const database = result.files.find((file) => file.path === "docs/evidence/production-database.md");
+    const abuse = result.files.find((file) => file.path === "docs/evidence/production-abuse-controls.md");
+    const formatted = handoff.formatEvidenceHandoff(result);
+
+    expect(database?.runtimeStatus).toMatchObject({
+      source: "https://www.kozbeylikonagi.com/api/health",
+      ready: true,
+      configurationSource: "env",
+      configuredCount: 2,
+      requiredCount: 2,
+    });
+    expect(database?.runtimeAction).toContain("Production runtime reports this gate configured");
+    expect(abuse?.runtimeStatus).toMatchObject({
+      ready: false,
+      configurationSource: "missing",
+      missingCount: 4,
+    });
+    expect(abuse?.runtimeAction).toContain("Production runtime is still missing or invalid");
+    expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: ready");
+    expect(formatted).toContain("runtime action:");
+    expect(JSON.stringify(result)).not.toContain("postgresql://");
+    expect(formatted).not.toContain("postgresql://");
   });
 
   it("carries redaction findings into the safe operator handoff", async () => {

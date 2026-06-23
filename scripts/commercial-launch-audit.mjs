@@ -6,7 +6,7 @@ import { scanEvidenceSource } from "./evidence-redaction-scan.mjs";
 
 const root = process.cwd();
 const BASE_COMMERCIAL_SCORE = 80;
-const DEFAULT_RUNTIME_HEALTH_URL = "https://www.kozbeylikonagi.com/api/health";
+export const DEFAULT_RUNTIME_HEALTH_URL = "https://www.kozbeylikonagi.com/api/health";
 const OFFICIAL_HMS_BOOKING_ENGINE_HOST = "kozbeyli-konagi\\.hmshotel\\.net";
 const OFFICIAL_HMS_BOOKING_ENGINE_URL =
   "https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine";
@@ -689,7 +689,7 @@ function argValue(name) {
   return process.argv[index + 1];
 }
 
-async function fetchRuntimeReadiness(healthUrl) {
+export async function fetchRuntimeReadiness(healthUrl) {
   const response = await fetch(healthUrl, {
     headers: { Accept: "application/json" },
     signal: AbortSignal.timeout(15_000),

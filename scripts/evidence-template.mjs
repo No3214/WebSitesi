@@ -1,6 +1,11 @@
 import { pathToFileURL } from "node:url";
 
-import { commercialLaunchGates, evaluateCommercialLaunch } from "./commercial-launch-audit.mjs";
+import {
+  DEFAULT_RUNTIME_HEALTH_URL,
+  commercialLaunchGates,
+  evaluateCommercialLaunch,
+  fetchRuntimeReadiness,
+} from "./commercial-launch-audit.mjs";
 import { requiredEvidenceSections, safeEvidenceRules } from "./evidence-handoff.mjs";
 import { buildProductionCutoverPlan } from "./production-cutover-plan.mjs";
 
@@ -84,6 +89,10 @@ function buildTemplateMarkdown(template) {
     "## Required Proof Signals",
     checkboxList(template.requiredProofSignals),
     "",
+    "## Runtime Status",
+    template.runtimeStatusText,
+    template.runtimeAction,
+    "",
     "## Guest-Facing Copy / Fallback",
     template.guestFacingCopy,
     "",
@@ -115,6 +124,27 @@ function buildTemplate({ gate, catalogGate, evidence, step }) {
   const timing = step?.timing || "Before full commercial launch";
   const checklist = [...(step?.checklist || ["Resolve this commercial launch gate with redacted source-system proof."])];
   const commands = [...(step?.commands || ["npm run launch:audit"])];
+  const runtimeStatus = gate.runtimeConfiguration
+    ? {
+        source: gate.runtimeConfiguration.source,
+        ready: Boolean(gate.runtimeConfiguration.ready),
+        configurationSource: gate.runtimeConfiguration.configurationSource,
+        configuredCount: gate.runtimeConfiguration.configuredCount,
+        requiredCount: gate.runtimeConfiguration.requiredCount,
+        missingCount: gate.runtimeConfiguration.missingCount,
+        invalidCount: gate.runtimeConfiguration.invalidCount,
+        placeholderCount: gate.runtimeConfiguration.placeholderCount,
+        fallbackApplied: Boolean(gate.runtimeConfiguration.fallbackApplied),
+      }
+    : undefined;
+  const runtimeStatusText = runtimeStatus
+    ? `${runtimeStatus.source}: ${runtimeStatus.ready ? "ready" : "blocked"} (${runtimeStatus.configurationSource}, ${runtimeStatus.configuredCount}/${runtimeStatus.requiredCount} configured, ${runtimeStatus.missingCount} missing, ${runtimeStatus.invalidCount} invalid, ${runtimeStatus.placeholderCount} placeholder, fallback=${runtimeStatus.fallbackApplied ? "yes" : "no"})`
+    : "Not checked in this template run. Use --live-runtime or --runtime-health-url to add production runtime context.";
+  const runtimeAction = runtimeStatus?.ready
+    ? "Production runtime reports this gate configured; complete the redacted source-system evidence below before setting status: ready."
+    : runtimeStatus
+      ? "Production runtime is still missing or invalid for this gate; configure the production provider/env first, then complete the redacted source-system evidence below."
+      : "Runtime context is diagnostic only and does not replace source-system evidence.";
 
   return {
     path: evidence.path,
@@ -130,6 +160,9 @@ function buildTemplate({ gate, catalogGate, evidence, step }) {
     missingProofSignals: [...(evidence.missingEvidenceSignals || [])],
     guestFacingCopy: guestFacingCopyByGate[gate.id] || "Ekibimiz talebinizi yazili olarak teyit eder.",
     commands,
+    runtimeStatus,
+    runtimeStatusText,
+    runtimeAction,
     kpiAndReviewLoop: step?.kpiAndReviewLoop || "Gate passes in npm run launch:audit.",
     requiredSections: [...requiredEvidenceSections],
     safeEvidenceRules: [...safeEvidenceRules],
@@ -195,11 +228,32 @@ function readArgValue(name) {
   return index >= 0 ? process.argv[index + 1] || "" : "";
 }
 
-function main() {
+async function buildLaunchResultFromArgs() {
+  const runtimeHealthUrl =
+    readArgValue("--runtime-health-url") || (process.argv.includes("--live-runtime") ? DEFAULT_RUNTIME_HEALTH_URL : "");
+
+  if (!runtimeHealthUrl) return evaluateCommercialLaunch();
+
+  try {
+    const runtimeReadiness = await fetchRuntimeReadiness(runtimeHealthUrl);
+    return evaluateCommercialLaunch({
+      runtimeReadiness,
+      runtimeSource: runtimeHealthUrl,
+    });
+  } catch (error) {
+    return evaluateCommercialLaunch({
+      runtimeReadinessError: error instanceof Error ? error.message : String(error),
+      runtimeSource: runtimeHealthUrl,
+    });
+  }
+}
+
+async function main() {
   const json = process.argv.includes("--json");
   const includeAll = process.argv.includes("--all");
   const gateId = readArgValue("--gate");
-  const result = buildEvidenceTemplates({ gateId, includeAll });
+  const launchResult = await buildLaunchResultFromArgs();
+  const result = buildEvidenceTemplates({ launchResult, gateId, includeAll });
 
   console.log(json ? JSON.stringify(result, null, 2) : formatEvidenceTemplates(result));
 }

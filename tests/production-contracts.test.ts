@@ -164,9 +164,13 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"evidence:scan:json"');
     expect(readinessScript).toContain('"evidence:handoff"');
     expect(readinessScript).toContain('"evidence:handoff:json"');
+    expect(readinessScript).toContain('"evidence:handoff:live"');
+    expect(readinessScript).toContain('"evidence:handoff:live:json"');
     expect(readinessScript).toContain('"evidence:handoff:strict"');
     expect(readinessScript).toContain('"evidence:templates"');
     expect(readinessScript).toContain('"evidence:templates:json"');
+    expect(readinessScript).toContain('"evidence:templates:live"');
+    expect(readinessScript).toContain('"evidence:templates:live:json"');
     expect(readinessScript).toContain('"media:hero"');
     expect(readinessScript).toContain('"media:hero:json"');
     expect(readinessScript).toContain('"media:hero:strict"');
@@ -252,12 +256,24 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["evidence:handoff:json"]).toBe(
       "node scripts/evidence-handoff.mjs --json",
     );
+    expect(packageJson.scripts?.["evidence:handoff:live"]).toBe(
+      "node scripts/evidence-handoff.mjs --live-runtime",
+    );
+    expect(packageJson.scripts?.["evidence:handoff:live:json"]).toBe(
+      "node scripts/evidence-handoff.mjs --json --live-runtime",
+    );
     expect(packageJson.scripts?.["evidence:handoff:strict"]).toBe(
       "node scripts/evidence-handoff.mjs --strict",
     );
     expect(packageJson.scripts?.["evidence:templates"]).toBe("node scripts/evidence-template.mjs");
     expect(packageJson.scripts?.["evidence:templates:json"]).toBe(
       "node scripts/evidence-template.mjs --json",
+    );
+    expect(packageJson.scripts?.["evidence:templates:live"]).toBe(
+      "node scripts/evidence-template.mjs --live-runtime",
+    );
+    expect(packageJson.scripts?.["evidence:templates:live:json"]).toBe(
+      "node scripts/evidence-template.mjs --json --live-runtime",
     );
     expect(packageJson.scripts?.["media:hero"]).toBe("node scripts/hero-media-audit.mjs");
     expect(packageJson.scripts?.["media:hero:json"]).toBe(

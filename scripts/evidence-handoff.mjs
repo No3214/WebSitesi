@@ -1,6 +1,10 @@
 import { pathToFileURL } from "node:url";
 
-import { evaluateCommercialLaunch } from "./commercial-launch-audit.mjs";
+import {
+  DEFAULT_RUNTIME_HEALTH_URL,
+  evaluateCommercialLaunch,
+  fetchRuntimeReadiness,
+} from "./commercial-launch-audit.mjs";
 import { buildProductionCutoverPlan } from "./production-cutover-plan.mjs";
 
 export const requiredEvidenceSections = [
@@ -39,6 +43,38 @@ function redactionAction(evidence) {
     : "";
 }
 
+function runtimeStatusSummary(runtimeConfiguration) {
+  if (!runtimeConfiguration) return undefined;
+
+  return {
+    source: runtimeConfiguration.source,
+    ready: Boolean(runtimeConfiguration.ready),
+    configurationSource: runtimeConfiguration.configurationSource,
+    configuredCount: runtimeConfiguration.configuredCount,
+    requiredCount: runtimeConfiguration.requiredCount,
+    missingCount: runtimeConfiguration.missingCount,
+    invalidCount: runtimeConfiguration.invalidCount,
+    placeholderCount: runtimeConfiguration.placeholderCount,
+    fallbackApplied: Boolean(runtimeConfiguration.fallbackApplied),
+  };
+}
+
+function formatRuntimeStatus(runtimeStatus) {
+  if (!runtimeStatus) return "";
+
+  const state = runtimeStatus.ready ? "ready" : "blocked";
+  return `${runtimeStatus.source}: ${state} (${runtimeStatus.configurationSource}, ${runtimeStatus.configuredCount}/${runtimeStatus.requiredCount} configured, ${runtimeStatus.missingCount} missing, ${runtimeStatus.invalidCount} invalid, ${runtimeStatus.placeholderCount} placeholder, fallback=${runtimeStatus.fallbackApplied ? "yes" : "no"})`;
+}
+
+function runtimeAction(runtimeStatus) {
+  if (!runtimeStatus) return "Run npm run launch:audit:live after production env changes to compare live runtime state with the evidence gate.";
+  if (runtimeStatus.ready) {
+    return "Production runtime reports this gate configured; attach redacted source-system evidence before marking the evidence file ready.";
+  }
+
+  return "Production runtime is still missing or invalid for this gate; configure the named production provider/env first, then attach redacted evidence.";
+}
+
 export function buildEvidenceHandoff({
   launchResult = evaluateCommercialLaunch(),
   cutoverPlan = buildProductionCutoverPlan({ launchResult }),
@@ -46,6 +82,7 @@ export function buildEvidenceHandoff({
   const stepsById = indexSteps(cutoverPlan);
   const files = launchResult.gateResults.flatMap((gate) => {
     const step = stepsById.get(gate.id);
+    const runtimeStatus = runtimeStatusSummary(gate.runtimeConfiguration);
 
     return (gate.missingEvidence || []).map((evidence) => ({
       path: evidence.path,
@@ -56,6 +93,8 @@ export function buildEvidenceHandoff({
       owner: step?.owner || "Launch operator",
       timing: step?.timing || "Before full commercial launch",
       missingEnv: [...(gate.missingEnv || [])],
+      runtimeStatus,
+      runtimeAction: runtimeAction(runtimeStatus),
       commands: [...(step?.commands || ["npm run launch:audit"])],
       kpiAndReviewLoop: step?.kpiAndReviewLoop || "Gate passes in npm run launch:audit.",
       redactionFindingCount: evidence.redactionFindingCount || 0,
@@ -117,6 +156,8 @@ export function formatEvidenceHandoff(result) {
       lines.push(`  owner: ${file.owner}`);
       lines.push(`  timing: ${file.timing}`);
       if (file.missingEnv.length > 0) lines.push(`  missing env names: ${file.missingEnv.join(", ")}`);
+      if (file.runtimeStatus) lines.push(`  runtime: ${formatRuntimeStatus(file.runtimeStatus)}`);
+      lines.push(`  runtime action: ${file.runtimeAction}`);
       lines.push(`  commands: ${file.commands.join(" && ")}`);
       lines.push(`  KPI/review: ${file.kpiAndReviewLoop}`);
       lines.push(`  source_refs policy: ${file.sourceRefsPolicy}`);
@@ -130,10 +171,38 @@ export function formatEvidenceHandoff(result) {
   return lines.join("\n");
 }
 
-function main() {
+function readArgValue(name) {
+  const inline = process.argv.find((arg) => arg.startsWith(`${name}=`));
+  if (inline) return inline.slice(name.length + 1);
+  const index = process.argv.indexOf(name);
+  return index >= 0 ? process.argv[index + 1] || "" : "";
+}
+
+async function buildLaunchResultFromArgs() {
+  const runtimeHealthUrl =
+    readArgValue("--runtime-health-url") || (process.argv.includes("--live-runtime") ? DEFAULT_RUNTIME_HEALTH_URL : "");
+
+  if (!runtimeHealthUrl) return evaluateCommercialLaunch();
+
+  try {
+    const runtimeReadiness = await fetchRuntimeReadiness(runtimeHealthUrl);
+    return evaluateCommercialLaunch({
+      runtimeReadiness,
+      runtimeSource: runtimeHealthUrl,
+    });
+  } catch (error) {
+    return evaluateCommercialLaunch({
+      runtimeReadinessError: error instanceof Error ? error.message : String(error),
+      runtimeSource: runtimeHealthUrl,
+    });
+  }
+}
+
+async function main() {
   const json = process.argv.includes("--json");
   const strict = process.argv.includes("--strict");
-  const result = buildEvidenceHandoff();
+  const launchResult = await buildLaunchResultFromArgs();
+  const result = buildEvidenceHandoff({ launchResult });
 
   console.log(json ? JSON.stringify(result, null, 2) : formatEvidenceHandoff(result));
   process.exitCode = strict && result.decision !== "EVIDENCE_HANDOFF_READY" ? 1 : 0;

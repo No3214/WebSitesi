@@ -121,6 +121,11 @@ test.describe("Launch localization smoke", () => {
       "href",
       HMS_BOOKING_URL,
     );
+    const mobileActionBar = page.getByTestId("mobile-action-bar");
+    await expect(mobileActionBar.getByText("ARA", { exact: true })).toBeVisible();
+    await expect(mobileActionBar.getByText("KONUM", { exact: true })).toBeVisible();
+    await expect(mobileActionBar.getByText("REZERVASYON", { exact: true })).toBeVisible();
+    await expect(mobileActionBar.getByText("BOOKING", { exact: true })).toHaveCount(0);
     await expect(main.getByText("Triple Room")).toHaveCount(0);
     await expect(main.getByText("3 Adults")).toHaveCount(0);
     await expect(main.getByText("Village & Nature")).toHaveCount(0);

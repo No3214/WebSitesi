@@ -12,6 +12,24 @@ type CommercialLaunchModule = {
   evaluateCommercialLaunch: (args?: {
     env?: Record<string, string>;
     baseDir?: string;
+    runtimeReadiness?: {
+      status: string;
+      ready: boolean;
+      configuredGates: string[];
+      blockedGates: string[];
+      checks: Array<{
+        id: string;
+        ready: boolean;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+        configurationSource: string;
+      }>;
+    };
+    runtimeSource?: string;
   }) => {
     score: number;
     target: number;
@@ -49,6 +67,8 @@ type EvidenceTemplateModule = {
       requiredProofSignals: string[];
       guestFacingCopy: string;
       commands: string[];
+      runtimeStatusText: string;
+      runtimeAction: string;
       safeEvidenceRules: string[];
     }>;
   };
@@ -87,6 +107,39 @@ afterEach(() => {
   }
 });
 
+function makeRuntimeReadinessFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["hms_booking_engine"],
+    blockedGates: ["production_abuse_controls"],
+    checks: [
+      {
+        id: "hms_booking_engine",
+        ready: true,
+        requiredCount: 1,
+        configuredCount: 1,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+      {
+        id: "production_abuse_controls",
+        ready: false,
+        requiredCount: 4,
+        configuredCount: 0,
+        missingCount: 4,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "missing",
+      },
+    ],
+  };
+}
+
 describe("evidence templates", () => {
   it("builds safe pending templates for every blocked commercial evidence file", async () => {
     const audit = await loadAuditModule();
@@ -108,6 +161,8 @@ describe("evidence templates", () => {
     expect(formatted).toContain("## Operational Goal");
     expect(formatted).toContain("## SOP / Checklist");
     expect(formatted).toContain("## Required Proof Signals");
+    expect(formatted).toContain("## Runtime Status");
+    expect(formatted).toContain("Not checked in this template run");
     expect(formatted).toContain("## Guest-Facing Copy / Fallback");
     expect(formatted).toContain("Do not commit secrets");
     expect(formatted).toContain("database URLs");
@@ -149,5 +204,35 @@ describe("evidence templates", () => {
     expect(hms.commands).toContain("npm run hms:verify:strict");
     expect(hms.guestFacingCopy).toContain("Rezervasyon motoru");
     expect(formatted).toContain("Gate filter: hms_booking_engine");
+  });
+
+  it("adds live runtime context to focused evidence templates", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const templates = await loadTemplateModule();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir: makeTmpDir(),
+      runtimeReadiness: makeRuntimeReadinessFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+
+    const result = templates.buildEvidenceTemplates({
+      launchResult,
+      cutoverPlan,
+      gateId: "hms_booking_engine",
+    });
+    const hms = result.templates[0];
+    const formatted = templates.formatEvidenceTemplates(result);
+
+    expect(hms.runtimeStatusText).toContain("https://www.kozbeylikonagi.com/api/health: ready");
+    expect(hms.runtimeAction).toContain("Production runtime reports this gate configured");
+    expect(formatted).toContain("## Runtime Status");
+    expect(formatted).toContain("Production runtime reports this gate configured");
+    expect(formatted).not.toContain("postgresql://");
   });
 });
