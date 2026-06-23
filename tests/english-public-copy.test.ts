@@ -74,6 +74,12 @@ describe("English public copy contracts", () => {
     const locationPage = read("src/components/location-page-content.tsx");
     const englishContactPage = read("src/app/en/iletisim/page.tsx");
     const englishLocationPage = read("src/app/en/lokasyon/page.tsx");
+    const cookieConsent = read("src/components/cookie-consent.tsx");
+    const paymentStep = read("src/components/payment-wizard/steps/payment-step.tsx");
+    const englishCookiePolicy = read("src/app/en/cerez-politikasi/page.tsx");
+    const englishPrivacy = read("src/app/en/gizlilik-politikasi/page.tsx");
+    const englishKvkk = read("src/app/en/kvkk/page.tsx");
+    const englishDistanceSales = read("src/app/en/mesafeli-satis-sozlesmesi/page.tsx");
 
     expect(rootLayout).toContain("<SkipLink />");
     expect(skipLink).toContain("Skip to content");
@@ -84,5 +90,15 @@ describe("English public copy contracts", () => {
     expect(locationPage).toContain("address: ADDRESS_EN");
     expect(englishContactPage).toContain("ADDRESS_EN");
     expect(englishLocationPage).toContain("ADDRESS_EN");
+    expect(footer).toContain('getLegalHref("cookies", "en")');
+    expect(cookieConsent).toContain('getLegalHref("cookies", locale)');
+    expect(paymentStep).toContain('getLegalHref("kvkk", wizard.locale)');
+    expect(paymentStep).toContain('getLegalHref("privacy", wizard.locale)');
+    for (const source of [englishCookiePolicy, englishPrivacy, englishKvkk, englishDistanceSales]) {
+      expect(source).toContain("EnglishLegalPage");
+      expect(source).not.toContain("Çerez Politikası");
+      expect(source).not.toContain("Gizlilik Politikası");
+      expect(source).not.toContain("Mesafeli Satış Sözleşmesi");
+    }
   });
 });

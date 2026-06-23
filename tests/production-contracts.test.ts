@@ -130,17 +130,23 @@ describe("production readiness contracts", () => {
   it("keeps cookie banner policy copy readable in Turkish and English", () => {
     const cookieConsent = read("src/components/cookie-consent.tsx");
     const footer = read("src/components/site-footer.tsx");
+    const legalRoutes = read("src/lib/legal-routes.ts");
+    const publishRoutes = read("tests/e2e/publish-routes.spec.ts");
 
     expect(cookieConsent).toContain('policy: "Çerez Politikamızı"');
     expect(cookieConsent).toContain('suffix: " inceleyebilirsiniz."');
     expect(cookieConsent).toContain('policy: "Cookie Policy"');
     expect(cookieConsent).toContain('suffix: "."');
+    expect(cookieConsent).toContain('getLegalHref("cookies", locale)');
     expect(cookieConsent).not.toContain("Politikamızıinceleyebilirsiniz");
     expect(cookieConsent).not.toContain("opacity: 0.8");
     expect(cookieConsent).toContain("CONSENT_OPEN_EVENT");
     expect(footer).toContain("CookiePreferencesButton");
     expect(footer).toContain("Cookie Preferences");
     expect(footer).toContain("Çerez Tercihleri");
+    expect(footer).toContain('getLegalHref("cookies", "en")');
+    expect(legalRoutes).toContain('return locale === "en" ? `/en${route}` : route');
+    expect(publishRoutes).toContain('"/en/cerez-politikasi"');
   });
 
   it("keeps publish readiness aware of payment and stress gates", () => {

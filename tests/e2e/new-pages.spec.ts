@@ -123,10 +123,20 @@ test.describe("EN public localization", () => {
     await expect(footer.getByText("Stone · Olive · Morning Sun")).toBeVisible();
     await expect(footer.getByText("Kozbeyli Village, No:188, Foça / Izmir")).toBeVisible();
     await expect(footer.getByText("Kozbeyli Köyü Küme Evler No:188")).toHaveCount(0);
-    await expect(footer.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/cerez-politikasi");
+    await expect(footer.getByRole("link", { name: "KVKK Notice" })).toHaveAttribute("href", "/en/kvkk");
+    await expect(footer.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/en/gizlilik-politikasi");
+    await expect(footer.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute("href", "/en/cerez-politikasi");
+    await expect(footer.getByRole("link", { name: "Distance Sales Agreement" })).toHaveAttribute(
+      "href",
+      "/en/mesafeli-satis-sozlesmesi",
+    );
     await expect(footer.getByRole("button", { name: "Cookie Preferences" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Open contact options" })).toBeVisible();
     await expect(page.getByRole("dialog", { name: "Cookie preferences" })).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Cookie preferences" }).getByRole("link", { name: "Cookie Policy" })).toHaveAttribute(
+      "href",
+      "/en/cerez-politikasi",
+    );
     await expect(page.getByRole("button", { name: "Reject" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Accept All" })).toBeVisible();
     await expect(page.getByText("Tahmini Bütçe")).toHaveCount(0);

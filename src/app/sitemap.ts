@@ -21,6 +21,10 @@ const EN_ROUTES = new Set([
   '/misafir-rehberi',
   '/deneyimler',
   '/teklifler',
+  '/kvkk',
+  '/gizlilik-politikasi',
+  '/cerez-politikasi',
+  '/mesafeli-satis-sozlesmesi',
 ]);
 
 export default function sitemap(): MetadataRoute.Sitemap {

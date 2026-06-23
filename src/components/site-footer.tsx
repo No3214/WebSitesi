@@ -8,6 +8,7 @@ import { ADDRESS_EN, ADDRESS_TR, getPhoneHref, MAPS_URL, PHONE_DISPLAY } from "@
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
 import { LogoMark } from "./logo-mark";
 import { CookiePreferencesButton } from "./cookie-preferences-button";
+import { getLegalHref } from "@/lib/legal-routes";
 
 function isEnPath(pathname: string): boolean {
   return pathname === "/en" || pathname.startsWith("/en/");
@@ -20,16 +21,16 @@ function localizedHref(href: string, english: boolean): string {
 
 const legalLinks = {
   tr: [
-    { href: "/kvkk", label: "KVKK Aydınlatma Metni" },
-    { href: "/gizlilik-politikasi", label: "Gizlilik Politikası" },
-    { href: "/cerez-politikasi", label: "Çerez Politikası" },
-    { href: "/mesafeli-satis-sozlesmesi", label: "Mesafeli Satış Sözleşmesi" },
+    { href: getLegalHref("kvkk", "tr"), label: "KVKK Aydınlatma Metni" },
+    { href: getLegalHref("privacy", "tr"), label: "Gizlilik Politikası" },
+    { href: getLegalHref("cookies", "tr"), label: "Çerez Politikası" },
+    { href: getLegalHref("distanceSales", "tr"), label: "Mesafeli Satış Sözleşmesi" },
   ],
   en: [
-    { href: "/kvkk", label: "KVKK Notice" },
-    { href: "/gizlilik-politikasi", label: "Privacy Policy" },
-    { href: "/cerez-politikasi", label: "Cookie Policy" },
-    { href: "/mesafeli-satis-sozlesmesi", label: "Distance Sales Agreement" },
+    { href: getLegalHref("kvkk", "en"), label: "KVKK Notice" },
+    { href: getLegalHref("privacy", "en"), label: "Privacy Policy" },
+    { href: getLegalHref("cookies", "en"), label: "Cookie Policy" },
+    { href: getLegalHref("distanceSales", "en"), label: "Distance Sales Agreement" },
   ],
 };
 

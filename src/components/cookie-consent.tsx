@@ -13,6 +13,7 @@ import {
   saveConsent,
   type ConsentState,
 } from "@/lib/consent";
+import { getLegalHref } from "@/lib/legal-routes";
 
 type ConsentLocale = "tr" | "en";
 
@@ -89,6 +90,7 @@ export function CookieConsent() {
   }, [pathname]);
 
   const copy = consentCopy[locale];
+  const policyHref = getLegalHref("cookies", locale);
 
   useEffect(() => {
     const current = parseConsent(localStorage.getItem(CONSENT_STORAGE_KEY));
@@ -137,7 +139,7 @@ export function CookieConsent() {
             <Cookie size={20} className="cookie-icon" />
             <div>
               <p>
-                {copy.description} <Link href="/cerez-politikasi">{copy.policy}</Link>
+                {copy.description} <Link href={policyHref}>{copy.policy}</Link>
                 {copy.suffix}
               </p>
               <p style={{ marginTop: 8 }}>{summaryText}</p>

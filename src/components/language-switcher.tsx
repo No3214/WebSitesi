@@ -23,6 +23,10 @@ const EN_ROUTES = [
   "/misafir-rehberi",
   "/deneyimler",
   "/teklifler",
+  "/kvkk",
+  "/gizlilik-politikasi",
+  "/cerez-politikasi",
+  "/mesafeli-satis-sozlesmesi",
 ];
 
 function isEnPath(pathname: string): boolean {

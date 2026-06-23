@@ -49,6 +49,17 @@ test.describe("Cookie preferences control", () => {
     await expect(dialog.getByRole("button", { name: "Tercihleri Kaydet" })).toBeVisible();
   });
 
+  test("English cookie banner links to the English legal route", async ({ page }) => {
+    await page.goto("/en/iletisim", { waitUntil: "load" });
+
+    const dialog = page.getByRole("dialog", { name: "Cookie preferences" });
+    await expect(dialog).toBeVisible({ timeout: 15000 });
+    await expect(dialog.getByRole("link", { name: "Cookie Policy" })).toHaveAttribute(
+      "href",
+      "/en/cerez-politikasi",
+    );
+  });
+
   test("funnel helpers write dataLayer events only while analytics consent is active", async ({ page }) => {
     await page.goto("/", { waitUntil: "load" });
     await page.evaluate(() => {

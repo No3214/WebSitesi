@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ShieldCheck, ArrowLeft } from "lucide-react";
 import type { usePaymentWizard } from "../use-payment-wizard";
+import { getLegalHref } from "@/lib/legal-routes";
 
 // Adim 4: Misafir bilgileri + ozet. Kart alanlari KASITLI olarak yok:
 // tahsilat Garanti BBVA Sanal POS'un guvenli 3D Secure sayfasinda yapilacak
@@ -20,6 +21,8 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
     copy,
   } = wizard;
   const t = copy.payment;
+  const kvkkHref = getLegalHref("kvkk", wizard.locale);
+  const privacyHref = getLegalHref("privacy", wizard.locale);
 
   return (
     <motion.div
@@ -99,11 +102,11 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
           />
           <span>
             {t.consentBefore}{" "}
-            <a href="/kvkk" style={{ color: "var(--olive)", fontWeight: 700 }}>
+            <a href={kvkkHref} style={{ color: "var(--olive)", fontWeight: 700 }}>
               {t.kvkk}
             </a>{" "}
             {wizard.locale === "tr" ? "ve" : "and"}{" "}
-            <a href="/gizlilik-politikasi" style={{ color: "var(--olive)", fontWeight: 700 }}>
+            <a href={privacyHref} style={{ color: "var(--olive)", fontWeight: 700 }}>
               {t.privacy}
             </a>{" "}
             {t.consentAfter}

@@ -40,6 +40,10 @@ const htmlRoutes = [
   "/en/sss",
   "/en/iletisim",
   "/en/lokasyon",
+  "/en/kvkk",
+  "/en/gizlilik-politikasi",
+  "/en/cerez-politikasi",
+  "/en/mesafeli-satis-sozlesmesi",
 ];
 
 const assetRoutes = ["/robots.txt", "/sitemap.xml", "/llms.txt", "/manifest.webmanifest"];
