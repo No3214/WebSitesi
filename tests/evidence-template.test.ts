@@ -9,6 +9,11 @@ const root = process.cwd();
 const tmpDirs: string[] = [];
 
 type CommercialLaunchModule = {
+  commercialLaunchGates: Array<{
+    id: string;
+    env: string[];
+    envAnyOf?: Array<{ keys: string[] }>;
+  }>;
   evaluateCommercialLaunch: (args?: {
     env?: Record<string, string>;
     baseDir?: string;
@@ -67,6 +72,16 @@ type EvidenceTemplateModule = {
       requiredProofSignals: string[];
       guestFacingCopy: string;
       commands: string[];
+      envSetup?: {
+        provider: string;
+        environment: string;
+        dashboardPath: string;
+        envNames: string[];
+        cliInstallCommand: string;
+        cliAuthCommands: string[];
+        cliCommands: string[];
+        manualChecklist: string[];
+      };
       runtimeStatusText: string;
       runtimeAction: string;
       safeEvidenceRules: string[];
@@ -235,5 +250,56 @@ describe("evidence templates", () => {
     expect(formatted).toContain("## Runtime Status");
     expect(formatted).toContain("Production runtime reports this gate configured");
     expect(formatted).not.toContain("postgresql://");
+  });
+
+  it("narrows partial analytics environment guidance to the actual missing secret", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const templates = await loadTemplateModule();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {
+        NEXT_PUBLIC_GTM_ID: "GTM-KCG6B4MJ",
+        NEXT_PUBLIC_GA4_MEASUREMENT_ID: "G-V3R66C3MEF",
+        NEXT_PUBLIC_GOOGLE_ADS_ID: "AW-800024713",
+        NEXT_PUBLIC_META_PIXEL_ID: "1781546559309505",
+        GA4_MEASUREMENT_ID: "G-V3R66C3MEF",
+      },
+      baseDir: makeTmpDir(),
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+
+    const result = templates.buildEvidenceTemplates({
+      launchResult,
+      cutoverPlan,
+      gateId: "analytics_purchase",
+    });
+    const analytics = result.templates[0];
+    const serialized = JSON.stringify(result);
+    const formatted = templates.formatEvidenceTemplates(result);
+
+    expect(result.templates).toHaveLength(1);
+    expect(analytics).toMatchObject({
+      gateId: "analytics_purchase",
+      envSetup: {
+        provider: "Vercel",
+        environment: "Production",
+        envNames: ["GA4_API_SECRET"],
+        cliCommands: ["vercel env add GA4_API_SECRET production"],
+      },
+      commands: ["vercel env add GA4_API_SECRET production", "npm run launch:audit"],
+    });
+    expect(analytics.envSetup?.manualChecklist.join(" ")).toContain(
+      "Add or update only these Production env names: GA4_API_SECRET",
+    );
+    expect(formatted).toContain("## Environment Setup");
+    expect(formatted).toContain("Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables");
+    expect(formatted).toContain("Env names: GA4_API_SECRET");
+    expect(serialized).not.toContain("vercel env add NEXT_PUBLIC_GTM_ID production");
+    expect(serialized).not.toContain("vercel env add NEXT_PUBLIC_GOOGLE_ADS_ID production");
+    expect(serialized).not.toContain("vercel env add NEXT_PUBLIC_META_PIXEL_ID production");
+    expect(serialized).not.toContain("vercel env add GA4_MEASUREMENT_ID production");
   });
 });

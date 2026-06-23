@@ -8,6 +8,7 @@ import {
 } from "./commercial-launch-audit.mjs";
 import { requiredEvidenceSections, safeEvidenceRules } from "./evidence-handoff.mjs";
 import { buildProductionCutoverPlan } from "./production-cutover-plan.mjs";
+import { buildVercelEnvSetupGuidance } from "./vercel-env-operator-guidance.mjs";
 
 const guestFacingCopyByGate = {
   canonical_domain:
@@ -69,6 +70,32 @@ function checkboxList(items) {
   return items.length > 0 ? items.map((item) => `- [ ] ${item}`).join("\n") : "- [ ] Redacted source-system proof";
 }
 
+function commandListForTemplate(commands, envSetup) {
+  if (!envSetup) return commands;
+
+  const verificationCommands = commands.filter((command) => !command.startsWith("vercel env add "));
+  return [...new Set([...envSetup.cliCommands, ...verificationCommands])];
+}
+
+function envSetupMarkdown(envSetup) {
+  if (!envSetup) return [];
+
+  return [
+    "## Environment Setup",
+    `Provider: ${envSetup.provider}`,
+    `Environment: ${envSetup.environment}`,
+    `Dashboard: ${envSetup.dashboardPath}`,
+    `Env names: ${envSetup.envNames.join(", ")}`,
+    "",
+    "Manual checklist:",
+    checkboxList(envSetup.manualChecklist),
+    "",
+    "CLI fallback:",
+    markdownList([envSetup.cliInstallCommand, ...envSetup.cliAuthCommands, ...envSetup.cliCommands]),
+    "",
+  ];
+}
+
 function buildTemplateMarkdown(template) {
   return [
     `# Evidence Template: ${template.gateLabel}`,
@@ -93,6 +120,7 @@ function buildTemplateMarkdown(template) {
     template.runtimeStatusText,
     template.runtimeAction,
     "",
+    ...envSetupMarkdown(template.envSetup),
     "## Guest-Facing Copy / Fallback",
     template.guestFacingCopy,
     "",
@@ -124,6 +152,8 @@ function buildTemplate({ gate, catalogGate, evidence, step }) {
   const timing = step?.timing || "Before full commercial launch";
   const checklist = [...(step?.checklist || ["Resolve this commercial launch gate with redacted source-system proof."])];
   const commands = [...(step?.commands || ["npm run launch:audit"])];
+  const envSetup = buildVercelEnvSetupGuidance(gate.missingEnv || [], commands);
+  const templateCommands = commandListForTemplate(commands, envSetup);
   const runtimeStatus = gate.runtimeConfiguration
     ? {
         source: gate.runtimeConfiguration.source,
@@ -159,7 +189,8 @@ function buildTemplate({ gate, catalogGate, evidence, step }) {
     requiredProofSignals,
     missingProofSignals: [...(evidence.missingEvidenceSignals || [])],
     guestFacingCopy: guestFacingCopyByGate[gate.id] || "Ekibimiz talebinizi yazili olarak teyit eder.",
-    commands,
+    ...(envSetup ? { envSetup } : {}),
+    commands: templateCommands,
     runtimeStatus,
     runtimeStatusText,
     runtimeAction,
