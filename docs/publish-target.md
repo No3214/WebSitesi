@@ -52,6 +52,11 @@ snapshot'ı prod ile aynı değilse tam ticari imza için bu komut tercih edilir
 operasyon ekibine verilecek kanıt listesi ve şablonlarına taşır. Böylece
 source-system kanıtı eksik ama production runtime hazır olan kapılar, gerçekten
 env eksik olan kapılardan ayrılır.
+Eksik Vercel production env adları için handoff çıktısı ayrıca `envSetup`
+üretir: Dashboard yolu `Vercel Dashboard > kozbeyli-konagi > Settings >
+Environment Variables`, optional CLI fallback `npm i -g vercel`, `vercel login`,
+`vercel whoami`. Secret değerleri sadece Vercel/provider panelinde kalır;
+kanıt dosyalarına değer veya değer içeren ekran görüntüsü girilmez.
 `launch:cutover`, eksik ticari kapıları sahip, zamanlama, komut, kanıt ve KPI
 kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
 `media:hero`, açılış videosunun onaylı hash, çözünürlük, süre, bitrate, poster

@@ -21,6 +21,7 @@ const requiredFiles = [
   "scripts/brand-integrity-readiness.mjs",
   "scripts/domain-readiness.mjs",
   "scripts/evidence-handoff.mjs",
+  "scripts/vercel-env-operator-guidance.mjs",
   "scripts/evidence-template.mjs",
   "scripts/evidence-redaction-scan.mjs",
   "scripts/hero-media-audit.mjs",

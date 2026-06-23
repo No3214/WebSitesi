@@ -106,6 +106,16 @@ type EvidenceHandoffModule = {
       owner: string;
       timing: string;
       missingEnv: string[];
+      envSetup?: {
+        provider: string;
+        environment: string;
+        dashboardPath: string;
+        envNames: string[];
+        cliInstallCommand: string;
+        cliAuthCommands: string[];
+        cliCommands: string[];
+        manualChecklist: string[];
+      };
       runtimeStatus?: {
         source: string;
         ready: boolean;
@@ -350,6 +360,18 @@ describe("evidence handoff", () => {
       timing: "Before public domain announcement",
     });
     expect(canonical?.missingEnv).toEqual(["NEXT_PUBLIC_SITE_URL"]);
+    expect(canonical?.envSetup).toMatchObject({
+      provider: "Vercel",
+      environment: "Production",
+      dashboardPath: "Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables",
+      envNames: ["NEXT_PUBLIC_SITE_URL"],
+      cliInstallCommand: "npm i -g vercel",
+      cliAuthCommands: ["vercel login", "vercel whoami"],
+      cliCommands: ["vercel env add NEXT_PUBLIC_SITE_URL production"],
+    });
+    expect(canonical?.envSetup?.manualChecklist.join(" ")).toContain(
+      "Keep secret values in Vercel/provider dashboards",
+    );
     expect(canonical?.commands).toEqual(
       expect.arrayContaining(["npm run domain:verify:strict", "npm run launch:smoke:live"]),
     );
@@ -366,9 +388,14 @@ describe("evidence handoff", () => {
       owner: "Platform / CMS operator",
     });
     expect(database?.missingEnv).toEqual(["DATABASE_URI", "PAYLOAD_SECRET"]);
+    expect(database?.envSetup?.cliCommands).toEqual([
+      "vercel env add DATABASE_URI production",
+      "vercel env add PAYLOAD_SECRET production",
+    ]);
 
     const hms = result.files.find((file) => file.path === "docs/evidence/hms-booking-engine.md");
     expect(hms?.missingEnv).toEqual([]);
+    expect(hms?.envSetup).toBeUndefined();
     expect(hms?.commands).toContain("npm run hms:verify:strict");
     expect(result.safeEvidenceRules.join(" ")).toContain("Do not commit secrets");
     expect(result.safeEvidenceRules.join(" ")).toContain("database URLs");
@@ -437,8 +464,18 @@ describe("evidence handoff", () => {
       missingCount: 4,
     });
     expect(abuse?.runtimeAction).toContain("Production runtime is still missing or invalid");
+    expect(abuse?.envSetup).toMatchObject({
+      envNames: [
+        "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
+        "TURNSTILE_SECRET_KEY",
+        "UPSTASH_REDIS_REST_URL",
+        "UPSTASH_REDIS_REST_TOKEN",
+      ],
+    });
     expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: ready");
     expect(formatted).toContain("runtime action:");
+    expect(formatted).toContain("env setup: Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables");
+    expect(formatted).toContain("cli fallback: npm i -g vercel; vercel login; vercel whoami");
     expect(JSON.stringify(result)).not.toContain("postgresql://");
     expect(formatted).not.toContain("postgresql://");
   });
@@ -564,6 +601,7 @@ describe("evidence handoff", () => {
     expect(text).toContain("JWT/access tokens");
     expect(text).toContain("docs/evidence/hms-booking-engine.md");
     expect(text).toContain("missing env names:");
+    expect(text).toContain("Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables");
     expect(text).not.toContain("super-secret-value");
   });
 });

@@ -6,6 +6,7 @@ import {
   fetchRuntimeReadiness,
 } from "./commercial-launch-audit.mjs";
 import { buildProductionCutoverPlan } from "./production-cutover-plan.mjs";
+import { buildVercelEnvSetupGuidance } from "./vercel-env-operator-guidance.mjs";
 
 function compactEvidenceStatus(items = []) {
   return items.map((item) => ({
@@ -72,6 +73,7 @@ function summarizeStep(step, index) {
   const evidenceBlocked = step.missingEvidence.length > 0;
   const firstEvidence = step.missingEvidence[0];
   const runtimeDiagnostics = compactRuntimeDiagnostics(step.runtimeDiagnostics);
+  const envSetup = buildVercelEnvSetupGuidance(step.missingEnv, step.commands);
 
   return {
     id: step.id,
@@ -85,6 +87,7 @@ function summarizeStep(step, index) {
     envDiagnostics: { ...step.envDiagnostics },
     ...(runtimeDiagnostics ? { runtimeDiagnostics } : {}),
     missingEnv: [...step.missingEnv],
+    ...(envSetup ? { envSetup } : {}),
     evidence: compactEvidenceStatus(step.missingEvidence),
     evidencePaths: [...step.evidence],
     nextAction: resolveNextAction(step, evidenceBlocked),
@@ -129,6 +132,7 @@ function buildOwnerQueues(blockedSteps) {
       nextCommand: step.nextCommand,
       verificationCommand: step.verificationCommand,
       evidencePaths: step.evidencePaths,
+      ...(step.envSetup ? { envSetup: step.envSetup } : {}),
     });
     if (!queue.nextAction) queue.nextAction = step.nextAction;
     if (!queue.nextCommand) queue.nextCommand = step.nextCommand;
@@ -182,6 +186,7 @@ export function buildLaunchStandup({
           nextCommand: firstGate.nextCommand,
           verificationCommand: firstGate.verificationCommand,
           evidencePaths: firstGate.evidencePaths,
+          ...(firstGate.envSetup ? { envSetup: firstGate.envSetup } : {}),
           ...(firstGate.runtimeDiagnostics
             ? {
                 runtimeReady: Boolean(firstGate.runtimeDiagnostics.ready),
@@ -215,6 +220,13 @@ export function formatLaunchStandup(result) {
     lines.push(`  timing: ${result.nextGate.timing}`);
     lines.push(`  action: ${result.nextGate.nextAction}`);
     lines.push(`  command: ${result.nextGate.nextCommand}`);
+    if (result.nextGate.envSetup) {
+      lines.push(`  env setup: ${result.nextGate.envSetup.dashboardPath}`);
+      lines.push(`  env names: ${result.nextGate.envSetup.envNames.join(", ")}`);
+      lines.push(
+        `  cli fallback: ${result.nextGate.envSetup.cliInstallCommand}; ${result.nextGate.envSetup.cliAuthCommands.join("; ")}`,
+      );
+    }
     lines.push(`  verify: ${result.nextGate.verificationCommand}`);
     lines.push("");
     lines.push("Blocked lanes:");
@@ -235,6 +247,11 @@ export function formatLaunchStandup(result) {
       lines.push(`- ${queue.owner}: ${queue.totalBlockedPoints} pts`);
       lines.push(`  next: ${queue.nextAction}`);
       lines.push(`  command: ${queue.nextCommand}`);
+      const envSetupGates = queue.gates.filter((gate) => gate.envSetup);
+      for (const gate of envSetupGates) {
+        lines.push(`  env setup (${gate.id}): ${gate.envSetup.dashboardPath}`);
+        lines.push(`  env names (${gate.id}): ${gate.envSetup.envNames.join(", ")}`);
+      }
       const runtimeReadyGates = queue.gates.filter((gate) => gate.runtimeReady).map((gate) => gate.id);
       if (runtimeReadyGates.length > 0) lines.push(`  runtime ready: ${runtimeReadyGates.join(", ")}`);
       lines.push(`  gates: ${queue.gates.map((gate) => gate.id).join(", ")}`);

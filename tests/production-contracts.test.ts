@@ -404,6 +404,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"docs/github-actions-readiness.md"');
     expect(readinessScript).toContain('"docs/vercel-operations.md"');
     expect(readinessScript).toContain('"scripts/evidence-handoff.mjs"');
+    expect(readinessScript).toContain('"scripts/vercel-env-operator-guidance.mjs"');
     expect(readinessScript).toContain('"scripts/evidence-template.mjs"');
     expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');

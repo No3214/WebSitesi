@@ -6,6 +6,7 @@ import {
   fetchRuntimeReadiness,
 } from "./commercial-launch-audit.mjs";
 import { buildProductionCutoverPlan } from "./production-cutover-plan.mjs";
+import { buildVercelEnvSetupGuidance } from "./vercel-env-operator-guidance.mjs";
 
 export const requiredEvidenceSections = [
   "status: ready",
@@ -84,28 +85,34 @@ export function buildEvidenceHandoff({
     const step = stepsById.get(gate.id);
     const runtimeStatus = runtimeStatusSummary(gate.runtimeConfiguration);
 
-    return (gate.missingEvidence || []).map((evidence) => ({
-      path: evidence.path,
-      gateId: gate.id,
-      gateLabel: gate.label,
-      reason: evidence.reason,
-      pointsBlocked: blockedPointsForGate(gate),
-      owner: step?.owner || "Launch operator",
-      timing: step?.timing || "Before full commercial launch",
-      missingEnv: [...(gate.missingEnv || [])],
-      runtimeStatus,
-      runtimeAction: runtimeAction(runtimeStatus),
-      commands: [...(step?.commands || ["npm run launch:audit"])],
-      kpiAndReviewLoop: step?.kpiAndReviewLoop || "Gate passes in npm run launch:audit.",
-      redactionFindingCount: evidence.redactionFindingCount || 0,
-      redactionCategories: [...(evidence.redactionCategories || [])],
-      redactionSummary: redactionSummary(evidence),
-      redactionAction: redactionAction(evidence),
-      missingEvidenceSignals: [...(evidence.missingEvidenceSignals || [])],
-      requiredSections: [...requiredEvidenceSections],
-      sourceRefsPolicy:
-        "source_refs must contain redacted operational IDs or dashboard references, never raw credentials, database URLs, access tokens, contracts, card data, bank account details or customer PII.",
-    }));
+    return (gate.missingEvidence || []).map((evidence) => {
+      const commands = [...(step?.commands || ["npm run launch:audit"])];
+      const envSetup = buildVercelEnvSetupGuidance(gate.missingEnv || [], commands);
+
+      return {
+        path: evidence.path,
+        gateId: gate.id,
+        gateLabel: gate.label,
+        reason: evidence.reason,
+        pointsBlocked: blockedPointsForGate(gate),
+        owner: step?.owner || "Launch operator",
+        timing: step?.timing || "Before full commercial launch",
+        missingEnv: [...(gate.missingEnv || [])],
+        ...(envSetup ? { envSetup } : {}),
+        runtimeStatus,
+        runtimeAction: runtimeAction(runtimeStatus),
+        commands,
+        kpiAndReviewLoop: step?.kpiAndReviewLoop || "Gate passes in npm run launch:audit.",
+        redactionFindingCount: evidence.redactionFindingCount || 0,
+        redactionCategories: [...(evidence.redactionCategories || [])],
+        redactionSummary: redactionSummary(evidence),
+        redactionAction: redactionAction(evidence),
+        missingEvidenceSignals: [...(evidence.missingEvidenceSignals || [])],
+        requiredSections: [...requiredEvidenceSections],
+        sourceRefsPolicy:
+          "source_refs must contain redacted operational IDs or dashboard references, never raw credentials, database URLs, access tokens, contracts, card data, bank account details or customer PII.",
+      };
+    });
   });
 
   return {
@@ -156,6 +163,13 @@ export function formatEvidenceHandoff(result) {
       lines.push(`  owner: ${file.owner}`);
       lines.push(`  timing: ${file.timing}`);
       if (file.missingEnv.length > 0) lines.push(`  missing env names: ${file.missingEnv.join(", ")}`);
+      if (file.envSetup) {
+        lines.push(`  env setup: ${file.envSetup.dashboardPath}`);
+        lines.push(`  env names: ${file.envSetup.envNames.join(", ")}`);
+        lines.push(
+          `  cli fallback: ${file.envSetup.cliInstallCommand}; ${file.envSetup.cliAuthCommands.join("; ")}`,
+        );
+      }
       if (file.runtimeStatus) lines.push(`  runtime: ${formatRuntimeStatus(file.runtimeStatus)}`);
       lines.push(`  runtime action: ${file.runtimeAction}`);
       lines.push(`  commands: ${file.commands.join(" && ")}`);

@@ -138,6 +138,13 @@ PW_BASE_URL=https://kozbeylikonagi.example npx playwright test tests/e2e/ --proj
 
 PowerShell'de ortam değişkeni: `$env:PW_BASE_URL="https://..."; npx playwright test`.
 
+`evidence:handoff` ve `launch:standup` çıktıları eksik Vercel production env
+adları için `envSetup` alanı üretir. CLI yoksa Vercel panelinde
+`kozbeyli-konagi > Settings > Environment Variables` yolunu kullanın; CLI
+gerekirse önce `npm i -g vercel`, `vercel login`, `vercel whoami` çalıştırın.
+Secret değerlerini veya değer içeren ekran görüntülerini repo/evidence
+dosyalarına yazmayın.
+
 ## Ücretsiz API Katmanı: /api/local-pulse
 
 Site, API anahtarı gerektirmeyen dört kamu servisini tek uç noktadan sunar (`src/lib/free-apis.ts`):

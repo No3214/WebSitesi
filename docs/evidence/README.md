@@ -24,6 +24,12 @@ evidence:handoff:json` emits the same handoff as machine-readable JSON.
 `npm run evidence:handoff:live` adds canonical production `/api/health` runtime
 context to the same checklist, so operators can see which gates are production
 configured but still missing redacted proof.
+When a gate is missing Vercel production environment variables, the handoff also
+prints `envSetup` with the exact env names, the Vercel Dashboard path
+(`Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables`) and
+the optional CLI fallback (`npm i -g vercel`, `vercel login`, `vercel whoami`).
+Use the Dashboard path when Vercel CLI is unavailable. Never paste secret values
+or screenshots containing values into these evidence files.
 
 `npm run evidence:templates` prints copy-ready `status: pending` evidence
 templates for the currently blocked gates. Use `npm run evidence:templates:json`

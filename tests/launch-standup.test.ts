@@ -120,6 +120,16 @@ type LaunchStandupModule = {
       nextCommand: string;
       verificationCommand: string;
       evidencePaths: string[];
+      envSetup?: {
+        provider: string;
+        environment: string;
+        dashboardPath: string;
+        envNames: string[];
+        cliInstallCommand: string;
+        cliAuthCommands: string[];
+        cliCommands: string[];
+        manualChecklist: string[];
+      };
       runtimeReady?: boolean;
       runtimeStatus?: string;
     };
@@ -147,6 +157,16 @@ type LaunchStandupModule = {
         runtimeStatus?: string;
         verificationCommand: string;
         evidencePaths: string[];
+        envSetup?: {
+          provider: string;
+          environment: string;
+          dashboardPath: string;
+          envNames: string[];
+          cliInstallCommand: string;
+          cliAuthCommands: string[];
+          cliCommands: string[];
+          manualChecklist: string[];
+        };
       }>;
     }>;
     blockedGates: Array<{
@@ -156,6 +176,16 @@ type LaunchStandupModule = {
       envBlocked: boolean;
       evidenceBlocked: boolean;
       missingEnv: string[];
+      envSetup?: {
+        provider: string;
+        environment: string;
+        dashboardPath: string;
+        envNames: string[];
+        cliInstallCommand: string;
+        cliAuthCommands: string[];
+        cliCommands: string[];
+        manualChecklist: string[];
+      };
       evidencePaths: string[];
       nextAction: string;
       nextCommand: string;
@@ -390,6 +420,16 @@ describe("launch standup", () => {
     expect(result.nextGate?.nextAction).toContain("Attach kozbeylikonagi.com");
     expect(result.nextGate?.nextCommand).toBe("vercel env pull");
     expect(result.nextGate?.verificationCommand).toBe("npm run launch:smoke:live");
+    expect(result.nextGate?.envSetup).toMatchObject({
+      provider: "Vercel",
+      environment: "Production",
+      dashboardPath: "Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables",
+      envNames: ["NEXT_PUBLIC_SITE_URL"],
+      cliInstallCommand: "npm i -g vercel",
+      cliAuthCommands: ["vercel login", "vercel whoami"],
+      cliCommands: ["vercel env add NEXT_PUBLIC_SITE_URL production"],
+    });
+    expect(result.nextGate?.envSetup?.manualChecklist.join(" ")).toContain("do not paste values into repository evidence");
     expect(result.lanes.envBlockedGates).toContain("canonical_domain");
     expect(result.lanes.evidenceBlockedGates).toContain("hms_booking_engine");
     expect(result.lanes.codeCoveredEvidenceOnlyGates).toContain("hms_booking_engine");
@@ -409,6 +449,8 @@ describe("launch standup", () => {
     expect(formatted).toContain("Kozbeyli Konagi launch standup");
     expect(formatted).toContain("Owner queues:");
     expect(formatted).toContain("code-covered evidence-only");
+    expect(formatted).toContain("env setup: Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables");
+    expect(formatted).toContain("cli fallback: npm i -g vercel; vercel login; vercel whoami");
     expect(formatted).toContain("Final verification commands:");
   });
 
@@ -440,6 +482,7 @@ describe("launch standup", () => {
     expect(formatted).not.toContain("super-secret-payload-key");
     expect(formatted).not.toContain("ga4-secret-value");
     expect(serialized).toContain("NEXT_PUBLIC_META_PIXEL_ID");
+    expect(serialized).toContain("Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables");
   });
 
   it("prioritizes evidence handoff when production runtime is already configured", async () => {
@@ -486,6 +529,7 @@ describe("launch standup", () => {
       nextCommand: "npm run evidence:handoff:live",
       verificationCommand: "npm run launch:audit:live",
     });
+    expect(database?.envSetup).toBeUndefined();
     expect(result.finalVerificationCommands).toContain("npm run launch:audit:live:strict");
     expect(result.finalVerificationCommands).not.toContain("npm run launch:audit:strict");
     expect(formatted).toContain("runtime-covered evidence-needed");
