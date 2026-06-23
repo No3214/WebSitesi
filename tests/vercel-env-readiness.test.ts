@@ -8,16 +8,28 @@ const root = process.cwd();
 type VercelEnvModule = {
   parseVercelEnvList: (output: string) => Array<{ name: string; environments: string[] }>;
   parseVercelEnvFile: (source: string) => Record<string, string>;
+  parseProcessEnv: (source?: Record<string, string | undefined>) => Record<string, string>;
   evaluateVercelEnvReadiness: (args?: {
     output?: string;
     available?: boolean;
     candidate?: string;
     errors?: string[];
     valueEnv?: Record<string, string>;
+    valueSource?: string;
   }) => {
     decision: string;
     scope: string;
     valueValidation: string;
+    valueValidationSource: string;
+    valueValidationHelp: {
+      status: string;
+      source?: string;
+      recommendedNoDiskCommand?: string;
+      temporaryFilePullCommand?: string;
+      temporaryFileVerifyCommand?: string;
+      temporaryFileCleanupCommand?: string;
+      valuesPrinted: boolean;
+    };
     productionEnvNames: string[];
     configuredProductionCount: number;
     blockers: string[];
@@ -109,6 +121,23 @@ describe("Vercel production env readiness", () => {
     });
   });
 
+  it("can validate production values from process env without writing a snapshot file", async () => {
+    const mod = await loadEnvModule();
+    const env = mod.parseProcessEnv({
+      DATABASE_URI: "postgresql://postgres:secret@db.supabase.co:6543/postgres",
+      PAYLOAD_SECRET: "payload-secret-value",
+      NEXT_PUBLIC_SITE_URL: "https://www.kozbeylikonagi.com",
+      lower_case: "ignored",
+      NUMBER_VALUE: undefined,
+    });
+
+    expect(env).toEqual({
+      DATABASE_URI: "postgresql://postgres:secret@db.supabase.co:6543/postgres",
+      PAYLOAD_SECRET: "payload-secret-value",
+      NEXT_PUBLIC_SITE_URL: "https://www.kozbeylikonagi.com",
+    });
+  });
+
   it("reports the current Vercel production env gaps without leaking values", async () => {
     const mod = await loadEnvModule();
     const result = mod.evaluateVercelEnvReadiness({
@@ -126,6 +155,15 @@ describe("Vercel production env readiness", () => {
     expect(result.decision).toBe("VERCEL PRODUCTION ENV INCOMPLETE");
     expect(result.scope).toBe("vercel-production-env-names-only");
     expect(result.valueValidation).toBe("not_performed");
+    expect(result.valueValidationHelp).toMatchObject({
+      status: "not_performed",
+      recommendedNoDiskCommand: "vercel env run -e production -- npm run vercel:env -- --from-process-env",
+      temporaryFilePullCommand:
+        "vercel env pull %TEMP%\\kozbeyli-vercel-production.env --environment=production",
+      temporaryFileVerifyCommand:
+        "npm run vercel:env -- --env-file %TEMP%\\kozbeyli-vercel-production.env",
+      valuesPrinted: false,
+    });
     expect(result.productionEnvNames).toContain("NEXT_PUBLIC_SITE_URL");
     expect(result.warnings).toEqual(
       expect.arrayContaining([
@@ -184,12 +222,19 @@ describe("Vercel production env readiness", () => {
         PAYLOAD_SECRET: "",
         NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL: "https://kozbeyli-konagi.hmshotel.net/bv3/search",
       },
+      valueSource: "process-env",
     });
 
     const databaseGate = result.gateResults.find((gate) => gate.id === "production_database");
     expect(result.decision).toBe("VERCEL PRODUCTION ENV INCOMPLETE");
     expect(result.scope).toBe("vercel-production-env-names-and-pulled-values");
     expect(result.valueValidation).toBe("performed_without_value_output");
+    expect(result.valueValidationSource).toBe("process-env");
+    expect(result.valueValidationHelp).toEqual({
+      status: "performed",
+      source: "process-env",
+      valuesPrinted: false,
+    });
     expect(databaseGate).toMatchObject({
       namesReady: true,
       ready: false,
@@ -307,8 +352,19 @@ describe("Vercel production env readiness", () => {
     });
 
     expect(result.decision).toBe("VERCEL ENV INVENTORY UNAVAILABLE");
+    expect(result.valueValidationHelp.recommendedNoDiskCommand).toContain("vercel env run -e production");
     expect(result.blockers[0]).toContain("npm i -g vercel");
     expect(result.warnings).toEqual([]);
     expect(result.gateResults).toEqual([]);
+  });
+
+  it("keeps pulled production env snapshot filenames out of git", async () => {
+    const gitignore = await import("node:fs").then(({ readFileSync }) =>
+      readFileSync(path.join(root, ".gitignore"), "utf8"),
+    );
+
+    expect(gitignore).toContain(".vercel-production.env");
+    expect(gitignore).toContain("vercel-production.env");
+    expect(gitignore).toContain("kozbeyli-vercel-production.env");
   });
 });

@@ -38,18 +38,26 @@ ls`. It never prints values. Use it to distinguish local `.env.local` readiness
 from the real Vercel Production inventory before marking any launch gate ready.
 
 When an operator needs to prove that configured production env names also have
-non-empty values, pull a temporary production snapshot outside the repository
-and feed it to the same gate:
+non-empty values, prefer Vercel's no-disk `env run` path so secrets are passed
+only as process environment variables:
 
 ```bash
-vercel env pull %TEMP%\kozbeyli-vercel-production.env --environment=production
-node scripts/vercel-env-readiness.mjs --env-file %TEMP%\kozbeyli-vercel-production.env
-del %TEMP%\kozbeyli-vercel-production.env
+vercel env run -e production -- npm run vercel:env -- --from-process-env
 ```
 
 The report validates required value shapes without printing secret values. If
-the deletion step fails, overwrite the temp file with an empty file before
-retrying deletion.
+`env run` is unavailable, use a temporary snapshot outside the repository and
+delete it immediately after the check:
+
+```bash
+vercel env pull %TEMP%\kozbeyli-vercel-production.env --environment=production
+npm run vercel:env -- --env-file %TEMP%\kozbeyli-vercel-production.env
+del %TEMP%\kozbeyli-vercel-production.env
+```
+
+The repository also ignores common production snapshot filenames as a guardrail,
+but operators should still avoid pulling secrets into the repo root. If deletion
+fails, overwrite the temp file with an empty file before retrying deletion.
 
 For a strict handoff gate, run:
 

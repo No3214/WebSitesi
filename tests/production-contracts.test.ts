@@ -943,11 +943,14 @@ describe("production readiness contracts", () => {
     expect(vercelEnv).toContain("VERCEL ENV INVENTORY UNAVAILABLE");
     expect(vercelEnv).toContain("Production env names configured");
     expect(vercelEnv).toContain("parseVercelEnvFile");
+    expect(vercelEnv).toContain("parseProcessEnv");
     expect(vercelEnv).toContain("--env-file");
+    expect(vercelEnv).toContain("--from-process-env");
+    expect(vercelEnv).toContain("vercel env run -e production -- npm run vercel:env -- --from-process-env");
     expect(vercelEnv).toContain("secret values are never printed");
     expect(vercelEnv).toContain("empty, placeholder or unavailable");
     expect(vercelEnv).toContain("valueValidation: \"not_performed\"");
-    expect(vercelEnv).not.toContain("process.env.");
+    expect(vercelEnv).toContain("process.env");
     expect(cutover).toContain("VERCEL_AUTH_COMMANDS");
     expect(cutover).toContain("vercel whoami");
     expect(cutover).toContain("npm run hms:verify:strict");
@@ -972,12 +975,15 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("npm run vercel:env:strict");
     expect(runbook).toContain("dnsTargetRecords");
     expect(runbook).toContain("never prints values");
+    expect(runbook).toContain("no-disk `env run`");
+    expect(runbook).toContain("vercel env run -e production -- npm run vercel:env -- --from-process-env");
     expect(runbook).toContain("npm run launch:cutover");
     expect(runbook).toContain("KPI and review loop");
     expect(runbook).toContain("npm run vercel:ops:strict");
     expect(runbook).toContain("npm i -g vercel");
     expect(runbook).toContain("vercel whoami");
     expect(runbook).toContain("Do not store secrets in this repository");
+    expect(read(".gitignore")).toContain("kozbeyli-vercel-production.env");
   });
 
   it("keeps B2B availability fail-closed without a live inventory source", () => {

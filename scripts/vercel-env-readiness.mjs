@@ -6,6 +6,12 @@ import { getVercelCliCandidates, runVercelCandidate } from "./vercel-ops-readine
 
 const PRODUCTION_ENV = "Production";
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
+const NO_DISK_VALUE_VALIDATION_COMMAND =
+  "vercel env run -e production -- npm run vercel:env -- --from-process-env";
+const TEMP_ENV_FILE = "%TEMP%\\kozbeyli-vercel-production.env";
+const TEMP_PULL_COMMAND = `vercel env pull ${TEMP_ENV_FILE} --environment=production`;
+const TEMP_VERIFY_COMMAND = `npm run vercel:env -- --env-file ${TEMP_ENV_FILE}`;
+const TEMP_CLEANUP_COMMAND = `del ${TEMP_ENV_FILE}`;
 
 function unique(values) {
   return [...new Set(values.filter(Boolean))];
@@ -46,6 +52,18 @@ export function parseVercelEnvFile(source) {
       value = value.slice(1, -1);
     }
 
+    env[key] = value;
+  }
+
+  return env;
+}
+
+export function parseProcessEnv(source = process.env) {
+  const env = {};
+
+  for (const [key, value] of Object.entries(source)) {
+    if (!/^[A-Z][A-Z0-9_]*$/.test(key)) continue;
+    if (typeof value !== "string") continue;
     env[key] = value;
   }
 
@@ -221,12 +239,40 @@ function runVercelEnvList() {
   };
 }
 
-export function evaluateVercelEnvReadiness({ output, available = true, candidate = "fixture", errors = [], valueEnv } = {}) {
+function valueValidationHelp(valueEnv, valueSource) {
+  if (valueEnv) {
+    return {
+      status: "performed",
+      source: valueSource || "provided-values",
+      valuesPrinted: false,
+    };
+  }
+
+  return {
+    status: "not_performed",
+    recommendedNoDiskCommand: NO_DISK_VALUE_VALIDATION_COMMAND,
+    temporaryFilePullCommand: TEMP_PULL_COMMAND,
+    temporaryFileVerifyCommand: TEMP_VERIFY_COMMAND,
+    temporaryFileCleanupCommand: TEMP_CLEANUP_COMMAND,
+    valuesPrinted: false,
+  };
+}
+
+export function evaluateVercelEnvReadiness({
+  output,
+  available = true,
+  candidate = "fixture",
+  errors = [],
+  valueEnv,
+  valueSource = "",
+} = {}) {
   if (!available) {
     return {
       decision: "VERCEL ENV INVENTORY UNAVAILABLE",
       scope: "vercel-production-env-names-only",
       valueValidation: "not_performed",
+      valueValidationSource: "unavailable",
+      valueValidationHelp: valueValidationHelp(undefined, ""),
       candidate,
       productionEnvNames: [],
       configuredProductionCount: 0,
@@ -270,6 +316,8 @@ export function evaluateVercelEnvReadiness({ output, available = true, candidate
     decision,
     scope: valueEnv ? "vercel-production-env-names-and-pulled-values" : "vercel-production-env-names-only",
     valueValidation: valueEnv ? "performed_without_value_output" : "not_performed",
+    valueValidationSource: valueEnv ? valueSource || "provided-values" : "not_provided",
+    valueValidationHelp: valueValidationHelp(valueEnv, valueSource),
     candidate,
     productionEnvNames,
     configuredProductionCount: productionEnvNames.length,
@@ -287,6 +335,14 @@ export function formatVercelEnvReadiness(result) {
     `Scope: ${result.scope}; secret values are never printed`,
     `CLI candidate: ${result.candidate || "unavailable"}`,
     `Production env names configured: ${result.configuredProductionCount}`,
+    "",
+    "Value validation:",
+    result.valueValidation === "performed_without_value_output"
+      ? `- performed from ${result.valueValidationSource}; secret values were not printed`
+      : `- not performed; preferred no-disk command: ${NO_DISK_VALUE_VALIDATION_COMMAND}`,
+    result.valueValidation === "performed_without_value_output"
+      ? ""
+      : `- temp-file fallback: ${TEMP_PULL_COMMAND} && ${TEMP_VERIFY_COMMAND} && ${TEMP_CLEANUP_COMMAND}`,
     "",
     "Gates:",
   ];
@@ -345,11 +401,17 @@ export function formatVercelEnvReadiness(result) {
 function main() {
   const strict = process.argv.includes("--strict");
   const json = process.argv.includes("--json");
+  const fromProcessEnv = process.argv.includes("--from-process-env");
   const envFileArgIndex = process.argv.indexOf("--env-file");
   const envFile = envFileArgIndex >= 0 ? process.argv[envFileArgIndex + 1] : "";
   const inventory = runVercelEnvList();
-  const valueEnv = envFile ? parseVercelEnvFile(fs.readFileSync(envFile, "utf8")) : undefined;
-  const result = evaluateVercelEnvReadiness({ ...inventory, valueEnv });
+  const valueEnv = envFile
+    ? parseVercelEnvFile(fs.readFileSync(envFile, "utf8"))
+    : fromProcessEnv
+      ? parseProcessEnv()
+      : undefined;
+  const valueSource = envFile ? "env-file" : fromProcessEnv ? "process-env" : "";
+  const result = evaluateVercelEnvReadiness({ ...inventory, valueEnv, valueSource });
 
   console.log(json ? JSON.stringify(result, null, 2) : formatVercelEnvReadiness(result));
   process.exitCode = strict && result.decision !== "VERCEL PRODUCTION ENV PASS" ? 1 : 0;
