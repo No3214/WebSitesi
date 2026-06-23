@@ -561,6 +561,7 @@ describe("launch standup", () => {
 
     expect(analytics).toMatchObject({
       missingEnv: ["GA4_API_SECRET"],
+      nextAction: expect.stringContaining("Add or update only these Vercel Production env names: GA4_API_SECRET."),
       nextCommand: "vercel env add GA4_API_SECRET production",
       envSetup: {
         envNames: ["GA4_API_SECRET"],
@@ -571,6 +572,9 @@ describe("launch standup", () => {
       nextCommand: "vercel env add GA4_API_SECRET production",
     });
     expect(JSON.stringify(result)).not.toContain("vercel env add NEXT_PUBLIC_GTM_ID production");
+    expect(analytics?.nextAction).toContain("Production runtime is partially configured");
+    expect(analytics?.nextAction).not.toContain("GTM");
+    expect(analytics?.nextAction).not.toContain("Meta Pixel");
   });
 
   it("reports ready only when every commercial gate has env and evidence proof", async () => {

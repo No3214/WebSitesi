@@ -4,9 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { getLocalizedRooms } from "@/data/rooms";
 import { FadeIn, StaggerContainer } from "@/components/animations";
-import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import { getDictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
 import { PageHero } from "@/components/page-hero";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
@@ -19,21 +16,8 @@ type RoomsClientProps = {
 };
 
 export function RoomsClient({ initialDict, initialLocale = "tr" }: RoomsClientProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(initialDict ?? null);
-  const [locale, setLocale] = useState<"tr" | "en">(initialLocale);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    const current = pathname
-      ? pathname === "/en" || pathname.startsWith("/en/")
-        ? "en"
-        : "tr"
-      : initialLocale;
-    setLocale(current);
-    if (current === initialLocale && initialDict) return;
-    getDictionary(current).then(setDict);
-  }, [initialDict, initialLocale, pathname]);
+  const dict = initialDict ?? null;
+  const locale = initialLocale;
 
   if (!dict) return <div className="loading-screen" />;
 

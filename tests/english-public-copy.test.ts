@@ -57,9 +57,11 @@ describe("English public copy contracts", () => {
     const documentLocaleSync = read("src/components/document-locale-sync.tsx");
     const rootLayout = read("src/app/layout.tsx");
 
-    expect(roomsClient).toContain(": initialLocale;");
+    expect(roomsClient).toContain("const locale = initialLocale;");
+    expect(roomsClient).not.toContain("usePathname");
     expect(roomDetailClient).toContain("initialLocale = \"tr\"");
-    expect(roomDetailClient).toContain(": initialLocale;");
+    expect(roomDetailClient).toContain("const locale = initialLocale;");
+    expect(roomDetailClient).not.toContain("usePathname");
     expect(englishRoomDetailPage).toContain('<RoomDetailClient slug={slug} initialLocale="en" />');
     expect(rootLayout).toContain("<DocumentLocaleSync />");
     expect(documentLocaleSync).toContain("document.documentElement.lang = locale");

@@ -61,10 +61,14 @@ describe("room localization", () => {
   it("renders reservation selection and fallback wizard rooms from localized room data", () => {
     const reservationPage = read("src/components/reservation-page-content.tsx");
     const roomsStep = read("src/components/payment-wizard/steps/rooms-step.tsx");
+    const roomsClient = read("src/components/rooms-client.tsx");
+    const roomDetailClient = read("src/components/room-detail-client.tsx");
 
     expect(reservationPage).toContain("getLocalizedRoom(selectedBaseRoom, locale)");
     expect(reservationPage).not.toContain("roomTitle={rooms.find");
     expect(roomsStep).toContain("getLocalizedRooms(locale)");
     expect(roomsStep).not.toContain("rooms.map((room)");
+    expect(roomsClient).not.toContain("usePathname");
+    expect(roomDetailClient).not.toContain("usePathname");
   });
 });

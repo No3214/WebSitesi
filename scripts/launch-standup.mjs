@@ -46,7 +46,7 @@ function runtimeStatusText(runtimeDiagnostics) {
   return `${runtimeDiagnostics.source}: ${state} (${runtimeDiagnostics.configurationSource}, ${runtimeDiagnostics.configuredCount}/${runtimeDiagnostics.requiredCount} configured, ${runtimeDiagnostics.missingCount} missing)`;
 }
 
-function resolveNextAction(step, evidenceBlocked) {
+function resolveNextAction(step, evidenceBlocked, envSetup) {
   if (runtimeReady(step) && evidenceBlocked) {
     return [
       "Production runtime is already configured for this gate.",
@@ -57,7 +57,26 @@ function resolveNextAction(step, evidenceBlocked) {
       .join(" ");
   }
 
-  return step.checklist[0] || "Re-run npm run launch:audit and resolve the blocked gate.";
+  const primaryAction = step.checklist[0] || "Re-run npm run launch:audit and resolve the blocked gate.";
+  if (!envSetup?.envNames?.length) return primaryAction;
+
+  const isPartialEnv =
+    Number(step.envDiagnostics?.configuredCount ?? 0) > 0 &&
+    Number(step.envDiagnostics?.missingCount ?? 0) > 0;
+  const envActions = [
+    `Add or update only these Vercel Production env names: ${envSetup.envNames.join(", ")}.`,
+    "Keep secret values in Vercel/provider dashboards; do not paste values into repository evidence.",
+    "Trigger a production redeploy, then rerun npm run launch:audit:live.",
+  ];
+
+  if (isPartialEnv) {
+    return [
+      "Production runtime is partially configured for this gate; resolve the remaining env gap before evidence can pass.",
+      ...envActions,
+    ].join(" ");
+  }
+
+  return [primaryAction, ...envActions].join(" ");
 }
 
 const VERCEL_BOOTSTRAP_COMMANDS = new Set(["npm i -g vercel", "vercel login", "vercel whoami"]);
@@ -99,7 +118,7 @@ function summarizeStep(step, index) {
     ...(envSetup ? { envSetup } : {}),
     evidence: compactEvidenceStatus(step.missingEvidence),
     evidencePaths: [...step.evidence],
-    nextAction: resolveNextAction(step, evidenceBlocked),
+    nextAction: resolveNextAction(step, evidenceBlocked, envSetup),
     nextCommand: resolveNextCommand(step, evidenceBlocked, envSetup),
     verificationCommand: step.commands.at(-1) || "npm run launch:audit",
     kpiAndReviewLoop: step.kpiAndReviewLoop,

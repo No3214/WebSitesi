@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { notFound, usePathname } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FadeIn } from "@/components/animations";
@@ -17,12 +17,7 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
   const [activeImg, setActiveImg] = useState(0);
-  const pathname = usePathname();
-  const locale = pathname
-    ? pathname === "/en" || pathname.startsWith("/en/")
-      ? "en"
-      : "tr"
-    : initialLocale;
+  const locale = initialLocale;
   const baseRoom = fallbackRooms.find((item) => item.slug === slug);
   const room = baseRoom ? getLocalizedRoom(baseRoom, locale) : undefined;
   const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL, {
