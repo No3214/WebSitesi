@@ -11,6 +11,8 @@ type CiModule = {
     annotations: Array<Record<string, unknown>>;
     jobs: Array<Record<string, unknown>>;
     remediation: string[];
+    expectedHeadSha: string;
+    headShaMatches: boolean;
   };
   parseGithubRepoFromRemote: (remoteUrl: string) => string;
 };
@@ -46,6 +48,7 @@ describe("github ci readiness", () => {
     const result = evaluateGithubCiReadiness({
       repo: "No3214/WebSitesi",
       branch: "main",
+      expectedHeadSha: "abc123",
       run: successRun,
       jobs: [qualityJob],
       annotationsByJobId: {},
@@ -55,6 +58,26 @@ describe("github ci readiness", () => {
     expect(result.blockers).toEqual([]);
     expect(result.remediation).toEqual([]);
     expect(result.jobs[0]?.stepsAvailable).toBe(true);
+    expect(result.headShaMatches).toBe(true);
+  });
+
+  it("does not treat a passed CI run on an older commit as current release evidence", async () => {
+    const { evaluateGithubCiReadiness } = await loadCiModule();
+
+    const result = evaluateGithubCiReadiness({
+      repo: "No3214/WebSitesi",
+      branch: "main",
+      expectedHeadSha: "current456",
+      run: successRun,
+      jobs: [qualityJob],
+      annotationsByJobId: {},
+    });
+
+    expect(result.decision).toBe("GITHUB CI STALE");
+    expect(result.headShaMatches).toBe(false);
+    expect(result.expectedHeadSha).toBe("current456");
+    expect(result.blockers.join("\n")).toContain("does not match expected current456");
+    expect(result.remediation.join("\n")).toContain("green CI run on an older commit");
   });
 
   it("identifies GitHub billing and spending-limit account blockers", async () => {
@@ -63,6 +86,7 @@ describe("github ci readiness", () => {
     const result = evaluateGithubCiReadiness({
       repo: "No3214/WebSitesi",
       branch: "main",
+      expectedHeadSha: "abc123",
       run: { ...successRun, conclusion: "failure" },
       jobs: [{ ...qualityJob, conclusion: "failure", steps: [], runner_name: "" }],
       annotationsByJobId: {
@@ -91,6 +115,7 @@ describe("github ci readiness", () => {
     const result = evaluateGithubCiReadiness({
       repo: "No3214/WebSitesi",
       branch: "main",
+      expectedHeadSha: "abc123",
       run: { ...successRun, conclusion: "failure" },
       jobs: [{ ...qualityJob, conclusion: "failure", steps: [], runner_name: "" }],
       annotationsByJobId: {},
@@ -109,6 +134,7 @@ describe("github ci readiness", () => {
     const result = evaluateGithubCiReadiness({
       repo: "No3214/WebSitesi",
       branch: "main",
+      expectedHeadSha: "abc123",
       run: { ...successRun, status: "in_progress", conclusion: "" },
       jobs: [{ ...qualityJob, conclusion: "" }],
       annotationsByJobId: {},

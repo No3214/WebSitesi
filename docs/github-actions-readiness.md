@@ -15,6 +15,12 @@ npm run github:ci:strict
 - `github:ci` prints a human-readable diagnosis.
 - `github:ci:json` prints machine-readable run, job, annotation and remediation data.
 - `github:ci:strict` exits non-zero unless the selected GitHub Actions run passed.
+- By default, the gate compares the latest run's `headSha` with the current local
+  `git rev-parse HEAD`. Use `--expected-head-sha <sha>` when checking a specific
+  commit from an external release dashboard.
+
+If the latest workflow passed on an older commit, the gate returns
+`GITHUB CI STALE` instead of treating the older green run as release evidence.
 
 ## Current Known External Blocker
 

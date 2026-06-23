@@ -402,6 +402,14 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["github:ci:strict"]).toBe(
       "node scripts/github-ci-readiness.mjs --strict",
     );
+    const githubCi = read("scripts/github-ci-readiness.mjs");
+    const githubCiRunbook = read("docs/github-actions-readiness.md");
+    expect(githubCi).toContain("GITHUB CI STALE");
+    expect(githubCi).toContain("expectedHeadSha");
+    expect(githubCi).toContain("--expected-head-sha");
+    expect(githubCi).toContain("Do not treat a green CI run on an older commit as release evidence");
+    expect(githubCiRunbook).toContain("latest run's `headSha`");
+    expect(githubCiRunbook).toContain("GITHUB CI STALE");
     expect(packageJson.scripts?.typecheck).toBe("tsc --noEmit --incremental false");
     expect(packageJson.scripts?.quality).toBe("npm run lint && npm run typecheck && npm run test:unit && npm run build");
     expect(packageJson.scripts?.["test:e2e"]).toBe("playwright test");

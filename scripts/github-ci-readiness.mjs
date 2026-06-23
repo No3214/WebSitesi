@@ -17,6 +17,11 @@ const STARTUP_REMEDIATIONS = [
   "If no workflow steps ran, resolve the account/runner startup blocker before debugging repository code.",
   "After GitHub starts assigning a runner, rerun npm run github:ci:strict and the local release gates.",
 ];
+const STALE_RUN_REMEDIATIONS = [
+  "Push the current commit or rerun the CI workflow for the expected head SHA.",
+  "Do not treat a green CI run on an older commit as release evidence for the current worktree.",
+  "After the current commit has a completed workflow, run npm run github:ci:strict again.",
+];
 
 function argValue(name) {
   const index = process.argv.indexOf(name);
@@ -42,6 +47,25 @@ function getDefaultRepo() {
   } catch {
     return DEFAULT_REPO;
   }
+}
+
+function getExpectedHeadSha() {
+  if (process.env.EXPECTED_GITHUB_HEAD_SHA) return process.env.EXPECTED_GITHUB_HEAD_SHA;
+
+  try {
+    return execFileSync("git", ["rev-parse", "HEAD"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return "";
+  }
+}
+
+function commitMatches(actual, expected) {
+  if (!expected) return true;
+  if (!actual) return false;
+  return actual.startsWith(expected) || expected.startsWith(actual);
 }
 
 function runGh(args) {
@@ -114,6 +138,7 @@ export function collectGithubCiReadiness({
   repo = getDefaultRepo(),
   branch = DEFAULT_BRANCH,
   runId = "",
+  expectedHeadSha = getExpectedHeadSha(),
 } = {}) {
   try {
     const run = runId ? runFromId(repo, runId) : latestRunFromList(repo, branch);
@@ -123,6 +148,7 @@ export function collectGithubCiReadiness({
         available: true,
         repo,
         branch,
+        expectedHeadSha,
         run: null,
         jobs: [],
         annotationsByJobId: {},
@@ -141,6 +167,7 @@ export function collectGithubCiReadiness({
       available: true,
       repo,
       branch,
+      expectedHeadSha,
       run,
       jobs,
       annotationsByJobId,
@@ -150,6 +177,7 @@ export function collectGithubCiReadiness({
       available: false,
       repo,
       branch,
+      expectedHeadSha,
       run: null,
       jobs: [],
       annotationsByJobId: {},
@@ -171,6 +199,7 @@ export function evaluateGithubCiReadiness({
   available = true,
   repo = DEFAULT_REPO,
   branch = DEFAULT_BRANCH,
+  expectedHeadSha = "",
   run = null,
   jobs = [],
   annotationsByJobId = {},
@@ -186,6 +215,8 @@ export function evaluateGithubCiReadiness({
       status: "",
       conclusion: "",
       headSha: "",
+      expectedHeadSha,
+      headShaMatches: false,
       workflowName: "",
       runUrl: "",
       jobs: [],
@@ -211,6 +242,8 @@ export function evaluateGithubCiReadiness({
       status: "",
       conclusion: "",
       headSha: "",
+      expectedHeadSha,
+      headShaMatches: false,
       workflowName: "",
       runUrl: "",
       jobs: [],
@@ -241,6 +274,8 @@ export function evaluateGithubCiReadiness({
   const annotations = normalizedJobs.flatMap((job) =>
     job.annotations.map((annotation) => ({ jobId: job.id, jobName: job.name, ...annotation })),
   );
+  const headSha = run.headSha || "";
+  const headShaMatches = commitMatches(headSha, expectedHeadSha);
   const billingAnnotations = annotations.filter((annotation) =>
     BILLING_BLOCKER_PATTERN.test(annotation.message),
   );
@@ -251,7 +286,13 @@ export function evaluateGithubCiReadiness({
   const blockers = [];
   const remediation = [];
 
-  if (PENDING_STATUSES.has(run.status)) {
+  if (!headShaMatches) {
+    decision = "GITHUB CI STALE";
+    blockers.push(
+      `Latest GitHub Actions run head SHA ${headSha || "n/a"} does not match expected ${expectedHeadSha}.`,
+    );
+    remediation.push(...STALE_RUN_REMEDIATIONS);
+  } else if (PENDING_STATUSES.has(run.status)) {
     decision = "GITHUB CI PENDING";
   } else if (run.conclusion === "success") {
     decision = "GITHUB CI PASS";
@@ -294,7 +335,9 @@ export function evaluateGithubCiReadiness({
     runId: String(run.databaseId || ""),
     status: run.status || "",
     conclusion: run.conclusion || "",
-    headSha: run.headSha || "",
+    headSha,
+    expectedHeadSha,
+    headShaMatches,
     workflowName: run.workflowName || "",
     runUrl: run.url || "",
     jobs: normalizedJobs,
@@ -317,6 +360,7 @@ export function formatGithubCiReadiness(result) {
     `Workflow: ${result.workflowName || "n/a"}`,
     `Status: ${result.status || "n/a"}; conclusion: ${result.conclusion || "n/a"}`,
     `Head SHA: ${result.headSha || "n/a"}`,
+    `Expected head SHA: ${result.expectedHeadSha || "not checked"}; match=${result.headShaMatches ? "yes" : "no"}`,
     "",
     "Jobs:",
   ];
@@ -361,7 +405,8 @@ function main() {
   const repo = argValue("--repo") || getDefaultRepo();
   const branch = argValue("--branch") || DEFAULT_BRANCH;
   const runId = argValue("--run");
-  const result = collectGithubCiReadiness({ repo, branch, runId });
+  const expectedHeadSha = argValue("--expected-head-sha") || getExpectedHeadSha();
+  const result = collectGithubCiReadiness({ repo, branch, runId, expectedHeadSha });
 
   console.log(json ? JSON.stringify(result, null, 2) : formatGithubCiReadiness(result));
   process.exitCode = strict && result.decision !== "GITHUB CI PASS" ? 1 : 0;
