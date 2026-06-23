@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -12,6 +14,7 @@ type VercelProductionRunModule = {
     command: string[];
   }>;
   buildVercelEnvRunArgs: (targetId: string, options?: { environment?: string; strict?: boolean }) => string[];
+  runProductionTarget: (targetId: string, options?: { strict?: boolean }) => unknown;
 };
 
 async function loadModule() {
@@ -124,5 +127,23 @@ describe("Vercel production runner", () => {
     expect(() => mod.buildVercelEnvRunArgs("unknown")).toThrow(
       "Unknown Vercel production run target: unknown",
     );
+  });
+
+  it("rejects unknown production run targets before requiring a linked Vercel project", async () => {
+    const previousCwd = process.cwd();
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "kozbeyli-vercel-run-test-"));
+
+    try {
+      process.chdir(tempDir);
+      const moduleUrl = `${pathToFileURL(path.join(root, "scripts/vercel-production-run.mjs")).href}?unknown-target-order`;
+      const mod = (await import(moduleUrl)) as VercelProductionRunModule;
+
+      expect(() => mod.runProductionTarget("unknown")).toThrow(
+        "Unknown Vercel production run target: unknown",
+      );
+    } finally {
+      process.chdir(previousCwd);
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
   });
 });

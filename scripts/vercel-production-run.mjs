@@ -85,11 +85,17 @@ export function getProductionRunTargets() {
   }));
 }
 
-export function buildVercelEnvRunArgs(targetId, { environment = "production", strict = false } = {}) {
+function assertKnownProductionRunTarget(targetId) {
   const target = productionRunTargets[targetId];
   if (!target) {
     throw new Error(`Unknown Vercel production run target: ${targetId}`);
   }
+
+  return target;
+}
+
+export function buildVercelEnvRunArgs(targetId, { environment = "production", strict = false } = {}) {
+  assertKnownProductionRunTarget(targetId);
 
   return ["env", "run", "-e", environment, "--", ...commandForTarget(targetId, { strict })];
 }
@@ -127,6 +133,8 @@ function commandStarted(error) {
 }
 
 export function runProductionTarget(targetId, { strict = false } = {}) {
+  assertKnownProductionRunTarget(targetId);
+
   const isolatedCwd = createIsolatedVercelCwd();
   const args = ["--cwd", isolatedCwd, ...buildVercelEnvRunArgs(targetId, { strict })];
   const errors = [];
