@@ -193,6 +193,8 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"supabase:verify:strict"');
     expect(readinessScript).toContain('"launch:audit"');
     expect(readinessScript).toContain('"launch:audit:json"');
+    expect(readinessScript).toContain('"launch:audit:live"');
+    expect(readinessScript).toContain('"launch:audit:live:json"');
     expect(readinessScript).toContain('"launch:audit:strict"');
     expect(readinessScript).toContain('"hms:verify"');
     expect(readinessScript).toContain('"hms:verify:json"');
@@ -497,10 +499,18 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["launch:audit:json"]).toBe(
       "node scripts/commercial-launch-audit.mjs --json",
     );
+    expect(packageJson.scripts?.["launch:audit:live"]).toBe(
+      "node scripts/commercial-launch-audit.mjs --runtime-health-url https://www.kozbeylikonagi.com/api/health",
+    );
+    expect(packageJson.scripts?.["launch:audit:live:json"]).toBe(
+      "node scripts/commercial-launch-audit.mjs --json --runtime-health-url https://www.kozbeylikonagi.com/api/health",
+    );
     expect(packageJson.scripts?.["launch:audit:strict"]).toBe(
       "node scripts/commercial-launch-audit.mjs --strict",
     );
     expect(auditScript).toContain("--json");
+    expect(auditScript).toContain("--runtime-health-url");
+    expect(auditScript).toContain("runtime lane:");
     expect(auditScript).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL");
     expect(auditScript).toContain("OFFICIAL_HMS_BOOKING_ENGINE_URL");
     expect(auditScript).toContain("HMS booking engine handoff and booking UAT evidence");

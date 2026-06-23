@@ -44,6 +44,8 @@
     "webhook:verify:strict": "node scripts/webhook-surface-readiness.mjs --strict",
     "launch:audit": "node scripts/commercial-launch-audit.mjs",
     "launch:audit:json": "node scripts/commercial-launch-audit.mjs --json",
+    "launch:audit:live": "node scripts/commercial-launch-audit.mjs --runtime-health-url https://www.kozbeylikonagi.com/api/health",
+    "launch:audit:live:json": "node scripts/commercial-launch-audit.mjs --json --runtime-health-url https://www.kozbeylikonagi.com/api/health",
     "launch:audit:strict": "node scripts/commercial-launch-audit.mjs --strict",
     "abuse:verify": "node scripts/abuse-controls-readiness.mjs",
     "abuse:verify:json": "node scripts/abuse-controls-readiness.mjs --json",

@@ -88,6 +88,7 @@ npm run evidence:templates       # Kalan kanıt dosyaları için status: pending
 npm run evidence:templates:json  # Aynı template çıktısı makine okunur JSON
 npm run launch:audit             # Ticari 100/100 hedefi için env/kanıt denetimi
 npm run launch:audit:json        # Aynı ticari denetimin makine okunur JSON çıktısı
+npm run launch:audit:live        # Canlı /api/health runtime env durumunu tanı olarak ekler
 npm run launch:audit:strict      # Tüm ticari kanıtlar tamamlanmadan fail verir
 npm run domain:verify            # Canonical domainler Vercel health/current commit veriyor mu?
 npm run domain:verify:strict     # Canonical domain hazır değilse fail verir
@@ -112,6 +113,7 @@ npx playwright test              # E2E testler (lokal sunucuya karşı)
 npm run test:stress              # Canlı prod'u yormadan lokal monkey/chaos paketi
 npm run launch:audit             # Booking/payment 100/100 için kalan kanıtları listeler
 npm run launch:audit:json        # CI/ajanlar için structured launch audit çıktısı
+npm run launch:audit:live        # Canonical production runtime readiness'i ayrı bir lane olarak gösterir
 npm run evidence:handoff         # Operasyon ekibi için güvenli kanıt tamamlama listesi
 npm run evidence:templates       # Operasyon ekibi için kopyalanabilir güvenli kanıt şablonları
 npm run media:hero               # Hero video hash, çözünürlük, süre, bitrate ve mobil/desktop sözleşmesi

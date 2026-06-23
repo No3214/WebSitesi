@@ -21,6 +21,7 @@ Tam ticari yayın hedefi artık çalıştırılabilir bir gate ile izlenir:
 ```bash
 npm run launch:audit
 npm run launch:audit:json
+npm run launch:audit:live
 npm run launch:cutover
 npm run launch:cutover:json
 npm run media:hero
@@ -37,6 +38,10 @@ makine okunur JSON olarak verir. Her gate ayrıca `progressNotes` üretir; bu
 notlar skor değiştirmez, fakat canlı `.com` doğrulaması, HMS handoff reachability
 ve analytics public-ID kurulumu gibi tamamlanmış alt adımları evidence/secret
 eksiklerinden ayırır.
+`launch:audit:live`, canonical production `/api/health` runtime readiness
+çıktısını aynı rapora ayrı bir tanı katmanı olarak ekler. Bu canlı env durumunu
+netleştirir, ancak redakte edilmiş kanıt dosyaları tamamlanmadan commercial
+puan artırmaz.
 `launch:cutover`, eksik ticari kapıları sahip, zamanlama, komut, kanıt ve KPI
 kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
 `media:hero`, açılış videosunun onaylı hash, çözünürlük, süre, bitrate, poster

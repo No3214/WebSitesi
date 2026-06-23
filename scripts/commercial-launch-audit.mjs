@@ -6,6 +6,7 @@ import { scanEvidenceSource } from "./evidence-redaction-scan.mjs";
 
 const root = process.cwd();
 const BASE_COMMERCIAL_SCORE = 80;
+const DEFAULT_RUNTIME_HEALTH_URL = "https://www.kozbeylikonagi.com/api/health";
 const OFFICIAL_HMS_BOOKING_ENGINE_HOST = "kozbeyli-konagi\\.hmshotel\\.net";
 const OFFICIAL_HMS_BOOKING_ENGINE_URL =
   "https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine";
@@ -499,7 +500,31 @@ function formatEvidenceIssue(item) {
   return `${item.path} (${item.reason}${redactionSummary})`;
 }
 
-function gateProgressNotes(gate, envState, missingEvidence) {
+function runtimeConfigurationState(gate, runtimeReadiness, runtimeSource) {
+  if (!runtimeReadiness?.checks || !Array.isArray(runtimeReadiness.checks)) return undefined;
+
+  const check = runtimeReadiness.checks.find((item) => item?.id === gate.id);
+  if (!check) return undefined;
+
+  return {
+    source: runtimeSource,
+    status: runtimeReadiness.status === "ready" ? "ready" : "blocked",
+    ready: Boolean(check.ready),
+    configurationSource: check.configurationSource || "unknown",
+    requiredCount: Number(check.requiredCount ?? 0),
+    configuredCount: Number(check.configuredCount ?? 0),
+    missingCount: Number(check.missingCount ?? 0),
+    invalidCount: Number(check.invalidCount ?? 0),
+    placeholderCount: Number(check.placeholderCount ?? 0),
+    fallbackApplied: Boolean(check.fallbackApplied),
+  };
+}
+
+function formatRuntimeState(state) {
+  return `${state.source}: ${state.ready ? "ready" : "blocked"} (${state.configurationSource}, ${state.configuredCount}/${state.requiredCount} configured, ${state.missingCount} missing, ${state.invalidCount} invalid, ${state.placeholderCount} placeholder, fallback=${state.fallbackApplied ? "yes" : "no"})`;
+}
+
+function gateProgressNotes(gate, envState, missingEvidence, runtimeState) {
   const notes = [];
 
   if (envState.configurationSource === "not_applicable") {
@@ -530,6 +555,17 @@ function gateProgressNotes(gate, envState, missingEvidence) {
     );
   }
 
+  if (runtimeState) {
+    const gateReady = envState.missingEnv.length === 0 && missingEvidence.length === 0;
+    notes.push(
+      runtimeState.ready
+        ? gateReady
+          ? `runtime lane: ${runtimeState.source} agrees this gate is configured in production`
+          : `runtime lane: ${runtimeState.source} reports this gate configured in production; points still require the audit env lane and redacted evidence file`
+        : `runtime lane: ${formatRuntimeState(runtimeState)}`,
+    );
+  }
+
   if (gate.id === "canonical_domain") {
     notes.push(
       "live validation lane: use npm run domain:verify:json; .com apex and www must serve the current Vercel app, opening hero video and health endpoint",
@@ -551,13 +587,20 @@ function gateProgressNotes(gate, envState, missingEvidence) {
   return notes;
 }
 
-export function evaluateCommercialLaunch({ env = loadEnvSnapshot(), baseDir = root } = {}) {
+export function evaluateCommercialLaunch({
+  env = loadEnvSnapshot(),
+  baseDir = root,
+  runtimeReadiness,
+  runtimeSource = "not provided",
+  runtimeReadinessError,
+} = {}) {
   const gateResults = commercialLaunchGates.map((gate) => {
     const envState = envRequirementState(gate, env);
     const evidence = gate.evidence.map((file) => evidenceState(file, baseDir, gate));
     const missingEvidence = evidence.filter((item) => !item.ready);
     const ready = envState.missingEnv.length === 0 && missingEvidence.length === 0;
-    const progressNotes = gateProgressNotes(gate, envState, missingEvidence);
+    const runtimeConfiguration = runtimeConfigurationState(gate, runtimeReadiness, runtimeSource);
+    const progressNotes = gateProgressNotes(gate, envState, missingEvidence, runtimeConfiguration);
 
     return {
       ...gate,
@@ -565,6 +608,7 @@ export function evaluateCommercialLaunch({ env = loadEnvSnapshot(), baseDir = ro
       awardedPoints: ready ? gate.points : 0,
       ...envState,
       missingEvidence,
+      ...(runtimeConfiguration ? { runtimeConfiguration } : {}),
       progressNotes,
     };
   });
@@ -576,6 +620,27 @@ export function evaluateCommercialLaunch({ env = loadEnvSnapshot(), baseDir = ro
     score,
     target: 100,
     decision: score >= 100 ? "FULL COMMERCIAL GO" : "NO-GO for full booking/payment launch",
+    ...(runtimeReadiness
+      ? {
+          runtimeReadiness: {
+            source: runtimeSource,
+            status: runtimeReadiness.status === "ready" ? "ready" : "blocked",
+            ready: Boolean(runtimeReadiness.ready),
+            configuredGates: runtimeReadiness.configuredGates || [],
+            blockedGates: runtimeReadiness.blockedGates || [],
+          },
+        }
+      : {}),
+    ...(runtimeReadinessError
+      ? {
+          runtimeReadiness: {
+            source: runtimeSource,
+            status: "unavailable",
+            ready: false,
+            error: runtimeReadinessError,
+          },
+        }
+      : {}),
     gateResults,
   };
 }
@@ -605,6 +670,9 @@ export function formatCommercialLaunchReport(result) {
           .join(", ")}`,
       );
     }
+    if (gate.runtimeConfiguration) {
+      lines.push(`  runtime: ${formatRuntimeState(gate.runtimeConfiguration)}`);
+    }
     if (gate.progressNotes?.length > 0) {
       for (const note of gate.progressNotes) {
         lines.push(`  progress: ${note}`);
@@ -615,10 +683,50 @@ export function formatCommercialLaunchReport(result) {
   return lines.join("\n");
 }
 
-function main() {
+function argValue(name) {
+  const index = process.argv.indexOf(name);
+  if (index === -1) return undefined;
+  return process.argv[index + 1];
+}
+
+async function fetchRuntimeReadiness(healthUrl) {
+  const response = await fetch(healthUrl, {
+    headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(15_000),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const payload = await response.json();
+  const runtimeReadiness = payload?.readiness?.runtimeConfiguration;
+  if (!runtimeReadiness?.checks || !Array.isArray(runtimeReadiness.checks)) {
+    throw new Error("missing readiness.runtimeConfiguration.checks");
+  }
+
+  return runtimeReadiness;
+}
+
+async function main() {
   const strict = process.argv.includes("--strict");
   const json = process.argv.includes("--json");
-  const result = evaluateCommercialLaunch();
+  const runtimeHealthUrl = argValue("--runtime-health-url") || (process.argv.includes("--live-runtime") ? DEFAULT_RUNTIME_HEALTH_URL : undefined);
+  let runtimeReadiness;
+  let runtimeReadinessError;
+
+  if (runtimeHealthUrl) {
+    try {
+      runtimeReadiness = await fetchRuntimeReadiness(runtimeHealthUrl);
+    } catch (error) {
+      runtimeReadinessError = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  const result = evaluateCommercialLaunch({
+    ...(runtimeReadiness ? { runtimeReadiness, runtimeSource: runtimeHealthUrl } : {}),
+    ...(runtimeReadinessError ? { runtimeReadinessError, runtimeSource: runtimeHealthUrl } : {}),
+  });
   console.log(json ? JSON.stringify(result, null, 2) : formatCommercialLaunchReport(result));
   process.exitCode = strict && result.score < result.target ? 1 : 0;
 }

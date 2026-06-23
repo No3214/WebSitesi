@@ -218,6 +218,8 @@ const requiredScripts = [
   "webhook:verify:strict",
   "launch:audit",
   "launch:audit:json",
+  "launch:audit:live",
+  "launch:audit:live:json",
   "launch:audit:strict",
   "abuse:verify",
   "abuse:verify:json",

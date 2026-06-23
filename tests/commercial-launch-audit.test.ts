@@ -20,6 +20,25 @@ type CommercialLaunchModule = {
   evaluateCommercialLaunch: (args?: {
     env?: Record<string, string>;
     baseDir?: string;
+    runtimeReadiness?: {
+      status: string;
+      ready: boolean;
+      configuredGates: string[];
+      blockedGates: string[];
+      checks: Array<{
+        id: string;
+        ready: boolean;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+        configurationSource: string;
+      }>;
+    };
+    runtimeSource?: string;
+    runtimeReadinessError?: string;
   }) => {
     baseScore: number;
     score: number;
@@ -45,6 +64,18 @@ type CommercialLaunchModule = {
       placeholderEnvCount: number;
       fallbackApplied: boolean;
       progressNotes: string[];
+      runtimeConfiguration?: {
+        source: string;
+        status: string;
+        ready: boolean;
+        configurationSource: string;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+      };
     }>;
   };
   formatCommercialLaunchReport: (
@@ -180,6 +211,61 @@ function makeReadyEnv(audit: CommercialLaunchModule) {
   );
 }
 
+function makeRuntimeReadinessFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["canonical_domain", "production_database", "hms_booking_engine"],
+    blockedGates: ["production_abuse_controls", "garanti_pos", "analytics_purchase", "search_local_seo"],
+    checks: [
+      {
+        id: "canonical_domain",
+        ready: true,
+        requiredCount: 1,
+        configuredCount: 1,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+      {
+        id: "production_database",
+        ready: true,
+        requiredCount: 2,
+        configuredCount: 2,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+      {
+        id: "production_abuse_controls",
+        ready: false,
+        requiredCount: 4,
+        configuredCount: 0,
+        missingCount: 4,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "missing",
+      },
+      {
+        id: "hms_booking_engine",
+        ready: true,
+        requiredCount: 1,
+        configuredCount: 1,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+    ],
+  };
+}
+
 afterEach(() => {
   for (const dir of tmpDirs.splice(0)) {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -240,6 +326,48 @@ describe("commercial launch audit", () => {
       missingEnvCount: 2,
       fallbackApplied: false,
     });
+  });
+
+  it("reports live runtime readiness without awarding commercial points before evidence is ready", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const result = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir,
+      runtimeReadiness: makeRuntimeReadinessFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+
+    const databaseGate = result.gateResults.find((gate) => gate.id === "production_database");
+    const abuseGate = result.gateResults.find((gate) => gate.id === "production_abuse_controls");
+    const formatted = audit.formatCommercialLaunchReport(result);
+
+    expect(result.score).toBe(80);
+    expect(databaseGate).toMatchObject({
+      ready: false,
+      awardedPoints: 0,
+      configurationSource: "missing",
+      runtimeConfiguration: {
+        source: "https://www.kozbeylikonagi.com/api/health",
+        ready: true,
+        configurationSource: "env",
+        configuredCount: 2,
+        requiredCount: 2,
+      },
+    });
+    expect(databaseGate?.progressNotes).toEqual(
+      expect.arrayContaining([
+        "runtime lane: https://www.kozbeylikonagi.com/api/health reports this gate configured in production; points still require the audit env lane and redacted evidence file",
+      ]),
+    );
+    expect(abuseGate?.runtimeConfiguration).toMatchObject({
+      ready: false,
+      configurationSource: "missing",
+      configuredCount: 0,
+      requiredCount: 4,
+    });
+    expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: ready");
+    expect(formatted).toContain("runtime lane:");
   });
 
   it("reaches 100/100 only when every required env group or official fallback and evidence file is ready", async () => {

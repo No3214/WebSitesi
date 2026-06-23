@@ -176,6 +176,10 @@ kanıtı local dev ayarlarından ayrı raporlanır.
 2026-06-23 canlı smoke hedef ayrımı: `launch:smoke:live` canonical production domain
 `https://www.kozbeylikonagi.com` üstünde çalışır; `launch:smoke:preview` Vercel preview
 hostunu ayrıca doğrulamak için ayrılmıştır.
+2026-06-23 commercial audit runtime ayrımı: `launch:audit:live`, canonical
+production `/api/health` runtime readiness bilgisini audit raporuna ayrı
+`runtime lane` olarak ekler. Bu canlı env durumunu görünür kılar; fakat
+source-system kanıt dosyaları hazır değilse 100/100 commercial puanı vermez.
 2026-06-14 monitoring güncellemesi: Uptime/rollback monitor yüzeyi olarak
 `/api/health` eklendi; cache'siz JSON döner ve secret/private env değeri
 yayınlamaz.
