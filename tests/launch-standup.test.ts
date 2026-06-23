@@ -418,7 +418,7 @@ describe("launch standup", () => {
       pointsBlocked: 2,
     });
     expect(result.nextGate?.nextAction).toContain("Attach kozbeylikonagi.com");
-    expect(result.nextGate?.nextCommand).toBe("vercel env pull");
+    expect(result.nextGate?.nextCommand).toBe("vercel env add NEXT_PUBLIC_SITE_URL production");
     expect(result.nextGate?.verificationCommand).toBe("npm run launch:smoke:live");
     expect(result.nextGate?.envSetup).toMatchObject({
       provider: "Vercel",
@@ -535,6 +535,42 @@ describe("launch standup", () => {
     expect(formatted).toContain("runtime-covered evidence-needed");
     expect(formatted).toContain("runtime ready: production_database");
     expect(formatted).toContain("npm run launch:audit:live:strict");
+  });
+
+  it("points partial analytics setup at the actual missing GA4 API secret", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const standup = await loadStandupModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+    delete env.GA4_API_SECRET;
+
+    for (const gate of audit.commercialLaunchGates) {
+      if (gate.id === "analytics_purchase") continue;
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const launchResult = audit.evaluateCommercialLaunch({ env, baseDir });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const result = standup.buildLaunchStandup({ launchResult, cutoverPlan });
+    const analytics = result.blockedGates.find((gate) => gate.id === "analytics_purchase");
+    const growthQueue = result.ownerQueues.find((queue) => queue.owner === "Growth / analytics operator");
+
+    expect(analytics).toMatchObject({
+      missingEnv: ["GA4_API_SECRET"],
+      nextCommand: "vercel env add GA4_API_SECRET production",
+      envSetup: {
+        envNames: ["GA4_API_SECRET"],
+        cliCommands: ["vercel env add GA4_API_SECRET production"],
+      },
+    });
+    expect(growthQueue).toMatchObject({
+      nextCommand: "vercel env add GA4_API_SECRET production",
+    });
+    expect(JSON.stringify(result)).not.toContain("vercel env add NEXT_PUBLIC_GTM_ID production");
   });
 
   it("reports ready only when every commercial gate has env and evidence proof", async () => {

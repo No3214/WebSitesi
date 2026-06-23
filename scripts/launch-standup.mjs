@@ -60,9 +60,18 @@ function resolveNextAction(step, evidenceBlocked) {
   return step.checklist[0] || "Re-run npm run launch:audit and resolve the blocked gate.";
 }
 
-function resolveNextCommand(step, evidenceBlocked) {
+const VERCEL_BOOTSTRAP_COMMANDS = new Set(["npm i -g vercel", "vercel login", "vercel whoami"]);
+
+function resolveNextCommand(step, evidenceBlocked, envSetup) {
   if (runtimeReady(step) && evidenceBlocked) {
     return "npm run evidence:handoff:live";
+  }
+
+  const bootstrapCommand = step.commands.find((command) => VERCEL_BOOTSTRAP_COMMANDS.has(command));
+  if (bootstrapCommand) return bootstrapCommand;
+
+  if (envSetup?.cliCommands?.length > 0) {
+    return envSetup.cliCommands[0];
   }
 
   return step.commands[0] || "npm run launch:audit";
@@ -91,7 +100,7 @@ function summarizeStep(step, index) {
     evidence: compactEvidenceStatus(step.missingEvidence),
     evidencePaths: [...step.evidence],
     nextAction: resolveNextAction(step, evidenceBlocked),
-    nextCommand: resolveNextCommand(step, evidenceBlocked),
+    nextCommand: resolveNextCommand(step, evidenceBlocked, envSetup),
     verificationCommand: step.commands.at(-1) || "npm run launch:audit",
     kpiAndReviewLoop: step.kpiAndReviewLoop,
     ...(firstEvidence?.redactionFindingCount
