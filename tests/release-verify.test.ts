@@ -55,6 +55,8 @@ describe("release verification runner", () => {
 
     expect(defaultScripts).toContain("launch:audit:json");
     expect(defaultScripts).toContain("launch:cutover:json");
+    expect(defaultScripts).toContain("readiness:summary:json");
+    expect(defaultScripts).toContain("evidence:templates:live:runtime-ready:json");
     expect(defaultScripts).toContain("analytics:verify:json");
     expect(defaultScripts).toContain("supabase:verify:json");
     expect(defaultScripts).toContain("vercel:env:json");
@@ -65,6 +67,8 @@ describe("release verification runner", () => {
 
     expect(commercialScripts).toContain("launch:audit:live:strict");
     expect(commercialScripts).toContain("launch:cutover:strict");
+    expect(commercialScripts).toContain("readiness:summary:json");
+    expect(commercialScripts).toContain("evidence:templates:live:runtime-ready:json");
     expect(commercialScripts).toContain("vercel:env:values:strict");
     expect(commercialScripts).toContain("vercel:supabase:verify");
     expect(commercialScripts).toContain("vercel:commercial:verify");

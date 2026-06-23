@@ -23,8 +23,10 @@ npm run launch:audit
 npm run launch:audit:json
 npm run launch:audit:live
 npm run launch:audit:live:strict
+npm run readiness:summary:json
 npm run evidence:handoff:live
 npm run evidence:templates:live
+npm run evidence:templates:live:runtime-ready
 npm run launch:cutover
 npm run launch:cutover:json
 npm run media:hero
@@ -54,10 +56,15 @@ puan artırmaz.
 `launch:audit:live:strict`, production runtime lane'ini esas alarak aynı kanıt
 kurallarını kırmızı/yeşil commercial sign-off kapısına çevirir. Local `.env`
 snapshot'ı prod ile aynı değilse tam ticari imza için bu komut tercih edilir.
+`readiness:summary:json`, canonical domain, commercial launch score, GitHub CI,
+Vercel ops ve admin surface durumunu tek kısa makine okunur raporda toplar.
 `evidence:handoff:live` ve `evidence:templates:live`, aynı runtime tanısını
 operasyon ekibine verilecek kanıt listesi ve şablonlarına taşır. Böylece
 source-system kanıtı eksik ama production runtime hazır olan kapılar, gerçekten
 env eksik olan kapılardan ayrılır.
+`evidence:templates:live:runtime-ready`, sadece production runtime'i hazır olup
+redakte source-system kanıtı bekleyen kapıları listeler; env eksik kapıları
+özellikle dışarıda bırakır.
 Eksik Vercel production env adları için handoff çıktısı ayrıca `envSetup`
 üretir: Dashboard yolu `Vercel Dashboard > kozbeyli-konagi > Settings >
 Environment Variables`, optional CLI fallback `npm i -g vercel`, `vercel login`,

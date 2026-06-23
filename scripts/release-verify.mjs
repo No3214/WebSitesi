@@ -27,6 +27,14 @@ const baseGates = [
     label: "Commercial evidence template manifest",
   },
   {
+    script: "evidence:templates:live:runtime-ready:json",
+    label: "Runtime-ready evidence template manifest",
+  },
+  {
+    script: "readiness:summary:json",
+    label: "Production readiness summary",
+  },
+  {
     script: "media:hero:json",
     label: "Opening hero media quality audit",
   },

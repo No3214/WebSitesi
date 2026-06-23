@@ -98,8 +98,10 @@ jobs:
 
       - name: Commercial launch audit and cutover plan
         run: |
+          npm run readiness:summary:json
           npm run launch:audit:json
           npm run launch:cutover:json
+          npm run evidence:templates:live:runtime-ready:json
 
       - name: Upload Playwright report (on failure)
         if: failure()

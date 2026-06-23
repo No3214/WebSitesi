@@ -541,6 +541,7 @@ describe("production readiness contracts", () => {
       "evidence:scan",
       "evidence:handoff:json",
       "evidence:templates:json",
+      "evidence:templates:live:runtime-ready:json",
       "media:hero:json",
       "admin:verify:json",
       "webhook:verify:json",
@@ -554,6 +555,7 @@ describe("production readiness contracts", () => {
       "vercel:ops:json",
       "vercel:env:json",
       "github:ci:json",
+      "readiness:summary:json",
       "publish:verify",
       "launch:smoke",
       "test:stress",
@@ -569,6 +571,8 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("Commercial evidence redaction scan");
     expect(releaseScript).toContain("Commercial evidence handoff manifest");
     expect(releaseScript).toContain("Commercial evidence template manifest");
+    expect(releaseScript).toContain("Runtime-ready evidence template manifest");
+    expect(releaseScript).toContain("Production readiness summary");
     expect(releaseScript).toContain("Admin-only growth dashboard access diagnosis");
     expect(releaseScript).toContain("Webhook signature, replay and body-limit diagnosis");
     expect(releaseScript).toContain("Production abuse-control readiness diagnosis");
@@ -618,8 +622,10 @@ describe("production readiness contracts", () => {
     expect(ciWorkflow).toContain("Stress tests");
     expect(ciWorkflow).toContain("npm run test:stress");
     expect(ciWorkflow).toContain("Commercial launch audit and cutover plan");
+    expect(ciWorkflow).toContain("npm run readiness:summary:json");
     expect(ciWorkflow).toContain("npm run launch:audit:json");
     expect(ciWorkflow).toContain("npm run launch:cutover:json");
+    expect(ciWorkflow).toContain("npm run evidence:templates:live:runtime-ready:json");
   });
 
   it("keeps the commercial launch audit executable and evidence-based", () => {
