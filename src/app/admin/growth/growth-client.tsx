@@ -25,6 +25,24 @@ type LaunchGate = {
   kpi: string;
 };
 
+type RuntimeReadinessSnapshot = {
+  status: string;
+  ready: boolean;
+  blockedGates: string[];
+  configuredGates: string[];
+  checks: Array<{
+    id: string;
+    ready: boolean;
+    configuredCount: number;
+    requiredCount: number;
+    missingCount: number;
+    invalidCount: number;
+    placeholderCount: number;
+    fallbackApplied: boolean;
+    configurationSource: string;
+  }>;
+};
+
 const launchGates: LaunchGate[] = [
   {
     id: "canonical_domain",
@@ -142,8 +160,14 @@ function statusClass(status: GateStatus) {
   return "border-stone-200 bg-stone-50 text-stone-700";
 }
 
-export function GrowthDashboardClient() {
+export function GrowthDashboardClient({ runtimeReadiness }: { runtimeReadiness: RuntimeReadinessSnapshot }) {
   const blockedGateCount = launchGates.filter((gate) => gate.status !== "verified").length;
+  const runtimeConfiguredCount = runtimeReadiness.configuredGates.length;
+  const runtimeTotalCount = runtimeReadiness.checks.length;
+  const runtimeBlockedCount = runtimeReadiness.blockedGates.length;
+  const runtimeBlockedSummary = runtimeReadiness.blockedGates.length
+    ? runtimeReadiness.blockedGates.join(", ")
+    : "none";
 
   return (
     <div className="min-h-screen bg-[#f7f4ec] text-[#27352b]">
@@ -175,7 +199,7 @@ export function GrowthDashboardClient() {
               </div>
               <Gauge className="text-[#a9813b]" size={42} />
             </div>
-            <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
+            <div className="mt-6 grid gap-3 text-sm sm:grid-cols-3">
               <div className="border border-[#eadfc8] bg-[#fbfaf6] p-4">
                 <p className="text-xs uppercase tracking-[0.18em] text-[#7c6f5c]">Blocked points</p>
                 <p className="mt-2 text-2xl font-semibold text-[#8a5c1f]">18</p>
@@ -184,6 +208,19 @@ export function GrowthDashboardClient() {
                 <p className="text-xs uppercase tracking-[0.18em] text-[#7c6f5c]">Open gates</p>
                 <p className="mt-2 text-2xl font-semibold text-[#8a5c1f]">{blockedGateCount}</p>
               </div>
+              <div className="border border-[#eadfc8] bg-[#fbfaf6] p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-[#7c6f5c]">Runtime env</p>
+                <p className="mt-2 text-2xl font-semibold text-[#8a5c1f]">
+                  {runtimeConfiguredCount}/{runtimeTotalCount}
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 border border-[#eadfc8] bg-[#fbfaf6] p-4 text-sm leading-6 text-[#5f675d]">
+              <p className="font-semibold text-[#27352b]">
+                Runtime readiness: {runtimeReadiness.status} - {runtimeBlockedCount} blocked gate
+                {runtimeBlockedCount === 1 ? "" : "s"}
+              </p>
+              <p className="mt-1 break-words">Blocked runtime gates: {runtimeBlockedSummary}</p>
             </div>
             <p className="mt-5 text-sm leading-6 text-[#6b6254]">
               Hedef: HMS rezervasyon, POS, analytics, local SEO, database, abuse-control ve hukuk kanitlari tamamlanmadan

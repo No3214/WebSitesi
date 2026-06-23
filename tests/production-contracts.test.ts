@@ -1144,14 +1144,20 @@ describe("production readiness contracts", () => {
   });
 
   it("keeps admin growth operations evidence-bound instead of simulated agent theater", () => {
+    const growthPage = read("src/app/admin/growth/page.tsx");
     const growthDashboard = read("src/app/admin/growth/growth-client.tsx");
     const growthEngine = read("src/lib/growth-engine.ts");
     const growthSmoke = read("scripts/stress-test-growth.ts");
-    const combined = [growthDashboard, growthEngine, growthSmoke].join("\n");
+    const combined = [growthPage, growthDashboard, growthEngine, growthSmoke].join("\n");
 
     expect(growthDashboard).toContain("Kozbeyli Commercial Launch Control");
     expect(growthDashboard).toContain("82/100");
     expect(growthDashboard).toContain(">18<");
+    expect(growthPage).toContain("getRuntimeReadiness");
+    expect(growthPage).toContain("runtimeReadiness={getRuntimeReadiness()}");
+    expect(growthDashboard).toContain("Runtime env");
+    expect(growthDashboard).toContain("Runtime readiness");
+    expect(growthDashboard).toContain("Blocked runtime gates");
     expect(growthDashboard).toContain("docs/evidence/canonical-domain.md");
     expect(growthDashboard).toContain("docs/evidence/production-database.md");
     expect(growthDashboard).toContain("Payload database proof");
@@ -1183,6 +1189,9 @@ describe("production readiness contracts", () => {
       "@import url",
       "ACTIVE AGENTS",
       "CONVERSION VELOCITY",
+      "TURNSTILE_SECRET_KEY",
+      "GA4_API_SECRET",
+      "PAYLOAD_SECRET",
     ]) {
       expect(combined, `growth operations must not contain ${forbidden}`).not.toContain(forbidden);
     }

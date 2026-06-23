@@ -192,6 +192,10 @@ production runtime lane'i ile evidence gate'i birlikte kırmızı/yeşil hale ge
 no-disk Vercel Production commercial gate'lerini tek raporda çalıştırır ve ilk
 hata sonrası durmaz; `release:verify:commercial` bu toplu raporu kullanarak dış
 env bloklarını eksiksiz gösterir.
+2026-06-23 admin runtime görünürlüğü: `/admin/growth` artık Payload admin
+oturumu arkasında `getRuntimeReadiness()` sonucunu sayısal özet olarak gösterir.
+Bu panel gate id ve sayıları gösterir; env key, secret value veya müşteri verisi
+render etmez. Commercial skor yine evidence gate tamamlanmadan 100/100 olmaz.
 2026-06-14 monitoring güncellemesi: Uptime/rollback monitor yüzeyi olarak
 `/api/health` eklendi; cache'siz JSON döner ve secret/private env değeri
 yayınlamaz.

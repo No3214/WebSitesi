@@ -2,6 +2,7 @@ import { headers as nextHeaders } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getPayloadClient } from "@/lib/payload";
+import { getRuntimeReadiness } from "@/lib/production-readiness";
 import { GrowthDashboardClient } from "./growth-client";
 
 // Auth guard (Audit F2/T2): bu sayfa yalnızca Payload admin oturumu olan
@@ -30,5 +31,5 @@ export default async function GrowthDashboardPage() {
     redirect("/admin");
   }
 
-  return <GrowthDashboardClient />;
+  return <GrowthDashboardClient runtimeReadiness={getRuntimeReadiness()} />;
 }
