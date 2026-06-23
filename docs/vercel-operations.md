@@ -33,12 +33,14 @@ the live standup report into the ignored `.codex-artifacts/` folder:
 ```bash
 npm run launch:standup:live:write
 npm run launch:standup:live:write:json
+npm run evidence:templates:live:write
+npm run evidence:templates:live:write:json
 ```
 
 The output guard rejects paths outside the project, dependency/build folders,
 VCS folders and `.env*` filenames. The report contains owners, blocked gate
-IDs, runtime status, evidence paths, next commands and final verification
-commands, but not environment values.
+IDs, runtime status, evidence paths, next commands, final verification
+commands, and copy-ready `status: pending` evidence templates, but not environment values.
 
 For the canonical-domain gate, `launch:cutover:json` also emits
 `dnsTargetNote` and `dnsTargetRecords`. Use those machine-readable records as

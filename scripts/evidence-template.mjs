@@ -8,6 +8,7 @@ import {
 } from "./commercial-launch-audit.mjs";
 import { requiredEvidenceSections, safeEvidenceRules } from "./evidence-handoff.mjs";
 import { buildProductionCutoverPlan } from "./production-cutover-plan.mjs";
+import { writeSafeReportOutput } from "./safe-report-output.mjs";
 import { buildVercelEnvSetupGuidance } from "./vercel-env-operator-guidance.mjs";
 
 const guestFacingCopyByGate = {
@@ -257,6 +258,12 @@ export function formatEvidenceTemplates(result) {
   return lines.join("\n");
 }
 
+export function writeEvidenceTemplateReport(result, outputPath, { json = false, cwd = process.cwd() } = {}) {
+  const body = json ? JSON.stringify(result, null, 2) : formatEvidenceTemplates(result);
+
+  return writeSafeReportOutput(outputPath, body, { cwd });
+}
+
 function readArgValue(name) {
   const inline = process.argv.find((arg) => arg.startsWith(`${name}=`));
   if (inline) return inline.slice(name.length + 1);
@@ -288,10 +295,16 @@ async function main() {
   const json = process.argv.includes("--json");
   const includeAll = process.argv.includes("--all");
   const gateId = readArgValue("--gate");
+  const outputPath = readArgValue("--output");
   const launchResult = await buildLaunchResultFromArgs();
   const result = buildEvidenceTemplates({ launchResult, gateId, includeAll });
 
-  console.log(json ? JSON.stringify(result, null, 2) : formatEvidenceTemplates(result));
+  if (outputPath) {
+    const writtenPath = writeEvidenceTemplateReport(result, outputPath, { json });
+    console.log(`Wrote evidence template report: ${writtenPath}`);
+  } else {
+    console.log(json ? JSON.stringify(result, null, 2) : formatEvidenceTemplates(result));
+  }
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] || "").href) {

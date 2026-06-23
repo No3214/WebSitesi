@@ -40,6 +40,15 @@ evidence:templates -- --gate hms_booking_engine` for one gate.
 `npm run evidence:templates:live` adds the same production runtime context to
 the generated templates. Runtime context is diagnostic only; it never replaces
 source-system references and does not make a pending evidence file ready.
+For local handoff artifacts that do not enter git, use:
+
+```bash
+npm run evidence:templates:live:write
+npm run evidence:templates:live:write:json
+```
+
+Both commands write to `.codex-artifacts/` and reject paths outside the project,
+dependency/build folders, VCS folders and `.env*` filenames.
 
 Ready evidence must include redacted source-system references, such as ticket
 IDs, dashboard reference IDs, approval note IDs, or UAT run IDs. Use uppercase

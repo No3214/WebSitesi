@@ -34,6 +34,8 @@
     "evidence:templates:json": "node scripts/evidence-template.mjs --json",
     "evidence:templates:live": "node scripts/evidence-template.mjs --live-runtime",
     "evidence:templates:live:json": "node scripts/evidence-template.mjs --json --live-runtime",
+    "evidence:templates:live:write": "node scripts/evidence-template.mjs --live-runtime --output .codex-artifacts/evidence-templates.md",
+    "evidence:templates:live:write:json": "node scripts/evidence-template.mjs --json --live-runtime --output .codex-artifacts/evidence-templates.json",
     "media:hero": "node scripts/hero-media-audit.mjs",
     "media:hero:json": "node scripts/hero-media-audit.mjs --json",
     "media:hero:strict": "node scripts/hero-media-audit.mjs --strict",

@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import {
@@ -10,6 +8,7 @@ import {
 } from "./commercial-launch-audit.mjs";
 import { requiredEvidenceSections, safeEvidenceRules } from "./evidence-handoff.mjs";
 import { buildProductionCutoverPlan } from "./production-cutover-plan.mjs";
+import { writeSafeReportOutput } from "./safe-report-output.mjs";
 import { buildVercelEnvSetupGuidance } from "./vercel-env-operator-guidance.mjs";
 
 const gateCatalog = new Map(commercialLaunchGates.map((gate) => [gate.id, gate]));
@@ -396,35 +395,10 @@ export function formatLaunchStandup(result) {
   return lines.join("\n");
 }
 
-function resolveSafeOutputPath(outputPath, { cwd = process.cwd() } = {}) {
-  const root = path.resolve(cwd);
-  const resolved = path.resolve(root, outputPath);
-  const relative = path.relative(root, resolved);
-
-  if (relative.startsWith("..") || path.isAbsolute(relative)) {
-    throw new Error("Output path must stay inside the project directory.");
-  }
-
-  const blockedSegments = new Set([".git", ".vercel", "node_modules", ".next"]);
-  if (relative.split(path.sep).some((segment) => blockedSegments.has(segment))) {
-    throw new Error("Output path must not target generated, dependency or VCS directories.");
-  }
-
-  if (path.basename(resolved).startsWith(".env")) {
-    throw new Error("Output path must not look like an environment file.");
-  }
-
-  return resolved;
-}
-
 export function writeLaunchStandupReport(result, outputPath, { json = false, cwd = process.cwd() } = {}) {
-  const resolved = resolveSafeOutputPath(outputPath, { cwd });
   const body = json ? JSON.stringify(result, null, 2) : formatLaunchStandup(result);
 
-  fs.mkdirSync(path.dirname(resolved), { recursive: true });
-  fs.writeFileSync(resolved, `${body}\n`, "utf8");
-
-  return resolved;
+  return writeSafeReportOutput(outputPath, body, { cwd });
 }
 
 function readArgValue(name) {

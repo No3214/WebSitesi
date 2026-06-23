@@ -177,6 +177,8 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"evidence:templates:json"');
     expect(readinessScript).toContain('"evidence:templates:live"');
     expect(readinessScript).toContain('"evidence:templates:live:json"');
+    expect(readinessScript).toContain('"evidence:templates:live:write"');
+    expect(readinessScript).toContain('"evidence:templates:live:write:json"');
     expect(readinessScript).toContain('"media:hero"');
     expect(readinessScript).toContain('"media:hero:json"');
     expect(readinessScript).toContain('"media:hero:strict"');
@@ -309,6 +311,12 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["evidence:templates:live:json"]).toBe(
       "node scripts/evidence-template.mjs --json --live-runtime",
     );
+    expect(packageJson.scripts?.["evidence:templates:live:write"]).toBe(
+      "node scripts/evidence-template.mjs --live-runtime --output .codex-artifacts/evidence-templates.md",
+    );
+    expect(packageJson.scripts?.["evidence:templates:live:write:json"]).toBe(
+      "node scripts/evidence-template.mjs --json --live-runtime --output .codex-artifacts/evidence-templates.json",
+    );
     expect(packageJson.scripts?.["media:hero"]).toBe("node scripts/hero-media-audit.mjs");
     expect(packageJson.scripts?.["media:hero:json"]).toBe(
       "node scripts/hero-media-audit.mjs --json",
@@ -424,6 +432,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/vercel-env-operator-guidance.mjs"');
     expect(readinessScript).toContain('"scripts/evidence-template.mjs"');
     expect(readinessScript).toContain('"scripts/evidence-redaction-scan.mjs"');
+    expect(readinessScript).toContain('"scripts/safe-report-output.mjs"');
     expect(readinessScript).toContain('"scripts/hero-media-audit.mjs"');
     expect(readinessScript).toContain('"scripts/admin-surface-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/webhook-surface-readiness.mjs"');
@@ -1122,6 +1131,9 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("npm run launch:cutover");
     expect(runbook).toContain("npm run launch:standup:live:write");
     expect(runbook).toContain("npm run launch:standup:live:write:json");
+    expect(runbook).toContain("npm run evidence:templates:live:write");
+    expect(runbook).toContain("npm run evidence:templates:live:write:json");
+    expect(runbook).toContain("copy-ready `status: pending` evidence templates");
     expect(runbook).toContain("not environment values");
     expect(runbook).toContain("KPI and review loop");
     expect(runbook).toContain("npm run vercel:ops:strict");

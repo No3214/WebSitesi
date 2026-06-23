@@ -90,6 +90,11 @@ type EvidenceTemplateModule = {
   formatEvidenceTemplates: (
     result: ReturnType<EvidenceTemplateModule["buildEvidenceTemplates"]>,
   ) => string;
+  writeEvidenceTemplateReport: (
+    result: ReturnType<EvidenceTemplateModule["buildEvidenceTemplates"]>,
+    outputPath: string,
+    options?: { json?: boolean; cwd?: string },
+  ) => string;
 };
 
 async function loadAuditModule() {
@@ -264,6 +269,61 @@ describe("evidence templates", () => {
     expect(hms.commands).toContain("npm run vercel:hms:verify");
     expect(hms.guestFacingCopy).toContain("Rezervasyon motoru");
     expect(formatted).toContain("Gate filter: hms_booking_engine");
+  });
+
+  it("writes safe local evidence template artifacts without leaving the project directory", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const templates = await loadTemplateModule();
+    const cwd = makeTmpDir();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {
+        DATABASE_URI: "postgresql://postgres:super-secret-password@db.supabase.co:6543/postgres",
+        PAYLOAD_SECRET: "super-secret-payload-key",
+      },
+      baseDir: makeTmpDir(),
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const result = templates.buildEvidenceTemplates({ launchResult, cutoverPlan });
+
+    const markdownPath = templates.writeEvidenceTemplateReport(
+      result,
+      ".codex-artifacts/evidence-templates.md",
+      { cwd },
+    );
+    const jsonPath = templates.writeEvidenceTemplateReport(
+      result,
+      ".codex-artifacts/evidence-templates.json",
+      { cwd, json: true },
+    );
+    const markdown = fs.readFileSync(markdownPath, "utf8");
+    const json = fs.readFileSync(jsonPath, "utf8");
+
+    expect(markdownPath).toBe(path.join(cwd, ".codex-artifacts", "evidence-templates.md"));
+    expect(jsonPath).toBe(path.join(cwd, ".codex-artifacts", "evidence-templates.json"));
+    expect(markdown).toContain("Kozbeyli Konagi evidence templates");
+    expect(markdown).toContain("status: pending");
+    expect(json).toContain('"decision": "EVIDENCE_TEMPLATES_READY"');
+    expect(`${markdown}\n${json}`).not.toContain("super-secret-password");
+    expect(`${markdown}\n${json}`).not.toContain("super-secret-payload-key");
+    expect(() => templates.writeEvidenceTemplateReport(result, "../outside.md", { cwd })).toThrow(
+      /inside the project directory/,
+    );
+    expect(() => templates.writeEvidenceTemplateReport(result, ".env.production", { cwd })).toThrow(
+      /environment file/,
+    );
+    expect(() => templates.writeEvidenceTemplateReport(result, ".ENV.production", { cwd })).toThrow(
+      /environment file/,
+    );
+    expect(() =>
+      templates.writeEvidenceTemplateReport(result, ".vercel/evidence-templates.md", { cwd }),
+    ).toThrow(/generated, dependency or VCS directories/);
+    expect(() =>
+      templates.writeEvidenceTemplateReport(result, ".Git/evidence-templates.md", { cwd }),
+    ).toThrow(/generated, dependency or VCS directories/);
   });
 
   it("adds live runtime context to focused evidence templates", async () => {
