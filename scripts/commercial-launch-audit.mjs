@@ -520,6 +520,26 @@ function runtimeConfigurationState(gate, runtimeReadiness, runtimeSource) {
   };
 }
 
+function applyRuntimeEnvState(envState, runtimeState) {
+  if (!runtimeState?.ready || envState.configurationSource === "not_applicable") return envState;
+
+  return {
+    ...envState,
+    missingEnv: [],
+    configuredEnvCount: Math.max(
+      envState.configuredEnvCount,
+      runtimeState.configuredCount,
+      envState.requiredEnvCount,
+    ),
+    missingEnvCount: 0,
+    invalidEnvCount: 0,
+    placeholderEnvCount: 0,
+    fallbackApplied: runtimeState.fallbackApplied,
+    configurationSource: `runtime_${runtimeState.configurationSource}`,
+    runtimeSatisfiedByProduction: true,
+  };
+}
+
 function formatRuntimeState(state) {
   return `${state.source}: ${state.ready ? "ready" : "blocked"} (${state.configurationSource}, ${state.configuredCount}/${state.requiredCount} configured, ${state.missingCount} missing, ${state.invalidCount} invalid, ${state.placeholderCount} placeholder, fallback=${state.fallbackApplied ? "yes" : "no"})`;
 }
@@ -527,7 +547,11 @@ function formatRuntimeState(state) {
 function gateProgressNotes(gate, envState, missingEvidence, runtimeState) {
   const notes = [];
 
-  if (envState.configurationSource === "not_applicable") {
+  if (envState.runtimeSatisfiedByProduction) {
+    notes.push(
+      `env/runtime lane: production runtime is configured via ${runtimeState.source}; local audit env snapshot is not treated as the blocker`,
+    );
+  } else if (envState.configurationSource === "not_applicable") {
     notes.push("env lane: not applicable for this gate");
   } else if (envState.missingEnv.length === 0) {
     notes.push(
@@ -561,7 +585,7 @@ function gateProgressNotes(gate, envState, missingEvidence, runtimeState) {
       runtimeState.ready
         ? gateReady
           ? `runtime lane: ${runtimeState.source} agrees this gate is configured in production`
-          : `runtime lane: ${runtimeState.source} reports this gate configured in production; points still require the audit env lane and redacted evidence file`
+          : `runtime lane: ${runtimeState.source} reports this gate configured in production; points still require the redacted evidence file`
         : `runtime lane: ${formatRuntimeState(runtimeState)}`,
     );
   }
@@ -595,11 +619,12 @@ export function evaluateCommercialLaunch({
   runtimeReadinessError,
 } = {}) {
   const gateResults = commercialLaunchGates.map((gate) => {
-    const envState = envRequirementState(gate, env);
+    const localEnvState = envRequirementState(gate, env);
     const evidence = gate.evidence.map((file) => evidenceState(file, baseDir, gate));
     const missingEvidence = evidence.filter((item) => !item.ready);
-    const ready = envState.missingEnv.length === 0 && missingEvidence.length === 0;
     const runtimeConfiguration = runtimeConfigurationState(gate, runtimeReadiness, runtimeSource);
+    const envState = applyRuntimeEnvState(localEnvState, runtimeConfiguration);
+    const ready = envState.missingEnv.length === 0 && missingEvidence.length === 0;
     const progressNotes = gateProgressNotes(gate, envState, missingEvidence, runtimeConfiguration);
 
     return {

@@ -346,7 +346,10 @@ describe("commercial launch audit", () => {
     expect(databaseGate).toMatchObject({
       ready: false,
       awardedPoints: 0,
-      configurationSource: "missing",
+      configurationSource: "runtime_env",
+      missingEnv: [],
+      missingEnvCount: 0,
+      configuredEnvCount: 2,
       runtimeConfiguration: {
         source: "https://www.kozbeylikonagi.com/api/health",
         ready: true,
@@ -357,7 +360,8 @@ describe("commercial launch audit", () => {
     });
     expect(databaseGate?.progressNotes).toEqual(
       expect.arrayContaining([
-        "runtime lane: https://www.kozbeylikonagi.com/api/health reports this gate configured in production; points still require the audit env lane and redacted evidence file",
+        "env/runtime lane: production runtime is configured via https://www.kozbeylikonagi.com/api/health; local audit env snapshot is not treated as the blocker",
+        "runtime lane: https://www.kozbeylikonagi.com/api/health reports this gate configured in production; points still require the redacted evidence file",
       ]),
     );
     expect(abuseGate?.runtimeConfiguration).toMatchObject({
