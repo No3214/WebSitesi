@@ -130,6 +130,14 @@ type LaunchStandupModule = {
         cliCommands: string[];
         manualChecklist: string[];
       };
+      evidenceSetup?: {
+        paths: string[];
+        requiredSections: string[];
+        requiredProofSignals: string[];
+        missingProofSignals: string[];
+        sourceRefsPolicy: string;
+        safeEvidenceRules: string[];
+      };
       runtimeReady?: boolean;
       runtimeStatus?: string;
     };
@@ -167,6 +175,14 @@ type LaunchStandupModule = {
           cliCommands: string[];
           manualChecklist: string[];
         };
+        evidenceSetup?: {
+          paths: string[];
+          requiredSections: string[];
+          requiredProofSignals: string[];
+          missingProofSignals: string[];
+          sourceRefsPolicy: string;
+          safeEvidenceRules: string[];
+        };
       }>;
     }>;
     blockedGates: Array<{
@@ -185,6 +201,14 @@ type LaunchStandupModule = {
         cliAuthCommands: string[];
         cliCommands: string[];
         manualChecklist: string[];
+      };
+      evidenceSetup?: {
+        paths: string[];
+        requiredSections: string[];
+        requiredProofSignals: string[];
+        missingProofSignals: string[];
+        sourceRefsPolicy: string;
+        safeEvidenceRules: string[];
       };
       evidencePaths: string[];
       nextAction: string;
@@ -430,6 +454,15 @@ describe("launch standup", () => {
       cliCommands: ["vercel env add NEXT_PUBLIC_SITE_URL production"],
     });
     expect(result.nextGate?.envSetup?.manualChecklist.join(" ")).toContain("do not paste values into repository evidence");
+    expect(result.nextGate?.evidenceSetup).toMatchObject({
+      paths: ["docs/evidence/canonical-domain.md"],
+      requiredSections: expect.arrayContaining(["status: ready", "## Proof", "## Residual Risk"]),
+      requiredProofSignals: expect.arrayContaining([
+        "current health and commit proof",
+        "canonical DNS and redirect proof",
+      ]),
+      sourceRefsPolicy: expect.stringContaining("redacted source-system IDs"),
+    });
     expect(result.lanes.envBlockedGates).toContain("canonical_domain");
     expect(result.lanes.evidenceBlockedGates).toContain("hms_booking_engine");
     expect(result.lanes.codeCoveredEvidenceOnlyGates).toContain("hms_booking_engine");
@@ -451,6 +484,7 @@ describe("launch standup", () => {
     expect(formatted).toContain("code-covered evidence-only");
     expect(formatted).toContain("env setup: Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables");
     expect(formatted).toContain("cli fallback: npm i -g vercel; vercel login; vercel whoami");
+    expect(formatted).toContain("required proof: current health and commit proof");
     expect(formatted).toContain("Final verification commands:");
   });
 
@@ -517,8 +551,20 @@ describe("launch standup", () => {
     });
     expect(result.nextGate?.nextAction).toContain("Production runtime is already configured");
     expect(result.nextGate?.nextAction).toContain("docs/evidence/production-database.md");
+    expect(result.nextGate?.evidenceSetup).toMatchObject({
+      paths: ["docs/evidence/production-database.md"],
+      requiredProofSignals: expect.arrayContaining([
+        "managed Postgres or Supabase pooler proof",
+        "Payload persistence UAT proof",
+      ]),
+      sourceRefsPolicy: expect.stringContaining("never raw URLs"),
+    });
     expect(database?.runtimeDiagnostics).toMatchObject({ status: "ready", ready: true, configuredCount: 2 });
+    expect(database?.evidenceSetup?.safeEvidenceRules.join(" ")).toContain("Do not commit secrets");
     expect(hms?.runtimeDiagnostics).toMatchObject({ ready: true, configuredCount: 1 });
+    expect(hms?.evidenceSetup?.requiredProofSignals).toEqual(
+      expect.arrayContaining(["live booking UAT proof", "room or rate sync ownership proof"]),
+    );
     expect(legal?.verificationCommand).toBe("npm run launch:audit:live");
     expect(result.lanes.runtimeCoveredEvidenceGates).toEqual(
       expect.arrayContaining(["production_database", "hms_booking_engine"]),
@@ -528,12 +574,17 @@ describe("launch standup", () => {
       runtimeReady: true,
       nextCommand: "npm run evidence:handoff:live",
       verificationCommand: "npm run launch:audit:live",
+      evidenceSetup: {
+        paths: ["docs/evidence/production-database.md"],
+      },
     });
     expect(database?.envSetup).toBeUndefined();
     expect(result.finalVerificationCommands).toContain("npm run launch:audit:live:strict");
     expect(result.finalVerificationCommands).not.toContain("npm run launch:audit:strict");
     expect(formatted).toContain("runtime-covered evidence-needed");
     expect(formatted).toContain("runtime ready: production_database");
+    expect(formatted).toContain("evidence files: docs/evidence/production-database.md");
+    expect(formatted).toContain("required proof: managed Postgres or Supabase pooler proof");
     expect(formatted).toContain("npm run launch:audit:live:strict");
   });
 

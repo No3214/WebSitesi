@@ -2,11 +2,22 @@ import { pathToFileURL } from "node:url";
 
 import {
   DEFAULT_RUNTIME_HEALTH_URL,
+  commercialLaunchGates,
   evaluateCommercialLaunch,
   fetchRuntimeReadiness,
 } from "./commercial-launch-audit.mjs";
+import { requiredEvidenceSections, safeEvidenceRules } from "./evidence-handoff.mjs";
 import { buildProductionCutoverPlan } from "./production-cutover-plan.mjs";
 import { buildVercelEnvSetupGuidance } from "./vercel-env-operator-guidance.mjs";
+
+const gateCatalog = new Map(commercialLaunchGates.map((gate) => [gate.id, gate]));
+
+const sourceRefsPolicy =
+  "Use only redacted source-system IDs such as OPS-1234, UAT-5678 or VERCEL:ENV-20260623; never raw URLs, local files, screenshots, credentials, database URLs, access tokens, contracts, card data, bank account details or customer PII.";
+
+function unique(values) {
+  return [...new Set(values.filter(Boolean))];
+}
 
 function compactEvidenceStatus(items = []) {
   return items.map((item) => ({
@@ -96,12 +107,32 @@ function resolveNextCommand(step, evidenceBlocked, envSetup) {
   return step.commands[0] || "npm run launch:audit";
 }
 
+function buildEvidenceSetupGuidance(step) {
+  if (!step.evidence?.length) return undefined;
+
+  const catalogGate = gateCatalog.get(step.id);
+  const requiredProofSignals = (catalogGate?.evidenceSignals || []).map((signal) => signal.label);
+  const missingProofSignals = unique(
+    (step.missingEvidence || []).flatMap((item) => item.missingEvidenceSignals || []),
+  );
+
+  return {
+    paths: [...step.evidence],
+    requiredSections: [...requiredEvidenceSections],
+    requiredProofSignals,
+    missingProofSignals,
+    sourceRefsPolicy,
+    safeEvidenceRules: [...safeEvidenceRules],
+  };
+}
+
 function summarizeStep(step, index) {
   const envBlocked = step.missingEnv.length > 0;
   const evidenceBlocked = step.missingEvidence.length > 0;
   const firstEvidence = step.missingEvidence[0];
   const runtimeDiagnostics = compactRuntimeDiagnostics(step.runtimeDiagnostics);
   const envSetup = buildVercelEnvSetupGuidance(step.missingEnv, step.commands);
+  const evidenceSetup = buildEvidenceSetupGuidance(step);
 
   return {
     id: step.id,
@@ -118,6 +149,7 @@ function summarizeStep(step, index) {
     ...(envSetup ? { envSetup } : {}),
     evidence: compactEvidenceStatus(step.missingEvidence),
     evidencePaths: [...step.evidence],
+    ...(evidenceSetup ? { evidenceSetup } : {}),
     nextAction: resolveNextAction(step, evidenceBlocked, envSetup),
     nextCommand: resolveNextCommand(step, evidenceBlocked, envSetup),
     verificationCommand: step.commands.at(-1) || "npm run launch:audit",
@@ -161,6 +193,7 @@ function buildOwnerQueues(blockedSteps) {
       verificationCommand: step.verificationCommand,
       evidencePaths: step.evidencePaths,
       ...(step.envSetup ? { envSetup: step.envSetup } : {}),
+      ...(step.evidenceSetup ? { evidenceSetup: step.evidenceSetup } : {}),
     });
     if (!queue.nextAction) queue.nextAction = step.nextAction;
     if (!queue.nextCommand) queue.nextCommand = step.nextCommand;
@@ -215,6 +248,7 @@ export function buildLaunchStandup({
           verificationCommand: firstGate.verificationCommand,
           evidencePaths: firstGate.evidencePaths,
           ...(firstGate.envSetup ? { envSetup: firstGate.envSetup } : {}),
+          ...(firstGate.evidenceSetup ? { evidenceSetup: firstGate.evidenceSetup } : {}),
           ...(firstGate.runtimeDiagnostics
             ? {
                 runtimeReady: Boolean(firstGate.runtimeDiagnostics.ready),
@@ -255,6 +289,13 @@ export function formatLaunchStandup(result) {
         `  cli fallback: ${result.nextGate.envSetup.cliInstallCommand}; ${result.nextGate.envSetup.cliAuthCommands.join("; ")}`,
       );
     }
+    if (result.nextGate.evidenceSetup) {
+      lines.push(`  evidence files: ${result.nextGate.evidenceSetup.paths.join(", ")}`);
+      lines.push(
+        `  required proof: ${result.nextGate.evidenceSetup.requiredProofSignals.join(", ") || "redacted source-system proof"}`,
+      );
+      lines.push(`  source refs: ${result.nextGate.evidenceSetup.sourceRefsPolicy}`);
+    }
     lines.push(`  verify: ${result.nextGate.verificationCommand}`);
     lines.push("");
     lines.push("Blocked lanes:");
@@ -282,6 +323,13 @@ export function formatLaunchStandup(result) {
       }
       const runtimeReadyGates = queue.gates.filter((gate) => gate.runtimeReady).map((gate) => gate.id);
       if (runtimeReadyGates.length > 0) lines.push(`  runtime ready: ${runtimeReadyGates.join(", ")}`);
+      const evidenceSetupGates = queue.gates.filter((gate) => gate.evidenceSetup);
+      for (const gate of evidenceSetupGates) {
+        lines.push(`  evidence files (${gate.id}): ${gate.evidenceSetup.paths.join(", ")}`);
+        lines.push(
+          `  required proof (${gate.id}): ${gate.evidenceSetup.requiredProofSignals.join(", ") || "redacted source-system proof"}`,
+        );
+      }
       lines.push(`  gates: ${queue.gates.map((gate) => gate.id).join(", ")}`);
     }
   }
