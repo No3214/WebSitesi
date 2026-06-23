@@ -39,8 +39,7 @@ context, not a web tag ID.
 
 ## Validation Commands
 
-- `npm run analytics:verify`
-- `npm run analytics:verify:strict` after production IDs and proof are complete
+- `npm run vercel:analytics:verify`
 - `npm run launch:smoke:live`
 - `npm run launch:audit:json`
 - `npm run launch:audit:strict` after production IDs and proof are complete

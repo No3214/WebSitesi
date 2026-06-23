@@ -21,6 +21,18 @@ const CONTRACT_FILES = {
 
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
 
+function parseProcessEnv(source = process.env) {
+  const env = {};
+
+  for (const [key, value] of Object.entries(source)) {
+    if (!/^[A-Z][A-Z0-9_]*$/.test(key)) continue;
+    if (typeof value !== "string") continue;
+    env[key] = value;
+  }
+
+  return env;
+}
+
 function read(baseDir, relPath) {
   const fullPath = path.join(baseDir, relPath);
   return fs.existsSync(fullPath) ? fs.readFileSync(fullPath, "utf8") : "";
@@ -213,7 +225,13 @@ export function formatSearchLocalSeoReadiness(result) {
 function main() {
   const strict = process.argv.includes("--strict");
   const json = process.argv.includes("--json");
-  const result = evaluateSearchLocalSeoReadiness();
+  const fromProcessEnv = process.argv.includes("--from-process-env");
+  const baseDirArgIndex = process.argv.indexOf("--base-dir");
+  const baseDir = baseDirArgIndex >= 0 ? process.argv[baseDirArgIndex + 1] : root;
+  const result = evaluateSearchLocalSeoReadiness({
+    env: fromProcessEnv ? parseProcessEnv() : loadEnvSnapshot(),
+    baseDir,
+  });
 
   console.log(json ? JSON.stringify(result, null, 2) : formatSearchLocalSeoReadiness(result));
   process.exitCode = strict && result.decision !== "SEARCH LOCAL SEO PASS" ? 1 : 0;

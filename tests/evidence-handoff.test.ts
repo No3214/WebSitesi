@@ -397,7 +397,7 @@ describe("evidence handoff", () => {
     const hms = result.files.find((file) => file.path === "docs/evidence/hms-booking-engine.md");
     expect(hms?.missingEnv).toEqual([]);
     expect(hms?.envSetup).toBeUndefined();
-    expect(hms?.commands).toContain("npm run hms:verify:strict");
+    expect(hms?.commands).toContain("npm run vercel:hms:verify");
     expect(result.safeEvidenceRules.join(" ")).toContain("Do not commit secrets");
     expect(result.safeEvidenceRules.join(" ")).toContain("previous 45 days");
     expect(result.safeEvidenceRules.join(" ")).toContain("database URLs");

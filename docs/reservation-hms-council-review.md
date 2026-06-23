@@ -23,7 +23,7 @@ The site should keep the local `/rezervasyon` page as a branded support and cont
 ## Verification Plan
 
 - `npx vitest run --project unit tests/booking-engine-url.test.ts tests/production-contracts.test.ts`
-- `npm run hms:verify:strict`
+- `npm run vercel:hms:verify`
 - `npx tsc --noEmit`
 - `npm run lint`
 - `npm run build`

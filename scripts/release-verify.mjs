@@ -105,6 +105,34 @@ const baseGates = [
 ];
 
 const commercialStrictGateOverrides = {
+  "abuse:verify:json": {
+    script: "vercel:abuse:verify",
+    label: "Production abuse-control Vercel env gate",
+  },
+  "analytics:verify:json": {
+    script: "vercel:analytics:verify",
+    label: "Analytics purchase Vercel env gate",
+  },
+  "search:verify:json": {
+    script: "vercel:search:verify",
+    label: "Search and local SEO Vercel env gate",
+  },
+  "garanti:verify:json": {
+    script: "vercel:garanti:verify",
+    label: "Garanti POS Vercel env gate",
+  },
+  "supabase:verify:json": {
+    script: "vercel:supabase:verify",
+    label: "Supabase/Payload Vercel env gate",
+  },
+  "hms:verify:json": {
+    script: "vercel:hms:verify",
+    label: "HMS booking target Vercel env gate",
+  },
+  "vercel:env:json": {
+    script: "vercel:env:values:strict",
+    label: "Vercel production env value gate",
+  },
   "launch:audit:json": {
     script: "launch:audit:live:strict",
     label: "Commercial launch live strict evidence gate",

@@ -24,9 +24,17 @@ export const productionRunTargets = {
     description: "Validate the approved HMS booking engine target from Vercel env.",
     command: ["node", "scripts/hms-booking-readiness.mjs", "--strict"],
   },
+  garanti: {
+    description: "Validate Garanti POS production env from Vercel env.",
+    command: ["node", "scripts/garanti-pos-readiness.mjs", "--strict", "--from-process-env", "--base-dir"],
+  },
   analytics: {
     description: "Validate analytics and purchase tracking env from Vercel env.",
     command: ["node", "scripts/analytics-readiness.mjs", "--strict", "--from-process-env", "--base-dir"],
+  },
+  search: {
+    description: "Validate Search Console and local SEO production env from Vercel env.",
+    command: ["node", "scripts/search-local-seo-readiness.mjs", "--strict", "--from-process-env", "--base-dir"],
   },
 };
 
@@ -57,13 +65,14 @@ function cleanupIsolatedCwd(tempDir) {
   }
 }
 
-function commandForTarget(targetId, baseDir = repoRoot) {
+function commandForTarget(targetId, { baseDir = repoRoot, strict = false } = {}) {
   const command = [...productionRunTargets[targetId].command];
   const scriptIndex = command.findIndex((item) => item.startsWith("scripts/"));
   if (scriptIndex >= 0) command[scriptIndex] = path.join(baseDir, command[scriptIndex]);
 
   const baseDirIndex = command.indexOf("--base-dir");
   if (baseDirIndex >= 0) command.splice(baseDirIndex + 1, 0, baseDir);
+  if (strict && targetId === "env" && !command.includes("--strict")) command.push("--strict");
 
   return command;
 }
@@ -76,13 +85,13 @@ export function getProductionRunTargets() {
   }));
 }
 
-export function buildVercelEnvRunArgs(targetId, { environment = "production" } = {}) {
+export function buildVercelEnvRunArgs(targetId, { environment = "production", strict = false } = {}) {
   const target = productionRunTargets[targetId];
   if (!target) {
     throw new Error(`Unknown Vercel production run target: ${targetId}`);
   }
 
-  return ["env", "run", "-e", environment, "--", ...commandForTarget(targetId)];
+  return ["env", "run", "-e", environment, "--", ...commandForTarget(targetId, { strict })];
 }
 
 function printUsage() {
@@ -117,9 +126,9 @@ function commandStarted(error) {
   return output.includes("Vercel CLI") || output.includes("Kozbeyli Konagi") || output.includes("Decision:");
 }
 
-export function runProductionTarget(targetId) {
+export function runProductionTarget(targetId, { strict = false } = {}) {
   const isolatedCwd = createIsolatedVercelCwd();
-  const args = ["--cwd", isolatedCwd, ...buildVercelEnvRunArgs(targetId)];
+  const args = ["--cwd", isolatedCwd, ...buildVercelEnvRunArgs(targetId, { strict })];
   const errors = [];
 
   try {
@@ -157,6 +166,7 @@ export function runProductionTarget(targetId) {
 
 function main() {
   const targetId = process.argv[2] || "";
+  const strict = process.argv.includes("--strict");
 
   if (!targetId || targetId === "--help" || targetId === "-h") {
     printUsage();
@@ -165,7 +175,7 @@ function main() {
   }
 
   try {
-    const result = runProductionTarget(targetId);
+    const result = runProductionTarget(targetId, { strict });
     if (result.output) console.log(result.output);
     if (!result.ok) process.exitCode = 1;
   } catch (error) {

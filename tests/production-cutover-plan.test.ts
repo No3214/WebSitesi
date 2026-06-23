@@ -437,14 +437,19 @@ describe("production cutover plan", () => {
       expect.arrayContaining([
         "vercel env add DATABASE_URI production",
         "vercel env add PAYLOAD_SECRET production",
-        "npm run supabase:verify",
+        "npm run vercel:supabase:verify",
       ]),
     );
     expect(database?.kpiAndReviewLoop).toContain("managed Postgres");
 
     const abuseControls = plan.gateSteps.find((step) => step.id === "production_abuse_controls");
     expect(abuseControls?.commands).toEqual(
-      expect.arrayContaining(["vercel login", "vercel whoami", "vercel env add TURNSTILE_SECRET_KEY production"]),
+      expect.arrayContaining([
+        "vercel login",
+        "vercel whoami",
+        "vercel env add TURNSTILE_SECRET_KEY production",
+        "npm run vercel:abuse:verify",
+      ]),
     );
 
     const hms = plan.gateSteps.find((step) => step.id === "hms_booking_engine");
@@ -457,7 +462,7 @@ describe("production cutover plan", () => {
       fallbackApplied: true,
     });
     expect(hms?.checklist).toContain(
-      "Run npm run hms:verify:strict to confirm the public target is the approved Kozbeyli HMS host, not another hotel/vendor URL.",
+      "Run npm run vercel:hms:verify to confirm the production public target is the approved Kozbeyli HMS host, not another hotel/vendor URL.",
     );
     expect(hms?.checklist).toContain(
       "Verify the public reservation CTA opens the approved HTTPS HMS engine in a new tab.",
@@ -534,7 +539,7 @@ describe("production cutover plan", () => {
     expect(canonical?.checklist).not.toContain("Install and authenticate Vercel CLI if it is missing.");
     expect(canonical?.commands[0]).toBe("vercel env pull");
     expect(database?.commands[0]).toBe("vercel env add DATABASE_URI production");
-    expect(hms?.commands[0]).toBe("npm run hms:verify:strict");
+    expect(hms?.commands[0]).toBe("npm run vercel:hms:verify");
     expect(plan.vercelCliInstallCommand).toBe("npm i -g vercel");
   });
 
@@ -643,9 +648,13 @@ describe("production cutover plan", () => {
     expect(plan.currentScore).toBe(100);
     expect(plan.blockedPoints).toBe(0);
     expect(plan.gateSteps).toEqual([]);
-    expect(plan.finalVerificationCommands).toContain("npm run vercel:env:strict");
-    expect(plan.finalVerificationCommands).toContain("npm run supabase:verify:strict");
-    expect(plan.finalVerificationCommands).toContain("npm run hms:verify:strict");
+    expect(plan.finalVerificationCommands).toContain("npm run vercel:env:values:strict");
+    expect(plan.finalVerificationCommands).toContain("npm run vercel:supabase:verify");
+    expect(plan.finalVerificationCommands).toContain("npm run vercel:abuse:verify");
+    expect(plan.finalVerificationCommands).toContain("npm run vercel:hms:verify");
+    expect(plan.finalVerificationCommands).toContain("npm run vercel:garanti:verify");
+    expect(plan.finalVerificationCommands).toContain("npm run vercel:analytics:verify");
+    expect(plan.finalVerificationCommands).toContain("npm run vercel:search:verify");
     expect(plan.finalVerificationCommands).toContain("npm run launch:audit:strict");
     expect(plan.finalVerificationCommands).not.toContain("npm run launch:audit:live:strict");
     expect(plan.finalVerificationCommands).toContain("npm run release:verify");

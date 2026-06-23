@@ -666,7 +666,7 @@ function gateProgressNotes(gate, envState, missingEvidence, runtimeState) {
 
   if (gate.id === "hms_booking_engine") {
     notes.push(
-      "live validation lane: use npm run hms:verify:json; reachable booking handoff is not the same as completed booking UAT",
+      "live validation lane: use npm run vercel:hms:verify; reachable booking handoff is not the same as completed booking UAT",
     );
   }
 

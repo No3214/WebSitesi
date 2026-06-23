@@ -11,7 +11,7 @@ type VercelProductionRunModule = {
     description: string;
     command: string[];
   }>;
-  buildVercelEnvRunArgs: (targetId: string, options?: { environment?: string }) => string[];
+  buildVercelEnvRunArgs: (targetId: string, options?: { environment?: string; strict?: boolean }) => string[];
 };
 
 async function loadModule() {
@@ -26,6 +26,8 @@ describe("Vercel production runner", () => {
     const envScript = path.join(root, "scripts/vercel-env-readiness.mjs");
     const supabaseScript = path.join(root, "scripts/supabase-security-readiness.mjs");
     const hmsScript = path.join(root, "scripts/hms-booking-readiness.mjs");
+    const garantiScript = path.join(root, "scripts/garanti-pos-readiness.mjs");
+    const searchScript = path.join(root, "scripts/search-local-seo-readiness.mjs");
 
     expect(mod.buildVercelEnvRunArgs("env")).toEqual([
       "env",
@@ -36,6 +38,17 @@ describe("Vercel production runner", () => {
       "node",
       envScript,
       "--from-process-env",
+    ]);
+    expect(mod.buildVercelEnvRunArgs("env", { strict: true })).toEqual([
+      "env",
+      "run",
+      "-e",
+      "production",
+      "--",
+      "node",
+      envScript,
+      "--from-process-env",
+      "--strict",
     ]);
     expect(mod.buildVercelEnvRunArgs("supabase")).toEqual([
       "env",
@@ -60,6 +73,32 @@ describe("Vercel production runner", () => {
       hmsScript,
       "--strict",
     ]);
+    expect(mod.buildVercelEnvRunArgs("garanti")).toEqual([
+      "env",
+      "run",
+      "-e",
+      "production",
+      "--",
+      "node",
+      garantiScript,
+      "--strict",
+      "--from-process-env",
+      "--base-dir",
+      root,
+    ]);
+    expect(mod.buildVercelEnvRunArgs("search")).toEqual([
+      "env",
+      "run",
+      "-e",
+      "production",
+      "--",
+      "node",
+      searchScript,
+      "--strict",
+      "--from-process-env",
+      "--base-dir",
+      root,
+    ]);
   });
 
   it("exposes every operator target without secret values", async () => {
@@ -70,7 +109,9 @@ describe("Vercel production runner", () => {
       "abuse",
       "analytics",
       "env",
+      "garanti",
       "hms",
+      "search",
       "supabase",
     ]);
     expect(JSON.stringify(targets)).not.toContain("DATABASE_URI=");

@@ -29,7 +29,7 @@ is still not ready until a live booking UAT is validated in production.
 
 ## Validation Commands
 
-- `npm run hms:verify:strict`
+- `npm run vercel:hms:verify`
 - `npm run launch:smoke:live`
 - `npm run launch:audit:json`
 - `npm run launch:audit:strict` after Vercel env and proof are complete

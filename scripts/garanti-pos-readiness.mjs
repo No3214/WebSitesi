@@ -33,6 +33,18 @@ const CONTRACT_FILES = {
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
 const forbiddenCardIdentifiers = /\b(cardNumber|card_number|cvv|cvc|expiry|expireMonth|expireYear)\b/i;
 
+function parseProcessEnv(source = process.env) {
+  const env = {};
+
+  for (const [key, value] of Object.entries(source)) {
+    if (!/^[A-Z][A-Z0-9_]*$/.test(key)) continue;
+    if (typeof value !== "string") continue;
+    env[key] = value;
+  }
+
+  return env;
+}
+
 function read(baseDir, relPath) {
   const fullPath = path.join(baseDir, relPath);
   return fs.existsSync(fullPath) ? fs.readFileSync(fullPath, "utf8") : "";
@@ -254,7 +266,13 @@ export function formatGarantiPosReadiness(result) {
 function main() {
   const strict = process.argv.includes("--strict");
   const json = process.argv.includes("--json");
-  const result = evaluateGarantiPosReadiness();
+  const fromProcessEnv = process.argv.includes("--from-process-env");
+  const baseDirArgIndex = process.argv.indexOf("--base-dir");
+  const baseDir = baseDirArgIndex >= 0 ? process.argv[baseDirArgIndex + 1] : root;
+  const result = evaluateGarantiPosReadiness({
+    env: fromProcessEnv ? parseProcessEnv() : loadEnvSnapshot(),
+    baseDir,
+  });
 
   console.log(json ? JSON.stringify(result, null, 2) : formatGarantiPosReadiness(result));
   process.exitCode = strict && result.decision !== "GARANTI POS READINESS PASS" ? 1 : 0;

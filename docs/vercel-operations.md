@@ -43,6 +43,7 @@ only as process environment variables:
 
 ```bash
 npm run vercel:env:values
+npm run vercel:env:values:strict
 ```
 
 The wrapper calls `vercel env run` with argument-array execution from an
@@ -69,7 +70,9 @@ no-disk pattern so an empty Vercel value cannot be hidden by local `.env` files:
 npm run vercel:supabase:verify
 npm run vercel:abuse:verify
 npm run vercel:hms:verify
+npm run vercel:garanti:verify
 npm run vercel:analytics:verify
+npm run vercel:search:verify
 ```
 
 For a strict handoff gate, run:
@@ -88,9 +91,9 @@ Strict mode fails on warnings. It should only pass when:
 - `.vercel/project.json` points at `kozbeyli-konagi`;
 - domain/env scripts are present;
 - canonical domain evidence is marked `ready`.
-- `npm run vercel:env:strict` shows every production env requirement for the
-  commercial launch gates is either present in Vercel Production or covered by
-  an approved code fallback.
+- `npm run vercel:env:values:strict` shows every production env requirement for
+  the commercial launch gates is either present in Vercel Production with a
+  non-empty value or covered by an approved code fallback.
 
 ## Cutover operating model
 
@@ -138,6 +141,7 @@ vercel login
 vercel whoami
 vercel env ls
 npm run vercel:env:values
+npm run vercel:env:values:strict
 vercel env pull
 vercel deploy
 vercel logs

@@ -486,7 +486,7 @@ describe("launch standup", () => {
     const revenue = result.ownerQueues.find((queue) => queue.owner === "Revenue / booking operator");
     expect(revenue).toMatchObject({
       totalBlockedPoints: 4,
-      nextCommand: "npm run hms:verify:strict",
+      nextCommand: "npm run vercel:hms:verify",
     });
     expect(revenue?.gates[0]).toMatchObject({
       id: "hms_booking_engine",

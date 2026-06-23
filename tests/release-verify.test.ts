@@ -55,15 +55,29 @@ describe("release verification runner", () => {
 
     expect(defaultScripts).toContain("launch:audit:json");
     expect(defaultScripts).toContain("launch:cutover:json");
+    expect(defaultScripts).toContain("analytics:verify:json");
+    expect(defaultScripts).toContain("supabase:verify:json");
+    expect(defaultScripts).toContain("vercel:env:json");
     expect(defaultScripts).not.toContain("launch:audit:strict");
     expect(defaultScripts).not.toContain("launch:cutover:strict");
+    expect(defaultScripts).not.toContain("vercel:env:values:strict");
     expect(releaseVerify.gates.map((gate) => gate.script)).toEqual(defaultScripts);
 
     expect(commercialScripts).toContain("launch:audit:live:strict");
     expect(commercialScripts).toContain("launch:cutover:strict");
+    expect(commercialScripts).toContain("vercel:env:values:strict");
+    expect(commercialScripts).toContain("vercel:supabase:verify");
+    expect(commercialScripts).toContain("vercel:abuse:verify");
+    expect(commercialScripts).toContain("vercel:hms:verify");
+    expect(commercialScripts).toContain("vercel:garanti:verify");
+    expect(commercialScripts).toContain("vercel:analytics:verify");
+    expect(commercialScripts).toContain("vercel:search:verify");
     expect(commercialScripts).not.toContain("launch:audit:json");
     expect(commercialScripts).not.toContain("launch:audit:strict");
     expect(commercialScripts).not.toContain("launch:cutover:json");
+    expect(commercialScripts).not.toContain("analytics:verify:json");
+    expect(commercialScripts).not.toContain("supabase:verify:json");
+    expect(commercialScripts).not.toContain("vercel:env:json");
   });
 
   it("retries npm audit once when the registry audit endpoint times out", async () => {

@@ -261,7 +261,7 @@ describe("evidence templates", () => {
         "room or rate sync ownership proof",
       ]),
     );
-    expect(hms.commands).toContain("npm run hms:verify:strict");
+    expect(hms.commands).toContain("npm run vercel:hms:verify");
     expect(hms.guestFacingCopy).toContain("Rezervasyon motoru");
     expect(formatted).toContain("Gate filter: hms_booking_engine");
   });
@@ -372,7 +372,11 @@ describe("evidence templates", () => {
         envNames: ["GA4_API_SECRET"],
         cliCommands: ["vercel env add GA4_API_SECRET production"],
       },
-      commands: ["vercel env add GA4_API_SECRET production", "npm run launch:audit"],
+      commands: [
+        "vercel env add GA4_API_SECRET production",
+        "npm run vercel:analytics:verify",
+        "npm run launch:audit",
+      ],
     });
     expect(analytics.envSetup?.manualChecklist.join(" ")).toContain(
       "Add or update only these Production env names: GA4_API_SECRET",

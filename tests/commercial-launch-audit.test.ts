@@ -293,7 +293,7 @@ describe("commercial launch audit", () => {
     expect(hmsGate?.progressNotes).toEqual(
       expect.arrayContaining([
         expect.stringContaining("env/fallback lane"),
-        expect.stringContaining("hms:verify:json"),
+        expect.stringContaining("vercel:hms:verify"),
       ]),
     );
     expect(hmsGate).toMatchObject({

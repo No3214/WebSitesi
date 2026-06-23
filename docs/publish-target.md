@@ -30,8 +30,13 @@ npm run launch:cutover:json
 npm run media:hero
 npm run launch:audit:strict
 npm run release:verify:commercial
-npm run supabase:verify
-npm run supabase:verify:strict
+npm run vercel:env:values:strict
+npm run vercel:supabase:verify
+npm run vercel:abuse:verify
+npm run vercel:hms:verify
+npm run vercel:garanti:verify
+npm run vercel:analytics:verify
+npm run vercel:search:verify
 npm run domain:verify
 ```
 
@@ -61,17 +66,19 @@ kanıt dosyalarına değer veya değer içeren ekran görüntüsü girilmez.
 kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
 `media:hero`, açılış videosunun onaylı hash, çözünürlük, süre, bitrate, poster
 türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
-`supabase:verify`, Payload CMS'in `DATABASE_URI` / `PAYLOAD_SECRET` üretim
-kapısını, local DB kullanımını ve service-role sızıntısı riskini ayrıca
-denetler. Vercel Production değerleri local `.env` ile maskelenmeden ve diske
-yazılmadan kanıtlanacaksa `npm run vercel:supabase:verify` kullanılır.
+`vercel:supabase:verify`, Payload CMS'in `DATABASE_URI` / `PAYLOAD_SECRET`
+üretim kapısını, local DB kullanımını ve service-role sızıntısı riskini Vercel
+Production process env üzerinden denetler. Vercel Production değerleri local
+`.env` ile maskelenmeden ve diske yazılmadan kanıtlanır.
 `vercel:abuse:verify`, production Turnstile/Upstash değerlerini aynı no-disk
 Vercel env runner üzerinden denetler; boş `NEXT_PUBLIC_TURNSTILE_SITE_KEY`,
 `TURNSTILE_SECRET_KEY`, `UPSTASH_REDIS_REST_URL` veya
-`UPSTASH_REDIS_REST_TOKEN` varsa gate bloklu kalır. `vercel:analytics:verify`
-de GTM/GA4/Meta/Google Ads production env değerlerini local `.env` yerine Vercel
-Production process env üzerinden doğrular. Boş public ID'ler veya
-`GA4_API_SECRET` local değerlerle tamamlanmaz.
+`UPSTASH_REDIS_REST_TOKEN` varsa gate bloklu kalır. `vercel:garanti:verify`,
+`vercel:analytics:verify` ve `vercel:search:verify` de Garanti POS,
+GTM/GA4/Meta/Google Ads ve Search Console production env değerlerini local
+`.env` yerine Vercel Production process env üzerinden doğrular. Boş POS
+değerleri, public ID'ler, `GA4_API_SECRET` veya `GOOGLE_SITE_VERIFICATION`
+local değerlerle tamamlanmaz.
 `launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
 
 - Canonical domain health + current Vercel commit: `docs/evidence/canonical-domain.md`
@@ -116,7 +123,7 @@ Bu üst komut aşağıdaki kapıları sırayla çalıştırır:
 - Lokal launch smoke (`npm run launch:smoke`)
 - Monkey/chaos stres testleri (`npm run test:stress`)
 - Makine okunur commercial launch audit (`npm run launch:audit:json`)
-- Supabase/Payload database security diagnostic (`npm run supabase:verify:json`)
+- Supabase/Payload database security diagnostic (`npm run vercel:supabase:verify`)
 - Makine okunur commercial cutover planı (`npm run launch:cutover:json`)
 
 `publish:verify` içinde aşağıdaki işler kalır:

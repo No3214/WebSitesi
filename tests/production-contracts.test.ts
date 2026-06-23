@@ -219,6 +219,14 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"vercel:env"');
     expect(readinessScript).toContain('"vercel:env:json"');
     expect(readinessScript).toContain('"vercel:env:strict"');
+    expect(readinessScript).toContain('"vercel:env:values"');
+    expect(readinessScript).toContain('"vercel:env:values:strict"');
+    expect(readinessScript).toContain('"vercel:supabase:verify"');
+    expect(readinessScript).toContain('"vercel:abuse:verify"');
+    expect(readinessScript).toContain('"vercel:hms:verify"');
+    expect(readinessScript).toContain('"vercel:garanti:verify"');
+    expect(readinessScript).toContain('"vercel:analytics:verify"');
+    expect(readinessScript).toContain('"vercel:search:verify"');
     expect(readinessScript).toContain('"github:ci"');
     expect(readinessScript).toContain('"github:ci:json"');
     expect(readinessScript).toContain('"github:ci:strict"');
@@ -491,6 +499,13 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("process.env.ComSpec");
     expect(releaseScript).toContain("launch:audit:live:strict");
     expect(releaseScript).toContain("launch:cutover:strict");
+    expect(releaseScript).toContain("vercel:env:values:strict");
+    expect(releaseScript).toContain("vercel:supabase:verify");
+    expect(releaseScript).toContain("vercel:abuse:verify");
+    expect(releaseScript).toContain("vercel:hms:verify");
+    expect(releaseScript).toContain("vercel:garanti:verify");
+    expect(releaseScript).toContain("vercel:analytics:verify");
+    expect(releaseScript).toContain("vercel:search:verify");
     expect(releaseScript).toContain("export const gates = buildReleaseGates();");
     expect(ciWorkflow).toContain("Release gate manifest");
     expect(ciWorkflow).toContain("node scripts/release-verify.mjs --list");
@@ -1006,6 +1021,9 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["vercel:env:values"]).toBe(
       "node scripts/vercel-production-run.mjs env",
     );
+    expect(packageJson.scripts?.["vercel:env:values:strict"]).toBe(
+      "node scripts/vercel-production-run.mjs env --strict",
+    );
     expect(packageJson.scripts?.["vercel:supabase:verify"]).toBe(
       "node scripts/vercel-production-run.mjs supabase",
     );
@@ -1015,8 +1033,14 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["vercel:hms:verify"]).toBe(
       "node scripts/vercel-production-run.mjs hms",
     );
+    expect(packageJson.scripts?.["vercel:garanti:verify"]).toBe(
+      "node scripts/vercel-production-run.mjs garanti",
+    );
     expect(packageJson.scripts?.["vercel:analytics:verify"]).toBe(
       "node scripts/vercel-production-run.mjs analytics",
+    );
+    expect(packageJson.scripts?.["vercel:search:verify"]).toBe(
+      "node scripts/vercel-production-run.mjs search",
     );
     expect(vercelOps).toContain("Kozbeyli Konagi Vercel operations readiness");
     expect(vercelEnv).toContain("Kozbeyli Konagi Vercel production env readiness");
@@ -1038,7 +1062,10 @@ describe("production readiness contracts", () => {
     expect(vercelEnv).toContain("process.env");
     expect(cutover).toContain("VERCEL_AUTH_COMMANDS");
     expect(cutover).toContain("vercel whoami");
-    expect(cutover).toContain("npm run hms:verify:strict");
+    expect(cutover).toContain("npm run vercel:hms:verify");
+    expect(cutover).toContain("npm run vercel:garanti:verify");
+    expect(cutover).toContain("npm run vercel:search:verify");
+    expect(cutover).toContain("npm run vercel:env:values:strict");
     expect(cutover).toContain("external DNS/CDN layer");
     expect(cutover).toContain("For first verification");
     expect(vercelOps).toContain("PASS_WITH_WARNINGS");
@@ -1057,8 +1084,8 @@ describe("production readiness contracts", () => {
     expect(vercelOps).toContain("kozbeyli-konagi");
     expect(runbook).toContain("npm run vercel:ops");
     expect(runbook).toContain("npm run vercel:env");
-    expect(runbook).toContain("npm run vercel:env:strict");
     expect(runbook).toContain("npm run vercel:env:values");
+    expect(runbook).toContain("npm run vercel:env:values:strict");
     expect(runbook).toContain("dnsTargetRecords");
     expect(runbook).toContain("never prints values");
     expect(runbook).toContain("no-disk `env run`");
@@ -1068,7 +1095,9 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("npm run vercel:supabase:verify");
     expect(runbook).toContain("npm run vercel:abuse:verify");
     expect(runbook).toContain("npm run vercel:hms:verify");
+    expect(runbook).toContain("npm run vercel:garanti:verify");
     expect(runbook).toContain("npm run vercel:analytics:verify");
+    expect(runbook).toContain("npm run vercel:search:verify");
     expect(runbook).toContain("npm run launch:cutover");
     expect(runbook).toContain("KPI and review loop");
     expect(runbook).toContain("npm run vercel:ops:strict");
@@ -1118,7 +1147,7 @@ describe("production readiness contracts", () => {
     expect(growthDashboard).toContain("docs/evidence/canonical-domain.md");
     expect(growthDashboard).toContain("docs/evidence/production-database.md");
     expect(growthDashboard).toContain("Payload database proof");
-    expect(growthDashboard).toContain("npm run supabase:verify:strict");
+    expect(growthDashboard).toContain("npm run vercel:supabase:verify");
     expect(growthDashboard).toContain("bank account details");
     expect(growthEngine).toContain("database");
     expect(growthDashboard).toContain("npm run release:verify");
@@ -1358,13 +1387,17 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("subdomain CNAME records shown by Vercel Project Settings");
     expect(cutoverPlan).toContain("kozbeylikonagi.com and www.kozbeylikonagi.com");
     expect(cutoverPlan).toContain("remove the bad override to use the official code fallback");
-    expect(cutoverPlan).toContain("Run npm run hms:verify:strict");
+    expect(cutoverPlan).toContain("Run npm run vercel:hms:verify");
     expect(cutoverPlan).toContain("Verify the public reservation CTA opens the approved HTTPS HMS engine");
     expect(cutoverPlan).toContain("vercel env add NEXT_PUBLIC_GA4_MEASUREMENT_ID production");
     expect(cutoverPlan).toContain("vercel env add NEXT_PUBLIC_GOOGLE_ADS_ID production");
     expect(cutoverPlan).toContain("npm run domain:verify:strict");
-    expect(cutoverPlan).toContain("npm run supabase:verify:strict");
-    expect(cutoverPlan).toContain("npm run hms:verify:strict");
+    expect(cutoverPlan).toContain("npm run vercel:env:values:strict");
+    expect(cutoverPlan).toContain("npm run vercel:supabase:verify");
+    expect(cutoverPlan).toContain("npm run vercel:hms:verify");
+    expect(cutoverPlan).toContain("npm run vercel:garanti:verify");
+    expect(cutoverPlan).toContain("npm run vercel:analytics:verify");
+    expect(cutoverPlan).toContain("npm run vercel:search:verify");
     expect(cutoverPlan).toContain("npm run launch:audit:live:strict");
     expect(cutoverPlan).toContain("npm run launch:audit:strict");
     expect(cutoverPlan).toContain("npm run release:verify:commercial");
