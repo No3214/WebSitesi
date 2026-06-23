@@ -7,6 +7,7 @@ const defaultOrigin = "https://www.kozbeylikonagi.com";
 const adminGrowthPath = "/admin/growth";
 const adminLoginPath = "/admin";
 const adminGrowthSourcePath = "src/app/admin/growth/page.tsx";
+const adminGrowthClientSourcePath = "src/app/admin/growth/growth-client.tsx";
 
 const requiredSourceSignals = [
   {
@@ -34,6 +35,34 @@ const requiredSourceSignals = [
     label: "unauthenticated users must be redirected to Payload admin login",
     pattern: /redirect\(["']\/admin["']\)/,
   },
+  {
+    id: "runtime_readiness_source",
+    label: "admin growth page must source runtime readiness on the server",
+    pattern: /getRuntimeReadiness\(\)/,
+  },
+  {
+    id: "runtime_readiness_prop",
+    label: "admin growth page must pass runtime readiness into the dashboard",
+    pattern: /runtimeReadiness=\{getRuntimeReadiness\(\)\}/,
+  },
+];
+
+const requiredClientSignals = [
+  {
+    id: "runtime_readiness_type",
+    label: "admin dashboard must accept a runtime readiness snapshot",
+    pattern: /type\s+RuntimeReadinessSnapshot\s*=/,
+  },
+  {
+    id: "runtime_readiness_summary",
+    label: "admin dashboard must render runtime readiness summary text",
+    pattern: /Runtime readiness/,
+  },
+  {
+    id: "runtime_blocked_gate_summary",
+    label: "admin dashboard must render blocked runtime gate ids only",
+    pattern: /Blocked runtime gates/,
+  },
 ];
 
 const forbiddenSourceSignals = [
@@ -45,7 +74,16 @@ const forbiddenSourceSignals = [
   {
     id: "public_export_guard_bypass",
     label: "GrowthDashboardClient must not render before the auth redirect guard",
-    pattern: /return\s+<GrowthDashboardClient\s*\/>[\s\S]*if\s*\(\s*!authenticated\s*\)/,
+    pattern: /return\s+<GrowthDashboardClient[\s\S]*\/>[\s\S]*if\s*\(\s*!authenticated\s*\)/,
+  },
+];
+
+const forbiddenClientSignals = [
+  {
+    id: "runtime_secret_env_names",
+    label: "admin dashboard runtime panel must not render secret env names",
+    pattern:
+      /\b(?:DATABASE_URI|PAYLOAD_SECRET|TURNSTILE_SECRET_KEY|UPSTASH_REDIS_REST_TOKEN|GA4_API_SECRET|GARANTI_3D_STORE_KEY)\b/,
   },
 ];
 
@@ -58,6 +96,8 @@ const sensitiveLiveSignatures = [
   "docs/evidence",
   "No secrets in repo evidence",
   "Payload database proof",
+  "Runtime readiness",
+  "Blocked runtime gates",
 ];
 
 function readIfExists(relPath, baseDir = root) {
@@ -91,13 +131,21 @@ function sameOriginAdminLogin(location, target) {
 
 export function evaluateAdminSurfaceSource({ baseDir = root } = {}) {
   const source = readIfExists(adminGrowthSourcePath, baseDir);
+  const clientSource = readIfExists(adminGrowthClientSourcePath, baseDir);
   const checks = [
     buildCheck("source_present", Boolean(source), adminGrowthSourcePath),
+    buildCheck("client_source_present", Boolean(clientSource), adminGrowthClientSourcePath),
     ...requiredSourceSignals.map((signal) =>
       buildCheck(signal.id, signal.pattern.test(source), signal.label),
     ),
+    ...requiredClientSignals.map((signal) =>
+      buildCheck(signal.id, signal.pattern.test(clientSource), signal.label),
+    ),
     ...forbiddenSourceSignals.map((signal) =>
       buildCheck(signal.id, !signal.pattern.test(source), signal.label),
+    ),
+    ...forbiddenClientSignals.map((signal) =>
+      buildCheck(signal.id, !signal.pattern.test(clientSource), signal.label),
     ),
   ];
 

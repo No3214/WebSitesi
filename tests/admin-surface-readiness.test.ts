@@ -38,12 +38,26 @@ async function loadAdminSurfaceModule() {
   )) as AdminSurfaceModule;
 }
 
-function makeTmpProject(source: string) {
+const safeClientSource = `
+  type RuntimeReadinessSnapshot = {
+    status: string;
+    ready: boolean;
+    blockedGates: string[];
+    configuredGates: string[];
+    checks: Array<{ id: string; ready: boolean; configuredCount: number; requiredCount: number }>;
+  };
+  export function GrowthDashboardClient({ runtimeReadiness }: { runtimeReadiness: RuntimeReadinessSnapshot }) {
+    return <div>Runtime readiness: {runtimeReadiness.status}<span>Blocked runtime gates</span></div>;
+  }
+`;
+
+function makeTmpProject(source: string, clientSource = safeClientSource) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kozbeyli-admin-surface-"));
   tmpDirs.push(dir);
   const sourceDir = path.join(dir, "src/app/admin/growth");
   fs.mkdirSync(sourceDir, { recursive: true });
   fs.writeFileSync(path.join(sourceDir, "page.tsx"), source);
+  fs.writeFileSync(path.join(sourceDir, "growth-client.tsx"), clientSource);
   return dir;
 }
 
@@ -80,6 +94,12 @@ describe("admin surface readiness", () => {
       ready: true,
     });
     expect(result.checks.find((check) => check.id === "boolean_user_guard")).toMatchObject({
+      ready: true,
+    });
+    expect(result.checks.find((check) => check.id === "runtime_readiness_source")).toMatchObject({
+      ready: true,
+    });
+    expect(result.checks.find((check) => check.id === "runtime_secret_env_names")).toMatchObject({
       ready: true,
     });
   });
@@ -135,6 +155,65 @@ describe("admin surface readiness", () => {
       ready: false,
     });
     expect(result.checks.find((check) => check.id === "boolean_user_guard")).toMatchObject({
+      ready: false,
+    });
+  });
+
+  it("blocks admin dashboard source when runtime readiness is no longer wired through the auth guard", async () => {
+    const adminSurface = await loadAdminSurfaceModule();
+    const dir = makeTmpProject(`
+      import { redirect } from "next/navigation";
+      import { GrowthDashboardClient } from "./growth-client";
+      export const dynamic = "force-dynamic";
+      export const metadata = { robots: { index: false, follow: false } };
+      export default async function GrowthDashboardPage() {
+        let authenticated = true;
+        const requestHeaders = {};
+        const payload = { auth: async () => ({ user: { role: "admin" } }) };
+        const { user } = await payload.auth({ headers: requestHeaders });
+        authenticated = user?.role === "admin";
+        if (!authenticated) redirect("/admin");
+        return <GrowthDashboardClient />;
+      }
+    `);
+
+    const result = adminSurface.evaluateAdminSurfaceSource({ baseDir: dir });
+
+    expect(result.ready).toBe(false);
+    expect(result.checks.find((check) => check.id === "runtime_readiness_source")).toMatchObject({
+      ready: false,
+    });
+    expect(result.checks.find((check) => check.id === "runtime_readiness_prop")).toMatchObject({
+      ready: false,
+    });
+  });
+
+  it("blocks admin dashboard source when the client renders secret env names", async () => {
+    const adminSurface = await loadAdminSurfaceModule();
+    const dir = makeTmpProject(
+      `
+        import { redirect } from "next/navigation";
+        import { getRuntimeReadiness } from "@/lib/production-readiness";
+        import { GrowthDashboardClient } from "./growth-client";
+        export const dynamic = "force-dynamic";
+        export const metadata = { robots: { index: false, follow: false } };
+        export default async function GrowthDashboardPage() {
+          let authenticated = true;
+          const requestHeaders = {};
+          const payload = { auth: async () => ({ user: { role: "admin" } }) };
+          const { user } = await payload.auth({ headers: requestHeaders });
+          authenticated = user?.role === "admin";
+          if (!authenticated) redirect("/admin");
+          return <GrowthDashboardClient runtimeReadiness={getRuntimeReadiness()} />;
+        }
+      `,
+      `${safeClientSource}\nexport const leaked = "GA4_API_SECRET";`,
+    );
+
+    const result = adminSurface.evaluateAdminSurfaceSource({ baseDir: dir });
+
+    expect(result.ready).toBe(false);
+    expect(result.checks.find((check) => check.id === "runtime_secret_env_names")).toMatchObject({
       ready: false,
     });
   });
