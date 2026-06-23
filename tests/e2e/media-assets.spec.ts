@@ -147,6 +147,49 @@ test.describe("Media, video and mobile publish readiness", () => {
     expect(videoRequests, videoRequests.join("\n")).toEqual([]);
   });
 
+  test("mobile homepage editorial videos expose controls and can start real clips", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const response = await page.goto("/", { waitUntil: "load" });
+
+    expect(response?.status(), "/ should return usable HTML on mobile").toBeLessThan(400);
+
+    for (const clip of [
+      { testId: "editorial-video-kahvalti", source: "/videos/kahvalti.mp4", index: 0 },
+      { testId: "editorial-video-mihlama", source: "/videos/mihlama.mp4", index: 1 },
+    ]) {
+      const button = page.getByTestId(clip.testId);
+      const video = page.locator(".gastronomy-editorial-section video").nth(clip.index);
+
+      await button.scrollIntoViewIfNeeded();
+      await expect(button, `${clip.source} should keep a visible mobile play control`).toBeVisible();
+      await expect(button).toHaveAttribute("data-state", /paused|blocked|playing/);
+
+      const isClipPlaying = () =>
+        video.evaluate((element, expectedSource) => {
+          const media = element as HTMLVideoElement;
+          const source = media.currentSrc || media.querySelector("source")?.getAttribute("src") || "";
+          return (
+            source.includes(expectedSource) &&
+            media.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+            media.currentTime > 0 &&
+            !media.paused
+          );
+        }, clip.source);
+
+      if (!(await isClipPlaying())) {
+        await button.click({ force: true });
+      }
+
+      await expect
+        .poll(isClipPlaying, { timeout: 15000 })
+        .toBe(true);
+
+      await expect(button).toHaveAttribute("data-state", "playing");
+      await button.click();
+      await expect(button).toHaveAttribute("data-state", "paused");
+    }
+  });
+
   for (const route of visualRoutes) {
     test(`${route} renders without broken visible images`, async ({ page }) => {
       const assetFailures: string[] = [];

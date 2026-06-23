@@ -1,6 +1,6 @@
 "use client";
 
-import { Play } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -20,6 +20,17 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackBlocked, setPlaybackBlocked] = useState(false);
 
+  const markPlaybackState = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    setIsPlaying(
+      !video.paused &&
+        video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+        video.currentTime > 0,
+    );
+  }, []);
+
   const start = useCallback(async () => {
     const video = videoRef.current;
     if (!video) return;
@@ -28,14 +39,31 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
       video.defaultMuted = true;
       video.muted = true;
       video.playsInline = true;
+      if (!video.currentSrc && video.networkState === HTMLMediaElement.NETWORK_EMPTY) {
+        video.load();
+      }
       await video.play();
-      setIsPlaying(!video.paused);
+      markPlaybackState();
       setPlaybackBlocked(false);
     } catch {
       setIsPlaying(false);
       setPlaybackBlocked(true);
     }
-  }, []);
+  }, [markPlaybackState]);
+
+  const togglePlayback = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isPlaying) {
+      video.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    setShouldPlay(true);
+    void start();
+  }, [isPlaying, start]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -80,9 +108,11 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
           if (shouldPlay) void start();
         }}
         onPlaying={() => {
-          setIsPlaying(true);
+          markPlaybackState();
           setPlaybackBlocked(false);
         }}
+        onLoadedData={markPlaybackState}
+        onTimeUpdate={markPlaybackState}
         onPause={() => setIsPlaying(false)}
         onError={() => {
           setIsPlaying(false);
@@ -91,20 +121,16 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
       >
         <source src={src} type="video/mp4" />
       </video>
-      {!isPlaying ? (
-        <button
-          type="button"
-          className="editorial-video-control"
-          data-state={playbackBlocked ? "blocked" : "paused"}
-          aria-label={playLabel}
-          onClick={() => {
-            setShouldPlay(true);
-            void start();
-          }}
-        >
-          <Play aria-hidden size={22} strokeWidth={2.2} />
-        </button>
-      ) : null}
+      <button
+        type="button"
+        className="editorial-video-control"
+        data-state={isPlaying ? "playing" : playbackBlocked ? "blocked" : "paused"}
+        data-testid={`editorial-video-${src.includes("mihlama") ? "mihlama" : "kahvalti"}`}
+        aria-label={isPlaying ? label : playLabel}
+        onClick={togglePlayback}
+      >
+        {isPlaying ? <Pause aria-hidden size={22} strokeWidth={2.2} /> : <Play aria-hidden size={22} strokeWidth={2.2} />}
+      </button>
     </>
   );
 }
