@@ -171,7 +171,7 @@ function checkProjectBinding() {
   }
 }
 
-function checkGlobalCli() {
+function checkGlobalCli({ allowNpxFallback = false } = {}) {
   const errors = [];
 
   for (const candidate of getVercelCliCandidates()) {
@@ -188,29 +188,34 @@ function checkGlobalCli() {
     }
   }
 
-  try {
-    const version = execFileSync("npx", ["--yes", "vercel", "--version"], {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-      timeout: 30000,
-    }).trim();
+  if (allowNpxFallback) {
+    try {
+      const version = execFileSync("npx", ["--yes", "vercel", "--version"], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+        timeout: 30000,
+      }).trim();
 
-    return {
-      id: "global_vercel_cli",
-      status: "warn",
-      detail: `Only npx Vercel fallback is available (${version}); persistent global CLI is not installed on PATH.`,
-      remediation: `${INSTALL_COMMAND} is required for reliable vercel env pull, vercel deploy and vercel logs operations.`,
-    };
-  } catch (error) {
-    errors.push(`npx --yes vercel --version: ${error instanceof Error ? error.message : String(error)}`);
-    return {
-      id: "global_vercel_cli",
-      status: "warn",
-      detail: "Global Vercel CLI is not available on PATH.",
-      remediation: `${INSTALL_COMMAND} is required for vercel env pull, vercel deploy and vercel logs.`,
-      error: errors.join("; "),
-    };
+      return {
+        id: "global_vercel_cli",
+        status: "warn",
+        detail: `Only npx Vercel fallback is available (${version}); persistent global CLI is not installed on PATH.`,
+        remediation: `${INSTALL_COMMAND} is required for reliable vercel env pull, vercel deploy and vercel logs operations.`,
+      };
+    } catch (error) {
+      errors.push(`npx --yes vercel --version: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
+
+  return {
+    id: "global_vercel_cli",
+    status: "warn",
+    detail: allowNpxFallback
+      ? "Global Vercel CLI is not available on PATH."
+      : "Global Vercel CLI is not available on PATH; npx fallback was not executed.",
+    remediation: `${INSTALL_COMMAND} is required for vercel env pull, vercel deploy and vercel logs.`,
+    error: errors.join("; "),
+  };
 }
 
 function checkVercelAuth() {
@@ -314,10 +319,10 @@ function checkCanonicalEvidence() {
       };
 }
 
-export function evaluateVercelOpsReadiness() {
+export function evaluateVercelOpsReadiness({ allowNpxFallback = false } = {}) {
   const checks = [
     checkProjectBinding(),
-    checkGlobalCli(),
+    checkGlobalCli({ allowNpxFallback }),
     checkVercelAuth(),
     checkPackageScripts(),
     checkEnvExample(),
@@ -355,7 +360,8 @@ export function formatVercelOpsReadiness(result) {
 async function main() {
   const strict = process.argv.includes("--strict");
   const json = process.argv.includes("--json");
-  const result = evaluateVercelOpsReadiness();
+  const allowNpxFallback = process.argv.includes("--allow-npx-fallback");
+  const result = evaluateVercelOpsReadiness({ allowNpxFallback });
   console.log(json ? JSON.stringify(result, null, 2) : formatVercelOpsReadiness(result));
   process.exit(result.failures.length > 0 || (strict && result.warnings.length > 0) ? 1 : 0);
 }

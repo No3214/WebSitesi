@@ -423,6 +423,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"tests/webhook-body-limit.test.ts"');
     expect(readinessScript).toContain('"tests/webhook-surface-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/search-local-seo-readiness.test.ts"');
+    expect(readinessScript).toContain('"tests/vercel-ops-readiness.test.ts"');
     expect(readinessScript).toContain('"tests/e2e/health.spec.ts"');
     expect(readinessScript).toContain('"tests/production-readiness.test.ts"');
     expect(readinessScript).toContain('"docs/evidence/README.md"');
@@ -1101,6 +1102,9 @@ describe("production readiness contracts", () => {
     expect(vercelOps).toContain("PASS_WITH_WARNINGS");
     expect(vercelOps).toContain("npm i -g vercel");
     expect(vercelOps).toContain("APPDATA");
+    expect(vercelOps).toContain("allowNpxFallback = false");
+    expect(vercelOps).toContain("--allow-npx-fallback");
+    expect(vercelOps).toContain("npx fallback was not executed");
     expect(vercelOps).toContain("Only npx Vercel fallback is available");
     expect(vercelOps).toContain("persistent global CLI is not installed on PATH");
     expect(vercelOps).toContain("resolveVercelCmdTarget");
@@ -1113,6 +1117,8 @@ describe("production readiness contracts", () => {
     expect(vercelOps).toContain("canonical-domain.md");
     expect(vercelOps).toContain("kozbeyli-konagi");
     expect(runbook).toContain("npm run vercel:ops");
+    expect(runbook).toContain("does not execute `npx vercel` by default");
+    expect(runbook).toContain("node scripts/vercel-ops-readiness.mjs --allow-npx-fallback");
     expect(runbook).toContain("npm run vercel:env");
     expect(runbook).toContain("npm run vercel:env:values");
     expect(runbook).toContain("npm run vercel:env:values:strict");
@@ -1138,6 +1144,7 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("KPI and review loop");
     expect(runbook).toContain("npm run vercel:ops:strict");
     expect(runbook).toContain("npm i -g vercel");
+    expect(runbook).toContain("default `vercel:ops` command does not execute npx");
     expect(runbook).toContain("vercel whoami");
     expect(runbook).toContain("Do not store secrets in this repository");
     expect(read(".gitignore")).toContain("kozbeyli-vercel-production.env");

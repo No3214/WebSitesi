@@ -17,6 +17,10 @@ npm run launch:cutover
 Expected local decision before final cutover is usually `PASS_WITH_WARNINGS`:
 the project link, authenticated Vercel CLI session and repo contracts can pass
 while canonical domain evidence still needs action.
+`vercel:ops` does not execute `npx vercel` by default; install the persistent
+CLI with `npm i -g vercel` so env, deploy and log checks do not depend on a
+one-off package download. For a one-time diagnostic only, run
+`node scripts/vercel-ops-readiness.mjs --allow-npx-fallback`.
 
 `launch:cutover` converts the current 100/100 commercial blockers into an
 operator checklist with owner, timing, missing env keys, redacted evidence files,
@@ -108,7 +112,7 @@ Strict mode fails on warnings. It should only pass when:
 
 - the global Vercel CLI is installed with `npm i -g vercel`;
 - one-off `npx vercel` execution is not treated as an installed, persistent
-  operator CLI;
+  operator CLI, and the default `vercel:ops` command does not execute npx;
 - `vercel whoami` confirms an authenticated operator session for env, deploy
   and log operations;
 - `.vercel/project.json` points at `kozbeyli-konagi`;

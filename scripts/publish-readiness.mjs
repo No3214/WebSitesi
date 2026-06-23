@@ -69,6 +69,7 @@ const requiredFiles = [
   "tests/utils.test.ts",
   "tests/local-preview-verify.test.ts",
   "tests/search-local-seo-readiness.test.ts",
+  "tests/vercel-ops-readiness.test.ts",
   "tests/e2e/health.spec.ts",
   "tests/e2e/publish-routes.spec.ts",
   "tests/production-readiness.test.ts",
