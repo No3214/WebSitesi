@@ -376,7 +376,8 @@ describe("evidence handoff", () => {
       expect.arrayContaining(["npm run domain:verify:strict", "npm run launch:smoke:live"]),
     );
     expect(canonical?.requiredSections).toContain("source_refs: <redacted-source-ids>");
-    expect(canonical?.sourceRefsPolicy).toContain("never raw credentials");
+    expect(canonical?.sourceRefsPolicy).toContain("only redacted source-system IDs");
+    expect(canonical?.sourceRefsPolicy).toContain("never raw URLs");
     expect(canonical?.sourceRefsPolicy).toContain("database URLs");
     expect(canonical?.sourceRefsPolicy).toContain("access tokens");
 

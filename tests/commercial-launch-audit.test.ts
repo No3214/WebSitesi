@@ -585,6 +585,62 @@ describe("commercial launch audit", () => {
     ]);
   });
 
+  it("blocks ready evidence that points source references at raw URLs or files", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const hmsPath = path.join(baseDir, "docs/evidence/hms-booking-engine.md");
+    fs.writeFileSync(
+      hmsPath,
+      fs
+        .readFileSync(hmsPath, "utf8")
+        .replace(
+          /^source_refs:.*$/m,
+          "source_refs: https://private.example.com/hms-uat-screenshot.png",
+        ),
+    );
+
+    const urlResult = audit.evaluateCommercialLaunch({ env, baseDir });
+    const urlGate = urlResult.gateResults.find((gate) => gate.id === "hms_booking_engine");
+
+    expect(urlResult.score).toBeLessThan(100);
+    expect(urlGate?.ready).toBe(false);
+    expect(urlGate?.missingEvidence).toEqual([
+      {
+        path: "docs/evidence/hms-booking-engine.md",
+        ready: false,
+        reason: "unsafe source refs",
+      },
+    ]);
+
+    fs.writeFileSync(
+      hmsPath,
+      fs
+        .readFileSync(hmsPath, "utf8")
+        .replace(
+          /^source_refs:.*$/m,
+          "source_refs: C:\\Users\\operator\\Downloads\\booking-uat.pdf",
+        ),
+    );
+
+    const fileResult = audit.evaluateCommercialLaunch({ env, baseDir });
+    const fileGate = fileResult.gateResults.find((gate) => gate.id === "hms_booking_engine");
+
+    expect(fileGate?.ready).toBe(false);
+    expect(fileGate?.missingEvidence).toEqual([
+      {
+        path: "docs/evidence/hms-booking-engine.md",
+        ready: false,
+        reason: "unsafe source refs",
+      },
+    ]);
+  });
+
   it("blocks ready evidence without a valid date and named owner", async () => {
     const audit = await loadAuditModule();
     const baseDir = makeTmpDir();

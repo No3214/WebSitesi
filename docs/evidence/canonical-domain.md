@@ -3,7 +3,7 @@
 status: ready
 date: 2026-06-22
 owner: launch-qa
-source_refs: npm run domain:verify 2026-06-22; Vercel project kozbeyli-konagi; Isimtescil DNS update 2026-06-22
+source_refs: DOMAIN-VERIFY-20260622, VERCEL-PROJ-KOZBEYLI, DNS-CUTOVER-20260622
 
 ## Summary
 

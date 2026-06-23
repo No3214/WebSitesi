@@ -293,6 +293,13 @@ const envFiles = [".env.production.local", ".env.production", ".env.local", ".en
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
 const requiredReadySections = ["## Summary", "## Proof", "## Residual Risk"];
 const blockedEvidenceFieldPattern = /^(<.*>|replace_with.*|todo|tbd|none|pending|draft)$/i;
+const sourceRefIdPattern = /^(?:[A-Z][A-Z0-9]{1,24}-[A-Z0-9][A-Z0-9_-]{1,40}|[A-Z]{2,16}:[A-Z0-9][A-Z0-9_-]{1,40})$/;
+const unsafeSourceRefPatterns = [
+  /https?:\/\//i,
+  /\b[A-Z]:[\\/]/i,
+  /\.(?:png|jpe?g|webp|gif|pdf|docx?|xlsx?|csv|sql|log|har|zip)\b/i,
+  /\b(?:screenshot|screen\s*shot|ekran\s*g[oö]r[uü]nt[uü]s[uü]|raw\s*log|contract|s[oö]zle[sş]me|invoice|fatura|iban|card|kart|credential|secret|token|password|parola)\b/i,
+];
 
 function parseEnvFile(source) {
   return Object.fromEntries(
@@ -335,6 +342,23 @@ function hasExplicitValue(value) {
 
 function hasValidFallbackUrl(gate) {
   return Boolean(gate.fallbackUrl && /^https:\/\//.test(gate.fallbackUrl));
+}
+
+function sourceRefsIssue(rawValue) {
+  const value = rawValue.trim();
+  if (blockedEvidenceFieldPattern.test(value)) return "missing source refs";
+
+  if (unsafeSourceRefPatterns.some((pattern) => pattern.test(value))) {
+    return "unsafe source refs";
+  }
+
+  const refs = value.split(/[;,]/).map((item) => item.trim()).filter(Boolean);
+  if (refs.length === 0) return "missing source refs";
+  if (refs.some((ref) => !sourceRefIdPattern.test(ref))) {
+    return "unsafe source refs";
+  }
+
+  return "";
 }
 
 function envRequirementState(gate, env) {
@@ -461,8 +485,9 @@ function evidenceState(relPath, baseDir, gate) {
   }
 
   const sourceRefsMatch = content.match(/^source_refs:\s*(.+)$/im);
-  if (!sourceRefsMatch || blockedEvidenceFieldPattern.test(sourceRefsMatch[1].trim())) {
-    return { path: relPath, ready: false, reason: "missing source refs" };
+  const sourceRefsProblem = sourceRefsMatch ? sourceRefsIssue(sourceRefsMatch[1]) : "missing source refs";
+  if (sourceRefsProblem) {
+    return { path: relPath, ready: false, reason: sourceRefsProblem };
   }
 
   const missingSignals = (gate.evidenceSignals || [])

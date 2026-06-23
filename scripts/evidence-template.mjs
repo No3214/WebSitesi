@@ -78,7 +78,7 @@ function buildTemplateMarkdown(template) {
     "status: pending",
     "date: YYYY-MM-DD",
     `owner: ${template.owner}`,
-    "source_refs: <redacted-ticket-id>, <dashboard-reference>, <uat-run-id>",
+    "source_refs: OPS-1234, UAT-5678, VERCEL:ENV-20260623",
     "",
     "## Operational Goal",
     template.operationalGoal,

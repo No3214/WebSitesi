@@ -3,11 +3,12 @@
 This folder is the evidence inbox for the 100/100 commercial go-live gate.
 
 Do not add secrets, database URLs, JWT/access tokens, card data, bank account
-details, customer PII, private contracts, or raw payment credentials. Store
-redacted screenshots, ticket IDs, approval notes, test summaries, and links to
-the source systems. Guest email addresses and phone numbers must stay in the
-source systems; only redacted guest/contact references belong in these evidence
-files. Public Kozbeyli Konağı contact channels are allowlisted for context.
+details, customer PII, private contracts, or raw payment credentials. Keep
+screenshots, PDFs, raw logs, private dashboard URLs and source artifacts in the
+source systems. Store only redacted source-system IDs, approval notes and test
+summaries here. Guest email addresses and phone numbers must stay in the source
+systems; only redacted guest/contact references belong in these evidence files.
+Public Kozbeyli Konağı contact channels are allowlisted for context.
 
 `npm run launch:audit` checks these files together with the relevant production
 environment variables. `npm run launch:audit:json` returns the same result as
@@ -41,14 +42,19 @@ the generated templates. Runtime context is diagnostic only; it never replaces
 source-system references and does not make a pending evidence file ready.
 
 Ready evidence must include redacted source-system references, such as ticket
-IDs, dashboard permalink IDs, approval note IDs, or UAT run IDs. Do not paste
-raw contracts, credentials, database connection strings, access tokens, card
-data, bank account numbers, bank account holder names, customer PII, or private
-guest data into this repository.
+IDs, dashboard reference IDs, approval note IDs, or UAT run IDs. Use uppercase
+opaque IDs like `OPS-1234`, `UAT-5678` or `VERCEL:ENV-20260623`. Do not paste
+raw dashboard URLs, local file paths, screenshot/PDF filenames, raw contracts,
+credentials, database connection strings, access tokens, card data, bank account
+numbers, bank account holder names, customer PII, or private guest data into
+this repository.
 
 The launch audit rejects `ready` evidence that has no `date: YYYY-MM-DD`, no
 named `owner`, or placeholder source references such as `pending`, `todo`,
-`tbd`, `none`, `draft` or `<redacted-source-ids>`.
+`tbd`, `none`, `draft` or `<redacted-source-ids>`. It also rejects ready
+evidence whose `source_refs` contain raw URLs, local file paths, attachment
+filenames, screenshot/PDF/log references or free-form text instead of redacted
+source-system IDs.
 
 Each `ready` file must also mention the gate-specific proof topics in the table
 below. Generic statements such as "validated in the source system" are not
@@ -77,7 +83,7 @@ Use this minimal structure:
 status: ready
 date: YYYY-MM-DD
 owner: <person/team>
-source_refs: <ticket-id>, <dashboard-link-id>, <uat-run-id>
+source_refs: OPS-1234, UAT-5678, VERCEL:ENV-20260623
 
 ## Summary
 
