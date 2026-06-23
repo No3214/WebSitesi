@@ -10,6 +10,7 @@ type CiModule = {
     failedJobs: Array<Record<string, unknown>>;
     annotations: Array<Record<string, unknown>>;
     jobs: Array<Record<string, unknown>>;
+    remediation: string[];
   };
   parseGithubRepoFromRemote: (remoteUrl: string) => string;
 };
@@ -52,6 +53,7 @@ describe("github ci readiness", () => {
 
     expect(result.decision).toBe("GITHUB CI PASS");
     expect(result.blockers).toEqual([]);
+    expect(result.remediation).toEqual([]);
     expect(result.jobs[0]?.stepsAvailable).toBe(true);
   });
 
@@ -78,6 +80,8 @@ describe("github ci readiness", () => {
 
     expect(result.decision).toBe("GITHUB CI ACCOUNT BLOCKED");
     expect(result.blockers.join("\n")).toContain("billing/spending limit blocked CI");
+    expect(result.remediation.join("\n")).toContain("Billing and plans");
+    expect(result.remediation.join("\n")).toContain("npm run github:ci:strict");
     expect(result.annotations[0]?.path).toBe(".github");
   });
 
@@ -96,6 +100,7 @@ describe("github ci readiness", () => {
     expect(result.failedJobs).toHaveLength(1);
     expect(result.blockers.join("\n")).toContain("failed before any workflow steps ran");
     expect(result.blockers.join("\n")).toContain("did not receive a runner assignment");
+    expect(result.remediation.join("\n")).toContain("account/runner startup blocker");
   });
 
   it("keeps queued and in-progress runs distinct from failures", async () => {
@@ -111,6 +116,7 @@ describe("github ci readiness", () => {
 
     expect(result.decision).toBe("GITHUB CI PENDING");
     expect(result.blockers).toEqual([]);
+    expect(result.remediation).toEqual([]);
   });
 
   it("reports inventory unavailability without pretending CI passed", async () => {
@@ -124,6 +130,7 @@ describe("github ci readiness", () => {
 
     expect(result.decision).toBe("GITHUB CI INVENTORY UNAVAILABLE");
     expect(result.blockers.join("\n")).toContain("GitHub CLI inventory is unavailable");
+    expect(result.remediation.join("\n")).toContain("gh auth login");
   });
 
   it("parses GitHub repository names from common remote URLs", async () => {

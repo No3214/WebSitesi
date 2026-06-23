@@ -7,6 +7,16 @@ const BILLING_BLOCKER_PATTERN =
   /recent account payments have failed|spending limit needs to be increased|Billing & plans/i;
 const PENDING_STATUSES = new Set(["queued", "in_progress", "waiting", "requested", "pending"]);
 const FAILED_CONCLUSIONS = new Set(["failure", "timed_out", "cancelled", "action_required", "startup_failure"]);
+const BILLING_REMEDIATIONS = [
+  "Open GitHub Settings > Billing and plans for the account or organization that owns this repository.",
+  "Resolve failed payments or increase the GitHub Actions spending limit, then rerun the failed workflow.",
+  "After a new run completes, run npm run github:ci:strict to confirm CI is green.",
+];
+const STARTUP_REMEDIATIONS = [
+  "Inspect the GitHub Actions run summary for account, runner or hosted-capacity messages.",
+  "If no workflow steps ran, resolve the account/runner startup blocker before debugging repository code.",
+  "After GitHub starts assigning a runner, rerun npm run github:ci:strict and the local release gates.",
+];
 
 function argValue(name) {
   const index = process.argv.indexOf(name);
@@ -184,6 +194,9 @@ export function evaluateGithubCiReadiness({
       blockers: [
         "GitHub CLI inventory is unavailable; install/authenticate gh and run npm run github:ci.",
       ],
+      remediation: [
+        "Install/authenticate the GitHub CLI with gh auth login, then rerun npm run github:ci.",
+      ],
       errors,
     };
   }
@@ -204,6 +217,7 @@ export function evaluateGithubCiReadiness({
       failedJobs: [],
       annotations: [],
       blockers: [`No GitHub Actions runs were found for ${repo}@${branch}.`],
+      remediation: ["Push a commit or manually start the CI workflow, then rerun npm run github:ci."],
       errors,
     };
   }
@@ -235,6 +249,7 @@ export function evaluateGithubCiReadiness({
 
   let decision = "GITHUB CI FAILED";
   const blockers = [];
+  const remediation = [];
 
   if (PENDING_STATUSES.has(run.status)) {
     decision = "GITHUB CI PENDING";
@@ -250,6 +265,7 @@ export function evaluateGithubCiReadiness({
         ),
       ),
     );
+    remediation.push(...BILLING_REMEDIATIONS);
   } else if (run.conclusion && FAILED_CONCLUSIONS.has(run.conclusion)) {
     blockers.push(`GitHub Actions run concluded ${run.conclusion}.`);
   }
@@ -263,6 +279,10 @@ export function evaluateGithubCiReadiness({
     }
     for (const annotation of annotations) {
       blockers.push(`${annotation.jobName || annotation.jobId}: ${annotation.message}`);
+    }
+
+    if (emptyStepFailures.length > 0 || noRunnerFailures.length > 0) {
+      remediation.push(...STARTUP_REMEDIATIONS);
     }
   }
 
@@ -281,6 +301,7 @@ export function evaluateGithubCiReadiness({
     failedJobs,
     annotations,
     blockers: [...new Set(blockers)],
+    remediation: [...new Set(remediation)],
     errors,
   };
 }
@@ -317,6 +338,12 @@ export function formatGithubCiReadiness(result) {
     lines.push("");
     lines.push("Blockers:");
     result.blockers.forEach((blocker) => lines.push(`- ${blocker}`));
+  }
+
+  if (result.remediation.length > 0) {
+    lines.push("");
+    lines.push("Remediation:");
+    result.remediation.forEach((item) => lines.push(`- ${item}`));
   }
 
   if (result.errors.length > 0) {

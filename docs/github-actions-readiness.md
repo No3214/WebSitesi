@@ -13,7 +13,7 @@ npm run github:ci:strict
 ```
 
 - `github:ci` prints a human-readable diagnosis.
-- `github:ci:json` prints machine-readable run, job and annotation data.
+- `github:ci:json` prints machine-readable run, job, annotation and remediation data.
 - `github:ci:strict` exits non-zero unless the selected GitHub Actions run passed.
 
 ## Current Known External Blocker
@@ -25,6 +25,9 @@ The job was not started because recent account payments have failed or your spen
 ```
 
 This is an account billing or spending-limit blocker, not a repository build failure.
+The JSON output includes a `remediation` array so dashboards and handoff notes can
+separate "what happened" from "what the account owner must do next" without
+parsing free-form blocker text.
 
 ## Recovery
 
