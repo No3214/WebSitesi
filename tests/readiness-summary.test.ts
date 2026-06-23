@@ -1,0 +1,171 @@
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+
+import { describe, expect, it } from "vitest";
+
+type ReadinessSummaryModule = {
+  buildReadinessSummary: (input: Record<string, unknown>) => {
+    decision: string;
+    launch: {
+      score: number;
+      target: number;
+      blockedGates: Array<{ id: string; pointsBlocked: number }>;
+      runtimeReadiness?: { status: string; blockedGates: string[] };
+    };
+    domain: { origins: Array<{ origin: string; openingHeroVideo: boolean }> };
+    github: { decision: string; headShaMatches: boolean };
+    nextActions: string[];
+    finalVerificationCommands: string[];
+  };
+  formatReadinessSummary: (summary: Record<string, unknown>) => string;
+};
+
+async function loadReadinessSummaryModule() {
+  return (await import(
+    pathToFileURL(path.join(process.cwd(), "scripts/readiness-summary.mjs")).href
+  )) as ReadinessSummaryModule;
+}
+
+const domainResult = {
+  decision: "CANONICAL DOMAIN GO",
+  expectedCommit: "16dd4f9aea45cdeafe6a04fe8b6673caac754d9a",
+  canonicalReady: true,
+  brandReady: true,
+  previewReady: true,
+  dnsReady: true,
+  canonical: [
+    {
+      origin: "https://www.kozbeylikonagi.com",
+      ready: true,
+      health: { status: 200, deploymentCommit: "16dd4f9aea45cdeafe6a04fe8b6673caac754d9a" },
+      home: { status: 200, hasOpeningHeroVideo: true },
+    },
+  ],
+  brand: [],
+  blockers: [],
+  warnings: [],
+};
+
+const launchResult = {
+  score: 82,
+  target: 100,
+  decision: "NO-GO for full booking/payment launch",
+  runtimeReadiness: {
+    source: "https://www.kozbeylikonagi.com/api/health",
+    status: "blocked",
+    ready: false,
+    configuredGates: ["canonical_domain", "production_database", "hms_booking_engine"],
+    blockedGates: ["production_abuse_controls", "garanti_pos", "analytics_purchase"],
+  },
+  gateResults: [
+    {
+      id: "canonical_domain",
+      label: "Canonical domain",
+      ready: true,
+      points: 3,
+      awardedPoints: 3,
+      missingEvidence: [],
+      missingEnv: [],
+    },
+    {
+      id: "analytics_purchase",
+      label: "Analytics purchase evidence",
+      ready: false,
+      points: 3,
+      awardedPoints: 0,
+      missingEvidence: [{ path: "docs/evidence/analytics-purchase.md" }],
+      missingEnv: ["GA4_API_SECRET"],
+      missingEnvCount: 1,
+    },
+  ],
+};
+
+const githubCiResult = {
+  decision: "GITHUB CI ACCOUNT BLOCKED",
+  repo: "No3214/WebSitesi",
+  branch: "main",
+  runId: "28050981940",
+  runUrl: "https://github.com/No3214/WebSitesi/actions/runs/28050981940",
+  status: "completed",
+  conclusion: "failure",
+  workflowName: "CI",
+  headSha: "16dd4f9aea45cdeafe6a04fe8b6673caac754d9a",
+  expectedHeadSha: "16dd4f9aea45cdeafe6a04fe8b6673caac754d9a",
+  headShaMatches: true,
+  failedJobs: [{}],
+  blockers: [
+    "GitHub account billing/spending limit blocked CI: The job was not started because recent account payments have failed or your spending limit needs to be increased.",
+  ],
+  remediation: ["Resolve Billing and plans, then rerun npm run github:ci:strict."],
+  errors: [],
+};
+
+const vercelOpsResult = {
+  decision: "PASS",
+  installCommand: "npm i -g vercel",
+  checks: [{ id: "vercel_auth", status: "pass", detail: "Vercel CLI authenticated as no3214." }],
+  failures: [],
+  warnings: [],
+};
+
+const adminSurfaceResult = {
+  decision: "ADMIN SURFACE READY",
+  live: {
+    target: "https://www.kozbeylikonagi.com/admin/growth",
+    status: 307,
+    location: "/admin/login",
+  },
+  blockers: [],
+};
+
+describe("readiness summary", () => {
+  it("summarizes live publish state without pretending commercial launch is complete", async () => {
+    const { buildReadinessSummary } = await loadReadinessSummaryModule();
+
+    const result = buildReadinessSummary({
+      generatedAt: "2026-06-23T00:00:00.000Z",
+      domainResult,
+      launchResult,
+      githubCiResult,
+      vercelOpsResult,
+      adminSurfaceResult,
+    });
+
+    expect(result.decision).toBe("PUBLIC SITE LIVE; FULL COMMERCIAL LAUNCH BLOCKED");
+    expect(result.launch.score).toBe(82);
+    expect(result.launch.blockedGates.map((gate) => gate.id)).toEqual(["analytics_purchase"]);
+    expect(result.launch.blockedGates[0]?.pointsBlocked).toBe(3);
+    expect(result.launch.runtimeReadiness?.blockedGates).toContain("garanti_pos");
+    expect(result.domain.origins[0]?.openingHeroVideo).toBe(true);
+    expect(result.github.decision).toBe("GITHUB CI ACCOUNT BLOCKED");
+    expect(result.github.headShaMatches).toBe(true);
+    expect(result.nextActions.join("\n")).toContain("Billing & plans");
+    expect(result.nextActions.join("\n")).toContain("launch:audit:live:strict");
+    expect(result.finalVerificationCommands).toContain("npm run readiness:summary:json");
+  });
+
+  it("formats a concise operator report with the decisive blockers", async () => {
+    const { buildReadinessSummary, formatReadinessSummary } = await loadReadinessSummaryModule();
+    const summary = buildReadinessSummary({
+      generatedAt: "2026-06-23T00:00:00.000Z",
+      domainResult,
+      launchResult,
+      githubCiResult,
+      vercelOpsResult,
+      adminSurfaceResult,
+    });
+
+    const report = formatReadinessSummary(summary);
+
+    expect(report).toContain("Kozbeyli Konagi readiness summary");
+    expect(report).toContain("Commercial launch score: 82/100");
+    expect(report).toContain("heroVideo=yes");
+    expect(report).toContain("GitHub CI: GITHUB CI ACCOUNT BLOCKED; headShaMatches=yes");
+    expect(report).toContain("Vercel ops: PASS");
+    expect(report).toContain("Admin surface: ADMIN SURFACE READY");
+    expect(report).toContain("analytics_purchase");
+    expect(report).not.toContain("SUPABASE_SERVICE_ROLE_KEY=");
+    expect(report).not.toContain("GARANTI_3D_STORE_KEY=");
+    expect(report).not.toContain("GA4_API_SECRET=");
+  });
+});

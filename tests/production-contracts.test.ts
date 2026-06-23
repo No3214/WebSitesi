@@ -241,6 +241,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"github:ci"');
     expect(readinessScript).toContain('"github:ci:json"');
     expect(readinessScript).toContain('"github:ci:strict"');
+    expect(readinessScript).toContain('"readiness:summary"');
+    expect(readinessScript).toContain('"readiness:summary:json"');
+    expect(readinessScript).toContain('"readiness:summary:strict"');
     expect(readinessScript).toContain('"launch:smoke"');
     expect(readinessScript).toContain('"launch:smoke:preview"');
     expect(readinessScript).toContain('"launch:smoke:live"');
@@ -402,6 +405,23 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["github:ci:strict"]).toBe(
       "node scripts/github-ci-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["readiness:summary"]).toBe("node scripts/readiness-summary.mjs");
+    expect(packageJson.scripts?.["readiness:summary:json"]).toBe(
+      "node scripts/readiness-summary.mjs --json",
+    );
+    expect(packageJson.scripts?.["readiness:summary:strict"]).toBe(
+      "node scripts/readiness-summary.mjs --strict",
+    );
+    const readinessSummary = read("scripts/readiness-summary.mjs");
+    expect(readinessSummary).toContain("collectReadinessSummary");
+    expect(readinessSummary).toContain("evaluateDomainReadiness");
+    expect(readinessSummary).toContain("evaluateCommercialLaunch");
+    expect(readinessSummary).toContain("collectGithubCiReadiness");
+    expect(readinessSummary).toContain("evaluateVercelOpsReadiness");
+    expect(readinessSummary).toContain("evaluateAdminSurfaceReadiness");
+    expect(readinessSummary).toContain("PUBLIC SITE LIVE; FULL COMMERCIAL LAUNCH BLOCKED");
+    expect(readinessSummary).toContain("GITHUB CI ACCOUNT BLOCKED");
+    expect(readinessSummary).toContain("openingHeroVideo");
     const githubCi = read("scripts/github-ci-readiness.mjs");
     const githubCiRunbook = read("docs/github-actions-readiness.md");
     expect(githubCi).toContain("GITHUB CI STALE");
@@ -454,6 +474,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/vercel-env-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/github-ci-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/local-preview-verify.mjs"');
+    expect(readinessScript).toContain('"scripts/readiness-summary.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
     expect(readinessScript).toContain("commercial launch progress notes");
     expect(readinessScript).toContain("live validation lane");
