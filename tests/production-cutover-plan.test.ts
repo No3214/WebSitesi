@@ -66,6 +66,8 @@ type CutoverModule = {
     vercelOpsResult?: {
       decision: string;
       warnings: Array<{ id: string; detail: string; remediation?: string }>;
+      checks?: Array<{ id: string; status: string; detail: string; remediation?: string }>;
+      failures?: Array<{ id: string; detail: string; remediation?: string }>;
     };
   }) => {
     decision: string;
@@ -503,6 +505,39 @@ describe("production cutover plan", () => {
     expect(serialized).toContain("GA4_API_SECRET");
   });
 
+  it("skips Vercel bootstrap commands when CLI, auth and project binding are already ready", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const launchResult = audit.evaluateCommercialLaunch({ env: {}, baseDir: makeTmpDir() });
+
+    const plan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: {
+        decision: "PASS",
+        warnings: [],
+        checks: [
+          { id: "global_vercel_cli", status: "pass", detail: "Vercel CLI available." },
+          { id: "vercel_auth", status: "pass", detail: "Authenticated." },
+          { id: "project_binding", status: "pass", detail: "Linked." },
+        ],
+      },
+    });
+    const canonical = plan.gateSteps.find((step) => step.id === "canonical_domain");
+    const database = plan.gateSteps.find((step) => step.id === "production_database");
+    const hms = plan.gateSteps.find((step) => step.id === "hms_booking_engine");
+
+    for (const step of [canonical, database, hms]) {
+      expect(step?.commands).not.toContain("npm i -g vercel");
+      expect(step?.commands).not.toContain("vercel login");
+      expect(step?.commands).not.toContain("vercel whoami");
+    }
+    expect(canonical?.checklist).not.toContain("Install and authenticate Vercel CLI if it is missing.");
+    expect(canonical?.commands[0]).toBe("vercel env pull");
+    expect(database?.commands[0]).toBe("vercel env add DATABASE_URI production");
+    expect(hms?.commands[0]).toBe("npm run hms:verify:strict");
+    expect(plan.vercelCliInstallCommand).toBe("npm i -g vercel");
+  });
+
   it("asks for HMS env repair only when an explicit override is invalid", async () => {
     const audit = await loadAuditModule();
     const cutover = await loadCutoverModule();
@@ -532,7 +567,9 @@ describe("production cutover plan", () => {
     expect(hms?.checklist[0]).toBe(
       "Fix NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL in Vercel production so it is the approved HTTPS HMS URL, or remove the bad override to use the official code fallback.",
     );
-    expect(hms?.commands).toEqual(expect.arrayContaining(["vercel login", "vercel whoami"]));
+    expect(hms?.commands).not.toContain("npm i -g vercel");
+    expect(hms?.commands).not.toContain("vercel login");
+    expect(hms?.commands).not.toContain("vercel whoami");
     expect(hms?.commands).toContain("vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production");
   });
 

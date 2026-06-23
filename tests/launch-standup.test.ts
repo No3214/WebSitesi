@@ -57,6 +57,8 @@ type CutoverModule = {
     vercelOpsResult?: {
       decision: string;
       warnings: Array<{ id: string; detail: string; remediation?: string }>;
+      checks?: Array<{ id: string; status: string; detail: string; remediation?: string }>;
+      failures?: Array<{ id: string; detail: string; remediation?: string }>;
     };
   }) => {
     currentScore: number;
@@ -385,7 +387,8 @@ describe("launch standup", () => {
       owner: "Vercel/DNS operator",
       pointsBlocked: 2,
     });
-    expect(result.nextGate?.nextAction).toContain("Install and authenticate Vercel CLI");
+    expect(result.nextGate?.nextAction).toContain("Attach kozbeylikonagi.com");
+    expect(result.nextGate?.nextCommand).toBe("vercel env pull");
     expect(result.nextGate?.verificationCommand).toBe("npm run launch:smoke:live");
     expect(result.lanes.envBlockedGates).toContain("canonical_domain");
     expect(result.lanes.evidenceBlockedGates).toContain("hms_booking_engine");
@@ -394,7 +397,7 @@ describe("launch standup", () => {
     const revenue = result.ownerQueues.find((queue) => queue.owner === "Revenue / booking operator");
     expect(revenue).toMatchObject({
       totalBlockedPoints: 4,
-      nextCommand: "npm i -g vercel",
+      nextCommand: "npm run hms:verify:strict",
     });
     expect(revenue?.gates[0]).toMatchObject({
       id: "hms_booking_engine",

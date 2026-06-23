@@ -12,6 +12,7 @@ const VERCEL_INSTALL_COMMAND = "npm i -g vercel";
 const VERCEL_LOGIN_COMMAND = "vercel login";
 const VERCEL_AUTH_CHECK_COMMAND = "vercel whoami";
 const VERCEL_AUTH_COMMANDS = [VERCEL_INSTALL_COMMAND, VERCEL_LOGIN_COMMAND, VERCEL_AUTH_CHECK_COMMAND];
+const VERCEL_BOOTSTRAP_COMMANDS = new Set(VERCEL_AUTH_COMMANDS);
 
 function buildDnsTargetRecords() {
   return VERCEL_TARGET_RECORDS.map((record) => ({
@@ -269,7 +270,40 @@ function hasEnvIssue(gate, envKey) {
   return gate.missingEnv.some((item) => item.startsWith(envKey));
 }
 
-function resolveGateChecklist(gate, catalog) {
+function getVercelIssue(vercelOpsResult, id) {
+  const checks = Array.isArray(vercelOpsResult?.checks) ? vercelOpsResult.checks : [];
+  const findings = [
+    ...checks.filter((check) => check.status && check.status !== "pass"),
+    ...(vercelOpsResult?.warnings || []),
+    ...(vercelOpsResult?.failures || []),
+  ];
+
+  return findings.find((item) => item.id === id);
+}
+
+function resolveVercelBootstrap(vercelOpsResult) {
+  const needsInstall = Boolean(getVercelIssue(vercelOpsResult, "global_vercel_cli"));
+
+  return {
+    needsInstall,
+    needsAuth: Boolean(
+      needsInstall ||
+      getVercelIssue(vercelOpsResult, "vercel_auth") ||
+        getVercelIssue(vercelOpsResult, "project_binding")
+    ),
+  };
+}
+
+function filterVercelBootstrapCommands(commands, bootstrap) {
+  return commands.filter((command) => {
+    if (!VERCEL_BOOTSTRAP_COMMANDS.has(command)) return true;
+    if (command === VERCEL_INSTALL_COMMAND) return bootstrap.needsInstall;
+
+    return bootstrap.needsAuth;
+  });
+}
+
+function resolveGateChecklist(gate, catalog, bootstrap) {
   const redactionCategories = unique(
     (gate.missingEvidence || []).flatMap((evidence) => evidence.redactionCategories || []),
   );
@@ -280,34 +314,39 @@ function resolveGateChecklist(gate, catalog) {
         ]
       : [];
 
-  if (gate.id !== "hms_booking_engine") return [...redactionChecklist, ...catalog.actions];
+  const actions =
+    gate.id === "canonical_domain" && !bootstrap.needsInstall && !bootstrap.needsAuth
+      ? catalog.actions.filter((action) => action !== "Install and authenticate Vercel CLI if it is missing.")
+      : catalog.actions;
+
+  if (gate.id !== "hms_booking_engine") return [...redactionChecklist, ...actions];
 
   if (!hasEnvIssue(gate, "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL")) {
-    return [...redactionChecklist, ...catalog.actions];
+    return [...redactionChecklist, ...actions];
   }
 
   return [
     "Fix NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL in Vercel production so it is the approved HTTPS HMS URL, or remove the bad override to use the official code fallback.",
     ...redactionChecklist,
-    ...catalog.actions,
+    ...actions,
   ];
 }
 
-function resolveGateCommands(gate, catalog) {
-  if (gate.id !== "hms_booking_engine") return catalog.commands;
+function resolveGateCommands(gate, catalog, bootstrap) {
+  if (gate.id !== "hms_booking_engine") return filterVercelBootstrapCommands(catalog.commands, bootstrap);
 
   if (!hasEnvIssue(gate, "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL")) {
-    return catalog.commands;
+    return filterVercelBootstrapCommands(catalog.commands, bootstrap);
   }
 
-  return [
+  return filterVercelBootstrapCommands([
     ...VERCEL_AUTH_COMMANDS,
     "vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production",
     ...catalog.commands.filter((command) => command !== VERCEL_INSTALL_COMMAND),
-  ];
+  ], bootstrap);
 }
 
-function buildGateStep(gate) {
+function buildGateStep(gate, vercelOpsResult) {
   const catalog = gateActionCatalog[gate.id] || {
     owner: "Launch operator",
     timing: "Before full launch",
@@ -319,6 +358,7 @@ function buildGateStep(gate) {
     kpi: "Gate passes in npm run launch:audit.",
   };
   const runtimeDiagnostics = normalizeRuntimeDiagnostics(gate.runtimeConfiguration);
+  const vercelBootstrap = resolveVercelBootstrap(vercelOpsResult);
 
   return {
     id: gate.id,
@@ -340,8 +380,8 @@ function buildGateStep(gate) {
     missingEnv: gate.missingEnv,
     missingEvidence: normalizeMissingEvidence(gate.missingEvidence),
     diagnostics: catalog.diagnostics || [],
-    checklist: resolveGateChecklist(gate, catalog),
-    commands: resolveGateCommands(gate, catalog),
+    checklist: resolveGateChecklist(gate, catalog, vercelBootstrap),
+    commands: resolveGateCommands(gate, catalog, vercelBootstrap),
     dnsTargetNote: catalog.dnsTargetNote || "",
     dnsTargetRecords: catalog.dnsTargetRecords || [],
     evidence: unique([...(gate.evidence || []), ...(catalog.evidence || [])]),
@@ -370,7 +410,7 @@ export function buildProductionCutoverPlan({
       remediation: warning.remediation || "",
     })),
     nextGateOrder: blockedGates.map((gate) => gate.id),
-    gateSteps: blockedGates.map(buildGateStep),
+    gateSteps: blockedGates.map((gate) => buildGateStep(gate, vercelOpsResult)),
     finalVerificationCommands: [
       "npm run vercel:ops:strict",
       "npm run vercel:env:strict",
