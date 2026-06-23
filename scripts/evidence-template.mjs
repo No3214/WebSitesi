@@ -70,11 +70,16 @@ function checkboxList(items) {
   return items.length > 0 ? items.map((item) => `- [ ] ${item}`).join("\n") : "- [ ] Redacted source-system proof";
 }
 
-function commandListForTemplate(commands, envSetup) {
+function commandListForTemplate(commands, envSetup, runtimeStatus) {
+  const nonMutatingCommands = commands.filter((command) => !command.startsWith("vercel env add "));
+
+  if (runtimeStatus?.ready) {
+    return [...new Set([...nonMutatingCommands, "npm run evidence:handoff:live", "npm run launch:audit:live"])];
+  }
+
   if (!envSetup) return commands;
 
-  const verificationCommands = commands.filter((command) => !command.startsWith("vercel env add "));
-  return [...new Set([...envSetup.cliCommands, ...verificationCommands])];
+  return [...new Set([...envSetup.cliCommands, ...nonMutatingCommands])];
 }
 
 function envSetupMarkdown(envSetup) {
@@ -153,7 +158,6 @@ function buildTemplate({ gate, catalogGate, evidence, step }) {
   const checklist = [...(step?.checklist || ["Resolve this commercial launch gate with redacted source-system proof."])];
   const commands = [...(step?.commands || ["npm run launch:audit"])];
   const envSetup = buildVercelEnvSetupGuidance(gate.missingEnv || [], commands);
-  const templateCommands = commandListForTemplate(commands, envSetup);
   const runtimeStatus = gate.runtimeConfiguration
     ? {
         source: gate.runtimeConfiguration.source,
@@ -167,6 +171,7 @@ function buildTemplate({ gate, catalogGate, evidence, step }) {
         fallbackApplied: Boolean(gate.runtimeConfiguration.fallbackApplied),
       }
     : undefined;
+  const templateCommands = commandListForTemplate(commands, envSetup, runtimeStatus);
   const runtimeStatusText = runtimeStatus
     ? `${runtimeStatus.source}: ${runtimeStatus.ready ? "ready" : "blocked"} (${runtimeStatus.configurationSource}, ${runtimeStatus.configuredCount}/${runtimeStatus.requiredCount} configured, ${runtimeStatus.missingCount} missing, ${runtimeStatus.invalidCount} invalid, ${runtimeStatus.placeholderCount} placeholder, fallback=${runtimeStatus.fallbackApplied ? "yes" : "no"})`
     : "Not checked in this template run. Use --live-runtime or --runtime-health-url to add production runtime context.";

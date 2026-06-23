@@ -155,6 +155,50 @@ function makeRuntimeReadinessFixture() {
   };
 }
 
+function makeRuntimeReadyEvidenceFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["production_database", "hms_booking_engine"],
+    blockedGates: ["production_abuse_controls"],
+    checks: [
+      {
+        id: "production_database",
+        ready: true,
+        requiredCount: 2,
+        configuredCount: 2,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+      {
+        id: "hms_booking_engine",
+        ready: true,
+        requiredCount: 1,
+        configuredCount: 1,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+      {
+        id: "production_abuse_controls",
+        ready: false,
+        requiredCount: 4,
+        configuredCount: 0,
+        missingCount: 4,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "missing",
+      },
+    ],
+  };
+}
+
 describe("evidence templates", () => {
   it("builds safe pending templates for every blocked commercial evidence file", async () => {
     const audit = await loadAuditModule();
@@ -250,6 +294,45 @@ describe("evidence templates", () => {
     expect(formatted).toContain("## Runtime Status");
     expect(formatted).toContain("Production runtime reports this gate configured");
     expect(formatted).not.toContain("postgresql://");
+  });
+
+  it("does not ask operators to re-add env values when runtime-ready gates only need evidence", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const templates = await loadTemplateModule();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir: makeTmpDir(),
+      runtimeReadiness: makeRuntimeReadyEvidenceFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+
+    const result = templates.buildEvidenceTemplates({
+      launchResult,
+      cutoverPlan,
+      gateId: "production_database",
+    });
+    const database = result.templates[0];
+    const serialized = JSON.stringify(result);
+    const formatted = templates.formatEvidenceTemplates(result);
+
+    expect(result.templates).toHaveLength(1);
+    expect(database.runtimeStatusText).toContain("https://www.kozbeylikonagi.com/api/health: ready");
+    expect(database.runtimeAction).toContain("Production runtime reports this gate configured");
+    expect(database.commands).toEqual(
+      expect.arrayContaining(["npm run evidence:handoff:live", "npm run launch:audit:live"]),
+    );
+    expect(database.commands).not.toContain("vercel env add DATABASE_URI production");
+    expect(database.commands).not.toContain("vercel env add PAYLOAD_SECRET production");
+    expect(serialized).not.toContain("vercel env add DATABASE_URI production");
+    expect(serialized).not.toContain("vercel env add PAYLOAD_SECRET production");
+    expect(formatted).toContain("Production runtime reports this gate configured");
+    expect(formatted).toContain("npm run evidence:handoff:live");
+    expect(formatted).not.toContain("vercel env add DATABASE_URI production");
   });
 
   it("narrows partial analytics environment guidance to the actual missing secret", async () => {

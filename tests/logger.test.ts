@@ -10,8 +10,13 @@ describe("logger helpers", () => {
   it("masks IP addresses and unknown identifiers before logging", () => {
     expect(maskIp("192.168.1.100")).toBe("192.168.1.x");
     expect(maskIp("2001:db8::abcd")).toBe("2001:db8::x");
+    expect(maskIp("2001:0db8:85a3:0000:0000:8a2e:0370:7334")).toBe(
+      "2001:0db8:85a3:0000:0000:8a2e:0370:x",
+    );
     expect(maskIp("unknown-client")).toBe("unknow…");
     expect(maskIp(null)).toBe("unknown");
+    expect(maskIp(undefined)).toBe("unknown");
+    expect(maskIp("")).toBe("unknown");
   });
 
   it("masks free-form PII text consistently", () => {
