@@ -111,6 +111,13 @@ type LaunchStandupModule = {
     currentScore: number;
     targetScore: number;
     blockedPoints: number;
+    toolingPrerequisites: {
+      vercelOpsDecision: string;
+      cliInstallCommand: string;
+      requiredFor: string[];
+      warnings: Array<{ id: string; detail: string; remediation: string }>;
+      nextCommand: string;
+    };
     nextGate: null | {
       id: string;
       owner: string;
@@ -436,6 +443,15 @@ describe("launch standup", () => {
     expect(result.decision).toBe("LAUNCH_STANDUP_ACTION_REQUIRED");
     expect(result.currentScore).toBe(80);
     expect(result.blockedPoints).toBe(20);
+    expect(result.toolingPrerequisites).toMatchObject({
+      vercelOpsDecision: "PASS",
+      cliInstallCommand: "npm i -g vercel",
+      nextCommand: "npm run vercel:ops",
+      warnings: [],
+    });
+    expect(result.toolingPrerequisites.requiredFor).toEqual(
+      expect.arrayContaining(["vercel env pull", "vercel deploy", "vercel logs"]),
+    );
     expect(result.nextGate).toMatchObject({
       id: "canonical_domain",
       owner: "Vercel/DNS operator",
@@ -480,12 +496,60 @@ describe("launch standup", () => {
 
     const formatted = standup.formatLaunchStandup(result);
     expect(formatted).toContain("Kozbeyli Konagi launch standup");
+    expect(formatted).toContain("Vercel ops: PASS");
+    expect(formatted).toContain("Vercel CLI install: npm i -g vercel");
     expect(formatted).toContain("Owner queues:");
     expect(formatted).toContain("code-covered evidence-only");
     expect(formatted).toContain("env setup: Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables");
     expect(formatted).toContain("cli fallback: npm i -g vercel; vercel login; vercel whoami");
     expect(formatted).toContain("required proof: current health and commit proof");
     expect(formatted).toContain("Final verification commands:");
+  });
+
+  it("surfaces Vercel CLI bootstrap before production env edits when ops tooling is not ready", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const standup = await loadStandupModule();
+    const launchResult = audit.evaluateCommercialLaunch({ env: {}, baseDir: makeTmpDir() });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: {
+        decision: "PASS_WITH_WARNINGS",
+        warnings: [
+          {
+            id: "global_vercel_cli",
+            detail: "Global Vercel CLI is not available on PATH.",
+            remediation:
+              "npm i -g vercel is required for reliable vercel env pull, vercel deploy and vercel logs operations.",
+          },
+        ],
+      },
+    });
+
+    const result = standup.buildLaunchStandup({ launchResult, cutoverPlan });
+    const formatted = standup.formatLaunchStandup(result);
+
+    expect(result.toolingPrerequisites).toMatchObject({
+      vercelOpsDecision: "PASS_WITH_WARNINGS",
+      cliInstallCommand: "npm i -g vercel",
+      nextCommand: "npm i -g vercel",
+      warnings: [
+        {
+          id: "global_vercel_cli",
+          detail: "Global Vercel CLI is not available on PATH.",
+          remediation:
+            "npm i -g vercel is required for reliable vercel env pull, vercel deploy and vercel logs operations.",
+        },
+      ],
+    });
+    expect(result.toolingPrerequisites.requiredFor).toEqual(
+      expect.arrayContaining(["vercel env pull", "vercel deploy", "vercel logs", "production env edits"]),
+    );
+    expect(result.nextGate?.nextCommand).toBe("npm i -g vercel");
+    expect(formatted).toContain("Tooling prerequisites:");
+    expect(formatted).toContain("next command: npm i -g vercel");
+    expect(formatted).toContain("required for: vercel env pull, vercel deploy, vercel logs, production env edits");
+    expect(formatted).toContain("global_vercel_cli: Global Vercel CLI is not available on PATH.");
   });
 
   it("does not leak secret env values into JSON or formatted output", async () => {

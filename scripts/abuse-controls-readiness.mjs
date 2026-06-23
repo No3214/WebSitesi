@@ -276,8 +276,14 @@ function main() {
   const fromProcessEnv = process.argv.includes("--from-process-env");
   const envFileArgIndex = process.argv.indexOf("--env-file");
   const envFile = envFileArgIndex >= 0 ? process.argv[envFileArgIndex + 1] : "";
-  const env = envFile ? loadEnvFileSnapshot(envFile) : fromProcessEnv ? loadProcessEnvSnapshot() : loadEnvSnapshot();
-  const result = evaluateAbuseControlsReadiness({ env });
+  const baseDirArgIndex = process.argv.indexOf("--base-dir");
+  const baseDir = baseDirArgIndex >= 0 ? process.argv[baseDirArgIndex + 1] || root : root;
+  const env = envFile
+    ? loadEnvFileSnapshot(envFile, loadEnvSnapshot(baseDir))
+    : fromProcessEnv
+      ? loadProcessEnvSnapshot()
+      : loadEnvSnapshot(baseDir);
+  const result = evaluateAbuseControlsReadiness({ env, baseDir });
 
   console.log(json ? JSON.stringify(result, null, 2) : formatAbuseControlsReadiness(result));
   process.exitCode = strict && result.decision !== "PRODUCTION ABUSE CONTROLS PASS" ? 1 : 0;

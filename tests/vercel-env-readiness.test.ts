@@ -157,7 +157,7 @@ describe("Vercel production env readiness", () => {
     expect(result.valueValidation).toBe("not_performed");
     expect(result.valueValidationHelp).toMatchObject({
       status: "not_performed",
-      recommendedNoDiskCommand: "vercel env run -e production -- npm run vercel:env -- --from-process-env",
+      recommendedNoDiskCommand: "npm run vercel:env:values",
       temporaryFilePullCommand:
         "vercel env pull %TEMP%\\kozbeyli-vercel-production.env --environment=production",
       temporaryFileVerifyCommand:
@@ -180,8 +180,7 @@ describe("Vercel production env readiness", () => {
       ready: false,
       configuredEnv: ["DATABASE_URI", "PAYLOAD_SECRET"],
       valueValidationKeys: ["DATABASE_URI"],
-      valueValidationCommand:
-        "vercel env run -e production -- npm run supabase:verify:strict -- --from-process-env",
+      valueValidationCommand: "npm run vercel:supabase:verify",
     });
     expect(result.blockers).toEqual(
       expect.arrayContaining([
@@ -199,7 +198,7 @@ describe("Vercel production env readiness", () => {
     expect(hmsGate).toMatchObject({
       valueValidationKeys: ["NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL"],
       valueValidationStatus: "required_not_performed",
-      valueValidationCommand: "vercel env run -e production -- npm run hms:verify:strict",
+      valueValidationCommand: "npm run vercel:hms:verify",
     });
 
     const serialized = JSON.stringify(result);
@@ -353,7 +352,7 @@ describe("Vercel production env readiness", () => {
     });
 
     expect(result.decision).toBe("VERCEL ENV INVENTORY UNAVAILABLE");
-    expect(result.valueValidationHelp.recommendedNoDiskCommand).toContain("vercel env run -e production");
+    expect(result.valueValidationHelp.recommendedNoDiskCommand).toBe("npm run vercel:env:values");
     expect(result.blockers[0]).toContain("npm i -g vercel");
     expect(result.warnings).toEqual([]);
     expect(result.gateResults).toEqual([]);

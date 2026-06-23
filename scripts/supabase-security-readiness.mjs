@@ -345,8 +345,14 @@ function main() {
   const fromProcessEnv = process.argv.includes("--from-process-env");
   const envFileArgIndex = process.argv.indexOf("--env-file");
   const envFile = envFileArgIndex >= 0 ? process.argv[envFileArgIndex + 1] : "";
-  const envSnapshot = envFile ? loadEnvFileSnapshot(envFile) : fromProcessEnv ? loadProcessEnvSnapshot() : loadEnvSnapshot();
-  const result = evaluateSupabaseSecurityReadiness({ envSnapshot });
+  const baseDirArgIndex = process.argv.indexOf("--base-dir");
+  const baseDir = baseDirArgIndex >= 0 ? process.argv[baseDirArgIndex + 1] || root : root;
+  const envSnapshot = envFile
+    ? loadEnvFileSnapshot(envFile, loadEnvSnapshot(baseDir))
+    : fromProcessEnv
+      ? loadProcessEnvSnapshot()
+      : loadEnvSnapshot(baseDir);
+  const result = evaluateSupabaseSecurityReadiness({ envSnapshot, baseDir });
   console.log(json ? JSON.stringify(result, null, 2) : formatSupabaseSecurityReadiness(result));
   process.exitCode = strict && result.decision !== "SUPABASE PRODUCTION DATABASE READY" ? 1 : 0;
 }

@@ -42,12 +42,15 @@ non-empty values, prefer Vercel's no-disk `env run` path so secrets are passed
 only as process environment variables:
 
 ```bash
-vercel env run -e production -- npm run vercel:env -- --from-process-env
+npm run vercel:env:values
 ```
 
-The report validates required value shapes without printing secret values. If
-`env run` is unavailable, use a temporary snapshot outside the repository and
-delete it immediately after the check:
+The wrapper calls `vercel env run` with argument-array execution from an
+isolated temporary `.vercel` workspace, so the command works reliably from
+PowerShell, cmd and Bash and local `.env` / `.env.local` files cannot mask the
+real Production values. The report validates required value shapes without
+printing secret values. If `env run` is unavailable, use a temporary snapshot
+outside the repository and delete it immediately after the check:
 
 ```bash
 vercel env pull %TEMP%\kozbeyli-vercel-production.env --environment=production
@@ -63,9 +66,10 @@ For individual strict gates that need production env values, use the same
 no-disk pattern so an empty Vercel value cannot be hidden by local `.env` files:
 
 ```bash
-vercel env run -e production -- npm run supabase:verify:strict -- --from-process-env
-vercel env run -e production -- npm run abuse:verify:strict -- --from-process-env
-vercel env run -e production -- npm run analytics:verify:strict -- --from-process-env
+npm run vercel:supabase:verify
+npm run vercel:abuse:verify
+npm run vercel:hms:verify
+npm run vercel:analytics:verify
 ```
 
 For a strict handoff gate, run:
@@ -133,6 +137,7 @@ npm i -g vercel
 vercel login
 vercel whoami
 vercel env ls
+npm run vercel:env:values
 vercel env pull
 vercel deploy
 vercel logs

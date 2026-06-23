@@ -6,8 +6,7 @@ import { getVercelCliCandidates, runVercelCandidate } from "./vercel-ops-readine
 
 const PRODUCTION_ENV = "Production";
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
-const NO_DISK_VALUE_VALIDATION_COMMAND =
-  "vercel env run -e production -- npm run vercel:env -- --from-process-env";
+const NO_DISK_VALUE_VALIDATION_COMMAND = "npm run vercel:env:values";
 const TEMP_ENV_FILE = "%TEMP%\\kozbeyli-vercel-production.env";
 const TEMP_PULL_COMMAND = `vercel env pull ${TEMP_ENV_FILE} --environment=production`;
 const TEMP_VERIFY_COMMAND = `npm run vercel:env -- --env-file ${TEMP_ENV_FILE}`;
@@ -85,12 +84,9 @@ function expectedValueKeys(gate) {
 function valueValidationCommand(gateId) {
   return {
     canonical_domain: "npm run domain:verify:strict",
-    production_database:
-      "vercel env run -e production -- npm run supabase:verify:strict -- --from-process-env",
-    hms_booking_engine:
-      "vercel env run -e production -- npm run hms:verify:strict",
-    analytics_purchase:
-      "vercel env run -e production -- npm run analytics:verify:strict -- --from-process-env",
+    production_database: "npm run vercel:supabase:verify",
+    hms_booking_engine: "npm run vercel:hms:verify",
+    analytics_purchase: "npm run vercel:analytics:verify",
   }[gateId] ?? "npm run launch:audit:strict";
 }
 

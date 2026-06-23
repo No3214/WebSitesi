@@ -1003,6 +1003,21 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["vercel:env:strict"]).toBe(
       "node scripts/vercel-env-readiness.mjs --strict",
     );
+    expect(packageJson.scripts?.["vercel:env:values"]).toBe(
+      "node scripts/vercel-production-run.mjs env",
+    );
+    expect(packageJson.scripts?.["vercel:supabase:verify"]).toBe(
+      "node scripts/vercel-production-run.mjs supabase",
+    );
+    expect(packageJson.scripts?.["vercel:abuse:verify"]).toBe(
+      "node scripts/vercel-production-run.mjs abuse",
+    );
+    expect(packageJson.scripts?.["vercel:hms:verify"]).toBe(
+      "node scripts/vercel-production-run.mjs hms",
+    );
+    expect(packageJson.scripts?.["vercel:analytics:verify"]).toBe(
+      "node scripts/vercel-production-run.mjs analytics",
+    );
     expect(vercelOps).toContain("Kozbeyli Konagi Vercel operations readiness");
     expect(vercelEnv).toContain("Kozbeyli Konagi Vercel production env readiness");
     expect(vercelEnv).toContain("parseVercelEnvList");
@@ -1013,10 +1028,10 @@ describe("production readiness contracts", () => {
     expect(vercelEnv).toContain("parseProcessEnv");
     expect(vercelEnv).toContain("--env-file");
     expect(vercelEnv).toContain("--from-process-env");
-    expect(vercelEnv).toContain("vercel env run -e production -- npm run vercel:env -- --from-process-env");
-    expect(vercelEnv).toContain("vercel env run -e production -- npm run supabase:verify:strict -- --from-process-env");
-    expect(vercelEnv).toContain("vercel env run -e production -- npm run hms:verify:strict");
-    expect(vercelEnv).toContain("vercel env run -e production -- npm run analytics:verify:strict -- --from-process-env");
+    expect(vercelEnv).toContain("npm run vercel:env:values");
+    expect(vercelEnv).toContain("npm run vercel:supabase:verify");
+    expect(vercelEnv).toContain("npm run vercel:hms:verify");
+    expect(vercelEnv).toContain("npm run vercel:analytics:verify");
     expect(vercelEnv).toContain("secret values are never printed");
     expect(vercelEnv).toContain("empty, placeholder or unavailable");
     expect(vercelEnv).toContain("valueValidation: \"not_performed\"");
@@ -1043,13 +1058,17 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("npm run vercel:ops");
     expect(runbook).toContain("npm run vercel:env");
     expect(runbook).toContain("npm run vercel:env:strict");
+    expect(runbook).toContain("npm run vercel:env:values");
     expect(runbook).toContain("dnsTargetRecords");
     expect(runbook).toContain("never prints values");
     expect(runbook).toContain("no-disk `env run`");
-    expect(runbook).toContain("vercel env run -e production -- npm run vercel:env -- --from-process-env");
-    expect(runbook).toContain("vercel env run -e production -- npm run supabase:verify:strict -- --from-process-env");
-    expect(runbook).toContain("vercel env run -e production -- npm run abuse:verify:strict -- --from-process-env");
-    expect(runbook).toContain("vercel env run -e production -- npm run analytics:verify:strict -- --from-process-env");
+    expect(runbook).toContain("argument-array execution");
+    expect(runbook).toContain("isolated temporary `.vercel` workspace");
+    expect(runbook).toMatch(/local `\.env` \/ `\.env\.local` files cannot mask the\s+real Production values/);
+    expect(runbook).toContain("npm run vercel:supabase:verify");
+    expect(runbook).toContain("npm run vercel:abuse:verify");
+    expect(runbook).toContain("npm run vercel:hms:verify");
+    expect(runbook).toContain("npm run vercel:analytics:verify");
     expect(runbook).toContain("npm run launch:cutover");
     expect(runbook).toContain("KPI and review loop");
     expect(runbook).toContain("npm run vercel:ops:strict");

@@ -91,6 +91,43 @@ function resolveNextAction(step, evidenceBlocked, envSetup) {
 }
 
 const VERCEL_BOOTSTRAP_COMMANDS = new Set(["npm i -g vercel", "vercel login", "vercel whoami"]);
+const VERCEL_REQUIRED_FOR = [
+  "vercel env pull",
+  "vercel deploy",
+  "vercel logs",
+  "production env edits",
+];
+
+function normalizeToolingWarnings(cutoverPlan) {
+  return (cutoverPlan.vercelOpsWarnings || []).map((warning) => ({
+    id: warning.id,
+    detail: warning.detail,
+    remediation: warning.remediation || "",
+  }));
+}
+
+function resolveToolingNextCommand(warnings, installCommand) {
+  const firstWarning = warnings[0];
+  if (!firstWarning) return "npm run vercel:ops";
+  if (firstWarning.id === "global_vercel_cli") return installCommand;
+  if (firstWarning.id === "vercel_auth") return "vercel login";
+  if (firstWarning.id === "project_binding") return "vercel link";
+
+  return "npm run vercel:ops";
+}
+
+function buildToolingPrerequisites(cutoverPlan) {
+  const warnings = normalizeToolingWarnings(cutoverPlan);
+  const cliInstallCommand = cutoverPlan.vercelCliInstallCommand || "npm i -g vercel";
+
+  return {
+    vercelOpsDecision: cutoverPlan.vercelOpsDecision || "UNKNOWN",
+    cliInstallCommand,
+    requiredFor: [...VERCEL_REQUIRED_FOR],
+    warnings,
+    nextCommand: resolveToolingNextCommand(warnings, cliInstallCommand),
+  };
+}
 
 function resolveNextCommand(step, evidenceBlocked, envSetup) {
   if (runtimeReady(step) && evidenceBlocked) {
@@ -230,6 +267,7 @@ export function buildLaunchStandup({
 } = {}) {
   const blockedSteps = (cutoverPlan.gateSteps || []).map(summarizeStep);
   const firstGate = blockedSteps[0];
+  const toolingPrerequisites = buildToolingPrerequisites(cutoverPlan);
 
   return {
     generatedAt: new Date().toISOString(),
@@ -237,6 +275,7 @@ export function buildLaunchStandup({
     currentScore: cutoverPlan.currentScore,
     targetScore: cutoverPlan.targetScore,
     blockedPoints: cutoverPlan.blockedPoints,
+    toolingPrerequisites,
     nextGate: firstGate
       ? {
           id: firstGate.id,
@@ -270,8 +309,21 @@ export function formatLaunchStandup(result) {
     `Decision: ${result.decision}`,
     `Commercial score: ${result.currentScore}/${result.targetScore}`,
     `Blocked points: ${result.blockedPoints}`,
+    `Vercel ops: ${result.toolingPrerequisites.vercelOpsDecision}`,
+    `Vercel CLI install: ${result.toolingPrerequisites.cliInstallCommand}`,
     "",
   ];
+
+  if (result.toolingPrerequisites.warnings.length > 0) {
+    lines.push("Tooling prerequisites:");
+    lines.push(`- next command: ${result.toolingPrerequisites.nextCommand}`);
+    lines.push(`- required for: ${result.toolingPrerequisites.requiredFor.join(", ")}`);
+    for (const warning of result.toolingPrerequisites.warnings) {
+      lines.push(`- ${warning.id}: ${warning.detail}`);
+      if (warning.remediation) lines.push(`  remediation: ${warning.remediation}`);
+    }
+    lines.push("");
+  }
 
   if (!result.nextGate) {
     lines.push("All commercial launch gates are ready.");

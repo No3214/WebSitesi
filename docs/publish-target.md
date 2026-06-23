@@ -63,23 +63,15 @@ kontrol döngüsüyle uygulanabilir cutover checklist'e çevirir.
 türevleri ve desktop/mobile Playwright playback sözleşmesini doğrular.
 `supabase:verify`, Payload CMS'in `DATABASE_URI` / `PAYLOAD_SECRET` üretim
 kapısını, local DB kullanımını ve service-role sızıntısı riskini ayrıca
-denetler. Vercel Production değerleri local `.env` ile maskelenmeden
-kanıtlanacaksa temp dosya kullan:
-`vercel env pull %TEMP%\kozbeyli-supabase.env --environment=production` ve
-`node scripts/supabase-security-readiness.mjs --env-file %TEMP%\kozbeyli-supabase.env`.
-Komut değerleri yazdırmaz; işlem sonunda temp dosyayı sil veya önce boşalt.
-`abuse:verify` aynı temp snapshot modeliyle production Turnstile/Upstash
-değerlerini local `.env` ile maskelenmeden denetler:
-`vercel env pull %TEMP%\kozbeyli-abuse.env --environment=production` ve
-`node scripts/abuse-controls-readiness.mjs --env-file %TEMP%\kozbeyli-abuse.env`.
-Snapshot içinde boş `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`,
-`UPSTASH_REDIS_REST_URL` veya `UPSTASH_REDIS_REST_TOKEN` varsa gate bloklu kalır.
-`analytics:verify` de aynı snapshot modeliyle GTM/GA4/Meta/Google Ads production
-env değerlerini local `.env` yerine Vercel Production dosyasından doğrular:
-`vercel env pull %TEMP%\kozbeyli-analytics.env --environment=production` ve
-`node scripts/analytics-readiness.mjs --env-file %TEMP%\kozbeyli-analytics.env`.
-Boş public ID'ler veya `GA4_API_SECRET` local değerlerle tamamlanmaz; işlem
-sonunda temp dosyayı sil veya önce boşalt.
+denetler. Vercel Production değerleri local `.env` ile maskelenmeden ve diske
+yazılmadan kanıtlanacaksa `npm run vercel:supabase:verify` kullanılır.
+`vercel:abuse:verify`, production Turnstile/Upstash değerlerini aynı no-disk
+Vercel env runner üzerinden denetler; boş `NEXT_PUBLIC_TURNSTILE_SITE_KEY`,
+`TURNSTILE_SECRET_KEY`, `UPSTASH_REDIS_REST_URL` veya
+`UPSTASH_REDIS_REST_TOKEN` varsa gate bloklu kalır. `vercel:analytics:verify`
+de GTM/GA4/Meta/Google Ads production env değerlerini local `.env` yerine Vercel
+Production process env üzerinden doğrular. Boş public ID'ler veya
+`GA4_API_SECRET` local değerlerle tamamlanmaz.
 `launch:audit:strict`, aşağıdaki kanıtlar tamamlanmadan bilinçli olarak fail verir:
 
 - Canonical domain health + current Vercel commit: `docs/evidence/canonical-domain.md`
