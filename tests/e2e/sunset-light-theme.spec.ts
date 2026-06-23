@@ -143,6 +143,9 @@ test.describe("Sunset light theme", () => {
     await page.goto("/en/odalar", { waitUntil: "domcontentloaded" });
     await expect(page.locator(".room-card").first()).toBeVisible({ timeout: 15000 });
     await waitForSunsetPalette(page);
+    await expect(page.getByTestId("sunset-mode-indicator")).toHaveAttribute("aria-label", "Appearance mode");
+    await expect(page.getByTestId("sunset-day-toggle")).toHaveAttribute("aria-label", "Switch to morning view");
+    await expect(page.getByTestId("sunset-night-toggle")).toHaveAttribute("aria-label", "Switch to evening view");
 
     let colors = await colorSnapshot(page);
     expect(luminance(colors.bodyBackground), colors.bodyBackground).toBeGreaterThan(0.82);

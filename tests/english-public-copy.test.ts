@@ -74,6 +74,7 @@ describe("English public copy contracts", () => {
     const footer = read("src/components/site-footer.tsx");
     const contactClient = read("src/components/contact-client.tsx");
     const locationPage = read("src/components/location-page-content.tsx");
+    const sunsetMode = read("src/components/sunset-mode.tsx");
     const englishContactPage = read("src/app/en/iletisim/page.tsx");
     const englishLocationPage = read("src/app/en/lokasyon/page.tsx");
     const cookieConsent = read("src/components/cookie-consent.tsx");
@@ -96,6 +97,9 @@ describe("English public copy contracts", () => {
     expect(cookieConsent).toContain('getLegalHref("cookies", locale)');
     expect(paymentStep).toContain('getLegalHref("kvkk", wizard.locale)');
     expect(paymentStep).toContain('getLegalHref("privacy", wizard.locale)');
+    expect(sunsetMode).toContain('group: "Appearance mode"');
+    expect(sunsetMode).toContain('day: "Switch to morning view"');
+    expect(sunsetMode).toContain('sunset: "Switch to evening view"');
     for (const source of [englishCookiePolicy, englishPrivacy, englishKvkk, englishDistanceSales]) {
       expect(source).toContain("EnglishLegalPage");
       expect(source).not.toContain("Çerez Politikası");

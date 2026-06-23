@@ -1,15 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Moon, Sun } from "lucide-react";
 
 type ManualSunsetMode = "day" | "sunset" | null;
 
 export const SunsetMode = () => {
+  const pathname = usePathname();
   const [autoIsSunset, setAutoIsSunset] = useState(false);
   const [manualMode, setManualMode] = useState<ManualSunsetMode>(null);
   const [mounted, setMounted] = useState(false);
   const isSunset = manualMode ? manualMode === "sunset" : autoIsSunset;
+  const englishPath = pathname === "/en" || pathname?.startsWith("/en/");
+  const labels = englishPath
+    ? {
+        group: "Appearance mode",
+        day: "Switch to morning view",
+        sunset: "Switch to evening view",
+        dayTitle: "Morning view",
+        sunsetTitle: "Evening view",
+      }
+    : {
+        group: "Görünüm modu",
+        day: "Sabah görünümünü aç",
+        sunset: "Akşam görünümünü aç",
+        dayTitle: "Sabah görünümü",
+        sunsetTitle: "Akşam görünümü",
+      };
 
   useEffect(() => {
     setMounted(true);
@@ -59,16 +77,17 @@ export const SunsetMode = () => {
           className="sunset-mode-indicator"
           data-testid="sunset-mode-indicator"
           data-mode={isSunset ? "sunset" : "day"}
-          aria-label="Görünüm modu"
+          aria-label={labels.group}
+          lang={englishPath ? "en" : "tr"}
         >
           <button
             type="button"
             className={`sunset-mode-button transition-colors ${!isSunset ? "is-active is-day" : ""}`}
             data-testid="sunset-day-toggle"
-            aria-label="Sabah görünümünü aç"
+            aria-label={labels.day}
             aria-pressed={!isSunset}
             onClick={() => setManualMode("day")}
-            title="Sabah görünümü"
+            title={labels.dayTitle}
           >
             <Sun size={14} aria-hidden="true" />
           </button>
@@ -76,10 +95,10 @@ export const SunsetMode = () => {
             type="button"
             className={`sunset-mode-button transition-colors ${isSunset ? "is-active is-sunset" : ""}`}
             data-testid="sunset-night-toggle"
-            aria-label="Akşam görünümünü aç"
+            aria-label={labels.sunset}
             aria-pressed={isSunset}
             onClick={() => setManualMode("sunset")}
-            title="Akşam görünümü"
+            title={labels.sunsetTitle}
           >
             <Moon size={14} aria-hidden="true" />
           </button>
