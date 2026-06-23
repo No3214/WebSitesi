@@ -395,8 +395,129 @@ export function formatLaunchStandup(result) {
   return lines.join("\n");
 }
 
-export function writeLaunchStandupReport(result, outputPath, { json = false, cwd = process.cwd() } = {}) {
-  const body = json ? JSON.stringify(result, null, 2) : formatLaunchStandup(result);
+function compactGate(gate) {
+  return {
+    id: gate.id,
+    pointsBlocked: gate.pointsBlocked,
+    timing: gate.timing,
+    envBlocked: Boolean(gate.envBlocked),
+    evidenceBlocked: Boolean(gate.evidenceBlocked),
+    runtimeReady: Boolean(gate.runtimeReady),
+    missingEnv: [...(gate.envSetup?.envNames || gate.missingEnv || [])],
+    evidencePaths: [...(gate.evidencePaths || [])],
+    nextCommand: gate.nextCommand,
+    verificationCommand: gate.verificationCommand,
+  };
+}
+
+function compactOwnerQueue(queue) {
+  return {
+    owner: queue.owner,
+    totalBlockedPoints: queue.totalBlockedPoints,
+    nextAction: queue.nextAction,
+    nextCommand: queue.nextCommand,
+    gates: queue.gates.map(compactGate),
+  };
+}
+
+export function buildCompactLaunchStandup(result) {
+  return {
+    generatedAt: result.generatedAt,
+    decision: result.decision,
+    currentScore: result.currentScore,
+    targetScore: result.targetScore,
+    blockedPoints: result.blockedPoints,
+    toolingPrerequisites: {
+      vercelOpsDecision: result.toolingPrerequisites.vercelOpsDecision,
+      nextCommand: result.toolingPrerequisites.nextCommand,
+      warningCount: result.toolingPrerequisites.warnings.length,
+      warnings: result.toolingPrerequisites.warnings.map((warning) => ({
+        id: warning.id,
+        detail: warning.detail,
+        ...(warning.remediation ? { remediation: warning.remediation } : {}),
+      })),
+    },
+    nextGate: result.nextGate
+      ? {
+          id: result.nextGate.id,
+          owner: result.nextGate.owner,
+          pointsBlocked: result.nextGate.pointsBlocked,
+          runtimeReady: Boolean(result.nextGate.runtimeReady),
+          nextAction: result.nextGate.nextAction,
+          nextCommand: result.nextGate.nextCommand,
+          verificationCommand: result.nextGate.verificationCommand,
+          evidencePaths: [...(result.nextGate.evidencePaths || [])],
+          envNames: [...(result.nextGate.envSetup?.envNames || [])],
+        }
+      : null,
+    lanes: { ...result.lanes },
+    ownerQueues: result.ownerQueues.map(compactOwnerQueue),
+    finalVerificationCommands: [...result.finalVerificationCommands],
+  };
+}
+
+export function formatCompactLaunchStandup(result) {
+  const lines = [
+    "Kozbeyli Konagi compact launch standup",
+    `Generated: ${result.generatedAt}`,
+    `Decision: ${result.decision}`,
+    `Commercial score: ${result.currentScore}/${result.targetScore}`,
+    `Blocked points: ${result.blockedPoints}`,
+    `Vercel ops: ${result.toolingPrerequisites.vercelOpsDecision}`,
+    "",
+  ];
+
+  if (result.toolingPrerequisites.warningCount > 0) {
+    lines.push(`Tooling next command: ${result.toolingPrerequisites.nextCommand}`);
+    for (const warning of result.toolingPrerequisites.warnings) {
+      lines.push(`- ${warning.id}: ${warning.detail}`);
+    }
+    lines.push("");
+  }
+
+  if (!result.nextGate) {
+    lines.push("All commercial launch gates are ready.");
+  } else {
+    lines.push(
+      `Next gate: ${result.nextGate.id} (+${result.nextGate.pointsBlocked} pts) owner=${result.nextGate.owner}`,
+    );
+    lines.push(`Action: ${result.nextGate.nextAction}`);
+    lines.push(`Command: ${result.nextGate.nextCommand}`);
+    if (result.nextGate.envNames.length > 0) {
+      lines.push(`Env names: ${result.nextGate.envNames.join(", ")}`);
+    }
+    if (result.nextGate.evidencePaths.length > 0) {
+      lines.push(`Evidence: ${result.nextGate.evidencePaths.join(", ")}`);
+    }
+    lines.push("");
+    lines.push(
+      `Lanes: env=${result.lanes.envBlockedCount}, evidence=${result.lanes.evidenceBlockedCount}, runtimeEvidence=${result.lanes.runtimeCoveredEvidenceCount}`,
+    );
+    lines.push("Owner queues:");
+    for (const queue of result.ownerQueues) {
+      lines.push(`- ${queue.owner}: ${queue.totalBlockedPoints} pts; command=${queue.nextCommand}`);
+      lines.push(`  gates=${queue.gates.map((gate) => gate.id).join(", ")}`);
+    }
+  }
+
+  lines.push("");
+  lines.push("Verify:");
+  result.finalVerificationCommands.slice(0, 5).forEach((command) => lines.push(`- ${command}`));
+
+  return lines.join("\n");
+}
+
+export function writeLaunchStandupReport(
+  result,
+  outputPath,
+  { json = false, compact = false, cwd = process.cwd() } = {},
+) {
+  const outputResult = compact ? buildCompactLaunchStandup(result) : result;
+  const body = json
+    ? JSON.stringify(outputResult, null, 2)
+    : compact
+      ? formatCompactLaunchStandup(outputResult)
+      : formatLaunchStandup(outputResult);
 
   return writeSafeReportOutput(outputPath, body, { cwd });
 }
@@ -431,15 +552,23 @@ async function buildLaunchResultFromArgs() {
 async function main() {
   const json = process.argv.includes("--json");
   const strict = process.argv.includes("--strict");
+  const compact = process.argv.includes("--compact");
   const outputPath = readArgValue("--output");
   const launchResult = await buildLaunchResultFromArgs();
   const result = buildLaunchStandup({ launchResult });
+  const outputResult = compact ? buildCompactLaunchStandup(result) : result;
 
   if (outputPath) {
-    const writtenPath = writeLaunchStandupReport(result, outputPath, { json });
+    const writtenPath = writeLaunchStandupReport(result, outputPath, { json, compact });
     console.log(`Wrote launch standup report: ${writtenPath}`);
   } else {
-    console.log(json ? JSON.stringify(result, null, 2) : formatLaunchStandup(result));
+    console.log(
+      json
+        ? JSON.stringify(outputResult, null, 2)
+        : compact
+          ? formatCompactLaunchStandup(outputResult)
+          : formatLaunchStandup(result),
+    );
   }
   process.exitCode = strict && result.decision !== "LAUNCH_STANDUP_READY" ? 1 : 0;
 }

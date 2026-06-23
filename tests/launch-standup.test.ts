@@ -237,10 +237,12 @@ type LaunchStandupModule = {
     finalVerificationCommands: string[];
   };
   formatLaunchStandup: (result: ReturnType<LaunchStandupModule["buildLaunchStandup"]>) => string;
+  buildCompactLaunchStandup: (result: ReturnType<LaunchStandupModule["buildLaunchStandup"]>) => Record<string, unknown>;
+  formatCompactLaunchStandup: (result: Record<string, unknown>) => string;
   writeLaunchStandupReport: (
     result: ReturnType<LaunchStandupModule["buildLaunchStandup"]>,
     outputPath: string,
-    options?: { json?: boolean; cwd?: string },
+    options?: { json?: boolean; compact?: boolean; cwd?: string },
   ) => string;
 };
 
@@ -552,6 +554,73 @@ describe("launch standup", () => {
     expect(() =>
       standup.writeLaunchStandupReport(result, "node_modules/report.md", { cwd }),
     ).toThrow(/generated, dependency or VCS directories/);
+  });
+
+  it("builds a compact owner queue for terminal-safe launch handoff", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const standup = await loadStandupModule();
+    const launchResult = audit.evaluateCommercialLaunch({ env: {}, baseDir: makeTmpDir() });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const result = standup.buildLaunchStandup({ launchResult, cutoverPlan });
+
+    const compact = standup.buildCompactLaunchStandup(result);
+    const formatted = standup.formatCompactLaunchStandup(compact);
+    const serialized = JSON.stringify(compact);
+
+    expect(compact).toMatchObject({
+      decision: "LAUNCH_STANDUP_ACTION_REQUIRED",
+      currentScore: 80,
+      targetScore: 100,
+      blockedPoints: 20,
+      nextGate: {
+        id: "canonical_domain",
+        owner: "Vercel/DNS operator",
+        envNames: ["NEXT_PUBLIC_SITE_URL"],
+        evidencePaths: ["docs/evidence/canonical-domain.md"],
+      },
+      toolingPrerequisites: {
+        vercelOpsDecision: "PASS",
+        warningCount: 0,
+      },
+    });
+    expect(serialized).toContain("Revenue / booking operator");
+    expect(serialized).toContain("hms_booking_engine");
+    expect(serialized).not.toContain("safeEvidenceRules");
+    expect(serialized).not.toContain("sourceRefsPolicy");
+    expect(formatted).toContain("Kozbeyli Konagi compact launch standup");
+    expect(formatted).toContain("Lanes: env=");
+    expect(formatted).toContain("Owner queues:");
+    expect(formatted).toContain("Verify:");
+  });
+
+  it("writes compact launch standup artifacts without the verbose evidence policy payload", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const standup = await loadStandupModule();
+    const cwd = makeTmpDir();
+    const launchResult = audit.evaluateCommercialLaunch({ env: {}, baseDir: makeTmpDir() });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const result = standup.buildLaunchStandup({ launchResult, cutoverPlan });
+
+    const writtenPath = standup.writeLaunchStandupReport(
+      result,
+      ".codex-artifacts/launch-standup-compact.json",
+      { cwd, json: true, compact: true },
+    );
+    const written = fs.readFileSync(writtenPath, "utf8");
+
+    expect(writtenPath).toBe(path.join(cwd, ".codex-artifacts", "launch-standup-compact.json"));
+    expect(written).toContain('"ownerQueues"');
+    expect(written).toContain('"NEXT_PUBLIC_SITE_URL"');
+    expect(written).not.toContain("safeEvidenceRules");
+    expect(written).not.toContain("sourceRefsPolicy");
   });
 
   it("surfaces Vercel CLI bootstrap before production env edits when ops tooling is not ready", async () => {

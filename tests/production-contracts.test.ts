@@ -211,10 +211,16 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"launch:audit:strict"');
     expect(readinessScript).toContain('"launch:standup"');
     expect(readinessScript).toContain('"launch:standup:json"');
+    expect(readinessScript).toContain('"launch:standup:compact"');
+    expect(readinessScript).toContain('"launch:standup:compact:json"');
     expect(readinessScript).toContain('"launch:standup:live"');
     expect(readinessScript).toContain('"launch:standup:live:json"');
+    expect(readinessScript).toContain('"launch:standup:live:compact"');
+    expect(readinessScript).toContain('"launch:standup:live:compact:json"');
     expect(readinessScript).toContain('"launch:standup:live:write"');
     expect(readinessScript).toContain('"launch:standup:live:write:json"');
+    expect(readinessScript).toContain('"launch:standup:live:write:compact"');
+    expect(readinessScript).toContain('"launch:standup:live:write:compact:json"');
     expect(readinessScript).toContain('"launch:standup:strict"');
     expect(readinessScript).toContain('"hms:verify"');
     expect(readinessScript).toContain('"hms:verify:json"');
@@ -1063,6 +1069,24 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["launch:standup:live:write:json"]).toBe(
       "node scripts/launch-standup.mjs --json --live-runtime --output .codex-artifacts/launch-standup.json",
     );
+    expect(packageJson.scripts?.["launch:standup:compact"]).toBe(
+      "node scripts/launch-standup.mjs --compact",
+    );
+    expect(packageJson.scripts?.["launch:standup:compact:json"]).toBe(
+      "node scripts/launch-standup.mjs --compact --json",
+    );
+    expect(packageJson.scripts?.["launch:standup:live:compact"]).toBe(
+      "node scripts/launch-standup.mjs --live-runtime --compact",
+    );
+    expect(packageJson.scripts?.["launch:standup:live:compact:json"]).toBe(
+      "node scripts/launch-standup.mjs --live-runtime --compact --json",
+    );
+    expect(packageJson.scripts?.["launch:standup:live:write:compact"]).toBe(
+      "node scripts/launch-standup.mjs --live-runtime --compact --output .codex-artifacts/launch-standup-compact.md",
+    );
+    expect(packageJson.scripts?.["launch:standup:live:write:compact:json"]).toBe(
+      "node scripts/launch-standup.mjs --json --live-runtime --compact --output .codex-artifacts/launch-standup-compact.json",
+    );
     expect(packageJson.scripts?.["hms:verify:strict"]).toBe(
       "node scripts/hms-booking-readiness.mjs --strict",
     );
@@ -1166,6 +1190,9 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("npm run launch:cutover");
     expect(runbook).toContain("npm run launch:standup:live:write");
     expect(runbook).toContain("npm run launch:standup:live:write:json");
+    expect(runbook).toContain("npm run launch:standup:live:compact");
+    expect(runbook).toContain("npm run launch:standup:live:write:compact");
+    expect(runbook).toContain("npm run launch:standup:live:write:compact:json");
     expect(runbook).toContain("npm run evidence:templates:live:write");
     expect(runbook).toContain("npm run evidence:templates:live:write:json");
     expect(runbook).toContain("copy-ready `status: pending` evidence templates");
