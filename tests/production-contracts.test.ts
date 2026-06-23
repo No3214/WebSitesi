@@ -1156,6 +1156,9 @@ describe("production readiness contracts", () => {
     expect(growthDashboard).toContain("docs/evidence/production-database.md");
     expect(growthDashboard).toContain("Payload database proof");
     expect(growthDashboard).toContain("npm run vercel:supabase:verify");
+    expect(growthDashboard).toContain("Aggregate Vercel commercial gate");
+    expect(growthDashboard).toContain("npm run vercel:commercial:verify");
+    expect(growthDashboard).toContain("complete next-action report");
     expect(growthDashboard).toContain("bank account details");
     expect(growthEngine).toContain("database");
     expect(growthDashboard).toContain("npm run release:verify");

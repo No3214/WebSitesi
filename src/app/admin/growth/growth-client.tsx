@@ -110,6 +110,7 @@ const launchGates: LaunchGate[] = [
 
 const verifiedChecks = [
   "Source-controlled release gate: npm run release:verify",
+  "Aggregate Vercel commercial gate: npm run vercel:commercial:verify reports all production env, provider and evidence blockers in one fail-closed run",
   "Public route smoke set: hero video, location, media and publish routes",
   "Evidence redaction scan: docs/evidence/* must not contain secrets, card data, bank account details, IBAN or guest PII",
   "Reservation handoff contract: approved HMS URL only, opened outside the main page flow",
@@ -118,6 +119,7 @@ const verifiedChecks = [
 const operatingSop = [
   "Run npm run release:verify before any production deploy.",
   "Run npm run launch:cutover:json and work gates in order.",
+  "Run npm run vercel:commercial:verify after every Vercel/provider update to get the complete next-action report.",
   "Collect only redacted source-system evidence in docs/evidence/*.md.",
   "Re-run launch:audit:strict after every external DNS, HMS, POS, analytics or legal update.",
 ];
@@ -304,7 +306,8 @@ export function GrowthDashboardClient() {
               </div>
               <p className="max-w-3xl text-sm leading-7 text-[#f7f4ec]">
                 Vercel CLI kurulumu ve login sonrasinda domain/env/deploy kanitlari ayni sira ile tamamlanmali:
-                npm i -g vercel, vercel login, vercel whoami, npm run launch:cutover:json.
+                npm i -g vercel, vercel login, vercel whoami, npm run launch:cutover:json,
+                npm run vercel:commercial:verify.
               </p>
             </div>
             <div className="border border-white/20 bg-white/10 px-4 py-3 text-sm font-semibold text-[#f6e6bd]">
