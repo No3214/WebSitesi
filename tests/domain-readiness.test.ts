@@ -389,6 +389,69 @@ describe("domain readiness", () => {
     expect(result.blockers).toEqual([]);
   });
 
+  it("retries transient origin and DNS failures before declaring the canonical domain blocked", async () => {
+    const { evaluateDomainReadiness } = await loadDomainReadinessModule();
+    const transientFetchFailures = new Set<string>();
+    const transientDnsFailures = new Set<string>();
+    let fetchCallCount = 0;
+    let dnsCallCount = 0;
+
+    const failFetchOnce = (key: string) => {
+      if (transientFetchFailures.has(key)) return;
+      transientFetchFailures.add(key);
+      throw new Error("fetch failed");
+    };
+    const failDnsOnce = (key: string) => {
+      dnsCallCount += 1;
+      if (transientDnsFailures.has(key)) return;
+      transientDnsFailures.add(key);
+      throw new Error(`${key} ECONNREFUSED kozbeylikonagi.com`);
+    };
+
+    const result = await evaluateDomainReadiness({
+      canonicalOrigins: ["https://kozbeylikonagi.com", "https://www.kozbeylikonagi.com"],
+      brandOrigins: [],
+      previewOrigin: "https://kozbeyli-konagi.vercel.app",
+      expectedCommit: "abc123def456",
+      fetchImpl: async (url: string | URL | Request, init?: RequestInit) => {
+        const href = String(url);
+        fetchCallCount += 1;
+
+        if (href.includes("kozbeylikonagi.com")) {
+          failFetchOnce(`${init?.redirect === "manual" ? "manual" : "follow"}:${href}`);
+        }
+
+        if (href.endsWith("/api/health")) return jsonResponse(healthyBody);
+        return appShellResponse(href.includes("www.") ? "WWW" : "Kozbeyli Konağı");
+      },
+      resolve4Impl: async (host: string) => {
+        failDnsOnce(`queryA:${host}`);
+        return ["76.76.21.21"];
+      },
+      resolveCnameImpl: async (host: string) => {
+        failDnsOnce(`queryCname:${host}`);
+        return ["cname.vercel-dns-0.com"];
+      },
+      resolveNsImpl: async (host: string) => {
+        failDnsOnce(`queryNs:${host}`);
+        return ["ns1.vercel-dns.com", "ns2.vercel-dns.com"];
+      },
+      resolveMxImpl: async (host: string) => {
+        failDnsOnce(`queryMx:${host}`);
+        return [{ exchange: "mx.kozbeylikonagi.com", preference: 0 }];
+      },
+      dnsFallbackFetchImpl: async () => {
+        throw new Error("dns-over-https disabled in this test");
+      },
+    });
+
+    expect(result.decision).toBe("CANONICAL DOMAIN GO");
+    expect(result.dnsReady).toBe(true);
+    expect(result.blockers).toEqual([]);
+    expect(fetchCallCount).toBeGreaterThan(8);
+    expect(dnsCallCount).toBeGreaterThan(4);
+  });
+
   it("warns when web DNS records do not match Vercel targets without overriding verified web readiness", async () => {
     const { evaluateDomainReadiness } = await loadDomainReadinessModule();
     const result = await evaluateDomainReadiness({

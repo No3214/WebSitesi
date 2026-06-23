@@ -63,6 +63,20 @@ const DNS_FALLBACK_ENDPOINTS = [
 ];
 const EXTERNAL_DNS_RESOLVER_NOTE =
   "If a public resolver still returns an external DNS/CDN layer, do not edit that provider unless ownership is confirmed. The final proof is the registrar delegation plus /api/health and the opening hero video on the public origin.";
+const TRANSIENT_RETRY_MAX_RETRIES = 2;
+const TRANSIENT_RETRY_DELAY_MS = 150;
+const TRANSIENT_ERROR_PATTERNS = [
+  /\bAbortError\b/i,
+  /\bEAI_AGAIN\b/i,
+  /\bECONNREFUSED\b/i,
+  /\bECONNRESET\b/i,
+  /\bENOTFOUND\b/i,
+  /\bETIMEDOUT\b/i,
+  /\bfetch failed\b/i,
+  /\bnetwork.*failed\b/i,
+  /\bsocket hang up\b/i,
+  /\bterminated\b/i,
+];
 
 function normalizeOrigin(origin) {
   return origin.replace(/\/+$/, "");
@@ -91,6 +105,54 @@ function getExpectedCommit() {
   }
 }
 
+function describeError(error) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function isTransientReadinessError(error) {
+  const message = describeError(error);
+  return TRANSIENT_ERROR_PATTERNS.some((pattern) => pattern.test(message));
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withTransientRetries(
+  operation,
+  {
+    maxRetries = TRANSIENT_RETRY_MAX_RETRIES,
+    retryDelayMs = TRANSIENT_RETRY_DELAY_MS,
+  } = {},
+) {
+  let lastError;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      if (attempt >= maxRetries || !isTransientReadinessError(error)) {
+        throw error;
+      }
+      await delay(retryDelayMs * (attempt + 1));
+    }
+  }
+
+  throw lastError;
+}
+
+async function withTimeout(timeoutMs, operation) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await operation(controller.signal);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 function commitMatches(actual, expected) {
   if (!expected) return true;
   if (!actual) return false;
@@ -98,29 +160,32 @@ function commitMatches(actual, expected) {
 }
 
 async function fetchFirstRedirect(url, fetchImpl, timeoutMs) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
   try {
-    const response = await fetchImpl(url, {
-      headers: { accept: "text/html,application/json" },
-      redirect: "manual",
-      signal: controller.signal,
-    });
+    return await withTransientRetries(() =>
+      withTimeout(timeoutMs, async (signal) => {
+        const response = await fetchImpl(url, {
+          headers: { accept: "text/html,application/json" },
+          redirect: "manual",
+          signal,
+        });
 
-    const location = response.headers.get("location") || "";
-    const resolvedLocation = location ? new URL(location, url).href : "";
+        const location = response.headers.get("location") || "";
+        const resolvedLocation = location ? new URL(location, url).href : "";
 
-    return {
-      status: response.status,
-      location,
-      resolvedLocation,
-      firstHopInsecure: Boolean(resolvedLocation && new URL(resolvedLocation).protocol === "http:"),
-      firstHopCrossOrigin: Boolean(
-        resolvedLocation && new URL(resolvedLocation).origin !== new URL(url).origin,
-      ),
-      error: "",
-    };
+        return {
+          status: response.status,
+          location,
+          resolvedLocation,
+          firstHopInsecure: Boolean(
+            resolvedLocation && new URL(resolvedLocation).protocol === "http:",
+          ),
+          firstHopCrossOrigin: Boolean(
+            resolvedLocation && new URL(resolvedLocation).origin !== new URL(url).origin,
+          ),
+          error: "",
+        };
+      }),
+    );
   } catch (error) {
     return {
       status: 0,
@@ -128,30 +193,30 @@ async function fetchFirstRedirect(url, fetchImpl, timeoutMs) {
       resolvedLocation: "",
       firstHopInsecure: false,
       firstHopCrossOrigin: false,
-      error: error instanceof Error ? error.message : String(error),
+      error: describeError(error),
     };
-  } finally {
-    clearTimeout(timeout);
   }
 }
 
 async function fetchFollowedText(url, fetchImpl, timeoutMs) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
   try {
-    const response = await fetchImpl(url, {
-      headers: { accept: "text/html,application/json" },
-      signal: controller.signal,
-    });
-    return {
-      ok: response.ok,
-      status: response.status,
-      contentType: response.headers.get("content-type") || "",
-      finalUrl: response.url || url,
-      redirected: Boolean(response.redirected),
-      text: await response.text(),
-    };
+    return await withTransientRetries(() =>
+      withTimeout(timeoutMs, async (signal) => {
+        const response = await fetchImpl(url, {
+          headers: { accept: "text/html,application/json" },
+          signal,
+        });
+
+        return {
+          ok: response.ok,
+          status: response.status,
+          contentType: response.headers.get("content-type") || "",
+          finalUrl: response.url || url,
+          redirected: Boolean(response.redirected),
+          text: await response.text(),
+        };
+      }),
+    );
   } catch (error) {
     return {
       ok: false,
@@ -160,10 +225,8 @@ async function fetchFollowedText(url, fetchImpl, timeoutMs) {
       finalUrl: "",
       redirected: false,
       text: "",
-      error: error instanceof Error ? error.message : String(error),
+      error: describeError(error),
     };
-  } finally {
-    clearTimeout(timeout);
   }
 }
 
@@ -379,42 +442,41 @@ async function queryDnsOverHttpsEndpoint({
   fetchImpl = fetch,
   timeoutMs = 6000,
 }) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
   try {
-    const url = new URL(endpoint);
-    url.searchParams.set("name", apexDomain);
-    url.searchParams.set("type", recordType);
+    return await withTransientRetries(() =>
+      withTimeout(timeoutMs, async (signal) => {
+        const url = new URL(endpoint);
+        url.searchParams.set("name", apexDomain);
+        url.searchParams.set("type", recordType);
 
-    const response = await fetchImpl(url, {
-      headers: { accept: "application/dns-json" },
-      signal: controller.signal,
-    });
+        const response = await fetchImpl(url, {
+          headers: { accept: "application/dns-json" },
+          signal,
+        });
 
-    if (!response.ok) {
-      return {
-        records: [],
-        source: endpoint,
-        error: `HTTP ${response.status}`,
-      };
-    }
+        if (!response.ok) {
+          return {
+            records: [],
+            source: endpoint,
+            error: `HTTP ${response.status}`,
+          };
+        }
 
-    const payload = await response.json();
+        const payload = await response.json();
 
-    return {
-      records: parseDohAnswers(payload, recordType),
-      source: endpoint,
-      error: "",
-    };
+        return {
+          records: parseDohAnswers(payload, recordType),
+          source: endpoint,
+          error: "",
+        };
+      }),
+    );
   } catch (error) {
     return {
       records: [],
       source: endpoint,
-      error: error instanceof Error ? error.message : String(error),
+      error: describeError(error),
     };
-  } finally {
-    clearTimeout(timeout);
   }
 }
 
@@ -426,7 +488,7 @@ async function resolveDnsRecord({
   dnsFallbackTimeoutMs,
 }) {
   try {
-    const records = await nativeLookup(apexDomain);
+    const records = await withTransientRetries(() => nativeLookup(apexDomain));
     if (Array.isArray(records) && records.length > 0) {
       return {
         records: recordType === "NS" ? records.sort() : records,
@@ -439,7 +501,7 @@ async function resolveDnsRecord({
       return {
         records: [],
         source: "system",
-        error: error instanceof Error ? error.message : String(error),
+        error: describeError(error),
       };
     }
 
@@ -453,7 +515,7 @@ async function resolveDnsRecord({
     return {
       records: fallback.records,
       source: fallback.records.length > 0 ? fallback.source : "system+dns-over-https",
-      error: fallback.records.length > 0 ? "" : `${error instanceof Error ? error.message : String(error)}; ${fallback.error}`,
+      error: fallback.records.length > 0 ? "" : `${describeError(error)}; ${fallback.error}`,
     };
   }
 
