@@ -4,6 +4,7 @@ import { rooms as fallbackRooms } from "@/data/rooms";
 import { RoomDetailClient } from "@/components/room-detail-client";
 import { RoomViewTracker } from "@/components/room-view-tracker";
 import { absoluteUrl } from "@/lib/utils";
+import { sanitizeJsonLd } from "@/lib/security";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -80,11 +81,11 @@ export default async function RoomDetailPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(roomJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(roomJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(breadcrumbJsonLd) }}
       />
       <RoomViewTracker slug={room.slug} title={room.title} />
       <RoomDetailClient slug={slug} initialLocale="tr" />

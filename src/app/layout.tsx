@@ -18,6 +18,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
 import { DocumentLocaleSync } from "@/components/document-locale-sync";
 import { SkipLink } from "@/components/skip-link";
+import { sanitizeJsonLd } from "@/lib/security";
 
 
 export const metadata = defaultMetadata;
@@ -37,7 +38,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelSchema()) }}
+          dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(hotelSchema()) }}
         />
         <ErrorBoundary>
           <CSPostHogProvider>
