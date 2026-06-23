@@ -106,8 +106,8 @@ const baseGates = [
 
 const commercialStrictGateOverrides = {
   "launch:audit:json": {
-    script: "launch:audit:strict",
-    label: "Commercial launch strict evidence gate",
+    script: "launch:audit:live:strict",
+    label: "Commercial launch live strict evidence gate",
   },
   "launch:cutover:json": {
     script: "launch:cutover:strict",

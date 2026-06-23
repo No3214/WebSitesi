@@ -590,6 +590,7 @@ describe("production cutover plan", () => {
     const database = plan.gateSteps.find((step) => step.id === "production_database");
     const abuseControls = plan.gateSteps.find((step) => step.id === "production_abuse_controls");
     const hms = plan.gateSteps.find((step) => step.id === "hms_booking_engine");
+    const legal = plan.gateSteps.find((step) => step.id === "legal_dpa");
     const formatted = cutover.formatProductionCutoverPlan(plan);
 
     expect(database?.runtimeDiagnostics).toMatchObject({
@@ -611,8 +612,15 @@ describe("production cutover plan", () => {
       configuredCount: 1,
       requiredCount: 1,
     });
+    expect(database?.commands).toContain("npm run launch:audit:live");
+    expect(abuseControls?.commands).toContain("npm run launch:audit:live");
+    expect(hms?.commands).toContain("npm run launch:audit:live");
+    expect(legal?.commands).toContain("npm run launch:audit:live");
+    expect(plan.finalVerificationCommands).toContain("npm run launch:audit:live:strict");
+    expect(plan.finalVerificationCommands).not.toContain("npm run launch:audit:strict");
     expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: ready");
     expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: blocked");
+    expect(formatted).toContain("npm run launch:audit:live:strict");
   });
 
   it("reports ready only when every commercial launch gate is proven ready", async () => {
@@ -639,6 +647,7 @@ describe("production cutover plan", () => {
     expect(plan.finalVerificationCommands).toContain("npm run supabase:verify:strict");
     expect(plan.finalVerificationCommands).toContain("npm run hms:verify:strict");
     expect(plan.finalVerificationCommands).toContain("npm run launch:audit:strict");
+    expect(plan.finalVerificationCommands).not.toContain("npm run launch:audit:live:strict");
     expect(plan.finalVerificationCommands).toContain("npm run release:verify");
     expect(plan.finalVerificationCommands).toContain("npm run release:verify:commercial");
   });

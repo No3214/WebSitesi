@@ -346,7 +346,18 @@ function resolveGateCommands(gate, catalog, bootstrap) {
   ], bootstrap);
 }
 
-function buildGateStep(gate, vercelOpsResult) {
+function preferLiveAuditCommands(commands, useLiveAudit) {
+  if (!useLiveAudit) return commands;
+
+  return commands.map((command) => {
+    if (command === "npm run launch:audit") return "npm run launch:audit:live";
+    if (command === "npm run launch:audit:strict") return "npm run launch:audit:live:strict";
+
+    return command;
+  });
+}
+
+function buildGateStep(gate, vercelOpsResult, { useLiveAudit = false } = {}) {
   const catalog = gateActionCatalog[gate.id] || {
     owner: "Launch operator",
     timing: "Before full launch",
@@ -359,6 +370,10 @@ function buildGateStep(gate, vercelOpsResult) {
   };
   const runtimeDiagnostics = normalizeRuntimeDiagnostics(gate.runtimeConfiguration);
   const vercelBootstrap = resolveVercelBootstrap(vercelOpsResult);
+  const commands = preferLiveAuditCommands(
+    resolveGateCommands(gate, catalog, vercelBootstrap),
+    useLiveAudit,
+  );
 
   return {
     id: gate.id,
@@ -381,7 +396,7 @@ function buildGateStep(gate, vercelOpsResult) {
     missingEvidence: normalizeMissingEvidence(gate.missingEvidence),
     diagnostics: catalog.diagnostics || [],
     checklist: resolveGateChecklist(gate, catalog, vercelBootstrap),
-    commands: resolveGateCommands(gate, catalog, vercelBootstrap),
+    commands,
     dnsTargetNote: catalog.dnsTargetNote || "",
     dnsTargetRecords: catalog.dnsTargetRecords || [],
     evidence: unique([...(gate.evidence || []), ...(catalog.evidence || [])]),
@@ -395,6 +410,7 @@ export function buildProductionCutoverPlan({
 } = {}) {
   const blockedGates = launchResult.gateResults.filter((gate) => !gate.ready);
   const blockedPoints = launchResult.target - launchResult.score;
+  const hasRuntimeLane = launchResult.gateResults.some((gate) => gate.runtimeConfiguration);
 
   return {
     generatedAt: new Date().toISOString(),
@@ -410,7 +426,7 @@ export function buildProductionCutoverPlan({
       remediation: warning.remediation || "",
     })),
     nextGateOrder: blockedGates.map((gate) => gate.id),
-    gateSteps: blockedGates.map((gate) => buildGateStep(gate, vercelOpsResult)),
+    gateSteps: blockedGates.map((gate) => buildGateStep(gate, vercelOpsResult, { useLiveAudit: hasRuntimeLane })),
     finalVerificationCommands: [
       "npm run vercel:ops:strict",
       "npm run vercel:env:strict",
@@ -418,7 +434,7 @@ export function buildProductionCutoverPlan({
       "npm run supabase:verify:strict",
       "npm run hms:verify:strict",
       "npm run launch:smoke:live",
-      "npm run launch:audit:strict",
+      hasRuntimeLane ? "npm run launch:audit:live:strict" : "npm run launch:audit:strict",
       "npm run release:verify",
       "npm run release:verify:commercial",
     ],

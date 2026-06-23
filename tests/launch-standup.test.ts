@@ -462,6 +462,7 @@ describe("launch standup", () => {
     const result = standup.buildLaunchStandup({ launchResult, cutoverPlan });
     const database = result.blockedGates.find((gate) => gate.id === "production_database");
     const hms = result.blockedGates.find((gate) => gate.id === "hms_booking_engine");
+    const legal = result.blockedGates.find((gate) => gate.id === "legal_dpa");
     const platform = result.ownerQueues.find((queue) => queue.owner === "Platform / CMS operator");
     const formatted = standup.formatLaunchStandup(result);
 
@@ -469,11 +470,13 @@ describe("launch standup", () => {
       id: "production_database",
       runtimeReady: true,
       nextCommand: "npm run evidence:handoff:live",
+      verificationCommand: "npm run launch:audit:live",
     });
     expect(result.nextGate?.nextAction).toContain("Production runtime is already configured");
     expect(result.nextGate?.nextAction).toContain("docs/evidence/production-database.md");
     expect(database?.runtimeDiagnostics).toMatchObject({ status: "ready", ready: true, configuredCount: 2 });
     expect(hms?.runtimeDiagnostics).toMatchObject({ ready: true, configuredCount: 1 });
+    expect(legal?.verificationCommand).toBe("npm run launch:audit:live");
     expect(result.lanes.runtimeCoveredEvidenceGates).toEqual(
       expect.arrayContaining(["production_database", "hms_booking_engine"]),
     );
@@ -481,9 +484,13 @@ describe("launch standup", () => {
       id: "production_database",
       runtimeReady: true,
       nextCommand: "npm run evidence:handoff:live",
+      verificationCommand: "npm run launch:audit:live",
     });
+    expect(result.finalVerificationCommands).toContain("npm run launch:audit:live:strict");
+    expect(result.finalVerificationCommands).not.toContain("npm run launch:audit:strict");
     expect(formatted).toContain("runtime-covered evidence-needed");
     expect(formatted).toContain("runtime ready: production_database");
+    expect(formatted).toContain("npm run launch:audit:live:strict");
   });
 
   it("reports ready only when every commercial gate has env and evidence proof", async () => {

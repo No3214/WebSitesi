@@ -224,6 +224,7 @@ const requiredScripts = [
   "launch:audit:json",
   "launch:audit:live",
   "launch:audit:live:json",
+  "launch:audit:live:strict",
   "launch:audit:strict",
   "abuse:verify",
   "abuse:verify:json",

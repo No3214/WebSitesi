@@ -12,8 +12,10 @@ files. Public Kozbeyli Konağı contact channels are allowlisted for context.
 `npm run launch:audit` checks these files together with the relevant production
 environment variables. `npm run launch:audit:json` returns the same result as
 machine-readable JSON for CI, dashboards and agent review. `npm run
-launch:audit:strict` intentionally fails until all evidence is present and no
-gate is blocked.
+launch:audit:live` adds the canonical production `/api/health` runtime lane.
+`npm run launch:audit:live:strict` intentionally fails until live production
+runtime and all required evidence are ready. `npm run launch:audit:strict` is
+kept for local env snapshots.
 
 `npm run evidence:handoff` converts the blocked launch gates into a human
 operator checklist with the evidence file, owner, timing, safe source reference

@@ -22,6 +22,7 @@ Tam ticari yayın hedefi artık çalıştırılabilir bir gate ile izlenir:
 npm run launch:audit
 npm run launch:audit:json
 npm run launch:audit:live
+npm run launch:audit:live:strict
 npm run evidence:handoff:live
 npm run evidence:templates:live
 npm run launch:cutover
@@ -44,6 +45,9 @@ eksiklerinden ayırır.
 çıktısını aynı rapora ayrı bir tanı katmanı olarak ekler. Bu canlı env durumunu
 netleştirir, ancak redakte edilmiş kanıt dosyaları tamamlanmadan commercial
 puan artırmaz.
+`launch:audit:live:strict`, production runtime lane'ini esas alarak aynı kanıt
+kurallarını kırmızı/yeşil commercial sign-off kapısına çevirir. Local `.env`
+snapshot'ı prod ile aynı değilse tam ticari imza için bu komut tercih edilir.
 `evidence:handoff:live` ve `evidence:templates:live`, aynı runtime tanısını
 operasyon ekibine verilecek kanıt listesi ve şablonlarına taşır. Böylece
 source-system kanıtı eksik ama production runtime hazır olan kapılar, gerçekten
@@ -159,7 +163,7 @@ hale getirir.
 Not: `release:verify` lokal repo/release yeşil kapısıdır ve `launch:audit:json`
 çıktısını raporlar; domain/commercial strict gate'leri dış kanıtlar hazır olana
 kadar bilinçli olarak ayrı kırmızı kapı halinde tutulur.
-`release:verify:commercial`, aynı release sırasını `launch:audit:strict` ve
+`release:verify:commercial`, aynı release sırasını `launch:audit:live:strict` ve
 `launch:cutover:strict` ile çalıştırır; bu komut sadece tam ticari
 booking/payment yayını için yeşil kabul edilir.
 

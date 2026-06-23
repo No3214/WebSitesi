@@ -199,6 +199,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"launch:audit:json"');
     expect(readinessScript).toContain('"launch:audit:live"');
     expect(readinessScript).toContain('"launch:audit:live:json"');
+    expect(readinessScript).toContain('"launch:audit:live:strict"');
     expect(readinessScript).toContain('"launch:audit:strict"');
     expect(readinessScript).toContain('"hms:verify"');
     expect(readinessScript).toContain('"hms:verify:json"');
@@ -481,7 +482,7 @@ describe("production readiness contracts", () => {
     expect(releaseScript).toContain("GitHub Actions CI readiness diagnosis");
     expect(releaseScript).toContain("domain/HMS/Vercel diagnostics");
     expect(releaseScript).toContain("process.env.ComSpec");
-    expect(releaseScript).toContain("launch:audit:strict");
+    expect(releaseScript).toContain("launch:audit:live:strict");
     expect(releaseScript).toContain("launch:cutover:strict");
     expect(releaseScript).toContain("export const gates = buildReleaseGates();");
     expect(ciWorkflow).toContain("Release gate manifest");
@@ -531,6 +532,9 @@ describe("production readiness contracts", () => {
     );
     expect(packageJson.scripts?.["launch:audit:live:json"]).toBe(
       "node scripts/commercial-launch-audit.mjs --json --runtime-health-url https://www.kozbeylikonagi.com/api/health",
+    );
+    expect(packageJson.scripts?.["launch:audit:live:strict"]).toBe(
+      "node scripts/commercial-launch-audit.mjs --strict --runtime-health-url https://www.kozbeylikonagi.com/api/health",
     );
     expect(packageJson.scripts?.["launch:audit:strict"]).toBe(
       "node scripts/commercial-launch-audit.mjs --strict",
@@ -1327,6 +1331,7 @@ describe("production readiness contracts", () => {
     expect(cutoverPlan).toContain("npm run domain:verify:strict");
     expect(cutoverPlan).toContain("npm run supabase:verify:strict");
     expect(cutoverPlan).toContain("npm run hms:verify:strict");
+    expect(cutoverPlan).toContain("npm run launch:audit:live:strict");
     expect(cutoverPlan).toContain("npm run launch:audit:strict");
     expect(cutoverPlan).toContain("npm run release:verify:commercial");
 

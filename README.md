@@ -91,6 +91,7 @@ npm run evidence:templates:live  # Canlı runtime durumunu da ekleyerek kanıt �
 npm run launch:audit             # Ticari 100/100 hedefi için env/kanıt denetimi
 npm run launch:audit:json        # Aynı ticari denetimin makine okunur JSON çıktısı
 npm run launch:audit:live        # Canlı /api/health runtime env durumunu tanı olarak ekler
+npm run launch:audit:live:strict # Canlı runtime + kanıtlar tamamlanmadan fail verir
 npm run launch:audit:strict      # Tüm ticari kanıtlar tamamlanmadan fail verir
 npm run domain:verify            # Canonical domainler Vercel health/current commit veriyor mu?
 npm run domain:verify:strict     # Canonical domain hazır değilse fail verir
@@ -117,6 +118,7 @@ npm run test:stress              # Canlı prod'u yormadan lokal monkey/chaos pak
 npm run launch:audit             # Booking/payment 100/100 için kalan kanıtları listeler
 npm run launch:audit:json        # CI/ajanlar için structured launch audit çıktısı
 npm run launch:audit:live        # Canonical production runtime readiness'i ayrı bir lane olarak gösterir
+npm run launch:audit:live:strict # Canonical production runtime'a göre strict commercial sign-off
 npm run evidence:handoff         # Operasyon ekibi için güvenli kanıt tamamlama listesi
 npm run evidence:handoff:live    # Aynı listeye canlı production runtime durumunu ekler
 npm run evidence:templates       # Operasyon ekibi için kopyalanabilir güvenli kanıt şablonları
@@ -192,9 +194,9 @@ Bu komut runtime dependency audit, evidence redaction scan, evidence handoff,
 `publish:verify`, lokal `launch:smoke`, monkey/chaos stres testleri ve
 non-strict JSON commercial launch audit'i tek sırada çalıştırır.
 Tam booking/payment yayını için `npm run release:verify:commercial` kullanılır;
-bu mod `launch:audit:strict` ve `launch:cutover:strict` kapılarını aynı sıraya
+bu mod `launch:audit:live:strict` ve `launch:cutover:strict` kapılarını aynı sıraya
 alır ve dış kanıtlar hazır değilse bilinçli olarak fail verir.
-`launch:audit:strict` ve `domain:verify:strict`, dış kanıtlar
+`launch:audit:live:strict` ve `domain:verify:strict`, dış kanıtlar
 hazır olana kadar ayrı kırmızı kapı olarak tutulur. `publish:verify` içinde lint, typecheck, unit, production build,
 tüm TR/EN public rota smoke, security, prestige/mobile, a11y ve publish target
 envanteri kalır.

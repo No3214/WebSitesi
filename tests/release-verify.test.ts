@@ -59,9 +59,10 @@ describe("release verification runner", () => {
     expect(defaultScripts).not.toContain("launch:cutover:strict");
     expect(releaseVerify.gates.map((gate) => gate.script)).toEqual(defaultScripts);
 
-    expect(commercialScripts).toContain("launch:audit:strict");
+    expect(commercialScripts).toContain("launch:audit:live:strict");
     expect(commercialScripts).toContain("launch:cutover:strict");
     expect(commercialScripts).not.toContain("launch:audit:json");
+    expect(commercialScripts).not.toContain("launch:audit:strict");
     expect(commercialScripts).not.toContain("launch:cutover:json");
   });
 
