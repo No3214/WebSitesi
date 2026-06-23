@@ -17,10 +17,61 @@ function compactEvidenceStatus(items = []) {
   }));
 }
 
+function compactRuntimeDiagnostics(runtimeDiagnostics) {
+  if (!runtimeDiagnostics) return undefined;
+
+  return {
+    source: runtimeDiagnostics.source,
+    status: runtimeDiagnostics.status,
+    ready: Boolean(runtimeDiagnostics.ready),
+    configurationSource: runtimeDiagnostics.configurationSource,
+    configuredCount: runtimeDiagnostics.configuredCount,
+    requiredCount: runtimeDiagnostics.requiredCount,
+    missingCount: runtimeDiagnostics.missingCount,
+    invalidCount: runtimeDiagnostics.invalidCount,
+    placeholderCount: runtimeDiagnostics.placeholderCount,
+    fallbackApplied: Boolean(runtimeDiagnostics.fallbackApplied),
+  };
+}
+
+function runtimeReady(step) {
+  return Boolean(step.runtimeDiagnostics?.ready);
+}
+
+function runtimeStatusText(runtimeDiagnostics) {
+  if (!runtimeDiagnostics) return "";
+
+  const state = runtimeDiagnostics.ready ? "ready" : "blocked";
+  return `${runtimeDiagnostics.source}: ${state} (${runtimeDiagnostics.configurationSource}, ${runtimeDiagnostics.configuredCount}/${runtimeDiagnostics.requiredCount} configured, ${runtimeDiagnostics.missingCount} missing)`;
+}
+
+function resolveNextAction(step, evidenceBlocked) {
+  if (runtimeReady(step) && evidenceBlocked) {
+    return [
+      "Production runtime is already configured for this gate.",
+      `Attach redacted source-system evidence in ${step.evidence.join(", ")}.`,
+      step.missingEnv.length > 0 ? "Then clean the local audit env snapshot so local checks do not report stale/invalid env." : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+  }
+
+  return step.checklist[0] || "Re-run npm run launch:audit and resolve the blocked gate.";
+}
+
+function resolveNextCommand(step, evidenceBlocked) {
+  if (runtimeReady(step) && evidenceBlocked) {
+    return "npm run evidence:handoff:live";
+  }
+
+  return step.commands[0] || "npm run launch:audit";
+}
+
 function summarizeStep(step, index) {
   const envBlocked = step.missingEnv.length > 0;
   const evidenceBlocked = step.missingEvidence.length > 0;
   const firstEvidence = step.missingEvidence[0];
+  const runtimeDiagnostics = compactRuntimeDiagnostics(step.runtimeDiagnostics);
 
   return {
     id: step.id,
@@ -32,11 +83,12 @@ function summarizeStep(step, index) {
     envBlocked,
     evidenceBlocked,
     envDiagnostics: { ...step.envDiagnostics },
+    ...(runtimeDiagnostics ? { runtimeDiagnostics } : {}),
     missingEnv: [...step.missingEnv],
     evidence: compactEvidenceStatus(step.missingEvidence),
     evidencePaths: [...step.evidence],
-    nextAction: step.checklist[0] || "Re-run npm run launch:audit and resolve the blocked gate.",
-    nextCommand: step.commands[0] || "npm run launch:audit",
+    nextAction: resolveNextAction(step, evidenceBlocked),
+    nextCommand: resolveNextCommand(step, evidenceBlocked),
     verificationCommand: step.commands.at(-1) || "npm run launch:audit",
     kpiAndReviewLoop: step.kpiAndReviewLoop,
     ...(firstEvidence?.redactionFindingCount
@@ -71,6 +123,8 @@ function buildOwnerQueues(blockedSteps) {
       timing: step.timing,
       envBlocked: step.envBlocked,
       evidenceBlocked: step.evidenceBlocked,
+      runtimeReady: Boolean(step.runtimeDiagnostics?.ready),
+      runtimeStatus: runtimeStatusText(step.runtimeDiagnostics),
       nextAction: step.nextAction,
       nextCommand: step.nextCommand,
       verificationCommand: step.verificationCommand,
@@ -89,14 +143,19 @@ function summarizeLanes(blockedSteps) {
   const codeCoveredEvidenceOnly = blockedSteps.filter(
     (step) => !step.envBlocked && step.evidenceBlocked,
   );
+  const runtimeCoveredEvidence = blockedSteps.filter(
+    (step) => step.runtimeDiagnostics?.ready && step.evidenceBlocked,
+  );
 
   return {
     envBlockedCount: envBlocked.length,
     evidenceBlockedCount: evidenceBlocked.length,
     codeCoveredEvidenceOnlyCount: codeCoveredEvidenceOnly.length,
+    runtimeCoveredEvidenceCount: runtimeCoveredEvidence.length,
     envBlockedGates: envBlocked.map((step) => step.id),
     evidenceBlockedGates: evidenceBlocked.map((step) => step.id),
     codeCoveredEvidenceOnlyGates: codeCoveredEvidenceOnly.map((step) => step.id),
+    runtimeCoveredEvidenceGates: runtimeCoveredEvidence.map((step) => step.id),
   };
 }
 
@@ -123,6 +182,12 @@ export function buildLaunchStandup({
           nextCommand: firstGate.nextCommand,
           verificationCommand: firstGate.verificationCommand,
           evidencePaths: firstGate.evidencePaths,
+          ...(firstGate.runtimeDiagnostics
+            ? {
+                runtimeReady: Boolean(firstGate.runtimeDiagnostics.ready),
+                runtimeStatus: runtimeStatusText(firstGate.runtimeDiagnostics),
+              }
+            : {}),
         }
       : null,
     lanes: summarizeLanes(blockedSteps),
@@ -160,6 +225,9 @@ export function formatLaunchStandup(result) {
     lines.push(
       `- code-covered evidence-only: ${result.lanes.codeCoveredEvidenceOnlyCount} gates (${result.lanes.codeCoveredEvidenceOnlyGates.join(", ") || "none"})`,
     );
+    lines.push(
+      `- runtime-covered evidence-needed: ${result.lanes.runtimeCoveredEvidenceCount} gates (${result.lanes.runtimeCoveredEvidenceGates.join(", ") || "none"})`,
+    );
     lines.push("");
     lines.push("Owner queues:");
 
@@ -167,6 +235,8 @@ export function formatLaunchStandup(result) {
       lines.push(`- ${queue.owner}: ${queue.totalBlockedPoints} pts`);
       lines.push(`  next: ${queue.nextAction}`);
       lines.push(`  command: ${queue.nextCommand}`);
+      const runtimeReadyGates = queue.gates.filter((gate) => gate.runtimeReady).map((gate) => gate.id);
+      if (runtimeReadyGates.length > 0) lines.push(`  runtime ready: ${runtimeReadyGates.join(", ")}`);
       lines.push(`  gates: ${queue.gates.map((gate) => gate.id).join(", ")}`);
     }
   }

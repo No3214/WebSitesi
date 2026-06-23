@@ -508,7 +508,7 @@ function runtimeConfigurationState(gate, runtimeReadiness, runtimeSource) {
 
   return {
     source: runtimeSource,
-    status: runtimeReadiness.status === "ready" ? "ready" : "blocked",
+    status: check.ready ? "ready" : "blocked",
     ready: Boolean(check.ready),
     configurationSource: check.configurationSource || "unknown",
     requiredCount: Number(check.requiredCount ?? 0),

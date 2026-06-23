@@ -18,6 +18,24 @@ type CommercialLaunchModule = {
   evaluateCommercialLaunch: (args?: {
     env?: Record<string, string>;
     baseDir?: string;
+    runtimeReadiness?: {
+      status: string;
+      ready: boolean;
+      configuredGates: string[];
+      blockedGates: string[];
+      checks: Array<{
+        id: string;
+        ready: boolean;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+        configurationSource: string;
+      }>;
+    };
+    runtimeSource?: string;
   }) => {
     score: number;
     target: number;
@@ -64,6 +82,18 @@ type CutoverModule = {
       diagnostics: string[];
       envDiagnostics: {
         source: string;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+      };
+      runtimeDiagnostics?: {
+        source: string;
+        status: string;
+        ready: boolean;
+        configurationSource: string;
         requiredCount: number;
         configuredCount: number;
         missingCount: number;
@@ -230,6 +260,50 @@ function makeReadyEnv(audit: CommercialLaunchModule) {
       ]),
     ),
   );
+}
+
+function makeRuntimeReadinessFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["production_database", "hms_booking_engine"],
+    blockedGates: ["production_abuse_controls"],
+    checks: [
+      {
+        id: "production_database",
+        ready: true,
+        requiredCount: 2,
+        configuredCount: 2,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+      {
+        id: "production_abuse_controls",
+        ready: false,
+        requiredCount: 4,
+        configuredCount: 0,
+        missingCount: 4,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "missing",
+      },
+      {
+        id: "hms_booking_engine",
+        ready: true,
+        requiredCount: 1,
+        configuredCount: 1,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+    ],
+  };
 }
 
 afterEach(() => {
@@ -460,6 +534,48 @@ describe("production cutover plan", () => {
     );
     expect(hms?.commands).toEqual(expect.arrayContaining(["vercel login", "vercel whoami"]));
     expect(hms?.commands).toContain("vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production");
+  });
+
+  it("carries live runtime diagnostics separately from local env and evidence blockers", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir: makeTmpDir(),
+      runtimeReadiness: makeRuntimeReadinessFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+
+    const plan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const database = plan.gateSteps.find((step) => step.id === "production_database");
+    const abuseControls = plan.gateSteps.find((step) => step.id === "production_abuse_controls");
+    const hms = plan.gateSteps.find((step) => step.id === "hms_booking_engine");
+    const formatted = cutover.formatProductionCutoverPlan(plan);
+
+    expect(database?.runtimeDiagnostics).toMatchObject({
+      source: "https://www.kozbeylikonagi.com/api/health",
+      status: "ready",
+      ready: true,
+      configurationSource: "env",
+      configuredCount: 2,
+      requiredCount: 2,
+    });
+    expect(abuseControls?.runtimeDiagnostics).toMatchObject({
+      status: "blocked",
+      ready: false,
+      configurationSource: "missing",
+      missingCount: 4,
+    });
+    expect(hms?.runtimeDiagnostics).toMatchObject({
+      ready: true,
+      configuredCount: 1,
+      requiredCount: 1,
+    });
+    expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: ready");
+    expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: blocked");
   });
 
   it("reports ready only when every commercial launch gate is proven ready", async () => {

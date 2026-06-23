@@ -18,6 +18,24 @@ type CommercialLaunchModule = {
   evaluateCommercialLaunch: (args?: {
     env?: Record<string, string>;
     baseDir?: string;
+    runtimeReadiness?: {
+      status: string;
+      ready: boolean;
+      configuredGates: string[];
+      blockedGates: string[];
+      checks: Array<{
+        id: string;
+        ready: boolean;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+        configurationSource: string;
+      }>;
+    };
+    runtimeSource?: string;
   }) => {
     score: number;
     target: number;
@@ -59,6 +77,18 @@ type CutoverModule = {
         placeholderCount: number;
         fallbackApplied: boolean;
       };
+      runtimeDiagnostics?: {
+        source: string;
+        status: string;
+        ready: boolean;
+        configurationSource: string;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+      };
       missingEnv: string[];
       missingEvidence: Array<{ path: string; ready: boolean; reason: string }>;
       checklist: string[];
@@ -88,14 +118,18 @@ type LaunchStandupModule = {
       nextCommand: string;
       verificationCommand: string;
       evidencePaths: string[];
+      runtimeReady?: boolean;
+      runtimeStatus?: string;
     };
     lanes: {
       envBlockedCount: number;
       evidenceBlockedCount: number;
       codeCoveredEvidenceOnlyCount: number;
+      runtimeCoveredEvidenceCount: number;
       envBlockedGates: string[];
       evidenceBlockedGates: string[];
       codeCoveredEvidenceOnlyGates: string[];
+      runtimeCoveredEvidenceGates: string[];
     };
     ownerQueues: Array<{
       owner: string;
@@ -107,6 +141,8 @@ type LaunchStandupModule = {
         pointsBlocked: number;
         envBlocked: boolean;
         evidenceBlocked: boolean;
+        runtimeReady?: boolean;
+        runtimeStatus?: string;
         verificationCommand: string;
         evidencePaths: string[];
       }>;
@@ -122,6 +158,18 @@ type LaunchStandupModule = {
       nextAction: string;
       nextCommand: string;
       verificationCommand: string;
+      runtimeDiagnostics?: {
+        source: string;
+        status: string;
+        ready: boolean;
+        configurationSource: string;
+        requiredCount: number;
+        configuredCount: number;
+        missingCount: number;
+        invalidCount: number;
+        placeholderCount: number;
+        fallbackApplied: boolean;
+      };
     }>;
     finalVerificationCommands: string[];
   };
@@ -266,6 +314,50 @@ function makeReadyEnv(audit: CommercialLaunchModule) {
   );
 }
 
+function makeRuntimeReadinessFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["production_database", "hms_booking_engine"],
+    blockedGates: ["production_abuse_controls"],
+    checks: [
+      {
+        id: "production_database",
+        ready: true,
+        requiredCount: 2,
+        configuredCount: 2,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+      {
+        id: "production_abuse_controls",
+        ready: false,
+        requiredCount: 4,
+        configuredCount: 0,
+        missingCount: 4,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "missing",
+      },
+      {
+        id: "hms_booking_engine",
+        ready: true,
+        requiredCount: 1,
+        configuredCount: 1,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "env",
+      },
+    ],
+  };
+}
+
 afterEach(() => {
   for (const dir of tmpDirs.splice(0)) {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -345,6 +437,50 @@ describe("launch standup", () => {
     expect(formatted).not.toContain("super-secret-payload-key");
     expect(formatted).not.toContain("ga4-secret-value");
     expect(serialized).toContain("NEXT_PUBLIC_META_PIXEL_ID");
+  });
+
+  it("prioritizes evidence handoff when production runtime is already configured", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const standup = await loadStandupModule();
+    const baseDir = makeTmpDir();
+    writeEvidence(baseDir, "docs/evidence/canonical-domain.md");
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: { NEXT_PUBLIC_SITE_URL: "https://kozbeylikonagi.com" },
+      baseDir,
+      runtimeReadiness: makeRuntimeReadinessFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+
+    const result = standup.buildLaunchStandup({ launchResult, cutoverPlan });
+    const database = result.blockedGates.find((gate) => gate.id === "production_database");
+    const hms = result.blockedGates.find((gate) => gate.id === "hms_booking_engine");
+    const platform = result.ownerQueues.find((queue) => queue.owner === "Platform / CMS operator");
+    const formatted = standup.formatLaunchStandup(result);
+
+    expect(result.nextGate).toMatchObject({
+      id: "production_database",
+      runtimeReady: true,
+      nextCommand: "npm run evidence:handoff:live",
+    });
+    expect(result.nextGate?.nextAction).toContain("Production runtime is already configured");
+    expect(result.nextGate?.nextAction).toContain("docs/evidence/production-database.md");
+    expect(database?.runtimeDiagnostics).toMatchObject({ status: "ready", ready: true, configuredCount: 2 });
+    expect(hms?.runtimeDiagnostics).toMatchObject({ ready: true, configuredCount: 1 });
+    expect(result.lanes.runtimeCoveredEvidenceGates).toEqual(
+      expect.arrayContaining(["production_database", "hms_booking_engine"]),
+    );
+    expect(platform?.gates[0]).toMatchObject({
+      id: "production_database",
+      runtimeReady: true,
+      nextCommand: "npm run evidence:handoff:live",
+    });
+    expect(formatted).toContain("runtime-covered evidence-needed");
+    expect(formatted).toContain("runtime ready: production_database");
   });
 
   it("reports ready only when every commercial gate has env and evidence proof", async () => {

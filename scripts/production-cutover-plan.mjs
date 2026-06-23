@@ -237,6 +237,28 @@ function normalizeMissingEvidence(evidenceItems = []) {
   }));
 }
 
+function normalizeRuntimeDiagnostics(runtimeConfiguration) {
+  if (!runtimeConfiguration) return undefined;
+
+  return {
+    source: runtimeConfiguration.source,
+    status: runtimeConfiguration.status || (runtimeConfiguration.ready ? "ready" : "blocked"),
+    ready: Boolean(runtimeConfiguration.ready),
+    configurationSource: runtimeConfiguration.configurationSource || "unknown",
+    requiredCount: Number(runtimeConfiguration.requiredCount ?? 0),
+    configuredCount: Number(runtimeConfiguration.configuredCount ?? 0),
+    missingCount: Number(runtimeConfiguration.missingCount ?? 0),
+    invalidCount: Number(runtimeConfiguration.invalidCount ?? 0),
+    placeholderCount: Number(runtimeConfiguration.placeholderCount ?? 0),
+    fallbackApplied: Boolean(runtimeConfiguration.fallbackApplied),
+  };
+}
+
+function formatRuntimeDiagnostics(runtimeDiagnostics) {
+  const state = runtimeDiagnostics.ready ? "ready" : "blocked";
+  return `${runtimeDiagnostics.source}: ${state} (${runtimeDiagnostics.configurationSource}, ${runtimeDiagnostics.configuredCount}/${runtimeDiagnostics.requiredCount} configured, ${runtimeDiagnostics.missingCount} missing, ${runtimeDiagnostics.invalidCount} invalid, ${runtimeDiagnostics.placeholderCount} placeholder, fallback=${runtimeDiagnostics.fallbackApplied ? "yes" : "no"})`;
+}
+
 function formatEvidenceIssue(item) {
   const summary = item.redactionSummary ? `; ${item.redactionSummary}` : "";
 
@@ -296,6 +318,7 @@ function buildGateStep(gate) {
     diagnostics: [],
     kpi: "Gate passes in npm run launch:audit.",
   };
+  const runtimeDiagnostics = normalizeRuntimeDiagnostics(gate.runtimeConfiguration);
 
   return {
     id: gate.id,
@@ -313,6 +336,7 @@ function buildGateStep(gate) {
       placeholderCount: gate.placeholderEnvCount || 0,
       fallbackApplied: Boolean(gate.fallbackApplied),
     },
+    ...(runtimeDiagnostics ? { runtimeDiagnostics } : {}),
     missingEnv: gate.missingEnv,
     missingEvidence: normalizeMissingEvidence(gate.missingEvidence),
     diagnostics: catalog.diagnostics || [],
@@ -394,6 +418,7 @@ export function formatProductionCutoverPlan(plan) {
       lines.push(
         `  env: ${step.envDiagnostics.source} (${step.envDiagnostics.configuredCount}/${step.envDiagnostics.requiredCount} configured, ${step.envDiagnostics.missingCount} missing, ${step.envDiagnostics.invalidCount} invalid, ${step.envDiagnostics.placeholderCount} placeholder, fallback=${step.envDiagnostics.fallbackApplied ? "yes" : "no"})`,
       );
+      if (step.runtimeDiagnostics) lines.push(`  runtime: ${formatRuntimeDiagnostics(step.runtimeDiagnostics)}`);
       if (step.missingEnv.length > 0) lines.push(`  missing env: ${step.missingEnv.join(", ")}`);
       if (step.missingEvidence.length > 0) {
         lines.push(
