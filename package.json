@@ -74,6 +74,8 @@
     "launch:standup:json": "node scripts/launch-standup.mjs --json",
     "launch:standup:live": "node scripts/launch-standup.mjs --live-runtime",
     "launch:standup:live:json": "node scripts/launch-standup.mjs --json --live-runtime",
+    "launch:standup:live:write": "node scripts/launch-standup.mjs --live-runtime --output .codex-artifacts/launch-standup.md",
+    "launch:standup:live:write:json": "node scripts/launch-standup.mjs --json --live-runtime --output .codex-artifacts/launch-standup.json",
     "launch:standup:strict": "node scripts/launch-standup.mjs --strict",
     "hms:verify": "node scripts/hms-booking-readiness.mjs",
     "hms:verify:json": "node scripts/hms-booking-readiness.mjs --json",

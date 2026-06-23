@@ -207,6 +207,13 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"launch:audit:live:json"');
     expect(readinessScript).toContain('"launch:audit:live:strict"');
     expect(readinessScript).toContain('"launch:audit:strict"');
+    expect(readinessScript).toContain('"launch:standup"');
+    expect(readinessScript).toContain('"launch:standup:json"');
+    expect(readinessScript).toContain('"launch:standup:live"');
+    expect(readinessScript).toContain('"launch:standup:live:json"');
+    expect(readinessScript).toContain('"launch:standup:live:write"');
+    expect(readinessScript).toContain('"launch:standup:live:write:json"');
+    expect(readinessScript).toContain('"launch:standup:strict"');
     expect(readinessScript).toContain('"hms:verify"');
     expect(readinessScript).toContain('"hms:verify:json"');
     expect(readinessScript).toContain('"hms:verify:strict"');
@@ -1011,6 +1018,12 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["launch:cutover:strict"]).toBe(
       "node scripts/production-cutover-plan.mjs --strict",
     );
+    expect(packageJson.scripts?.["launch:standup:live:write"]).toBe(
+      "node scripts/launch-standup.mjs --live-runtime --output .codex-artifacts/launch-standup.md",
+    );
+    expect(packageJson.scripts?.["launch:standup:live:write:json"]).toBe(
+      "node scripts/launch-standup.mjs --json --live-runtime --output .codex-artifacts/launch-standup.json",
+    );
     expect(packageJson.scripts?.["hms:verify:strict"]).toBe(
       "node scripts/hms-booking-readiness.mjs --strict",
     );
@@ -1107,6 +1120,9 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("npm run vercel:analytics:verify");
     expect(runbook).toContain("npm run vercel:search:verify");
     expect(runbook).toContain("npm run launch:cutover");
+    expect(runbook).toContain("npm run launch:standup:live:write");
+    expect(runbook).toContain("npm run launch:standup:live:write:json");
+    expect(runbook).toContain("not environment values");
     expect(runbook).toContain("KPI and review loop");
     expect(runbook).toContain("npm run vercel:ops:strict");
     expect(runbook).toContain("npm i -g vercel");

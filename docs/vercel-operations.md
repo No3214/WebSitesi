@@ -31,8 +31,8 @@ For a dated, local operator artifact that does not contain secret values, write
 the live standup report into the ignored `.codex-artifacts/` folder:
 
 ```bash
-npm run launch:standup:live -- --output .codex-artifacts/launch-standup.md
-npm run launch:standup:live:json -- --output .codex-artifacts/launch-standup.json
+npm run launch:standup:live:write
+npm run launch:standup:live:write:json
 ```
 
 The output guard rejects paths outside the project, dependency/build folders,
