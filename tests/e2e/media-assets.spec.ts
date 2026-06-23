@@ -257,6 +257,60 @@ test.describe("Media, video and mobile publish readiness", () => {
     }
   });
 
+  test("mobile /gastronomi video controls play breakfast, mihlama and chef clips", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const response = await page.goto("/gastronomi", { waitUntil: "load" });
+
+    expect(response?.status(), "/gastronomi should return usable HTML on mobile").toBeLessThan(400);
+    await expect(page.getByRole("heading", { name: "Mutfaktan Canlı Kareler" })).toBeVisible({
+      timeout: 15000,
+    });
+
+    for (const clip of [
+      { event: "video_play_kahvalti", testId: "kitchen-video-play-kahvalti", source: "/videos/kahvalti.mp4" },
+      { event: "video_play_mihlama", testId: "kitchen-video-play-mihlama", source: "/videos/mihlama.mp4" },
+      { event: "video_play_chef", testId: "kitchen-video-play-chef", source: "/videos/chef.mp4" },
+    ]) {
+      const video = page.locator(`video[data-event="${clip.event}"]`);
+      const button = page.getByTestId(clip.testId);
+
+      await button.scrollIntoViewIfNeeded();
+      await expect(button, `${clip.event} should expose a visible mobile play control`).toBeVisible();
+      await expect(button).toHaveAttribute("aria-label", /oynat/i);
+      await button.click();
+
+      await expect
+        .poll(
+          async () =>
+            video.evaluate((element, expectedSource) => {
+              const media = element as HTMLVideoElement;
+              const source = media.currentSrc || media.querySelector("source")?.getAttribute("src") || "";
+              return (
+                source.includes(expectedSource) &&
+                media.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+                media.currentTime > 0 &&
+                !media.paused
+              );
+            }, clip.source),
+          { timeout: 15000 }
+        )
+        .toBe(true);
+
+      const playback = await video.evaluate((element) => {
+        const media = element as HTMLVideoElement;
+        const result = {
+          currentTime: media.currentTime,
+          readyState: media.readyState,
+        };
+        media.pause();
+        return result;
+      });
+
+      expect(playback.readyState, `${clip.source} should decode data on mobile`).toBeGreaterThanOrEqual(2);
+      expect(playback.currentTime, `${clip.source} should advance on mobile`).toBeGreaterThan(0);
+    }
+  });
+
   test("mobile fixed contact controls do not overlap the bottom action bar", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     const response = await page.goto("/rezervasyon?oda=standart-deniz-manzarali-oda", { waitUntil: "load" });

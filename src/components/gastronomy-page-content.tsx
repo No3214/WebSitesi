@@ -1,5 +1,8 @@
 "use client";
 
+import { Play } from "lucide-react";
+import { useRef, useState } from "react";
+
 import { SiteHeader } from "@/components/site-header";
 import { StoryHero, StorySegment } from "@/components/storytelling";
 import { absoluteUrl } from "@/lib/utils";
@@ -36,6 +39,7 @@ const gastronomyCopy = {
     liveText:
       "Serpme köy kahvaltısı, taş ateşinde mıhlama ve şefin akşam tabağı — Kozbeyli mutfağının gerçek hali.",
     videos: ["Serpme Köy Kahvaltısı", "Taş Ateşinde Mıhlama", "Şefin İmzası"],
+    playLabels: ["Kahvaltı videosunu oynat", "Mıhlama videosunu oynat", "Şef videosunu oynat"],
   },
   en: {
     url: "/en/gastronomi",
@@ -66,8 +70,81 @@ const gastronomyCopy = {
     liveText:
       "Village breakfast, mıhlama over stone fire and the chef's evening plate — real moments from the Kozbeyli kitchen.",
     videos: ["Village Breakfast Table", "Stone-Fire Mıhlama", "Chef's Signature"],
+    playLabels: ["Play breakfast video", "Play mıhlama video", "Play chef video"],
   },
 };
+
+type KitchenVideoCardProps = {
+  poster: string;
+  src: string;
+  event: string;
+  caption: string;
+  playLabel: string;
+};
+
+function KitchenVideoCard({ poster, src, event, caption, playLabel }: KitchenVideoCardProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackBlocked, setPlaybackBlocked] = useState(false);
+
+  async function playVideo() {
+    const video = videoRef.current;
+    if (!video) return;
+
+    try {
+      video.playsInline = true;
+      await video.play();
+      setIsPlaying(!video.paused);
+      setPlaybackBlocked(false);
+    } catch {
+      setIsPlaying(false);
+      setPlaybackBlocked(true);
+      video.controls = true;
+    }
+  }
+
+  return (
+    <figure className="kitchen-video-card">
+      <div className="kitchen-video-shell">
+        <video
+          ref={videoRef}
+          controls
+          preload="none"
+          playsInline
+          poster={poster}
+          data-event={event}
+          onPlaying={() => {
+            setIsPlaying(true);
+            setPlaybackBlocked(false);
+          }}
+          onPause={() => setIsPlaying(false)}
+          onEnded={() => setIsPlaying(false)}
+          onError={() => {
+            setIsPlaying(false);
+            setPlaybackBlocked(true);
+          }}
+        >
+          <source src={src} type="video/mp4" />
+        </video>
+        {!isPlaying ? (
+          <button
+            type="button"
+            className="kitchen-video-control"
+            data-state={playbackBlocked ? "blocked" : "paused"}
+            data-testid={`kitchen-video-play-${event.replace("video_play_", "")}`}
+            aria-label={playLabel}
+            onClick={() => {
+              void playVideo();
+            }}
+          >
+            <Play aria-hidden size={22} strokeWidth={2.2} />
+          </button>
+        ) : null}
+      </div>
+      <figcaption>{caption}</figcaption>
+    </figure>
+  );
+}
 
 export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
   const copy = gastronomyCopy[locale];
@@ -133,28 +210,14 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
             { poster: "/videos/mihlama-poster.jpg", src: "/videos/mihlama.mp4", event: "video_play_mihlama" },
             { poster: "/videos/chef-poster.jpg", src: "/videos/chef.mp4", event: "video_play_chef" },
           ].map((video, index) => (
-            <figure key={video.src} style={{ margin: 0 }}>
-              <video
-                controls
-                preload="none"
-                playsInline
-                poster={video.poster}
-                style={{ width: "100%", borderRadius: 16, display: "block", background: "var(--stone-warm)" }}
-                data-event={video.event}
-              >
-                <source src={video.src} type="video/mp4" />
-              </video>
-              <figcaption
-                style={{
-                  color: "var(--muted)",
-                  fontSize: "0.9rem",
-                  marginTop: 10,
-                  textAlign: "center",
-                }}
-              >
-                {copy.videos[index]}
-              </figcaption>
-            </figure>
+            <KitchenVideoCard
+              key={video.src}
+              poster={video.poster}
+              src={video.src}
+              event={video.event}
+              caption={copy.videos[index]}
+              playLabel={copy.playLabels[index]}
+            />
           ))}
         </div>
       </section>

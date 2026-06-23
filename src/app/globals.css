@@ -1114,6 +1114,69 @@
     color: var(--white);
   }
 
+  .kitchen-video-card {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .kitchen-video-shell {
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--stone-warm);
+    box-shadow: 0 16px 42px rgba(31, 35, 30, 0.12);
+  }
+
+  .kitchen-video-shell video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background: var(--stone-warm);
+  }
+
+  .kitchen-video-control {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    z-index: 3;
+    width: 58px;
+    height: 58px;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(250, 249, 246, 0.78);
+    border-radius: 999px;
+    background: rgba(250, 249, 246, 0.94);
+    color: var(--olive);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 18px 48px rgba(31, 35, 30, 0.22);
+    cursor: pointer;
+    transition:
+      transform 180ms ease,
+      background-color 180ms ease,
+      color 180ms ease;
+  }
+
+  .kitchen-video-control:hover,
+  .kitchen-video-control:focus-visible {
+    transform: translate(-50%, -50%) scale(1.05);
+    background: var(--gold);
+    color: var(--white);
+    outline: none;
+  }
+
+  .kitchen-video-control[data-state="blocked"] {
+    background: var(--gold);
+    color: var(--white);
+  }
+
+  .kitchen-video-card figcaption {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 10px;
+    text-align: center;
+  }
+
   .editorial-copy h3 {
     font-size: var(--fs-h3);
     color: var(--olive);
