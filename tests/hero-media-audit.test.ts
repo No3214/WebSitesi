@@ -10,6 +10,14 @@ type HeroMediaModule = {
     sha256: string;
     width: number;
     height: number;
+    activeVideoAssets: Array<{ id: string; videoPath: string }>;
+  };
+  inspectMp4Structure: (buffer: Buffer) => {
+    firstBoxType?: string;
+    hasFtyp: boolean;
+    hasMoov: boolean;
+    hasMdat: boolean;
+    moovBeforeMdat: boolean;
   };
   parseMp4Metadata: (buffer: Buffer) => {
     width?: number;
@@ -25,6 +33,8 @@ type HeroMediaModule = {
       width?: number;
       height?: number;
     } | null;
+    activeVideoMetadata: Record<string, { width?: number; height?: number }>;
+    structures: Record<string, { firstBoxType?: string; moovBeforeMdat: boolean }>;
     failures: unknown[];
     checks: Array<{ id: string }>;
   };
@@ -37,9 +47,10 @@ async function loadHeroMediaModule() {
 
 describe("hero media audit", () => {
   it("parses the approved opening video metadata without external ffmpeg tooling", async () => {
-    const { HERO_MEDIA_EXPECTATION, parseMp4Metadata } = await loadHeroMediaModule();
+    const { HERO_MEDIA_EXPECTATION, inspectMp4Structure, parseMp4Metadata } = await loadHeroMediaModule();
     const video = fs.readFileSync(path.join(process.cwd(), HERO_MEDIA_EXPECTATION.videoPath));
     const metadata = parseMp4Metadata(video);
+    const structure = inspectMp4Structure(video);
 
     expect(metadata).toMatchObject({
       width: 1280,
@@ -49,6 +60,36 @@ describe("hero media audit", () => {
     expect(metadata.durationSec).toBeGreaterThanOrEqual(15.7);
     expect(metadata.durationSec).toBeLessThanOrEqual(15.9);
     expect(metadata.bitrateBps).toBeGreaterThanOrEqual(3_000_000);
+    expect(structure).toMatchObject({
+      firstBoxType: "ftyp",
+      hasFtyp: true,
+      hasMoov: true,
+      hasMdat: true,
+      moovBeforeMdat: true,
+    });
+  });
+
+  it("keeps active public food/history videos mobile-progressive playable", async () => {
+    const { HERO_MEDIA_EXPECTATION, auditHeroMedia } = await loadHeroMediaModule();
+    const result = auditHeroMedia();
+
+    for (const asset of HERO_MEDIA_EXPECTATION.activeVideoAssets) {
+      expect(result.activeVideoMetadata[asset.videoPath], `${asset.videoPath} metadata`).toMatchObject({
+        width: 720,
+        height: 1280,
+      });
+      expect(result.structures[asset.videoPath], `${asset.videoPath} structure`).toMatchObject({
+        firstBoxType: "ftyp",
+        moovBeforeMdat: true,
+      });
+      expect(result.checks.map((check) => check.id)).toEqual(
+        expect.arrayContaining([
+          `active_video_${asset.id}_mp4_boxes`,
+          `active_video_${asset.id}_mp4_fast_start`,
+          `active_video_${asset.id}_poster`,
+        ]),
+      );
+    }
   });
 
   it("keeps the opening video quality and provenance gate green", async () => {
@@ -65,6 +106,7 @@ describe("hero media audit", () => {
     expect(result.checks.map((check) => check.id)).toEqual(
       expect.arrayContaining([
         "hero_video_hash",
+        "hero_video_mp4_fast_start",
         "hero_video_dimensions",
         "hero_video_duration",
         "hero_video_bitrate",

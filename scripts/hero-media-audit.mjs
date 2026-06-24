@@ -22,6 +22,56 @@ export const HERO_MEDIA_EXPECTATION = {
   minBitrateBps: 3_000_000,
   minSizeBytes: 6_000_000,
   minPosterSizeBytes: 35_000,
+  activeVideoAssets: [
+    {
+      id: "kahvalti",
+      label: "Homepage and gastronomy breakfast video",
+      videoPath: "public/videos/kahvalti.mp4",
+      posterPath: "public/videos/kahvalti-poster.jpg",
+      minSizeBytes: 3_500_000,
+      minPosterSizeBytes: 35_000,
+      minDurationSec: 20,
+      minBitrateBps: 1_000_000,
+      width: 720,
+      height: 1280,
+    },
+    {
+      id: "mihlama",
+      label: "Homepage and gastronomy mihlama video",
+      videoPath: "public/videos/mihlama.mp4",
+      posterPath: "public/videos/mihlama-poster.jpg",
+      minSizeBytes: 1_000_000,
+      minPosterSizeBytes: 35_000,
+      minDurationSec: 8,
+      minBitrateBps: 850_000,
+      width: 720,
+      height: 1280,
+    },
+    {
+      id: "chef",
+      label: "Gastronomy chef video",
+      videoPath: "public/videos/chef.mp4",
+      posterPath: "public/videos/chef-poster.jpg",
+      minSizeBytes: 1_500_000,
+      minPosterSizeBytes: 35_000,
+      minDurationSec: 6,
+      minBitrateBps: 1_000_000,
+      width: 720,
+      height: 1280,
+    },
+    {
+      id: "sunset",
+      label: "History sunset video",
+      videoPath: "public/videos/sunset.mp4",
+      posterPath: "public/videos/sunset-poster.jpg",
+      minSizeBytes: 900_000,
+      minPosterSizeBytes: 20_000,
+      minDurationSec: 7,
+      minBitrateBps: 700_000,
+      width: 720,
+      height: 1280,
+    },
+  ],
 };
 
 function exists(relPath, baseDir = root) {
@@ -131,6 +181,30 @@ function parseTrack(buffer, trakBox) {
   return handler === "vide" ? dimensions : undefined;
 }
 
+export function inspectMp4Structure(buffer) {
+  const topLevelBoxes = [...boxes(buffer, 0, buffer.length)].map((box) => ({
+    type: box.type,
+    start: box.start,
+    end: box.end,
+    size: box.end - box.start,
+  }));
+  const ftyp = topLevelBoxes.find((box) => box.type === "ftyp");
+  const moov = topLevelBoxes.find((box) => box.type === "moov");
+  const mdat = topLevelBoxes.find((box) => box.type === "mdat");
+
+  return {
+    topLevelBoxes,
+    hasFtyp: Boolean(ftyp),
+    hasMoov: Boolean(moov),
+    hasMdat: Boolean(mdat),
+    ftypStart: ftyp?.start,
+    moovStart: moov?.start,
+    mdatStart: mdat?.start,
+    moovBeforeMdat: Boolean(moov && mdat && moov.start < mdat.start),
+    firstBoxType: topLevelBoxes[0]?.type,
+  };
+}
+
 export function parseMp4Metadata(buffer) {
   let durationSec;
   let dimensions;
@@ -160,6 +234,27 @@ export function parseMp4Metadata(buffer) {
   };
 }
 
+function checkMp4PlaybackStructure(checks, id, label, buffer) {
+  const structure = inspectMp4Structure(buffer);
+
+  check(
+    checks,
+    `${id}_mp4_boxes`,
+    `${label} has required MP4 ftyp/moov/mdat boxes`,
+    structure.hasFtyp && structure.hasMoov && structure.hasMdat,
+    structure.topLevelBoxes.map((box) => `${box.type}@${box.start}`).join(", "),
+  );
+  check(
+    checks,
+    `${id}_mp4_fast_start`,
+    `${label} keeps moov before mdat for mobile/progressive playback`,
+    structure.firstBoxType === "ftyp" && structure.moovBeforeMdat,
+    structure.topLevelBoxes.map((box) => `${box.type}@${box.start}`).join(", "),
+  );
+
+  return structure;
+}
+
 function check(checks, id, label, pass, detail) {
   checks.push({
     id,
@@ -175,6 +270,8 @@ export function auditHeroMedia(options = {}) {
   const checks = [];
   let metadata = null;
   let hash = null;
+  const structures = {};
+  const activeVideoMetadata = {};
 
   const videoExists = exists(expected.videoPath, baseDir);
   check(checks, "hero_video_file", "Hero video file is present", videoExists, expected.videoPath);
@@ -182,6 +279,12 @@ export function auditHeroMedia(options = {}) {
   if (videoExists) {
     const video = read(expected.videoPath, baseDir);
     metadata = parseMp4Metadata(video);
+    structures[expected.videoPath] = checkMp4PlaybackStructure(
+      checks,
+      "hero_video",
+      "Hero video",
+      video,
+    );
     hash = crypto.createHash("sha256").update(video).digest("hex");
 
     check(
@@ -218,6 +321,67 @@ export function auditHeroMedia(options = {}) {
       "Hero video bitrate stays above the visible quality floor",
       Boolean(metadata.bitrateBps && metadata.bitrateBps >= expected.minBitrateBps),
       metadata.bitrateBps ? `${metadata.bitrateBps} bps` : "bitrate unavailable",
+    );
+  }
+
+  for (const asset of expected.activeVideoAssets || []) {
+    const videoExists = exists(asset.videoPath, baseDir);
+    check(
+      checks,
+      `active_video_${asset.id}_file`,
+      `${asset.label} file is present`,
+      videoExists,
+      asset.videoPath,
+    );
+
+    if (videoExists) {
+      const video = read(asset.videoPath, baseDir);
+      const assetMetadata = parseMp4Metadata(video);
+      activeVideoMetadata[asset.videoPath] = assetMetadata;
+      structures[asset.videoPath] = checkMp4PlaybackStructure(
+        checks,
+        `active_video_${asset.id}`,
+        asset.label,
+        video,
+      );
+      check(
+        checks,
+        `active_video_${asset.id}_size`,
+        `${asset.label} keeps enough source data for visible playback`,
+        assetMetadata.sizeBytes >= asset.minSizeBytes,
+        `${assetMetadata.sizeBytes} bytes`,
+      );
+      check(
+        checks,
+        `active_video_${asset.id}_dimensions`,
+        `${asset.label} keeps the approved vertical video dimensions`,
+        assetMetadata.width === asset.width && assetMetadata.height === asset.height,
+        `${assetMetadata.width || "?"}x${assetMetadata.height || "?"}`,
+      );
+      check(
+        checks,
+        `active_video_${asset.id}_duration`,
+        `${asset.label} keeps the approved clip length floor`,
+        Boolean(assetMetadata.durationSec && assetMetadata.durationSec >= asset.minDurationSec),
+        assetMetadata.durationSec ? `${assetMetadata.durationSec.toFixed(3)}s` : "duration unavailable",
+      );
+      check(
+        checks,
+        `active_video_${asset.id}_bitrate`,
+        `${asset.label} keeps the visible quality bitrate floor`,
+        Boolean(assetMetadata.bitrateBps && assetMetadata.bitrateBps >= asset.minBitrateBps),
+        assetMetadata.bitrateBps ? `${assetMetadata.bitrateBps} bps` : "bitrate unavailable",
+      );
+    }
+
+    const posterExists = exists(asset.posterPath, baseDir);
+    const posterSize = posterExists ? fs.statSync(path.join(baseDir, asset.posterPath)).size : 0;
+    check(
+      checks,
+      `active_video_${asset.id}_poster`,
+      `${asset.label} poster is present`,
+      posterExists && posterSize >= asset.minPosterSizeBytes,
+      posterExists ? `${posterSize} bytes` : "missing",
     );
   }
 
@@ -274,6 +438,8 @@ export function auditHeroMedia(options = {}) {
     status: failures.length === 0 ? "PASS" : "FAIL",
     expected,
     metadata,
+    activeVideoMetadata,
+    structures,
     sha256: hash,
     checks,
     failures,
