@@ -33,6 +33,7 @@ type CommercialLaunchModule = {
         placeholderCount: number;
         fallbackApplied: boolean;
         configurationSource: string;
+        operationalStatus?: string;
       }>;
     };
     runtimeSource?: string;
@@ -78,6 +79,7 @@ type CutoverModule = {
         invalidCount: number;
         placeholderCount: number;
         fallbackApplied: boolean;
+        operationalStatus?: string;
       };
       runtimeDiagnostics?: {
         source: string;
@@ -90,6 +92,7 @@ type CutoverModule = {
         invalidCount: number;
         placeholderCount: number;
         fallbackApplied: boolean;
+        operationalStatus?: string;
       };
       missingEnv: string[];
       missingEvidence: Array<{ path: string; ready: boolean; reason: string }>;
@@ -147,6 +150,7 @@ type LaunchStandupModule = {
       };
       runtimeReady?: boolean;
       runtimeStatus?: string;
+      runtimeOperationalStatus?: string;
     };
     lanes: {
       envBlockedCount: number;
@@ -170,6 +174,7 @@ type LaunchStandupModule = {
         evidenceBlocked: boolean;
         runtimeReady?: boolean;
         runtimeStatus?: string;
+        runtimeOperationalStatus?: string;
         verificationCommand: string;
         evidencePaths: string[];
         envSetup?: {
@@ -232,6 +237,7 @@ type LaunchStandupModule = {
         invalidCount: number;
         placeholderCount: number;
         fallbackApplied: boolean;
+        operationalStatus?: string;
       };
     }>;
     finalVerificationCommands: string[];
@@ -423,6 +429,29 @@ function makeRuntimeReadinessFixture() {
         placeholderCount: 0,
         fallbackApplied: false,
         configurationSource: "env",
+      },
+    ],
+  };
+}
+
+function makeRuntimeOperationalBlockFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["hms_booking_engine"],
+    blockedGates: ["production_database"],
+    checks: [
+      {
+        id: "production_database",
+        ready: false,
+        requiredCount: 2,
+        configuredCount: 2,
+        missingCount: 0,
+        invalidCount: 1,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "invalid",
+        operationalStatus: "database_dns_unresolved",
       },
     ],
   };
@@ -767,6 +796,51 @@ describe("launch standup", () => {
     expect(formatted).toContain("evidence files: docs/evidence/production-database.md");
     expect(formatted).toContain("required proof: managed Postgres or Supabase pooler proof");
     expect(formatted).toContain("npm run launch:audit:live:strict");
+  });
+
+  it("routes operational runtime blockers to the exact provider repair action", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const standup = await loadStandupModule();
+    const baseDir = makeTmpDir();
+    writeEvidence(baseDir, "docs/evidence/canonical-domain.md");
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: { NEXT_PUBLIC_SITE_URL: "https://kozbeylikonagi.com" },
+      baseDir,
+      runtimeReadiness: makeRuntimeOperationalBlockFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+
+    const result = standup.buildLaunchStandup({ launchResult, cutoverPlan });
+    const compact = standup.buildCompactLaunchStandup(result);
+    const formatted = standup.formatLaunchStandup(result);
+    const compactText = standup.formatCompactLaunchStandup(compact);
+    const database = result.blockedGates.find((gate) => gate.id === "production_database");
+
+    expect(result.nextGate).toMatchObject({
+      id: "production_database",
+      runtimeReady: false,
+      runtimeOperationalStatus: "database_dns_unresolved",
+      nextAction: expect.stringContaining("replace the Vercel Production DATABASE_URI host/connection string"),
+    });
+    expect(result.nextGate?.runtimeStatus).toContain("operational=database_dns_unresolved");
+    expect(database?.runtimeDiagnostics).toMatchObject({
+      ready: false,
+      configurationSource: "invalid",
+      invalidCount: 1,
+      operationalStatus: "database_dns_unresolved",
+    });
+    expect(JSON.stringify(compact)).toContain('"runtimeOperationalStatus":"database_dns_unresolved"');
+    expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: blocked");
+    expect(formatted).toContain("operational=database_dns_unresolved");
+    expect(formatted).toContain("replace the Vercel Production DATABASE_URI host/connection string");
+    expect(compactText).toContain("Runtime: https://www.kozbeylikonagi.com/api/health: blocked");
+    expect(compactText).toContain("operational=database_dns_unresolved");
+    expect(formatted).not.toContain("postgresql://");
   });
 
   it("points partial analytics setup at the actual missing GA4 API secret", async () => {

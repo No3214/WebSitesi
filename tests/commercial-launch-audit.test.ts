@@ -35,6 +35,7 @@ type CommercialLaunchModule = {
         placeholderCount: number;
         fallbackApplied: boolean;
         configurationSource: string;
+        operationalStatus?: string;
       }>;
     };
     runtimeSource?: string;
@@ -76,6 +77,7 @@ type CommercialLaunchModule = {
         invalidCount: number;
         placeholderCount: number;
         fallbackApplied: boolean;
+        operationalStatus?: string;
       };
     }>;
   };
@@ -267,6 +269,29 @@ function makeRuntimeReadinessFixture() {
   };
 }
 
+function makeRuntimeOperationalBlockFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["canonical_domain", "hms_booking_engine"],
+    blockedGates: ["production_database"],
+    checks: [
+      {
+        id: "production_database",
+        ready: false,
+        requiredCount: 2,
+        configuredCount: 2,
+        missingCount: 0,
+        invalidCount: 1,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "invalid",
+        operationalStatus: "database_dns_unresolved",
+      },
+    ],
+  };
+}
+
 afterEach(() => {
   for (const dir of tmpDirs.splice(0)) {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -373,6 +398,31 @@ describe("commercial launch audit", () => {
     });
     expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: ready");
     expect(formatted).toContain("runtime lane:");
+  });
+
+  it("preserves production runtime operational block details", async () => {
+    const audit = await loadAuditModule();
+    const result = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir: makeTmpDir(),
+      runtimeReadiness: makeRuntimeOperationalBlockFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+
+    const databaseGate = result.gateResults.find((gate) => gate.id === "production_database");
+    const formatted = audit.formatCommercialLaunchReport(result);
+
+    expect(databaseGate?.runtimeConfiguration).toMatchObject({
+      source: "https://www.kozbeylikonagi.com/api/health",
+      ready: false,
+      configurationSource: "invalid",
+      configuredCount: 2,
+      requiredCount: 2,
+      invalidCount: 1,
+      operationalStatus: "database_dns_unresolved",
+    });
+    expect(formatted).toContain("operational=database_dns_unresolved");
+    expect(formatted).not.toContain("postgresql://");
   });
 
   it("reaches 100/100 only when every required env group or official fallback and evidence file is ready", async () => {

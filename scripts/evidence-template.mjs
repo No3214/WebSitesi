@@ -170,16 +170,26 @@ function buildTemplate({ gate, catalogGate, evidence, step }) {
         invalidCount: gate.runtimeConfiguration.invalidCount,
         placeholderCount: gate.runtimeConfiguration.placeholderCount,
         fallbackApplied: Boolean(gate.runtimeConfiguration.fallbackApplied),
+        ...(gate.runtimeConfiguration.operationalStatus
+          ? { operationalStatus: gate.runtimeConfiguration.operationalStatus }
+          : {}),
       }
     : undefined;
   const templateCommands = commandListForTemplate(commands, envSetup, runtimeStatus);
+  const operational = runtimeStatus?.operationalStatus
+    ? `, operational=${runtimeStatus.operationalStatus}`
+    : "";
   const runtimeStatusText = runtimeStatus
-    ? `${runtimeStatus.source}: ${runtimeStatus.ready ? "ready" : "blocked"} (${runtimeStatus.configurationSource}, ${runtimeStatus.configuredCount}/${runtimeStatus.requiredCount} configured, ${runtimeStatus.missingCount} missing, ${runtimeStatus.invalidCount} invalid, ${runtimeStatus.placeholderCount} placeholder, fallback=${runtimeStatus.fallbackApplied ? "yes" : "no"})`
+    ? `${runtimeStatus.source}: ${runtimeStatus.ready ? "ready" : "blocked"} (${runtimeStatus.configurationSource}, ${runtimeStatus.configuredCount}/${runtimeStatus.requiredCount} configured, ${runtimeStatus.missingCount} missing, ${runtimeStatus.invalidCount} invalid, ${runtimeStatus.placeholderCount} placeholder, fallback=${runtimeStatus.fallbackApplied ? "yes" : "no"}${operational})`
     : "Not checked in this template run. Use --live-runtime or --runtime-health-url to add production runtime context.";
   const runtimeAction = runtimeStatus?.ready
     ? "Production runtime reports this gate configured; complete the redacted source-system evidence below before setting status: ready."
     : runtimeStatus
-      ? "Production runtime is still missing or invalid for this gate; configure the production provider/env first, then complete the redacted source-system evidence below."
+      ? runtimeStatus.operationalStatus === "database_dns_unresolved"
+        ? "Production runtime reports database_dns_unresolved; replace the Vercel Production DATABASE_URI host/connection string with the valid production Postgres/Supabase endpoint, trigger a production redeploy, then rerun npm run vercel:supabase:verify and npm run admin:verify:strict."
+        : runtimeStatus.operationalStatus
+          ? `Production runtime reports operational status ${runtimeStatus.operationalStatus}; resolve the provider dependency, redeploy production, then complete the redacted source-system evidence below.`
+          : "Production runtime is still missing or invalid for this gate; configure the production provider/env first, then complete the redacted source-system evidence below."
       : "Runtime context is diagnostic only and does not replace source-system evidence.";
 
   return {
@@ -279,6 +289,9 @@ export function buildCompactEvidenceTemplates(result) {
       timing: template.timing,
       currentReason: template.currentReason,
       runtimeReady: Boolean(template.runtimeStatus?.ready),
+      ...(template.runtimeStatus?.operationalStatus
+        ? { runtimeOperationalStatus: template.runtimeStatus.operationalStatus }
+        : {}),
       runtimeStatusText: template.runtimeStatusText,
       envNames: [...(template.envSetup?.envNames || [])],
       requiredProofSignals: [...template.requiredProofSignals],

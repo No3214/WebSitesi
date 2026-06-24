@@ -44,6 +44,9 @@ function compactRuntimeDiagnostics(runtimeDiagnostics) {
     invalidCount: runtimeDiagnostics.invalidCount,
     placeholderCount: runtimeDiagnostics.placeholderCount,
     fallbackApplied: Boolean(runtimeDiagnostics.fallbackApplied),
+    ...(runtimeDiagnostics.operationalStatus
+      ? { operationalStatus: runtimeDiagnostics.operationalStatus }
+      : {}),
   };
 }
 
@@ -55,10 +58,27 @@ function runtimeStatusText(runtimeDiagnostics) {
   if (!runtimeDiagnostics) return "";
 
   const state = runtimeDiagnostics.ready ? "ready" : "blocked";
-  return `${runtimeDiagnostics.source}: ${state} (${runtimeDiagnostics.configurationSource}, ${runtimeDiagnostics.configuredCount}/${runtimeDiagnostics.requiredCount} configured, ${runtimeDiagnostics.missingCount} missing)`;
+  const operational = runtimeDiagnostics.operationalStatus
+    ? `, operational=${runtimeDiagnostics.operationalStatus}`
+    : "";
+  return `${runtimeDiagnostics.source}: ${state} (${runtimeDiagnostics.configurationSource}, ${runtimeDiagnostics.configuredCount}/${runtimeDiagnostics.requiredCount} configured, ${runtimeDiagnostics.missingCount} missing, ${runtimeDiagnostics.invalidCount} invalid, ${runtimeDiagnostics.placeholderCount} placeholder, fallback=${runtimeDiagnostics.fallbackApplied ? "yes" : "no"}${operational})`;
+}
+
+function runtimeOperationalAction(step) {
+  const status = step.runtimeDiagnostics?.operationalStatus;
+  if (!status || step.runtimeDiagnostics?.ready) return "";
+
+  if (status === "database_dns_unresolved") {
+    return "Production runtime reports database_dns_unresolved; replace the Vercel Production DATABASE_URI host/connection string with the valid production Postgres/Supabase endpoint, trigger a production redeploy, then rerun npm run vercel:supabase:verify and npm run admin:verify:strict.";
+  }
+
+  return `Production runtime reports operational status ${status}; resolve the provider dependency, redeploy production, then rerun npm run launch:audit:live.`;
 }
 
 function resolveNextAction(step, evidenceBlocked, envSetup) {
+  const operationalAction = runtimeOperationalAction(step);
+  if (operationalAction) return operationalAction;
+
   if (runtimeReady(step) && evidenceBlocked) {
     return [
       "Production runtime is already configured for this gate.",
@@ -226,6 +246,7 @@ function buildOwnerQueues(blockedSteps) {
       evidenceBlocked: step.evidenceBlocked,
       runtimeReady: Boolean(step.runtimeDiagnostics?.ready),
       runtimeStatus: runtimeStatusText(step.runtimeDiagnostics),
+      runtimeOperationalStatus: step.runtimeDiagnostics?.operationalStatus || "",
       nextAction: step.nextAction,
       nextCommand: step.nextCommand,
       verificationCommand: step.verificationCommand,
@@ -293,6 +314,7 @@ export function buildLaunchStandup({
             ? {
                 runtimeReady: Boolean(firstGate.runtimeDiagnostics.ready),
                 runtimeStatus: runtimeStatusText(firstGate.runtimeDiagnostics),
+                runtimeOperationalStatus: firstGate.runtimeDiagnostics.operationalStatus || "",
               }
             : {}),
         }
@@ -336,6 +358,7 @@ export function formatLaunchStandup(result) {
     lines.push(`  timing: ${result.nextGate.timing}`);
     lines.push(`  action: ${result.nextGate.nextAction}`);
     lines.push(`  command: ${result.nextGate.nextCommand}`);
+    if (result.nextGate.runtimeStatus) lines.push(`  runtime: ${result.nextGate.runtimeStatus}`);
     if (result.nextGate.envSetup) {
       lines.push(`  env setup: ${result.nextGate.envSetup.dashboardPath}`);
       lines.push(`  env names: ${result.nextGate.envSetup.envNames.join(", ")}`);
@@ -377,6 +400,10 @@ export function formatLaunchStandup(result) {
       }
       const runtimeReadyGates = queue.gates.filter((gate) => gate.runtimeReady).map((gate) => gate.id);
       if (runtimeReadyGates.length > 0) lines.push(`  runtime ready: ${runtimeReadyGates.join(", ")}`);
+      const runtimeGates = queue.gates.filter((gate) => gate.runtimeStatus);
+      for (const gate of runtimeGates) {
+        lines.push(`  runtime (${gate.id}): ${gate.runtimeStatus}`);
+      }
       const evidenceSetupGates = queue.gates.filter((gate) => gate.evidenceSetup);
       for (const gate of evidenceSetupGates) {
         lines.push(`  evidence files (${gate.id}): ${gate.evidenceSetup.paths.join(", ")}`);
@@ -403,6 +430,8 @@ function compactGate(gate) {
     envBlocked: Boolean(gate.envBlocked),
     evidenceBlocked: Boolean(gate.evidenceBlocked),
     runtimeReady: Boolean(gate.runtimeReady),
+    ...(gate.runtimeStatus ? { runtimeStatus: gate.runtimeStatus } : {}),
+    ...(gate.runtimeOperationalStatus ? { runtimeOperationalStatus: gate.runtimeOperationalStatus } : {}),
     missingEnv: [...(gate.envSetup?.envNames || gate.missingEnv || [])],
     evidencePaths: [...(gate.evidencePaths || [])],
     nextCommand: gate.nextCommand,
@@ -443,6 +472,10 @@ export function buildCompactLaunchStandup(result) {
           owner: result.nextGate.owner,
           pointsBlocked: result.nextGate.pointsBlocked,
           runtimeReady: Boolean(result.nextGate.runtimeReady),
+          ...(result.nextGate.runtimeStatus ? { runtimeStatus: result.nextGate.runtimeStatus } : {}),
+          ...(result.nextGate.runtimeOperationalStatus
+            ? { runtimeOperationalStatus: result.nextGate.runtimeOperationalStatus }
+            : {}),
           nextAction: result.nextGate.nextAction,
           nextCommand: result.nextGate.nextCommand,
           verificationCommand: result.nextGate.verificationCommand,
@@ -483,6 +516,7 @@ export function formatCompactLaunchStandup(result) {
     );
     lines.push(`Action: ${result.nextGate.nextAction}`);
     lines.push(`Command: ${result.nextGate.nextCommand}`);
+    if (result.nextGate.runtimeStatus) lines.push(`Runtime: ${result.nextGate.runtimeStatus}`);
     if (result.nextGate.envNames.length > 0) {
       lines.push(`Env names: ${result.nextGate.envNames.join(", ")}`);
     }

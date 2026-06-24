@@ -58,6 +58,9 @@ function runtimeStatusSummary(runtimeConfiguration) {
     invalidCount: runtimeConfiguration.invalidCount,
     placeholderCount: runtimeConfiguration.placeholderCount,
     fallbackApplied: Boolean(runtimeConfiguration.fallbackApplied),
+    ...(runtimeConfiguration.operationalStatus
+      ? { operationalStatus: runtimeConfiguration.operationalStatus }
+      : {}),
   };
 }
 
@@ -65,13 +68,24 @@ function formatRuntimeStatus(runtimeStatus) {
   if (!runtimeStatus) return "";
 
   const state = runtimeStatus.ready ? "ready" : "blocked";
-  return `${runtimeStatus.source}: ${state} (${runtimeStatus.configurationSource}, ${runtimeStatus.configuredCount}/${runtimeStatus.requiredCount} configured, ${runtimeStatus.missingCount} missing, ${runtimeStatus.invalidCount} invalid, ${runtimeStatus.placeholderCount} placeholder, fallback=${runtimeStatus.fallbackApplied ? "yes" : "no"})`;
+  const operational = runtimeStatus.operationalStatus
+    ? `, operational=${runtimeStatus.operationalStatus}`
+    : "";
+  return `${runtimeStatus.source}: ${state} (${runtimeStatus.configurationSource}, ${runtimeStatus.configuredCount}/${runtimeStatus.requiredCount} configured, ${runtimeStatus.missingCount} missing, ${runtimeStatus.invalidCount} invalid, ${runtimeStatus.placeholderCount} placeholder, fallback=${runtimeStatus.fallbackApplied ? "yes" : "no"}${operational})`;
 }
 
 function runtimeAction(runtimeStatus) {
   if (!runtimeStatus) return "Run npm run launch:audit:live after production env changes to compare live runtime state with the evidence gate.";
   if (runtimeStatus.ready) {
     return "Production runtime reports this gate configured; attach redacted source-system evidence before marking the evidence file ready.";
+  }
+
+  if (runtimeStatus.operationalStatus === "database_dns_unresolved") {
+    return "Production runtime reports database_dns_unresolved; replace the Vercel Production DATABASE_URI host/connection string with the valid production Postgres/Supabase endpoint, trigger a production redeploy, then rerun npm run vercel:supabase:verify and npm run admin:verify:strict.";
+  }
+
+  if (runtimeStatus.operationalStatus) {
+    return `Production runtime reports operational status ${runtimeStatus.operationalStatus}; resolve the provider dependency, redeploy production, then rerun npm run launch:audit:live.`;
   }
 
   return "Production runtime is still missing or invalid for this gate; configure the named production provider/env first, then attach redacted evidence.";

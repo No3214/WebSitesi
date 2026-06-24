@@ -257,12 +257,18 @@ function normalizeRuntimeDiagnostics(runtimeConfiguration) {
     invalidCount: Number(runtimeConfiguration.invalidCount ?? 0),
     placeholderCount: Number(runtimeConfiguration.placeholderCount ?? 0),
     fallbackApplied: Boolean(runtimeConfiguration.fallbackApplied),
+    ...(runtimeConfiguration.operationalStatus
+      ? { operationalStatus: runtimeConfiguration.operationalStatus }
+      : {}),
   };
 }
 
 function formatRuntimeDiagnostics(runtimeDiagnostics) {
   const state = runtimeDiagnostics.ready ? "ready" : "blocked";
-  return `${runtimeDiagnostics.source}: ${state} (${runtimeDiagnostics.configurationSource}, ${runtimeDiagnostics.configuredCount}/${runtimeDiagnostics.requiredCount} configured, ${runtimeDiagnostics.missingCount} missing, ${runtimeDiagnostics.invalidCount} invalid, ${runtimeDiagnostics.placeholderCount} placeholder, fallback=${runtimeDiagnostics.fallbackApplied ? "yes" : "no"})`;
+  const operational = runtimeDiagnostics.operationalStatus
+    ? `, operational=${runtimeDiagnostics.operationalStatus}`
+    : "";
+  return `${runtimeDiagnostics.source}: ${state} (${runtimeDiagnostics.configurationSource}, ${runtimeDiagnostics.configuredCount}/${runtimeDiagnostics.requiredCount} configured, ${runtimeDiagnostics.missingCount} missing, ${runtimeDiagnostics.invalidCount} invalid, ${runtimeDiagnostics.placeholderCount} placeholder, fallback=${runtimeDiagnostics.fallbackApplied ? "yes" : "no"}${operational})`;
 }
 
 function formatEvidenceIssue(item) {

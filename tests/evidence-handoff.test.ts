@@ -33,6 +33,7 @@ type CommercialLaunchModule = {
         placeholderCount: number;
         fallbackApplied: boolean;
         configurationSource: string;
+        operationalStatus?: string;
       }>;
     };
     runtimeSource?: string;
@@ -64,6 +65,7 @@ type CommercialLaunchModule = {
         invalidCount: number;
         placeholderCount: number;
         fallbackApplied: boolean;
+        operationalStatus?: string;
       };
     }>;
   };
@@ -126,6 +128,7 @@ type EvidenceHandoffModule = {
         invalidCount: number;
         placeholderCount: number;
         fallbackApplied: boolean;
+        operationalStatus?: string;
       };
       runtimeAction: string;
       commands: string[];
@@ -352,6 +355,29 @@ function makeRuntimeReadinessFixture() {
   };
 }
 
+function makeRuntimeOperationalBlockFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["hms_booking_engine"],
+    blockedGates: ["production_database"],
+    checks: [
+      {
+        id: "production_database",
+        ready: false,
+        requiredCount: 2,
+        configuredCount: 2,
+        missingCount: 0,
+        invalidCount: 1,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "invalid",
+        operationalStatus: "database_dns_unresolved",
+      },
+    ],
+  };
+}
+
 afterEach(() => {
   for (const dir of tmpDirs.splice(0)) {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -507,6 +533,42 @@ describe("evidence handoff", () => {
     expect(formatted).toContain("env setup: Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables");
     expect(formatted).toContain("cli fallback: npm i -g vercel; vercel login; vercel whoami");
     expect(formatted).not.toContain("vercel env add DATABASE_URI production");
+    expect(JSON.stringify(result)).not.toContain("postgresql://");
+    expect(formatted).not.toContain("postgresql://");
+  });
+
+  it("turns operational runtime blockers into provider-specific repair guidance", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const handoff = await loadHandoffModule();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir: makeTmpDir(),
+      runtimeReadiness: makeRuntimeOperationalBlockFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+
+    const result = handoff.buildEvidenceHandoff({ launchResult, cutoverPlan });
+    const database = result.files.find((file) => file.path === "docs/evidence/production-database.md");
+    const formatted = handoff.formatEvidenceHandoff(result);
+
+    expect(database?.runtimeStatus).toMatchObject({
+      ready: false,
+      configurationSource: "invalid",
+      configuredCount: 2,
+      requiredCount: 2,
+      invalidCount: 1,
+      operationalStatus: "database_dns_unresolved",
+    });
+    expect(database?.runtimeAction).toContain("replace the Vercel Production DATABASE_URI host/connection string");
+    expect(database?.runtimeAction).toContain("npm run vercel:supabase:verify");
+    expect(database?.runtimeAction).toContain("npm run admin:verify:strict");
+    expect(formatted).toContain("operational=database_dns_unresolved");
+    expect(formatted).toContain("replace the Vercel Production DATABASE_URI host/connection string");
     expect(JSON.stringify(result)).not.toContain("postgresql://");
     expect(formatted).not.toContain("postgresql://");
   });

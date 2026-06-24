@@ -33,6 +33,7 @@ type CommercialLaunchModule = {
         placeholderCount: number;
         fallbackApplied: boolean;
         configurationSource: string;
+        operationalStatus?: string;
       }>;
     };
     runtimeSource?: string;
@@ -90,6 +91,7 @@ type CutoverModule = {
         invalidCount: number;
         placeholderCount: number;
         fallbackApplied: boolean;
+        operationalStatus?: string;
       };
       runtimeDiagnostics?: {
         source: string;
@@ -303,6 +305,29 @@ function makeRuntimeReadinessFixture() {
         placeholderCount: 0,
         fallbackApplied: false,
         configurationSource: "env",
+      },
+    ],
+  };
+}
+
+function makeRuntimeOperationalBlockFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["hms_booking_engine"],
+    blockedGates: ["production_database"],
+    checks: [
+      {
+        id: "production_database",
+        ready: false,
+        requiredCount: 2,
+        configuredCount: 2,
+        missingCount: 0,
+        invalidCount: 1,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "invalid",
+        operationalStatus: "database_dns_unresolved",
       },
     ],
   };
@@ -658,6 +683,36 @@ describe("production cutover plan", () => {
     expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: ready");
     expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: blocked");
     expect(formatted).toContain("npm run launch:audit:live:strict");
+  });
+
+  it("keeps operational runtime blockers visible in the cutover checklist", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir: makeTmpDir(),
+      runtimeReadiness: makeRuntimeOperationalBlockFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+
+    const plan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const database = plan.gateSteps.find((step) => step.id === "production_database");
+    const formatted = cutover.formatProductionCutoverPlan(plan);
+
+    expect(database?.runtimeDiagnostics).toMatchObject({
+      status: "blocked",
+      ready: false,
+      configurationSource: "invalid",
+      configuredCount: 2,
+      requiredCount: 2,
+      invalidCount: 1,
+      operationalStatus: "database_dns_unresolved",
+    });
+    expect(formatted).toContain("operational=database_dns_unresolved");
+    expect(formatted).not.toContain("postgresql://");
   });
 
   it("reports ready only when every commercial launch gate is proven ready", async () => {

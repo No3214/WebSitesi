@@ -32,6 +32,7 @@ type CommercialLaunchModule = {
         placeholderCount: number;
         fallbackApplied: boolean;
         configurationSource: string;
+        operationalStatus?: string;
       }>;
     };
     runtimeSource?: string;
@@ -161,6 +162,29 @@ function makeRuntimeReadinessFixture() {
         placeholderCount: 0,
         fallbackApplied: false,
         configurationSource: "missing",
+      },
+    ],
+  };
+}
+
+function makeRuntimeOperationalBlockFixture() {
+  return {
+    status: "blocked",
+    ready: false,
+    configuredGates: ["hms_booking_engine"],
+    blockedGates: ["production_database"],
+    checks: [
+      {
+        id: "production_database",
+        ready: false,
+        requiredCount: 2,
+        configuredCount: 2,
+        missingCount: 0,
+        invalidCount: 1,
+        placeholderCount: 0,
+        fallbackApplied: false,
+        configurationSource: "invalid",
+        operationalStatus: "database_dns_unresolved",
       },
     ],
   };
@@ -359,6 +383,41 @@ describe("evidence templates", () => {
     expect(hms.runtimeAction).toContain("Production runtime reports this gate configured");
     expect(formatted).toContain("## Runtime Status");
     expect(formatted).toContain("Production runtime reports this gate configured");
+    expect(formatted).not.toContain("postgresql://");
+  });
+
+  it("prints provider-specific repair guidance for operational runtime blockers", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const templates = await loadTemplateModule();
+    const launchResult = audit.evaluateCommercialLaunch({
+      env: {},
+      baseDir: makeTmpDir(),
+      runtimeReadiness: makeRuntimeOperationalBlockFixture(),
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+
+    const result = templates.buildEvidenceTemplates({
+      launchResult,
+      cutoverPlan,
+      gateId: "production_database",
+    });
+    const database = result.templates[0];
+    const compact = templates.buildCompactEvidenceTemplates(result);
+    const formatted = templates.formatEvidenceTemplates(result);
+    const compactText = templates.formatCompactEvidenceTemplates(compact);
+
+    expect(database.runtimeStatusText).toContain("operational=database_dns_unresolved");
+    expect(database.runtimeAction).toContain("replace the Vercel Production DATABASE_URI host/connection string");
+    expect(database.runtimeAction).toContain("npm run vercel:supabase:verify");
+    expect(database.runtimeAction).toContain("npm run admin:verify:strict");
+    expect(JSON.stringify(compact)).toContain('"runtimeOperationalStatus":"database_dns_unresolved"');
+    expect(formatted).toContain("operational=database_dns_unresolved");
+    expect(compactText).toContain("operational=database_dns_unresolved");
     expect(formatted).not.toContain("postgresql://");
   });
 

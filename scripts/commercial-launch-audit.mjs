@@ -585,6 +585,7 @@ function runtimeConfigurationState(gate, runtimeReadiness, runtimeSource) {
     invalidCount: Number(check.invalidCount ?? 0),
     placeholderCount: Number(check.placeholderCount ?? 0),
     fallbackApplied: Boolean(check.fallbackApplied),
+    ...(check.operationalStatus ? { operationalStatus: check.operationalStatus } : {}),
   };
 }
 
@@ -609,7 +610,8 @@ function applyRuntimeEnvState(envState, runtimeState) {
 }
 
 function formatRuntimeState(state) {
-  return `${state.source}: ${state.ready ? "ready" : "blocked"} (${state.configurationSource}, ${state.configuredCount}/${state.requiredCount} configured, ${state.missingCount} missing, ${state.invalidCount} invalid, ${state.placeholderCount} placeholder, fallback=${state.fallbackApplied ? "yes" : "no"})`;
+  const operational = state.operationalStatus ? `, operational=${state.operationalStatus}` : "";
+  return `${state.source}: ${state.ready ? "ready" : "blocked"} (${state.configurationSource}, ${state.configuredCount}/${state.requiredCount} configured, ${state.missingCount} missing, ${state.invalidCount} invalid, ${state.placeholderCount} placeholder, fallback=${state.fallbackApplied ? "yes" : "no"}${operational})`;
 }
 
 function gateProgressNotes(gate, envState, missingEvidence, runtimeState) {
