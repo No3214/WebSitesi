@@ -8,6 +8,8 @@ const adminGrowthPath = "/admin/growth";
 const adminLoginPath = "/admin";
 const adminGrowthSourcePath = "src/app/admin/growth/page.tsx";
 const adminGrowthClientSourcePath = "src/app/admin/growth/growth-client.tsx";
+const adminPayloadPageSourcePath = "src/app/(payload)/admin/[[...payload]]/page.tsx";
+const adminPayloadLayoutSourcePath = "src/app/(payload)/admin/[[...payload]]/layout.tsx";
 
 const requiredSourceSignals = [
   {
@@ -87,6 +89,37 @@ const forbiddenClientSignals = [
   },
 ];
 
+const requiredPayloadAdminSignals = [
+  {
+    id: "admin_dependency_guard_page",
+    label: "Payload admin page must preflight dependencies before loading Payload",
+    pattern: /getAdminDependencyStatus\(\)/,
+  },
+  {
+    id: "admin_dependency_guard_layout",
+    label: "Payload admin layout must skip Payload RootLayout when dependencies are unavailable",
+    pattern: /getAdminDependencyStatus\(\)/,
+  },
+  {
+    id: "admin_dependency_status_marker",
+    label: "controlled admin dependency outage must expose a non-secret status marker",
+    pattern: /data-admin-dependency-status/,
+  },
+];
+
+const forbiddenPayloadAdminSignals = [
+  {
+    id: "top_level_payload_config_page",
+    label: "Payload admin page must not import @payload-config before dependency preflight",
+    pattern: /^import\s+config\s+from\s+["']@payload-config["']/m,
+  },
+  {
+    id: "top_level_payload_config_layout",
+    label: "Payload admin layout must not import @payload-config before dependency preflight",
+    pattern: /^import\s+config\s+from\s+["']@payload-config["']/m,
+  },
+];
+
 const sensitiveLiveSignatures = [
   "Kozbeyli Commercial Launch Control",
   "Commercial readiness",
@@ -140,9 +173,13 @@ function sameOriginAdminLogin(location, target) {
 export function evaluateAdminSurfaceSource({ baseDir = root } = {}) {
   const source = readIfExists(adminGrowthSourcePath, baseDir);
   const clientSource = readIfExists(adminGrowthClientSourcePath, baseDir);
+  const payloadAdminPageSource = readIfExists(adminPayloadPageSourcePath, baseDir);
+  const payloadAdminLayoutSource = readIfExists(adminPayloadLayoutSourcePath, baseDir);
   const checks = [
     buildCheck("source_present", Boolean(source), adminGrowthSourcePath),
     buildCheck("client_source_present", Boolean(clientSource), adminGrowthClientSourcePath),
+    buildCheck("payload_admin_page_source_present", Boolean(payloadAdminPageSource), adminPayloadPageSourcePath),
+    buildCheck("payload_admin_layout_source_present", Boolean(payloadAdminLayoutSource), adminPayloadLayoutSourcePath),
     ...requiredSourceSignals.map((signal) =>
       buildCheck(signal.id, signal.pattern.test(source), signal.label),
     ),
@@ -154,6 +191,31 @@ export function evaluateAdminSurfaceSource({ baseDir = root } = {}) {
     ),
     ...forbiddenClientSignals.map((signal) =>
       buildCheck(signal.id, !signal.pattern.test(clientSource), signal.label),
+    ),
+    buildCheck(
+      requiredPayloadAdminSignals[0].id,
+      requiredPayloadAdminSignals[0].pattern.test(payloadAdminPageSource),
+      requiredPayloadAdminSignals[0].label,
+    ),
+    buildCheck(
+      requiredPayloadAdminSignals[1].id,
+      requiredPayloadAdminSignals[1].pattern.test(payloadAdminLayoutSource),
+      requiredPayloadAdminSignals[1].label,
+    ),
+    buildCheck(
+      requiredPayloadAdminSignals[2].id,
+      requiredPayloadAdminSignals[2].pattern.test(payloadAdminPageSource),
+      requiredPayloadAdminSignals[2].label,
+    ),
+    buildCheck(
+      forbiddenPayloadAdminSignals[0].id,
+      !forbiddenPayloadAdminSignals[0].pattern.test(payloadAdminPageSource),
+      forbiddenPayloadAdminSignals[0].label,
+    ),
+    buildCheck(
+      forbiddenPayloadAdminSignals[1].id,
+      !forbiddenPayloadAdminSignals[1].pattern.test(payloadAdminLayoutSource),
+      forbiddenPayloadAdminSignals[1].label,
     ),
   ];
 
@@ -219,6 +281,7 @@ export async function evaluateAdminSurfaceLive({
   const loginLeakedSignatures = sensitiveLiveSignatures.filter((signature) =>
     loginBody.includes(signature),
   );
+  const loginDependencyUnavailable = loginBody.includes("data-admin-dependency-status");
   const loginRouteReachable =
     !redirectsToAdmin || (loginStatus > 0 && loginStatus < 500 && loginStatus !== 404);
 
@@ -253,6 +316,15 @@ export async function evaluateAdminSurfaceLive({
       loginLeakedSignatures.length === 0
         ? "no sensitive dashboard signatures"
         : loginLeakedSignatures.join(", "),
+    ),
+  );
+  checks.push(
+    buildCheck(
+      "live_payload_admin_dependency_ready",
+      !loginDependencyUnavailable,
+      loginDependencyUnavailable
+        ? "Payload admin returned controlled dependency-unavailable screen"
+        : "Payload admin did not report a dependency outage",
     ),
   );
 

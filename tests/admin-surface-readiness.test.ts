@@ -56,9 +56,19 @@ function makeTmpProject(source: string, clientSource = safeClientSource) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kozbeyli-admin-surface-"));
   tmpDirs.push(dir);
   const sourceDir = path.join(dir, "src/app/admin/growth");
+  const payloadAdminDir = path.join(dir, "src/app/(payload)/admin/[[...payload]]");
   fs.mkdirSync(sourceDir, { recursive: true });
+  fs.mkdirSync(payloadAdminDir, { recursive: true });
   fs.writeFileSync(path.join(sourceDir, "page.tsx"), source);
   fs.writeFileSync(path.join(sourceDir, "growth-client.tsx"), clientSource);
+  fs.writeFileSync(
+    path.join(payloadAdminDir, "page.tsx"),
+    'import { getAdminDependencyStatus } from "@/lib/admin-runtime"; export default async function Page(){ await getAdminDependencyStatus(); return <main data-admin-dependency-status="database_dns_unresolved" />; }',
+  );
+  fs.writeFileSync(
+    path.join(payloadAdminDir, "layout.tsx"),
+    'import { getAdminDependencyStatus } from "@/lib/admin-runtime"; export default async function Layout({ children }){ await getAdminDependencyStatus(); return <>{children}</>; }',
+  );
   return dir;
 }
 
@@ -170,6 +180,23 @@ describe("admin surface readiness", () => {
     expect(result.decision).toBe("ADMIN SURFACE BLOCKED");
     expect(result.blockers.join("\n")).toContain("live_payload_admin_login_reachable");
     expect(result.blockers.join("\n")).toContain("/admin: HTTP 500");
+  });
+
+  it("blocks admin readiness when the login route is a controlled dependency outage", async () => {
+    const adminSurface = await loadAdminSurfaceModule();
+    const result = await adminSurface.evaluateAdminSurfaceReadiness({
+      target: "https://www.kozbeylikonagi.com/admin/growth",
+      fetchImpl: mockAdminFetch({
+        growthStatus: 307,
+        growthLocation: "/admin",
+        loginStatus: 200,
+        loginBody: '<main data-admin-dependency-status="database_dns_unresolved">Admin unavailable</main>',
+      }),
+    });
+
+    expect(result.decision).toBe("ADMIN SURFACE BLOCKED");
+    expect(result.blockers.join("\n")).toContain("live_payload_admin_dependency_ready");
+    expect(result.blockers.join("\n")).toContain("controlled dependency-unavailable");
   });
 
   it("blocks public dashboard body leakage", async () => {
