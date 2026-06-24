@@ -1,5 +1,6 @@
 node_modules
 .next
+.next-codex-build/
 playwright-report
 test-results
 .env

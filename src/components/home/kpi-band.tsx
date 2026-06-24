@@ -4,7 +4,7 @@ import { FadeIn } from "@/components/animations";
 
 export function KpiBand({ locale }: { locale: "tr" | "en" }) {
   const experienceScore = locale === "tr" ? "9,4/10" : "9.4/10";
-  const responseTime = locale === "tr" ? "24 Saat" : "24 Hrs";
+  const receptionHours = locale === "tr" ? "12 Saat" : "12 Hrs";
 
   return (
     <section className="section" style={{ paddingBlock: "72px" }}>
@@ -20,8 +20,8 @@ export function KpiBand({ locale }: { locale: "tr" | "en" }) {
               <span>{locale === "tr" ? "Yıllık Taş Miras" : "Years of Stone Heritage"}</span>
             </div>
             <div>
-              <strong>{responseTime}</strong>
-              <span>{locale === "tr" ? "Destek Geri Dönüş" : "Support Response"}</span>
+              <strong>{receptionHours}</strong>
+              <span>{locale === "tr" ? "Resepsiyon · 24:00'a kadar" : "Reception until 24:00"}</span>
             </div>
           </div>
         </FadeIn>

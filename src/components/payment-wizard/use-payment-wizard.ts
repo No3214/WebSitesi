@@ -65,7 +65,7 @@ export function usePaymentWizard(locale: BookingLocale = "tr") {
     return 1;
   }, [checkIn, checkOut, selectedRoom]);
 
-  // Calculate prices
+  // Internal fallback totals are not public live rates; HMS/team confirmation remains authoritative.
   const totalRawPrice = useMemo(() => {
     if (!selectedRoom) return 0;
     const quote = calculateBookingQuote(selectedRoom.slug, checkIn, checkOut);
@@ -145,7 +145,7 @@ ${"    "}
 🪶 ${copy.whatsapp.pillow}: ${pillow.label}
 🔊 ${copy.whatsapp.sound}: ${sound.label}
 💡 ${copy.whatsapp.light}: ${light.label}
-💰 ${copy.whatsapp.total}: ${finalPrice.toLocaleString("tr-TR")} ₺
+💰 ${copy.whatsapp.total}: ${copy.whatsapp.totalPending}
 👤 ${copy.whatsapp.guestName}: ${guestName} (${guestPhone})
 
 ${copy.whatsapp.closing}`;

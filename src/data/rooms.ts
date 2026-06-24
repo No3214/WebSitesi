@@ -143,7 +143,7 @@ export const rooms: Room[] = [
     size: "40 m²",
     view: "Panoramik Deniz",
     amenities: ["Küvet & Duş", "Deniz Manzarası", "Premium Buklet Seti", "Bose Ses Sistemi", "Nespresso Makinesi"],
-    images: ["/images/odalar/superrior-oda-deniz-manzarali/1.jpg", "/images/odalar/superrior-oda-deniz-manzarali/2.jpg", "/images/odalar/superrior-oda-deniz-manzarali/3.jpg", "/images/odalar/superrior-oda-deniz-manzarali/4.jpg"],
+    images: ["/images/odalar/superior-oda-deniz-manzarali/1.jpg", "/images/odalar/superior-oda-deniz-manzarali/2.jpg", "/images/odalar/superior-oda-deniz-manzarali/3.jpg", "/images/odalar/superior-oda-deniz-manzarali/4.jpg"],
     translations: {
       en: {
         title: "Superior Room for 2",
@@ -164,7 +164,7 @@ export const rooms: Room[] = [
     size: "42 m²",
     view: "Panoramik Deniz",
     amenities: ["Küvet & Duş", "3 Kişilik Yatak Düzeni", "Deniz Manzarası", "Premium Buklet Seti", "Nespresso Makinesi"],
-    images: ["/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/1.jpg", "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/2.jpg", "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/3.jpg", "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/4.jpg", "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/5.jpg", "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/6.jpg"],
+    images: ["/images/odalar/superior-3-kisilik-oda-deniz-manzarali/1.jpg", "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/2.jpg", "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/3.jpg", "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/4.jpg", "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/5.jpg", "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/6.jpg"],
     translations: {
       en: {
         title: "Superior Triple Room",

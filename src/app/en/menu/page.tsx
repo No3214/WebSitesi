@@ -32,7 +32,7 @@ export default function EnglishMenuPage() {
         sections={englishMenuSections}
         title="Kozbeyli Konağı"
         subtitle="Restaurant Menu"
-        note="Within the five-century village texture of Kozbeyli, Antakya family recipes meet Aegean olive oil, herbs, stone-oven warmth and carefully selected wine pairings."
+        note="Within the five-century village texture of Kozbeyli, Antakya family recipes meet Aegean olive oil, herbs, stone-oven warmth and carefully selected wine pairings. Menu items, availability and prices may change seasonally; our team confirms the current details before service."
         signature="Chef Yunuscan Oruk"
         ctaTitle="Planning a Private Dinner?"
         ctaText="For celebrations, group dining and wine tasting requests, our guest relations team can curate the evening with you."

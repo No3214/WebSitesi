@@ -31,7 +31,7 @@ export const durations: DurationOption[] = [
     label: "3 Günlük Derin Dinlenme",
     desc: "Köy yollarından deniz turlarına, gastronomi ritüellerinden şömine başına tam arınma.",
     days: 3,
-    image: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/5.jpg"
+    image: "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/5.jpg"
   }
 ];
 
@@ -57,7 +57,7 @@ export const interests: InterestOption[] = [
     title: "Romantizm & Sükunet",
     desc: "Ege Denizi üzerinden batan güneş eşliğinde baş başa, özel ve sakin anlar.",
     icon: Compass,
-    image: "/images/odalar/superrior-oda-deniz-manzarali/1.jpg"
+    image: "/images/odalar/superior-oda-deniz-manzarali/1.jpg"
   },
   {
     id: "kultur",

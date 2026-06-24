@@ -940,11 +940,11 @@ describe("production readiness contracts", () => {
     expect(paymentUiSource).toContain("We do not ask for card details here");
     expect(wizardTypes).toContain("Talep Bilgileri");
     expect(wizardTypes).toContain("Misafir & İletişim Bilgileri");
-    expect(wizardTypes).toContain("Teyit Sonrası Ödenecek Tutar");
-    expect(wizardTypes).toContain("Teyit Edilecek Tutar");
+    expect(wizardTypes).toContain("Teyit Sonrası Netleşecek Tutar");
+    expect(wizardTypes).toContain("HMS / ekip teyidi");
     expect(wizardTypes).toContain("Guest and Contact Details");
-    expect(wizardTypes).toContain("Amount Due After Confirmation");
-    expect(wizardTypes).toContain("Amount to Be Confirmed");
+    expect(wizardTypes).toContain("Amount Confirmed After Review");
+    expect(wizardTypes).toContain("HMS / team confirmation");
     expect(wizardTypes).not.toContain("Ödeme ve Fatura");
     expect(wizardTypes).not.toContain("Misafir & Fatura Bilgileri");
     expect(wizardTypes).not.toContain("Tahsil Edilen Tutar");
@@ -1070,6 +1070,31 @@ describe("production readiness contracts", () => {
     expect(rooms).toContain("Superior 2 Kişilik Oda");
     expect(rooms).toContain("Superior 3 Kişilik Oda");
     expect(rooms).not.toContain("Superrior");
+  });
+
+  it("keeps superior room media paths correctly spelled while redirecting legacy typo URLs", () => {
+    const canonicalMediaFiles = [
+      "src/data/rooms.ts",
+      "src/data/gallery.ts",
+      "src/components/experience-designer/data.ts",
+      "src/components/history-client.tsx",
+      "src/components/heritage-archive.tsx",
+      "src/app/misafir-rehberi/page.tsx",
+    ];
+    const nextConfig = read("next.config.ts");
+
+    for (const file of canonicalMediaFiles) {
+      expect(read(file), `${file} should use superior, not superrior`).not.toContain("/superrior-");
+    }
+
+    expect(exists("public/images/odalar/superior-oda-deniz-manzarali")).toBe(true);
+    expect(exists("public/images/odalar/superior-3-kisilik-oda-deniz-manzarali")).toBe(true);
+    expect(exists("public/images/odalar/superrior-oda-deniz-manzarali")).toBe(false);
+    expect(exists("public/images/odalar/superrior-3-kisilik-oda-deniz-manzarali")).toBe(false);
+    expect(nextConfig).toContain('source: "/images/odalar/superrior-oda-deniz-manzarali/:path*"');
+    expect(nextConfig).toContain('destination: "/images/odalar/superior-oda-deniz-manzarali/:path*"');
+    expect(nextConfig).toContain('source: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/:path*"');
+    expect(nextConfig).toContain('destination: "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/:path*"');
   });
 
   it("keeps the CSP frame surface narrow after moving booking to new-tab handoff", () => {
@@ -1843,19 +1868,27 @@ describe("production readiness contracts", () => {
     expect(kpiBand).toContain('"9,4/10"');
     expect(kpiBand).toContain('"9.4/10"');
     expect(kpiBand).toContain("<strong>500+</strong>");
-    expect(kpiBand).toContain('"24 Saat"');
+    expect(kpiBand).toContain('"12 Saat"');
+    expect(kpiBand).toContain('"Resepsiyon · 24:00');
+    expect(kpiBand).not.toContain('"24 Saat"');
     expect(kpiBand).not.toContain('to={500}');
   });
 
   it("keeps production builds independent from Google Fonts network fetches", () => {
     const layout = read("src/app/layout.tsx");
     const globals = read("src/app/globals.css");
+    const nextConfig = read("next.config.ts");
+    const cleanNextBuild = read("scripts/clean-next-build.mjs");
 
     expect(layout).not.toContain("next/font/google");
     expect(layout).not.toContain("Inter(");
     expect(layout).not.toContain("Playfair_Display(");
     expect(globals).toContain("--font-playfair:");
     expect(globals).toContain("--font-inter:");
+    expect(nextConfig).toContain("NEXT_DIST_DIR");
+    expect(nextConfig).toContain('distDir: nextDistDir || ".next"');
+    expect(cleanNextBuild).toContain("distDir = process.env.NEXT_DIST_DIR || \".next\"");
+    expect(cleanNextBuild).toContain("Refusing unsafe Next.js build directory");
   });
 
   it("keeps language switching on hydration-safe href navigation", () => {
@@ -2003,6 +2036,61 @@ describe("production readiness contracts", () => {
     expect(globals).toContain("#f7f1e7");
     expect(globals).toContain("rgba(255, 252, 246, 0.92)");
     expect(layout).toContain('{ media: "(prefers-color-scheme: dark)", color: "#fbf6eb" }');
+  });
+
+  it("keeps a repo-local design contract for brand and media decisions", () => {
+    const design = read("DESIGN.md");
+    const externalAudit = read("docs/external-agent-tooling-audit.md");
+    const instagramReadiness = read("docs/instagram-integration-readiness.md");
+    const globals = read("src/app/globals.css");
+
+    expect(design).toContain("version: alpha");
+    expect(design).toContain("Kozbeyli Konagi Heritage Hospitality");
+    expect(design).toContain('primary: "#3D4A3B"');
+    expect(design).toContain('accent: "#B3925C"');
+    expect(design).toContain('textColor: "{colors.ink}"');
+    expect(globals).toContain("--on-gold: #14161a");
+    expect(globals).toContain(".button.gold {\n    background: linear-gradient(135deg, var(--gold), #9a7c49);\n    color: var(--on-gold);");
+    expect(design).toContain("real Kozbeyli Konagi property, food, room, event or approved brand assets");
+    expect(design).toContain("reception until 24:00");
+    expect(design).toContain("menu and room pricing conservative");
+    expect(design).toContain("Don't let dark theme sections dominate rooms, gastronomy or product-inspection pages.");
+    expect(externalAudit).toContain("No external repository was executed as an installer");
+    expect(externalAudit).toContain("Added repo-local `DESIGN.md`");
+    expect(externalAudit).toContain("Do not install as a live skill for this hotel site");
+    expect(instagramReadiness).toContain("does not currently render a live Instagram feed");
+    expect(instagramReadiness).toContain("Do not scrape Instagram HTML as a production dependency");
+    expect(instagramReadiness).toContain("Do not use screenshots as if they were playable Reels");
+  });
+
+  it("keeps public menu pricing copy conservative because the menu is code-backed", () => {
+    const trMenu = read("src/app/menu/page.tsx");
+    const enMenu = read("src/app/en/menu/page.tsx");
+    const menuData = read("src/data/menu.ts");
+    const menuPageContent = read("src/components/menu-book.tsx");
+
+    expect(menuData).toContain("price:");
+    expect(menuPageContent).not.toContain("payload");
+    expect(trMenu).toContain("Menü içerikleri, stok ve fiyatlar dönemsel olarak değişebilir");
+    expect(trMenu).toContain("güncel bilgi ekibimizden teyit edilir");
+    expect(enMenu).toContain("Menu items, availability and prices may change seasonally");
+    expect(enMenu).toContain("confirms the current details before service");
+  });
+
+  it("keeps gastronomy story segments populated with real local media", () => {
+    const gastronomy = read("src/components/gastronomy-page-content.tsx");
+
+    for (const asset of [
+      "/images/galeri/aksam-sofrasi.jpg",
+      "/videos/mihlama-poster.jpg",
+      "/videos/kahvalti-poster.jpg",
+    ]) {
+      expect(gastronomy).toContain(`image: "${asset}"`);
+      expect(exists(`public${asset}`)).toBe(true);
+    }
+
+    expect(gastronomy).toContain('image: absoluteUrl("/images/galeri/aksam-sofrasi.jpg")');
+    expect(gastronomy).toContain("image={segment.image}");
   });
 
   it("keeps cancellation and route-time claims legally conservative", () => {

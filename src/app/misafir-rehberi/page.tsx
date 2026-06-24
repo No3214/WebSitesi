@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     url: absoluteUrl("/misafir-rehberi"),
     images: [
       {
-        url: absoluteUrl("/images/odalar/superrior-oda-deniz-manzarali/1.jpg"),
+        url: absoluteUrl("/images/odalar/superior-oda-deniz-manzarali/1.jpg"),
         alt: "Kozbeyli Konağı'nda manzaralı taş oda",
       },
     ],
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Kozbeyli Konağı Misafir Rehberi",
     description: "Konağımızın servis standartları, kahvaltı saatleri ve pratik konaklama rehberi.",
-    images: [absoluteUrl("/images/odalar/superrior-oda-deniz-manzarali/1.jpg")],
+    images: [absoluteUrl("/images/odalar/superior-oda-deniz-manzarali/1.jpg")],
   }
 };
 

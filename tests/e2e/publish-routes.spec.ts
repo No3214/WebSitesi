@@ -54,6 +54,14 @@ const legacyRedirects = [
   { from: "/en-US/pages/rooms-rates", to: "/en/rooms" },
   { from: "/en-US/room-type/1187066", to: "/en/rooms" },
   { from: "/en-US/blog", to: "/en/experiences" },
+  {
+    from: "/images/odalar/superrior-oda-deniz-manzarali/1.jpg",
+    to: "/images/odalar/superior-oda-deniz-manzarali/1.jpg",
+  },
+  {
+    from: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/1.jpg",
+    to: "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/1.jpg",
+  },
 ];
 
 test.describe("Publish route inventory", () => {

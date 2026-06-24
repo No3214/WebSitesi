@@ -187,7 +187,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       ok: true,
-      message: "Talebiniz alındı. Satış danışmanımız 24 saat içinde sizinle iletişime geçecek.",
+      message: "Talebiniz alındı. Satış danışmanımız resepsiyon ve operasyon saatleri içinde sizinle iletişime geçecek.",
     });
   } catch (error) {
     logEvent("error", "lead.submission_failed", {

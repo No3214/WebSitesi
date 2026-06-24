@@ -68,8 +68,8 @@ export const faqs = [
   {
     q: { tr: "Organizasyon rezervasyonu nasıl yapılır?", en: "How to make an event booking?" },
     a: {
-      tr: "Talep formunu doldurduğunuzda satış ekibimiz 24 saat içinde size döner.",
-      en: "Our sales team will contact you within 24 hours of form submission."
+      tr: "Talep formunu doldurduğunuzda satış ekibimiz resepsiyon ve operasyon saatleri içinde size döner.",
+      en: "After you submit the request form, our sales team will contact you during reception and operations hours."
     }
   },
   {

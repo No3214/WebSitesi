@@ -31,6 +31,7 @@
   --olive: #3d4a3b;
   --olive-deep: #2c3729;
   --gold: #b3925c;
+  --on-gold: #14161a;
   /* a11y: remains AA even while fade-in opacity is still settling on light cards. */
   --gold-text: #6e4b18;
   --gold-soft: #cfb389;
@@ -110,7 +111,7 @@
 
   ::selection {
     background: var(--gold);
-    color: var(--white);
+    color: var(--on-gold);
   }
 
   :focus-visible {
@@ -474,7 +475,7 @@
 
   .button.gold {
     background: linear-gradient(135deg, var(--gold), #9a7c49);
-    color: var(--white);
+    color: var(--on-gold);
     border: 1px solid transparent;
     box-shadow: var(--shadow-gold);
   }
@@ -1105,13 +1106,13 @@
   .editorial-video-control:focus-visible {
     transform: translate(-50%, -50%) scale(1.05);
     background: var(--gold);
-    color: var(--white);
+    color: var(--on-gold);
     outline: none;
   }
 
   .editorial-video-control[data-state="blocked"] {
     background: var(--gold);
-    color: var(--white);
+    color: var(--on-gold);
   }
 
   .kitchen-video-card {
@@ -1161,13 +1162,13 @@
   .kitchen-video-control:focus-visible {
     transform: translate(-50%, -50%) scale(1.05);
     background: var(--gold);
-    color: var(--white);
+    color: var(--on-gold);
     outline: none;
   }
 
   .kitchen-video-control[data-state="blocked"] {
     background: var(--gold);
-    color: var(--white);
+    color: var(--on-gold);
   }
 
   .kitchen-video-card figcaption {
@@ -1615,7 +1616,7 @@
   .faq-item.open .faq-icon {
     transform: rotate(45deg);
     background: var(--gold);
-    color: var(--white);
+    color: var(--on-gold);
     border-color: var(--gold);
   }
 
@@ -1958,7 +1959,7 @@
   .footer .social-links a:hover {
     background: var(--gold);
     border-color: var(--gold);
-    color: var(--white);
+    color: var(--on-gold);
     transform: translateY(-3px);
     opacity: 1;
   }

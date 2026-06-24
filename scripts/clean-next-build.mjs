@@ -16,6 +16,22 @@ function assertInsideRoot(root, target) {
   }
 }
 
+function resolveBuildDir(root, distDir) {
+  const normalizedDistDir = String(distDir || ".next").trim() || ".next";
+
+  if (
+    normalizedDistDir === "." ||
+    normalizedDistDir === ".." ||
+    path.isAbsolute(normalizedDistDir)
+  ) {
+    throw new Error(`Refusing unsafe Next.js build directory: ${normalizedDistDir}`);
+  }
+
+  const target = path.resolve(root, normalizedDistDir);
+  assertInsideRoot(root, target);
+  return target;
+}
+
 function formatError(error) {
   return error instanceof Error ? error.message : String(error);
 }
@@ -58,14 +74,14 @@ function cleanStaleBuildDirs(root, logger, removePathFn) {
 
 export function cleanNextBuild({
   root = process.cwd(),
+  distDir = process.env.NEXT_DIST_DIR || ".next",
   logger = console,
   now = Date.now,
   removePathFn = removePath,
   renameSync = fs.renameSync,
   existsSync = fs.existsSync,
 } = {}) {
-  const nextDir = path.resolve(root, ".next");
-  assertInsideRoot(root, nextDir);
+  const nextDir = resolveBuildDir(root, distDir);
   cleanStaleBuildDirs(root, logger, removePathFn);
 
   if (!existsSync(nextDir)) return;

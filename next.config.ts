@@ -45,7 +45,19 @@ const securityHeaders = [
   { key: "Content-Security-Policy", value: csp },
 ];
 
+const nextDistDir = process.env.NEXT_DIST_DIR?.trim();
+const unsafeDistDir =
+  nextDistDir === "." ||
+  nextDistDir === ".." ||
+  nextDistDir?.startsWith("/") ||
+  (nextDistDir ? /^[A-Za-z]:/.test(nextDistDir) : false);
+
+if (nextDistDir && unsafeDistDir) {
+  throw new Error(`Unsafe NEXT_DIST_DIR value: ${nextDistDir}`);
+}
+
 const nextConfig: NextConfig = {
+  distDir: nextDistDir || ".next",
   outputFileTracingRoot: __dirname,
   images: {
     formats: ["image/avif", "image/webp"],
@@ -69,6 +81,16 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/tr", destination: "/", permanent: true },
+      {
+        source: "/images/odalar/superrior-oda-deniz-manzarali/:path*",
+        destination: "/images/odalar/superior-oda-deniz-manzarali/:path*",
+        permanent: true,
+      },
+      {
+        source: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/:path*",
+        destination: "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/:path*",
+        permanent: true,
+      },
       { source: "/tr/pages/rooms-rates", destination: "/odalar", permanent: true },
       { source: "/tr/room-type/:path*", destination: "/odalar", permanent: true },
       { source: "/tr/blog", destination: "/deneyimler", permanent: true },

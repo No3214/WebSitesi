@@ -117,6 +117,14 @@ function adminGrowthUrl(origin) {
   return `${normalizeOrigin(origin)}${adminGrowthPath}`;
 }
 
+function adminLoginUrlFromTarget(target) {
+  try {
+    return new URL(adminLoginPath, target).toString();
+  } catch {
+    return `${defaultOrigin}${adminLoginPath}`;
+  }
+}
+
 function sameOriginAdminLogin(location, target) {
   if (!location) return false;
 
@@ -164,6 +172,10 @@ export async function evaluateAdminSurfaceLive({
   let response;
   let body = "";
   let location = "";
+  const loginTarget = adminLoginUrlFromTarget(target);
+  let loginStatus = 0;
+  let loginBody = "";
+  let loginLocation = "";
 
   try {
     response = await fetchImpl(target, {
@@ -188,6 +200,28 @@ export async function evaluateAdminSurfaceLive({
   const protectedStatus = redirectsToAdmin || deniesDirectAccess;
   const leakedSignatures = sensitiveLiveSignatures.filter((signature) => body.includes(signature));
 
+  if (redirectsToAdmin) {
+    try {
+      const loginResponse = await fetchImpl(loginTarget, {
+        redirect: "manual",
+        headers: { accept: "text/html,application/xhtml+xml" },
+      });
+      loginStatus = Number(loginResponse.status || 0);
+      loginLocation = loginResponse.headers?.get?.("location") || "";
+      loginBody = await loginResponse.text();
+    } catch (error) {
+      loginStatus = 0;
+      loginBody = "";
+      loginLocation = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  const loginLeakedSignatures = sensitiveLiveSignatures.filter((signature) =>
+    loginBody.includes(signature),
+  );
+  const loginRouteReachable =
+    !redirectsToAdmin || (loginStatus > 0 && loginStatus < 500 && loginStatus !== 404);
+
   checks.push(buildCheck("live_protected_status", protectedStatus, `HTTP ${status}${location ? ` -> ${location}` : ""}`));
   checks.push(
     buildCheck(
@@ -203,12 +237,32 @@ export async function evaluateAdminSurfaceLive({
       leakedSignatures.length === 0 ? "no sensitive dashboard signatures" : leakedSignatures.join(", "),
     ),
   );
+  checks.push(
+    buildCheck(
+      "live_payload_admin_login_reachable",
+      loginRouteReachable,
+      redirectsToAdmin
+        ? `${loginTarget}: HTTP ${loginStatus}${loginLocation ? ` -> ${loginLocation}` : ""}`
+        : "not required because direct access was denied",
+    ),
+  );
+  checks.push(
+    buildCheck(
+      "live_payload_admin_login_no_dashboard_leak",
+      loginLeakedSignatures.length === 0,
+      loginLeakedSignatures.length === 0
+        ? "no sensitive dashboard signatures"
+        : loginLeakedSignatures.join(", "),
+    ),
+  );
 
   return {
     ready: checks.every((check) => check.ready),
     target,
     status,
     location,
+    loginTarget,
+    loginStatus,
     checks,
   };
 }
@@ -235,6 +289,7 @@ export function formatAdminSurfaceReadiness(result) {
     `Decision: ${result.decision}`,
     `Target: ${result.live.target}`,
     `HTTP: ${result.live.status}, location=${result.live.location || "n/a"}`,
+    `Payload admin login: ${result.live.loginTarget || "n/a"}, HTTP ${result.live.loginStatus || "n/a"}`,
     "",
     "Source guard:",
   ];

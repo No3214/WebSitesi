@@ -23,7 +23,7 @@ minimumda kalır (SAQ-A sınıfı), Audit bulgusu **F13 kökten kapanır**.
 beklemeyi tolere eder." Terk oranı belirgin artarsa sitede gömülü (b) modeline geçiş tartışılır.
 
 **En zayıf nokta (stress-test):** Talep ile ödeme arasında insan döngüsü varsa misafir soğuyabilir.
-Önlem: success ekranı beklentiyi netliyor ("24 saat içinde teyit"); entegrasyon sonrası akış
+Önlem: success ekranı beklentiyi netliyor ("resepsiyon saatleri içinde teyit"); entegrasyon sonrası akış
 otomatikleşecek (aşağıda).
 
 ## Bugün yapılanlar (kod, 2026-06-10)

@@ -25,7 +25,7 @@ const archiveCopy = {
         "Taşın Nefesi"
       ],
       description: "Bu duvarlar sadece taş ve kum değil; 19. yüzyıl tescilli taş konağın nefes alan dokusudur. Beş asırlık Kozbeyli köy hafızasıyla çevrelenen Horasan harcı, konağımıza o &apos;yaşayan bina&apos; ruhunu veren asıl sırdır.",
-      image: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/2.jpg"
+      image: "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/2.jpg"
     },
     {
       id: "zeytinyagi",
@@ -68,7 +68,7 @@ const archiveCopy = {
         ],
         description:
           "These walls are not only stone and sand. Traditional Horasan mortar gives the building its living character and keeps the historic fabric breathable.",
-        image: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/2.jpg",
+        image: "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/2.jpg",
       },
       {
         id: "zeytinyagi",

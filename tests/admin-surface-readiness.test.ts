@@ -20,6 +20,7 @@ type AdminSurfaceModule = {
     ready: boolean;
     status: number;
     location: string;
+    loginStatus?: number;
     checks: Array<{ id: string; ready: boolean; detail: string }>;
   }>;
   evaluateAdminSurfaceReadiness: (args?: {
@@ -78,6 +79,40 @@ function mockFetch({
     }) as Response) as typeof fetch;
 }
 
+function mockAdminFetch({
+  growthStatus,
+  growthLocation = "",
+  growthBody = "",
+  loginStatus = 200,
+  loginLocation = "",
+  loginBody = "<html><body>Payload admin login</body></html>",
+}: {
+  growthStatus: number;
+  growthLocation?: string;
+  growthBody?: string;
+  loginStatus?: number;
+  loginLocation?: string;
+  loginBody?: string;
+}): typeof fetch {
+  return (async (input: RequestInfo | URL) => {
+    const url = String(input);
+    const isLogin = url.endsWith("/admin");
+    return {
+      status: isLogin ? loginStatus : growthStatus,
+      headers: new Headers(
+        isLogin
+          ? loginLocation
+            ? { location: loginLocation }
+            : {}
+          : growthLocation
+            ? { location: growthLocation }
+            : {},
+      ),
+      text: async () => (isLogin ? loginBody : growthBody),
+    } as Response;
+  }) as typeof fetch;
+}
+
 afterAll(() => {
   for (const dir of tmpDirs) {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -108,15 +143,33 @@ describe("admin surface readiness", () => {
     const adminSurface = await loadAdminSurfaceModule();
     const result = await adminSurface.evaluateAdminSurfaceLive({
       target: "https://www.kozbeylikonagi.com/admin/growth",
-      fetchImpl: mockFetch({
-        status: 307,
-        location: "/admin",
+      fetchImpl: mockAdminFetch({
+        growthStatus: 307,
+        growthLocation: "/admin",
+        loginStatus: 200,
       }),
     });
 
     expect(result.ready).toBe(true);
     expect(result.status).toBe(307);
     expect(result.location).toBe("/admin");
+    expect(result.loginStatus).toBe(200);
+  });
+
+  it("blocks admin readiness when the Payload admin login route returns a server error", async () => {
+    const adminSurface = await loadAdminSurfaceModule();
+    const result = await adminSurface.evaluateAdminSurfaceReadiness({
+      target: "https://www.kozbeylikonagi.com/admin/growth",
+      fetchImpl: mockAdminFetch({
+        growthStatus: 307,
+        growthLocation: "/admin",
+        loginStatus: 500,
+      }),
+    });
+
+    expect(result.decision).toBe("ADMIN SURFACE BLOCKED");
+    expect(result.blockers.join("\n")).toContain("live_payload_admin_login_reachable");
+    expect(result.blockers.join("\n")).toContain("/admin: HTTP 500");
   });
 
   it("blocks public dashboard body leakage", async () => {

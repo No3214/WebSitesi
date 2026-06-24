@@ -266,7 +266,10 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
                         alt={item.title} 
                         fill 
                         className="object-cover"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
                         priority={index === 0}
+                        loading={index === 0 ? undefined : "eager"}
+                        fetchPriority={index < 2 ? "high" : "auto"}
                       />
                     </div>
                     <div className="org-content">
@@ -291,6 +294,8 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 48vw"
+                    loading="eager"
+                    fetchPriority="high"
                   />
                 </div>
                 <div className="wedding-detail-image">
@@ -300,6 +305,8 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 44vw, 22vw"
+                    loading="eager"
+                    fetchPriority="high"
                   />
                 </div>
               </div>
@@ -361,7 +368,8 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
                       fill
                       className="object-cover"
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      loading={index === 0 ? "eager" : "lazy"}
+                      loading={index < 2 ? "eager" : "lazy"}
+                      fetchPriority={index < 2 ? "high" : "auto"}
                     />
                   </figure>
                 ))}

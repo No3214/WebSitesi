@@ -46,7 +46,7 @@ export default function MenuPage() {
         sections={menuSections}
         title="Kozbeyli Konağı"
         subtitle="Restoran Menüsü"
-        note="Beş asırlık Kozbeyli köy dokusunun içinde, Antakya'dan gelen aile tariflerini Ege'nin zeytinyağı ve otlarıyla buluşturuyoruz. Taş fırınımızdan çıkan pizzalar, özenle seçilmiş malzemeler ve şarap eşleşmeleriyle her tabakta rafine bir konak deneyimi sunuyoruz."
+        note="Beş asırlık Kozbeyli köy dokusunun içinde, Antakya'dan gelen aile tariflerini Ege'nin zeytinyağı ve otlarıyla buluşturuyoruz. Taş fırınımızdan çıkan pizzalar, özenle seçilmiş malzemeler ve şarap eşleşmeleriyle her tabakta rafine bir konak deneyimi sunuyoruz. Menü içerikleri, stok ve fiyatlar dönemsel olarak değişebilir; servis öncesinde güncel bilgi ekibimizden teyit edilir."
         signature="Şef Yunuscan Oruk"
         ctaTitle="Size Özel Bir Akşam?"
         ctaText="Özel kutlamalarınız, grup yemekleriniz ve şarap tadımı talepleriniz için ekibimizle iletişime geçebilirsiniz."

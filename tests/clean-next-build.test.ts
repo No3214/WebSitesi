@@ -11,6 +11,7 @@ const tmpDirs: string[] = [];
 type CleanNextBuildModule = {
   cleanNextBuild: (args?: {
     root?: string;
+    distDir?: string;
     logger?: { warn: (message: string) => void };
     now?: () => number;
     removePathFn?: (target: string) => void;
@@ -48,6 +49,27 @@ describe("clean-next-build", () => {
     cleanNextBuild({ root: baseDir, logger: { warn: () => undefined } });
 
     expect(fs.existsSync(nextDir)).toBe(false);
+  });
+
+  it("removes an alternate build output when NEXT_DIST_DIR is used", async () => {
+    const { cleanNextBuild } = await loadCleanModule();
+    const baseDir = makeTmpDir();
+    const nextDir = path.join(baseDir, ".next-codex-build");
+    fs.mkdirSync(nextDir, { recursive: true });
+    fs.writeFileSync(path.join(nextDir, "BUILD_ID"), "stale");
+
+    cleanNextBuild({ root: baseDir, distDir: ".next-codex-build", logger: { warn: () => undefined } });
+
+    expect(fs.existsSync(nextDir)).toBe(false);
+  });
+
+  it("rejects unsafe alternate build directories", async () => {
+    const { cleanNextBuild } = await loadCleanModule();
+    const baseDir = makeTmpDir();
+
+    expect(() =>
+      cleanNextBuild({ root: baseDir, distDir: ".", logger: { warn: () => undefined } }),
+    ).toThrow("Refusing unsafe Next.js build directory");
   });
 
   it("renames locked .next output so the next build can continue", async () => {

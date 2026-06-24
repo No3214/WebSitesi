@@ -8,12 +8,13 @@ import type { usePaymentWizard } from "../use-payment-wizard";
 export function SuccessStep({ wizard }: { wizard: ReturnType<typeof usePaymentWizard> }) {
   const {
     guestName, bookingId, selectedRoom, checkIn, checkOut, nights,
-    scent, pillow, sound, light, finalPrice,
+    scent, pillow, sound, light,
     getWhatsAppMessage, resetWizard,
     copy,
   } = wizard;
   const t = copy.success;
   const payment = copy.payment;
+  const amountPending = wizard.locale === "tr" ? "HMS / ekip teyidi" : "HMS / team confirmation";
 
   return (
     <motion.div
@@ -43,7 +44,7 @@ export function SuccessStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
         </div>
         <div style={{ borderTop: "1px solid rgba(0,0,0,0.1)", paddingTop: 10, marginTop: 4, display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
           <span>{t.collected}</span>
-          <span>{finalPrice.toLocaleString("tr-TR")} ₺</span>
+          <span>{amountPending}</span>
         </div>
       </div>
 

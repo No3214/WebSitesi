@@ -26,7 +26,7 @@ const historyCopy = {
         title: "Tüccar Mirası",
         content:
           "1870-1891 yılları arasında bölgenin en varlıklı tüccar aileleri için inşa edilen yapı, zemin katındaki devasa şarap ve zeytinyağı mahzenleriyle dönemin ticari gücünü yansıtır.",
-        image: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/3.jpg",
+        image: "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/3.jpg",
         side: "right" as const,
       },
       {
@@ -56,7 +56,7 @@ const historyCopy = {
         title: "Merchant Heritage",
         content:
           "Built between 1870 and 1891 for the region's prosperous merchant families, the mansion still carries the memory of wine and olive-oil cellars on its ground floor.",
-        image: "/images/odalar/superrior-3-kisilik-oda-deniz-manzarali/3.jpg",
+        image: "/images/odalar/superior-3-kisilik-oda-deniz-manzarali/3.jpg",
         side: "right" as const,
       },
       {

@@ -23,18 +23,21 @@ const gastronomyCopy = {
         title: "İnci Hanım'ın Mutfağı",
         content:
           "Kozbeyli Konağı'nın mutfağı, sadece bir yemek alanı değil; İnci Hanım'ın Antakya kökenli aile mirası ile Ege'nin kadim topraklarını birleştiren bir 'Gastronomi Laboratuvarı'dır.",
+        image: "/images/galeri/aksam-sofrasi.jpg",
         side: "left" as const,
       },
       {
         title: "Orijinal Taş Dibek",
         content:
           "180 yıllık orijinal taş dibekte her gün taze olarak elde dövülen Dibek Kahvesi, Kozbeyli'nin en karakteristik sabah ritüellerinden biridir.",
+        image: "/videos/mihlama-poster.jpg",
         side: "right" as const,
       },
       {
         title: "Farm-to-Table Kahvaltı",
         content:
           "Serpme köy kahvaltımız, Kozbeyli'nin asırlık zeytin ağaçlarından ve İnci Hanım'ın geleneksel reçel tariflerinden süzülen tam organik bir döngüdür.",
+        image: "/videos/kahvalti-poster.jpg",
         side: "left" as const,
       },
     ],
@@ -61,18 +64,21 @@ const gastronomyCopy = {
         title: "Inci Hanim's Kitchen",
         content:
           "The kitchen at Kozbeyli Konağı is more than a dining room. It brings Inci Hanim's Antakya family heritage together with the Aegean's ancient produce in a curated culinary experience.",
+        image: "/images/galeri/aksam-sofrasi.jpg",
         side: "left" as const,
       },
       {
         title: "Original Stone Dibek",
         content:
           "Fresh dibek coffee is still ground by hand in the original stone mortar, keeping one of Kozbeyli's oldest morning rituals alive for guests.",
+        image: "/videos/mihlama-poster.jpg",
         side: "right" as const,
       },
       {
         title: "Farm-to-Table Breakfast",
         content:
           "Our village breakfast follows a complete local cycle, from century-old olive trees to house-made preserves and warm stone-oven flavours.",
+        image: "/videos/kahvalti-poster.jpg",
         side: "left" as const,
       },
     ],
@@ -181,7 +187,7 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
     "@type": "Restaurant",
     name: "Kozbeyli Konağı Restaurant",
     url: absoluteUrl(copy.url),
-    image: absoluteUrl("/videos/kahvalti-poster.jpg"),
+    image: absoluteUrl("/images/galeri/aksam-sofrasi.jpg"),
     servesCuisine: copy.cuisine,
     address: {
       "@type": "PostalAddress",
@@ -213,6 +219,7 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
           key={segment.title}
           title={segment.title}
           content={segment.content}
+          image={segment.image}
           side={segment.side}
         />
       ))}

@@ -5,10 +5,12 @@ import { ArrowRight, ArrowLeft } from "lucide-react";
 import { getLocalizedRooms } from "@/data/rooms";
 import type { usePaymentWizard } from "../use-payment-wizard";
 
-// Adim 2: Oda secimi ve gecelik fiyat listesi
+// Adim 2: Oda secimi; guncel fiyat ve musaitlik HMS/ekip teyidinde netlesir.
 export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWizard> }) {
   const { nights, selectedRoom, setSelectedRoom, setStep, copy, locale } = wizard;
   const localizedRooms = getLocalizedRooms(locale);
+  const liveRateLabel = locale === "tr" ? "Güncel fiyat HMS ekranında" : "Current rate in HMS";
+  const liveRateHint = locale === "tr" ? "Fiyat ve müsaitlik resmi rezervasyon ekranında netleşir." : "Rate and availability are confirmed on the official booking screen.";
 
   return (
     <motion.div
@@ -23,13 +25,7 @@ export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
 
       <div className="rooms-grid" style={{ display: "grid", gap: 18, maxHeight: "400px", overflowY: "auto", paddingRight: 8, marginBottom: 24 }}>
         {localizedRooms.map((room) => {
-          let rate = 4500;
-          if (room.slug.includes("superior")) rate = 8500;
-          else if (room.slug.includes("aile")) rate = 7500;
-          else if (room.slug.includes("uc-kisilik")) rate = 6000;
-
           const isSelected = selectedRoom?.slug === room.slug;
-          const total = rate * nights;
 
           return (
             <div
@@ -53,8 +49,8 @@ export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
                 <span className="eyebrow" style={{ fontSize: "0.7rem", marginBottom: 0 }}>{room.amenities.slice(0, 3).join(" · ")}</span>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--olive)" }}>{total.toLocaleString("tr-TR")} ₺</div>
-                <div className="muted" style={{ fontSize: "0.8rem", marginTop: 2 }}>{rate.toLocaleString("tr-TR")} ₺ / {copy.rooms.perNight}</div>
+                <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--olive)" }}>{liveRateLabel}</div>
+                <div className="muted" style={{ fontSize: "0.78rem", marginTop: 2, maxWidth: 160 }}>{liveRateHint}</div>
                 <button
                   className={`button sm ${isSelected ? "primary" : "secondary"}`}
                   style={{ marginTop: 10, padding: "6px 14px", fontSize: "0.75rem" }}

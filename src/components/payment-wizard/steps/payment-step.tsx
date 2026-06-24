@@ -14,16 +14,16 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
     guestName, setGuestName, guestPhone, setGuestPhone, guestEmail, setGuestEmail,
     consent, setConsent,
     paymentError,
-    setStep, isSubmitting, finalPrice,
+    setStep, isSubmitting,
     selectedRoom, checkIn, checkOut, nights, guests,
     scent, pillow, sound, light,
-    totalRawPrice,
     copy,
   } = wizard;
   const t = copy.payment;
   const kvkkHref = getLegalHref("kvkk", wizard.locale);
   const privacyHref = getLegalHref("privacy", wizard.locale);
   const fieldId = (field: string) => `payment-${wizard.locale}-${field}`;
+  const amountPending = wizard.locale === "tr" ? "HMS / ekip teyidi" : "HMS / team confirmation";
 
   return (
     <motion.div
@@ -139,9 +139,7 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
             disabled={isSubmitting || !consent}
             style={{ display: "flex", alignItems: "center", gap: 8 }}
           >
-            {isSubmitting
-              ? t.submitting
-              : `${t.submit} (${finalPrice.toLocaleString("tr-TR")} ₺)`}
+            {isSubmitting ? t.submitting : t.submit}
           </button>
         </div>
       </form>
@@ -169,11 +167,11 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
         <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16, display: "grid", gap: 8 }}>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.95rem" }}>
             <span>{t.roomTotal}</span>
-            <span>{totalRawPrice.toLocaleString("tr-TR")} ₺</span>
+            <span>{amountPending}</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: "1.2rem", color: "var(--olive)", borderTop: "1px solid var(--border)", paddingTop: 12 }}>
             <span>{t.due}</span>
-            <span>{finalPrice.toLocaleString("tr-TR")} ₺</span>
+            <span>{amountPending}</span>
           </div>
         </div>
 
