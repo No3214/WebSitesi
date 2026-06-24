@@ -19,6 +19,7 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
   const [shouldLoad, setShouldLoad] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackBlocked, setPlaybackBlocked] = useState(false);
+  const [playRequest, setPlayRequest] = useState(0);
 
   const markPlaybackState = useCallback(() => {
     const video = videoRef.current;
@@ -40,7 +41,10 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
       video.muted = true;
       video.playsInline = true;
       video.preload = "auto";
-      if (!video.currentSrc && video.networkState === HTMLMediaElement.NETWORK_EMPTY) {
+      if (
+        video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
+        (!video.currentSrc && video.networkState === HTMLMediaElement.NETWORK_EMPTY)
+      ) {
         video.load();
       }
       await video.play();
@@ -63,8 +67,13 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
     }
 
     setShouldLoad(true);
+    setPlayRequest((current) => current + 1);
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (playRequest === 0 || !shouldLoad) return;
     void start();
-  }, [isPlaying, start]);
+  }, [playRequest, shouldLoad, start]);
 
   useEffect(() => {
     const video = videoRef.current;

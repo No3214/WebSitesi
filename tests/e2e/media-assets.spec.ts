@@ -9,7 +9,7 @@ const mobileRoutes = ["/", "/odalar", "/gastronomi", "/menu", "/galeri", "/rezer
 const visualRoutes = ["/", "/gastronomi", "/galeri", "/odalar", "/organizasyonlar", "/odalar/standart-bahce-manzarali-oda", "/en/menu", "/en/events"];
 const playableVideoSelector = 'video[data-event^="video_play_"]';
 
-test.describe.configure({ timeout: 120000 });
+test.describe.configure({ mode: "serial", timeout: 120000 });
 
 function listMediaFiles(dir: string): string[] {
   return fs
