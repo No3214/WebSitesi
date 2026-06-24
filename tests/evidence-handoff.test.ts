@@ -146,6 +146,24 @@ type EvidenceHandoffModule = {
   ) => string;
 };
 
+type VercelEnvOperatorGuidanceModule = {
+  buildVercelEnvSetupGuidance: (
+    missingEnv?: string[],
+    commands?: string[],
+  ) =>
+    | {
+        provider: string;
+        environment: string;
+        dashboardPath: string;
+        envNames: string[];
+        cliInstallCommand: string;
+        cliAuthCommands: string[];
+        cliCommands: string[];
+        manualChecklist: string[];
+      }
+    | undefined;
+};
+
 async function loadAuditModule() {
   return (await import(
     pathToFileURL(path.join(root, "scripts/commercial-launch-audit.mjs")).href
@@ -162,6 +180,12 @@ async function loadHandoffModule() {
   return (await import(
     pathToFileURL(path.join(root, "scripts/evidence-handoff.mjs")).href
   )) as EvidenceHandoffModule;
+}
+
+async function loadVercelEnvOperatorGuidanceModule() {
+  return (await import(
+    pathToFileURL(path.join(root, "scripts/vercel-env-operator-guidance.mjs")).href
+  )) as VercelEnvOperatorGuidanceModule;
 }
 
 function makeTmpDir() {
@@ -460,6 +484,10 @@ describe("evidence handoff", () => {
       requiredCount: 2,
     });
     expect(database?.runtimeAction).toContain("Production runtime reports this gate configured");
+    expect(database?.commands).not.toContain("vercel env add DATABASE_URI production");
+    expect(database?.commands).not.toContain("vercel env add PAYLOAD_SECRET production");
+    expect(database?.commands).toContain("npm run evidence:handoff:live");
+    expect(database?.commands).toContain("npm run launch:audit:live");
     expect(abuse?.runtimeStatus).toMatchObject({
       ready: false,
       configurationSource: "missing",
@@ -478,8 +506,70 @@ describe("evidence handoff", () => {
     expect(formatted).toContain("runtime action:");
     expect(formatted).toContain("env setup: Vercel Dashboard > kozbeyli-konagi > Settings > Environment Variables");
     expect(formatted).toContain("cli fallback: npm i -g vercel; vercel login; vercel whoami");
+    expect(formatted).not.toContain("vercel env add DATABASE_URI production");
     expect(JSON.stringify(result)).not.toContain("postgresql://");
     expect(formatted).not.toContain("postgresql://");
+  });
+
+  it("keeps live handoff env commands scoped to the still-missing production keys", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const handoff = await loadHandoffModule();
+    const env = makeReadyEnv(audit);
+    delete env.GA4_API_SECRET;
+
+    const launchResult = audit.evaluateCommercialLaunch({
+      env,
+      baseDir: makeTmpDir(),
+      runtimeReadiness: {
+        status: "blocked",
+        ready: false,
+        configuredGates: [],
+        blockedGates: ["analytics_purchase"],
+        checks: [
+          {
+            id: "analytics_purchase",
+            ready: false,
+            requiredCount: 5,
+            configuredCount: 4,
+            missingCount: 1,
+            invalidCount: 0,
+            placeholderCount: 0,
+            fallbackApplied: false,
+            configurationSource: "partial",
+          },
+        ],
+      },
+      runtimeSource: "https://www.kozbeylikonagi.com/api/health",
+    });
+    const cutoverPlan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const result = handoff.buildEvidenceHandoff({ launchResult, cutoverPlan });
+    const analytics = result.files.find((file) => file.path === "docs/evidence/analytics-purchase.md");
+
+    expect(analytics?.missingEnv).toEqual(["GA4_API_SECRET"]);
+    expect(analytics?.envSetup?.cliCommands).toEqual(["vercel env add GA4_API_SECRET production"]);
+    expect(analytics?.commands).toContain("vercel env add GA4_API_SECRET production");
+    expect(analytics?.commands).not.toContain("vercel env add NEXT_PUBLIC_GTM_ID production");
+    expect(analytics?.commands).not.toContain("vercel env add NEXT_PUBLIC_GA4_MEASUREMENT_ID production");
+    expect(analytics?.commands).not.toContain("vercel env add NEXT_PUBLIC_GOOGLE_ADS_ID production");
+    expect(analytics?.commands).not.toContain("vercel env add NEXT_PUBLIC_META_PIXEL_ID production");
+    expect(analytics?.commands).not.toContain("vercel env add GA4_MEASUREMENT_ID production");
+  });
+
+  it("normalizes annotated env names without turning alternatives into one unsafe command", async () => {
+    const guidance = await loadVercelEnvOperatorGuidanceModule();
+    const setup = guidance.buildVercelEnvSetupGuidance([
+      "DATABASE_URI (expected production Postgres/Supabase connection string, not localhost)",
+      "NEXT_PUBLIC_GTM_ID or NEXT_PUBLIC_GA4_MEASUREMENT_ID (expected GTM container or direct public GA4 tag)",
+    ]);
+
+    expect(setup?.envNames).toEqual(["DATABASE_URI"]);
+    expect(setup?.cliCommands).toEqual(["vercel env add DATABASE_URI production"]);
+    expect(setup?.manualChecklist.join(" ")).toContain("DATABASE_URI");
+    expect(setup?.manualChecklist.join(" ")).not.toContain("NEXT_PUBLIC_GTM_ID");
   });
 
   it("carries redaction findings into the safe operator handoff", async () => {

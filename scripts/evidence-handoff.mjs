@@ -77,6 +77,32 @@ function runtimeAction(runtimeStatus) {
   return "Production runtime is still missing or invalid for this gate; configure the named production provider/env first, then attach redacted evidence.";
 }
 
+function nonMutatingCommands(commands) {
+  return commands.filter((command) => !command.startsWith("vercel env add "));
+}
+
+function uniqueCommands(commands) {
+  return [...new Set(commands)];
+}
+
+function commandListForHandoff(commands, envSetup, runtimeStatus) {
+  const verificationCommands = nonMutatingCommands(commands);
+
+  if (runtimeStatus?.ready) {
+    return uniqueCommands([
+      ...verificationCommands,
+      "npm run evidence:handoff:live",
+      "npm run launch:audit:live",
+    ]);
+  }
+
+  if (envSetup) {
+    return uniqueCommands([...envSetup.cliCommands, ...verificationCommands]);
+  }
+
+  return verificationCommands.length > 0 ? verificationCommands : commands;
+}
+
 export function buildEvidenceHandoff({
   launchResult = evaluateCommercialLaunch(),
   cutoverPlan = buildProductionCutoverPlan({ launchResult }),
@@ -87,8 +113,9 @@ export function buildEvidenceHandoff({
     const runtimeStatus = runtimeStatusSummary(gate.runtimeConfiguration);
 
     return (gate.missingEvidence || []).map((evidence) => {
-      const commands = [...(step?.commands || ["npm run launch:audit"])];
-      const envSetup = buildVercelEnvSetupGuidance(gate.missingEnv || [], commands);
+      const sourceCommands = [...(step?.commands || ["npm run launch:audit"])];
+      const envSetup = buildVercelEnvSetupGuidance(gate.missingEnv || [], sourceCommands);
+      const commands = commandListForHandoff(sourceCommands, envSetup, runtimeStatus);
 
       return {
         path: evidence.path,

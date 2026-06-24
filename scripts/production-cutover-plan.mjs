@@ -6,6 +6,7 @@ import {
   VERCEL_TARGET_RECORDS,
   describeVercelTarget,
 } from "./domain-readiness.mjs";
+import { buildVercelEnvSetupGuidance } from "./vercel-env-operator-guidance.mjs";
 import { evaluateVercelOpsReadiness } from "./vercel-ops-readiness.mjs";
 
 const VERCEL_INSTALL_COMMAND = "npm i -g vercel";
@@ -307,6 +308,21 @@ function filterVercelBootstrapCommands(commands, bootstrap) {
   });
 }
 
+function isVercelEnvAddCommand(command) {
+  return command.startsWith("vercel env add ");
+}
+
+function scopeVercelEnvCommands(commands, missingEnv = []) {
+  const envSetup = buildVercelEnvSetupGuidance(missingEnv, commands);
+  const nonEnvCommands = commands.filter((command) => !isVercelEnvAddCommand(command));
+  if (!envSetup) return unique(nonEnvCommands);
+
+  const bootstrapCommands = nonEnvCommands.filter((command) => VERCEL_BOOTSTRAP_COMMANDS.has(command));
+  const verificationCommands = nonEnvCommands.filter((command) => !VERCEL_BOOTSTRAP_COMMANDS.has(command));
+
+  return unique([...bootstrapCommands, ...envSetup.cliCommands, ...verificationCommands]);
+}
+
 function resolveGateChecklist(gate, catalog, bootstrap) {
   const redactionCategories = unique(
     (gate.missingEvidence || []).flatMap((evidence) => evidence.redactionCategories || []),
@@ -336,18 +352,31 @@ function resolveGateChecklist(gate, catalog, bootstrap) {
   ];
 }
 
-function resolveGateCommands(gate, catalog, bootstrap) {
-  if (gate.id !== "hms_booking_engine") return filterVercelBootstrapCommands(catalog.commands, bootstrap);
+function resolveGateCommands(gate, catalog, bootstrap, runtimeDiagnostics) {
+  const missingEnvForCommands = runtimeDiagnostics?.ready ? [] : gate.missingEnv;
 
-  if (!hasEnvIssue(gate, "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL")) {
-    return filterVercelBootstrapCommands(catalog.commands, bootstrap);
+  if (gate.id !== "hms_booking_engine") {
+    return scopeVercelEnvCommands(
+      filterVercelBootstrapCommands(catalog.commands, bootstrap),
+      missingEnvForCommands,
+    );
   }
 
-  return filterVercelBootstrapCommands([
-    ...VERCEL_AUTH_COMMANDS,
-    "vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production",
-    ...catalog.commands.filter((command) => command !== VERCEL_INSTALL_COMMAND),
-  ], bootstrap);
+  if (!hasEnvIssue(gate, "NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL")) {
+    return scopeVercelEnvCommands(
+      filterVercelBootstrapCommands(catalog.commands, bootstrap),
+      missingEnvForCommands,
+    );
+  }
+
+  return scopeVercelEnvCommands(
+    filterVercelBootstrapCommands([
+      ...VERCEL_AUTH_COMMANDS,
+      "vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production",
+      ...catalog.commands.filter((command) => command !== VERCEL_INSTALL_COMMAND),
+    ], bootstrap),
+    missingEnvForCommands,
+  );
 }
 
 function preferLiveAuditCommands(commands, useLiveAudit) {
@@ -375,7 +404,7 @@ function buildGateStep(gate, vercelOpsResult, { useLiveAudit = false } = {}) {
   const runtimeDiagnostics = normalizeRuntimeDiagnostics(gate.runtimeConfiguration);
   const vercelBootstrap = resolveVercelBootstrap(vercelOpsResult);
   const commands = preferLiveAuditCommands(
-    resolveGateCommands(gate, catalog, vercelBootstrap),
+    resolveGateCommands(gate, catalog, vercelBootstrap, runtimeDiagnostics),
     useLiveAudit,
   );
 

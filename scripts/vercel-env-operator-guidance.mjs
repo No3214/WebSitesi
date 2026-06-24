@@ -6,9 +6,17 @@ export const VERCEL_CLI_INSTALL_COMMAND = "npm i -g vercel";
 export const VERCEL_CLI_AUTH_COMMANDS = ["vercel login", "vercel whoami"];
 
 const SAFE_ENV_NAME = /^[A-Z0-9_]+$/;
+const SAFE_ENV_NAME_WITH_DETAIL = /^([A-Z0-9_]+)\s+\(/;
 
 function uniqueSafeEnvNames(names = []) {
-  return [...new Set(names)].filter((name) => SAFE_ENV_NAME.test(name));
+  return [
+    ...new Set(
+      names
+        .map((name) => String(name || "").trim())
+        .map((name) => name.match(SAFE_ENV_NAME_WITH_DETAIL)?.[1] || name)
+        .filter((name) => SAFE_ENV_NAME.test(name)),
+    ),
+  ];
 }
 
 function cliCommandsForEnvNames(envNames, commands = []) {

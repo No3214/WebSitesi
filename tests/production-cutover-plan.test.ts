@@ -506,8 +506,10 @@ describe("production cutover plan", () => {
     const serialized = JSON.stringify(plan);
     expect(serialized).not.toContain("super-secret-store-key");
     expect(serialized).not.toContain("ga4-secret-value");
-    expect(serialized).toContain("GARANTI_3D_STORE_KEY");
-    expect(serialized).toContain("GA4_API_SECRET");
+    expect(serialized).not.toContain("vercel env add GARANTI_3D_STORE_KEY production");
+    expect(serialized).not.toContain("vercel env add GA4_API_SECRET production");
+    expect(serialized).toContain("GARANTI_POS_MODE");
+    expect(serialized).toContain("NEXT_PUBLIC_META_PIXEL_ID");
   });
 
   it("skips Vercel bootstrap commands when CLI, auth and project binding are already ready", async () => {
@@ -537,10 +539,36 @@ describe("production cutover plan", () => {
       expect(step?.commands).not.toContain("vercel whoami");
     }
     expect(canonical?.checklist).not.toContain("Install and authenticate Vercel CLI if it is missing.");
-    expect(canonical?.commands[0]).toBe("vercel env pull");
+    expect(canonical?.commands).toContain("vercel env add NEXT_PUBLIC_SITE_URL production");
+    expect(canonical?.commands).toContain("vercel env pull");
     expect(database?.commands[0]).toBe("vercel env add DATABASE_URI production");
     expect(hms?.commands[0]).toBe("npm run vercel:hms:verify");
     expect(plan.vercelCliInstallCommand).toBe("npm i -g vercel");
+  });
+
+  it("keeps partial analytics cutover commands scoped to the missing production key", async () => {
+    const audit = await loadAuditModule();
+    const cutover = await loadCutoverModule();
+    const env = makeReadyEnv(audit);
+    delete env.GA4_API_SECRET;
+
+    const launchResult = audit.evaluateCommercialLaunch({
+      env,
+      baseDir: makeTmpDir(),
+    });
+    const plan = cutover.buildProductionCutoverPlan({
+      launchResult,
+      vercelOpsResult: { decision: "PASS", warnings: [] },
+    });
+    const analytics = plan.gateSteps.find((step) => step.id === "analytics_purchase");
+
+    expect(analytics?.missingEnv).toEqual(["GA4_API_SECRET"]);
+    expect(analytics?.commands).toContain("vercel env add GA4_API_SECRET production");
+    expect(analytics?.commands).not.toContain("vercel env add NEXT_PUBLIC_GTM_ID production");
+    expect(analytics?.commands).not.toContain("vercel env add NEXT_PUBLIC_GA4_MEASUREMENT_ID production");
+    expect(analytics?.commands).not.toContain("vercel env add NEXT_PUBLIC_GOOGLE_ADS_ID production");
+    expect(analytics?.commands).not.toContain("vercel env add NEXT_PUBLIC_META_PIXEL_ID production");
+    expect(analytics?.commands).not.toContain("vercel env add GA4_MEASUREMENT_ID production");
   });
 
   it("asks for HMS env repair only when an explicit override is invalid", async () => {
@@ -606,6 +634,8 @@ describe("production cutover plan", () => {
       configuredCount: 2,
       requiredCount: 2,
     });
+    expect(database?.commands).not.toContain("vercel env add DATABASE_URI production");
+    expect(database?.commands).not.toContain("vercel env add PAYLOAD_SECRET production");
     expect(abuseControls?.runtimeDiagnostics).toMatchObject({
       status: "blocked",
       ready: false,
@@ -617,6 +647,7 @@ describe("production cutover plan", () => {
       configuredCount: 1,
       requiredCount: 1,
     });
+    expect(hms?.commands).not.toContain("vercel env add NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL production");
     expect(database?.commands).toContain("npm run launch:audit:live");
     expect(abuseControls?.commands).toContain("npm run launch:audit:live");
     expect(hms?.commands).toContain("npm run launch:audit:live");
