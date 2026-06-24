@@ -82,6 +82,7 @@ npm run test:monkey              # Lokal deterministik desktop/mobile monkey tes
 npm run test:chaos               # Lokal sert etkileşim stres testi
 npm run test:stress              # monkey + chaos
 npm run media:hero               # Açılış videosu kalite/provenance denetimi
+npm run media:playback:live      # Canlı domainde kahvaltı, mıhlama ve şef video oynatma smoke
 npm run evidence:handoff         # Kalan 100/100 kanıtlarını sahip/komut/checklist olarak listeler
 npm run evidence:handoff:json    # Aynı evidence handoff çıktısı makine okunur JSON
 npm run evidence:handoff:live    # Canlı runtime durumunu da ekleyerek kanıt handoff üretir
@@ -124,6 +125,7 @@ npm run evidence:handoff:live    # Aynı listeye canlı production runtime durum
 npm run evidence:templates       # Operasyon ekibi için kopyalanabilir güvenli kanıt şablonları
 npm run evidence:templates:live  # Aynı şablonlara canlı production runtime durumunu ekler
 npm run media:hero               # Hero video hash, çözünürlük, süre, bitrate ve mobil/desktop sözleşmesi
+npm run media:playback:live      # https://www.kozbeylikonagi.com video oynatma sözleşmesi
 npm run domain:verify            # kozbeylikonagi.com ve www domain health/commit kontrolü
 npm run launch:smoke             # Public rota, health, hero video, konum ve medya smoke
 npm run launch:smoke:preview     # https://kozbeyli-konagi.vercel.app üzerinde aynı smoke

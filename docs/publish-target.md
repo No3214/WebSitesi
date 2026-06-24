@@ -30,6 +30,7 @@ npm run evidence:templates:live:runtime-ready
 npm run launch:cutover
 npm run launch:cutover:json
 npm run media:hero
+npm run media:playback:live
 npm run launch:audit:strict
 npm run release:verify:commercial
 npm run vercel:commercial:verify
@@ -130,6 +131,7 @@ Bu üst komut aşağıdaki kapıları sırayla çalıştırır:
 
 - Runtime dependency audit (`npm run security:audit`)
 - Açılış videosu kalite/provenance audit'i (`npm run media:hero:json`)
+- Canlı video playback smoke'u (`npm run media:playback:live`)
 - Tam publish doğrulaması (`npm run publish:verify`)
 - Lokal launch smoke (`npm run launch:smoke`)
 - Monkey/chaos stres testleri (`npm run test:stress`)
@@ -151,14 +153,17 @@ Bu üst komut aşağıdaki kapıları sırayla çalıştırır:
 
 `launch:smoke` production build üstünde public rotaları, hero video playback,
 iletişim koordinatı, düğün/organizasyon medyası ve görünür medya kırıklarını
-kontrol eder. Lokal hedefte commercial launch audit'i okur; `PW_BASE_URL` ile
-canlı hedef verildiğinde local `.env` dosyalarından etkilenmemek için preflight
-olarak `domain:verify:json` çalıştırır. CI her push/PR'da release gate
-manifestini doğrular ve aynı smoke gate'i publish verification'dan önce
-çalıştırır. Canonical production domain için:
+kontrol eder. `media:playback:live` ise kullanıcıdan gelen video oynatma
+şikayetlerini hızlı tekrar üretmek için canlı domainde kahvaltı, mıhlama ve şef
+kliplerinin gerçekten oynadığını ayrı doğrular. Lokal hedefte commercial launch
+audit'i okur; `PW_BASE_URL` ile canlı hedef verildiğinde local `.env`
+dosyalarından etkilenmemek için preflight olarak `domain:verify:json` çalıştırır.
+CI her push/PR'da release gate manifestini doğrular ve aynı smoke gate'i publish
+verification'dan önce çalıştırır. Canonical production domain için:
 
 ```bash
 npm run launch:smoke:live
+npm run media:playback:live
 npm run localization:verify:live
 npm run domain:verify:strict
 ```

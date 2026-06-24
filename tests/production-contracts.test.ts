@@ -190,6 +190,9 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"media:hero"');
     expect(readinessScript).toContain('"media:hero:json"');
     expect(readinessScript).toContain('"media:hero:strict"');
+    expect(readinessScript).toContain('"media:playback"');
+    expect(readinessScript).toContain('"media:playback:preview"');
+    expect(readinessScript).toContain('"media:playback:live"');
     expect(readinessScript).toContain('"admin:verify"');
     expect(readinessScript).toContain('"admin:verify:json"');
     expect(readinessScript).toContain('"admin:verify:strict"');
@@ -364,6 +367,13 @@ describe("production readiness contracts", () => {
     );
     expect(packageJson.scripts?.["media:hero:strict"]).toBe(
       "node scripts/hero-media-audit.mjs --strict",
+    );
+    expect(packageJson.scripts?.["media:playback"]).toBe("node scripts/media-playback-readiness.mjs");
+    expect(packageJson.scripts?.["media:playback:preview"]).toBe(
+      "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/media-playback-readiness.mjs",
+    );
+    expect(packageJson.scripts?.["media:playback:live"]).toBe(
+      "cross-env PW_BASE_URL=https://www.kozbeylikonagi.com node scripts/media-playback-readiness.mjs",
     );
     expect(packageJson.scripts?.["admin:verify"]).toBe("node scripts/admin-surface-readiness.mjs");
     expect(packageJson.scripts?.["admin:verify:json"]).toBe(
@@ -1507,6 +1517,25 @@ describe("production readiness contracts", () => {
     expect(localizationScript).toContain("test-results\", \"localization-readiness");
     expect(localizationScript).toContain("process.env.LOCALIZATION_VERIFY_WORKERS || \"1\"");
     expect(localizationScript).toContain("--output");
+  });
+
+  it("keeps media playback readiness focused on real public food videos", () => {
+    const mediaPlaybackScript = read("scripts/media-playback-readiness.mjs");
+
+    expect(mediaPlaybackScript).toContain("Kozbeyli Konagi media playback readiness");
+    expect(mediaPlaybackScript).toContain("tests/e2e/media-assets.spec.ts");
+    expect(mediaPlaybackScript).toContain("homepage editorial videos");
+    expect(mediaPlaybackScript).toContain("/gastronomi videos can play real frames");
+    expect(mediaPlaybackScript).toContain("mobile /gastronomi video controls");
+    expect(mediaPlaybackScript).toContain("breakfast, mihlama and chef video playback");
+    expect(mediaPlaybackScript).toContain("PW_BASE_URL");
+    expect(mediaPlaybackScript).toContain("scripts/domain-readiness.mjs");
+    expect(mediaPlaybackScript).toContain(".next/BUILD_ID");
+    expect(mediaPlaybackScript).toContain("node_modules/@playwright/test/cli.js");
+    expect(mediaPlaybackScript).toContain("test-results\", \"media-playback-readiness");
+    expect(mediaPlaybackScript).toContain("process.env.MEDIA_PLAYBACK_WORKERS || \"1\"");
+    expect(mediaPlaybackScript).toContain("--grep");
+    expect(mediaPlaybackScript).toContain("--output");
   });
 
   it("keeps stress tests reproducible with seeded interaction plans", () => {
