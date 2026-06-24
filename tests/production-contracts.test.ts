@@ -1308,6 +1308,8 @@ describe("production readiness contracts", () => {
     expect(vercelOps).toContain("Only npx Vercel fallback is available");
     expect(vercelOps).toContain("persistent global CLI is not installed on PATH");
     expect(vercelOps).toContain("resolveVercelCmdTarget");
+    expect(vercelOps).toContain('process.env.CI === "true"');
+    expect(vercelOps).toContain("private operator link is intentionally not committed");
     expect(vercelOps).not.toContain("candidates.push(path.join(npmPrefix, \"node_modules\", \"vercel\", \"dist\", \"vc.js\"");
     expect(vercelOps).toContain('"vercel_auth"');
     expect(vercelOps).toContain('"whoami"');
@@ -1319,6 +1321,8 @@ describe("production readiness contracts", () => {
     expect(runbook).toContain("npm run vercel:ops");
     expect(runbook).toContain("does not execute `npx vercel` by default");
     expect(runbook).toContain("node scripts/vercel-ops-readiness.mjs --allow-npx-fallback");
+    expect(runbook).toContain("`.vercel/project.json` is a private local operator link");
+    expect(runbook).toContain("In GitHub Actions, its absence is reported as a warning");
     expect(runbook).toContain("npm run vercel:env");
     expect(runbook).toContain("npm run vercel:env:values");
     expect(runbook).toContain("npm run vercel:env:values:strict");

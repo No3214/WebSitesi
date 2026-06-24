@@ -22,6 +22,12 @@ CLI with `npm i -g vercel` so env, deploy and log checks do not depend on a
 one-off package download. For a one-time diagnostic only, run
 `node scripts/vercel-ops-readiness.mjs --allow-npx-fallback`.
 
+`.vercel/project.json` is a private local operator link and must not be
+committed. In GitHub Actions, its absence is reported as a warning so unit tests
+do not fail on an intentionally uncommitted Vercel workspace file. On an
+operator machine, the same missing link remains a failure, and
+`npm run vercel:ops:strict` must pass before env, deploy or logs work.
+
 `launch:cutover` converts the current 100/100 commercial blockers into an
 operator checklist with owner, timing, missing env keys, redacted evidence files,
 commands and KPI/review loop. Use the JSON form for handoff dashboards:

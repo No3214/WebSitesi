@@ -128,6 +128,15 @@ function extractVercelUser(output) {
 
 function checkProjectBinding() {
   if (!exists(".vercel/project.json")) {
+    if (process.env.CI === "true") {
+      return {
+        id: "project_binding",
+        status: "warn",
+        detail: ".vercel/project.json is not present in CI; this private operator link is intentionally not committed.",
+        remediation: "Run npm run vercel:ops:strict on an authenticated operator machine before env, deploy or logs work.",
+      };
+    }
+
     return {
       id: "project_binding",
       status: "fail",
