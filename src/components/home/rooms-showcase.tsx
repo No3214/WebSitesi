@@ -26,36 +26,41 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
             }
           />
         </FadeIn>
-        <StaggerContainer delay={0.15}>
-          <div className="card-grid">
-            {localizedRooms.slice(0, 6).map((room) => (
-              <FadeIn key={room.slug}>
-                <Link href={`${locale === "en" ? "/en/rooms" : "/odalar"}/${room.slug}`} className="card">
-                  <div className="card-media">
-                    <Image
-                      src={room.images[0]}
-                      alt={room.title}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover"
-                      unoptimized
-                    />
-                  </div>
-                  <div className="card-body">
-                    <span className="meta">
-                      {room.capacity} · {room.view}
-                    </span>
-                    <h3>{room.title}</h3>
-                    <p>{room.short}</p>
-                    <span className="card-link">
-                      {locale === "tr" ? "Odayı İncele" : "View Room"}
-                      <span className="arrow" aria-hidden>→</span>
-                    </span>
-                  </div>
-                </Link>
-              </FadeIn>
-            ))}
-          </div>
+        <StaggerContainer className="room-mosaic" delay={0.12} stagger={0.08}>
+          {localizedRooms.slice(0, 6).map((room, index) => (
+            <Link
+              key={room.slug}
+              href={`${locale === "en" ? "/en/rooms" : "/odalar"}/${room.slug}`}
+              className={`room-mosaic-card${index === 0 ? " room-mosaic-featured" : ""}${index === 3 ? " room-mosaic-wide" : ""}`}
+            >
+              <div className="room-mosaic-media">
+                <Image
+                  src={room.images[0]}
+                  alt={room.title}
+                  fill
+                  sizes={
+                    index === 0
+                      ? "(max-width: 760px) 100vw, 56vw"
+                      : "(max-width: 760px) 100vw, (max-width: 1180px) 44vw, 22vw"
+                  }
+                  className="object-cover"
+                  priority={index === 0}
+                  unoptimized
+                />
+              </div>
+              <div className="room-mosaic-copy">
+                <span className="room-mosaic-meta">
+                  {room.size} · {room.capacity} · {room.view}
+                </span>
+                <h3>{room.title}</h3>
+                <p>{room.short}</p>
+                <span className="card-link">
+                  {locale === "tr" ? "Odayı İncele" : "View Room"}
+                  <span className="arrow" aria-hidden>→</span>
+                </span>
+              </div>
+            </Link>
+          ))}
         </StaggerContainer>
         <FadeIn delay={0.2}>
           <div style={{ textAlign: "center", marginTop: 56 }}>

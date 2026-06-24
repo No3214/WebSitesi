@@ -1765,6 +1765,9 @@ describe("production readiness contracts", () => {
     expect(globals).toContain("0 2px 34px rgba(0, 0, 0, 0.5)");
     expect(globals).toContain("text-shadow: 0 2px 40px rgba(0, 0, 0, 0.3)");
     expect(homeHero).toContain("srcSet=");
+    expect(homeHero).toContain("MagneticLink");
+    expect(homeHero).toContain("hero-signature");
+    expect(homeHero).toContain("magnetic-cta");
     expect(homeHero).not.toContain("RevealLines");
     expect(homeHero).not.toContain("<motion.div");
     expect(homeHero).not.toContain('from "next/image"');
@@ -1788,6 +1791,21 @@ describe("production readiness contracts", () => {
       expect(source).not.toContain("AnimatePresence");
       expect(source).not.toContain("<motion.");
     }
+  });
+
+  it("keeps the first visual wave on lightweight native motion primitives", () => {
+    const animations = read("src/components/animations.tsx");
+    const globals = read("src/app/globals.css");
+
+    expect(animations).toContain("export function StaggerContainer");
+    expect(animations).toContain("export function Parallax");
+    expect(animations).toContain("export function RevealLines");
+    expect(animations).toContain("export function MagneticLink");
+    expect(animations).toContain("prefers-reduced-motion: reduce");
+    expect(animations).toContain("data-stagger-state");
+    expect(animations).toContain("window.matchMedia(\"(pointer: coarse)\")");
+    expect(globals).toContain("--ease-editorial");
+    expect(globals).toContain(".magnetic-link-inner");
   });
 
   it("keeps below-fold homepage sections split out of the initial client path", () => {
@@ -1819,6 +1837,9 @@ describe("production readiness contracts", () => {
     expect(galleryStrip).toContain("unoptimized");
     expect(galleryStrip).toContain('loading="lazy"');
     expect(roomsShowcase).toContain("unoptimized");
+    expect(roomsShowcase).toContain("room-mosaic");
+    expect(roomsShowcase).toContain("room-mosaic-featured");
+    expect(roomsShowcase).not.toContain("card-grid");
     expect(roomDetail.match(/unoptimized/g)?.length ?? 0).toBeGreaterThanOrEqual(2);
     expect(roomDetail).toContain("src={room.images[activeImg] ?? room.images[0]}");
     expect(roomDetail).toContain("src={img}");

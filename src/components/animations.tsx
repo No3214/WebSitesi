@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Children, useEffect, useRef, useState } from "react";
+import type { AnchorHTMLAttributes, CSSProperties, PointerEvent as ReactPointerEvent, ReactNode } from "react";
 
 function useReducedMotionPreference() {
   const [reduced, setReduced] = useState(false);
@@ -49,7 +50,7 @@ export function FadeIn({
   delay = 0,
   direction = "up",
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   delay?: number;
   direction?: "up" | "down" | "left" | "right";
 }) {
@@ -83,12 +84,38 @@ export function FadeIn({
 export function StaggerContainer({
   children,
   delay = 0,
+  stagger = 0.1,
+  className,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   delay?: number;
+  stagger?: number;
+  className?: string;
 }) {
-  void delay;
-  return <div>{children}</div>;
+  const reduceMotion = useReducedMotionPreference();
+  const { ref, inView } = useElementInView<HTMLDivElement>();
+
+  if (reduceMotion) {
+    return <div className={className}>{children}</div>;
+  }
+
+  return (
+    <div ref={ref} className={className} data-stagger-state={inView ? "visible" : "hidden"}>
+      {Children.toArray(children).map((child, index) => (
+        <div
+          key={index}
+          className="stagger-item"
+          style={{
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translate3d(0, 0, 0)" : "translate3d(0, 18px, 0)",
+            transition: `opacity 0.8s var(--ease-lux) ${delay + index * stagger}s, transform 0.8s var(--ease-lux) ${delay + index * stagger}s`,
+          }}
+        >
+          {child}
+        </div>
+      ))}
+    </div>
+  );
 }
 
 /** Görünüme girince hedef değere doğru sayan premium sayaç. */
@@ -161,12 +188,48 @@ export function Parallax({
   offset = 60,
   className,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   offset?: number;
   className?: string;
 }) {
-  void offset;
-  return <div className={className}>{children}</div>;
+  const reduceMotion = useReducedMotionPreference();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || reduceMotion) return;
+
+    const distance = Math.max(-24, Math.min(24, offset));
+    let raf = 0;
+
+    const update = () => {
+      raf = 0;
+      const rect = node.getBoundingClientRect();
+      const viewport = window.innerHeight || 1;
+      const progress = (rect.top + rect.height / 2 - viewport / 2) / viewport;
+      const y = Math.max(-1, Math.min(1, progress)) * -distance;
+      node.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+    };
+
+    const requestUpdate = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+    };
+  }, [offset, reduceMotion]);
+
+  return (
+    <div ref={ref} className={className}>
+      {children}
+    </div>
+  );
 }
 
 /** Satır satır maske içinden yükselen başlık reveal'ı. */
@@ -183,20 +246,93 @@ export function RevealLines({
   delay?: number;
   trigger?: "inView" | "mount";
 }) {
-  void delay;
-  void trigger;
+  const reduceMotion = useReducedMotionPreference();
+  const { ref, inView } = useElementInView<HTMLDivElement>();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const visible = reduceMotion || (trigger === "mount" ? mounted : inView);
 
   return (
-    <Tag className={className} aria-label={lines.join(" ")}>
-      {lines.map((line, i) => (
-        <span
-          key={i}
-          aria-hidden="true"
-          style={{ display: "block", overflow: "hidden", padding: "0.08em 0" }}
-        >
-          <span style={{ display: "block" }}>{line}</span>
-        </span>
-      ))}
-    </Tag>
+    <div ref={ref} className="reveal-lines">
+      <Tag className={className} aria-label={lines.join(" ")}>
+        {lines.map((line, i) => (
+          <span
+            key={i}
+            aria-hidden="true"
+            style={{ display: "block", overflow: "hidden", padding: "0.08em 0" }}
+          >
+            <span
+              style={{
+                display: "block",
+                opacity: visible ? 1 : 0,
+                transform: visible ? "translate3d(0, 0, 0)" : "translate3d(0, 105%, 0)",
+                transition: `opacity 0.75s var(--ease-lux) ${delay + i * 0.08}s, transform 0.9s var(--ease-lux) ${delay + i * 0.08}s`,
+              }}
+            >
+              {line}
+            </span>
+          </span>
+        ))}
+      </Tag>
+    </div>
+  );
+}
+
+export function MagneticLink({
+  children,
+  className,
+  maxOffset = 6,
+  onPointerMove,
+  onPointerLeave,
+  ...props
+}: AnchorHTMLAttributes<HTMLAnchorElement> & {
+  children: ReactNode;
+  maxOffset?: number;
+}) {
+  const reduceMotion = useReducedMotionPreference();
+  const ref = useRef<HTMLAnchorElement>(null);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const move = (event: ReactPointerEvent<HTMLAnchorElement>) => {
+    onPointerMove?.(event);
+    if (reduceMotion || window.matchMedia("(pointer: coarse)").matches) return;
+
+    const node = ref.current;
+    if (!node) return;
+
+    const rect = node.getBoundingClientRect();
+    const dx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+    const dy = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+    const limit = Math.max(0, Math.min(8, maxOffset));
+    setOffset({ x: dx * limit, y: dy * limit });
+  };
+
+  const leave = (event: ReactPointerEvent<HTMLAnchorElement>) => {
+    onPointerLeave?.(event);
+    setOffset({ x: 0, y: 0 });
+  };
+
+  const innerStyle: CSSProperties = reduceMotion
+    ? {}
+    : {
+        transform: `translate3d(${offset.x.toFixed(2)}px, ${offset.y.toFixed(2)}px, 0)`,
+      };
+
+  return (
+    <a
+      {...props}
+      ref={ref}
+      className={className ? `${className} magnetic-link` : "magnetic-link"}
+      onPointerMove={move}
+      onPointerLeave={leave}
+    >
+      <span className="magnetic-link-inner" style={innerStyle}>
+        {children}
+      </span>
+    </a>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Pause, Play } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { MagneticLink } from "@/components/animations";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
 
@@ -196,6 +197,9 @@ export function HomeHero({ locale, eyebrow }: Props) {
         <span className="eyebrow hero-eyebrow">
           {eyebrow}
         </span>
+        <span className="hero-signature" aria-hidden="true">
+          FOÇA · TAŞ · ZEYTİN
+        </span>
 
         <h1 aria-label={`${heroTitle} ${heroAccent}`}>
           <span aria-hidden="true" className="hero-title-line">
@@ -213,15 +217,15 @@ export function HomeHero({ locale, eyebrow }: Props) {
         </p>
 
         <div className="hero-actions">
-          <a
+          <MagneticLink
             href={reservationHref}
-            className="button gold"
+            className="button gold magnetic-cta"
             target="_blank"
             rel="noopener noreferrer"
             data-event="booking_engine_open"
           >
             {locale === "tr" ? "Hemen Rezervasyon" : "Book Now"}
-          </a>
+          </MagneticLink>
           <Link href={eventsHref} className="button ghost-light">
             {locale === "tr" ? "Davet & Etkinlik Planla" : "Plan an Event"}
           </Link>
