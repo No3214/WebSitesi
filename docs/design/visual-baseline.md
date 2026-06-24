@@ -20,12 +20,14 @@ Implemented in this wave:
 - `src/components/animations.tsx`: `Parallax` is now clamped to a 24px travel budget and disabled on touch/mobile-width contexts; `TiltCard` is available for later real-artifact storytelling without WebGL.
 - `src/components/home/home-hero.tsx`: opening video contract preserved, editorial signature added, primary booking CTA gets the only magnetic interaction.
 - `src/components/home/rooms-showcase.tsx`: equal homepage room grid replaced with editorial mosaic while keeping existing room facts and links.
+- `src/components/home/gallery-strip.tsx`: homepage gallery keeps approved real media and now uses a native cinematic filmstrip rhythm with focusable captions.
 - `src/app/globals.css`: Stone & Light surface tokens, hero reveal timing, magnetic CTA inner motion, responsive room mosaic.
+- `src/app/globals.css`: gallery filmstrip aspect-ratio rhythm, native snap scroll, keyboard focus states and mobile-safe fallback.
 - `src/stories/MotionPrimitives.stories.tsx`: Storybook now exposes the brand motion primitives for review before wider rollout.
 
 Deferred by design:
 
-- gallery lightbox and cinematic filmstrip;
+- gallery lightbox;
 - room detail swipe/keyboard viewer;
 - optional real-asset 3D pilot for `/hikayemiz`;
 - Storybook visual regression setup;

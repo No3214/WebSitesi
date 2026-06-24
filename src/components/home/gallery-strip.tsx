@@ -7,6 +7,13 @@ import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 import { galleryShots } from "@/data/gallery";
 
+function filmstripRhythm(index: number) {
+  if (index === 0) return "gallery-item gallery-item-hero";
+  if (index % 5 === 1 || index % 5 === 4) return "gallery-item gallery-item-portrait";
+  if (index % 5 === 3) return "gallery-item gallery-item-wide";
+  return "gallery-item";
+}
+
 export function GalleryStrip({ locale }: { locale: "tr" | "en" }) {
   return (
     <section className="section section-alt" id="galeri" style={{ paddingBottom: 64 }}>
@@ -27,7 +34,13 @@ export function GalleryStrip({ locale }: { locale: "tr" | "en" }) {
             aria-label={locale === "tr" ? "Konak fotoğraf galerisi" : "Mansion photo gallery"}
           >
             {galleryShots.map((shot, i) => (
-              <figure key={i} className="gallery-item" style={{ margin: 0 }}>
+              <figure
+                key={shot.src}
+                className={filmstripRhythm(i)}
+                style={{ margin: 0 }}
+                tabIndex={0}
+                aria-label={shot.caption[locale]}
+              >
                 <Image
                   src={shot.src}
                   alt={shot.caption[locale]}

@@ -53,13 +53,34 @@ describe("Stone & Light motion primitives", () => {
     expect(globals).toContain("transform: translateX(4px);");
   });
 
+  it("keeps the homepage gallery as a real-media native cinematic filmstrip", () => {
+    const galleryStrip = read("src/components/home/gallery-strip.tsx");
+    const globals = read("src/app/globals.css");
+
+    expect(galleryStrip).toContain("filmstripRhythm");
+    expect(galleryStrip).toContain("gallery-item-hero");
+    expect(galleryStrip).toContain("gallery-item-portrait");
+    expect(galleryStrip).toContain("gallery-item-wide");
+    expect(galleryStrip).toContain("galleryShots.map");
+    expect(galleryStrip).toContain("unoptimized");
+    expect(galleryStrip).not.toContain("autoPlay");
+    expect(galleryStrip).not.toContain("framer-motion");
+
+    expect(globals).toContain(".gallery-item-hero");
+    expect(globals).toContain(".gallery-item:focus-visible");
+    expect(globals).toContain("scroll-snap-type: x mandatory;");
+    expect(globals).toContain("width: clamp(320px, 46vw, 640px);");
+    expect(globals).toContain(".gallery-item,\n    .gallery-item-hero,\n    .gallery-item-portrait,\n    .gallery-item-wide");
+  });
+
   it("documents the first visual wave and the deferred heavy media work", () => {
     const baseline = read("docs/design/visual-baseline.md");
     const inventory = read("docs/design/media-usage-inventory.md");
 
     expect(baseline).toContain("Stone & Light Editorial");
     expect(baseline).toContain("real lightweight `StaggerContainer`, `Parallax`, `RevealLines`, and `MagneticLink`");
-    expect(baseline).toContain("gallery lightbox and cinematic filmstrip");
+    expect(baseline).toContain("native cinematic filmstrip rhythm");
+    expect(baseline).toContain("gallery lightbox");
     expect(inventory).toContain("Use only real Kozbeyli Konagi media");
     expect(inventory).toContain("Do not fill missing sections with generated or stock-like hotel imagery");
   });

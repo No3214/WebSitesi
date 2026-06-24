@@ -1586,10 +1586,12 @@
   /* ---------- Galeri şeridi (yatay snap) ---------- */
   .gallery-strip {
     display: flex;
-    gap: 18px;
+    align-items: center;
+    gap: clamp(14px, 1.8vw, 26px);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding: 8px 4px 22px;
+    scroll-padding-inline: clamp(20px, 5vw, 72px);
+    padding: 12px clamp(20px, 5vw, 72px) 28px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--gold) 60%, transparent) transparent;
@@ -1608,16 +1610,39 @@
   .gallery-item {
     position: relative;
     flex: none;
-    width: clamp(240px, 32vw, 400px);
+    width: clamp(230px, 28vw, 360px);
     aspect-ratio: 4 / 3;
     overflow: hidden;
     scroll-snap-align: center;
-    box-shadow: var(--shadow-soft);
+    background: var(--surface-stone);
+    border: 1px solid rgba(255, 250, 242, 0.46);
+    box-shadow: 0 24px 70px rgba(68, 53, 31, 0.11);
+    transition: transform var(--motion-slow) var(--ease-lux), box-shadow var(--motion-slow) var(--ease-lux),
+      border-color var(--motion-base) var(--ease-lux);
   }
 
-  .gallery-item:nth-child(even) {
-    aspect-ratio: 3 / 3.6;
-    align-self: flex-start;
+  .gallery-item-hero {
+    width: clamp(320px, 46vw, 640px);
+    aspect-ratio: 16 / 10;
+  }
+
+  .gallery-item-portrait {
+    width: clamp(214px, 22vw, 312px);
+    aspect-ratio: 3 / 4;
+    transform: translateY(18px);
+  }
+
+  .gallery-item-wide {
+    width: clamp(292px, 38vw, 520px);
+    aspect-ratio: 16 / 9;
+    transform: translateY(-14px);
+  }
+
+  .gallery-item:hover,
+  .gallery-item:focus-visible {
+    border-color: var(--line-gold);
+    box-shadow: var(--shadow-editorial);
+    outline: none;
   }
 
   .gallery-item img {
@@ -1625,27 +1650,42 @@
     transition: transform 1s var(--ease-lux);
   }
 
-  .gallery-item:hover img {
+  .gallery-item:hover img,
+  .gallery-item:focus-visible img {
     transform: scale(1.06);
+  }
+
+  .gallery-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, transparent 46%, rgba(61, 74, 59, 0.58)),
+      linear-gradient(120deg, rgba(179, 146, 92, 0.12), transparent 42%);
+    opacity: 0.84;
+    pointer-events: none;
   }
 
   .gallery-item figcaption {
     position: absolute;
+    z-index: 1;
     left: 0;
     right: 0;
     bottom: 0;
-    padding: 28px 16px 14px;
-    background: linear-gradient(180deg, transparent, rgba(61, 74, 59, 0.62));
+    padding: 38px 18px 16px;
     color: var(--ivory);
     font-size: 0.72rem;
     letter-spacing: 0.18em;
+    line-height: 1.45;
     text-transform: uppercase;
-    opacity: 0;
-    transition: opacity 0.5s ease;
+    opacity: 0.92;
+    transition: opacity 0.45s ease, transform 0.45s var(--ease-lux);
   }
 
-  .gallery-item:hover figcaption {
+  .gallery-item:hover figcaption,
+  .gallery-item:focus-visible figcaption {
     opacity: 1;
+    transform: translateY(-2px);
   }
 
   /* ---------- /galeri tam sayfa grid'i ---------- */
@@ -2395,6 +2435,21 @@
       height: 44px;
     }
 
+    .gallery-strip {
+      mask-image: none;
+      scroll-padding-inline: 20px;
+      padding-inline: 20px;
+    }
+
+    .gallery-item,
+    .gallery-item-hero,
+    .gallery-item-portrait,
+    .gallery-item-wide {
+      width: clamp(250px, 78vw, 340px);
+      aspect-ratio: 4 / 3;
+      transform: none;
+    }
+
     .faq-a p {
       padding-right: 8px;
     }
@@ -2418,6 +2473,8 @@
   .magnetic-link-inner,
   .room-mosaic-card,
   .room-mosaic-media img,
+  .gallery-item,
+  .gallery-item img,
   .tilt-card-inner {
     transform: none !important;
     opacity: 1 !important;
