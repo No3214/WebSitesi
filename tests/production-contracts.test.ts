@@ -877,6 +877,8 @@ describe("production readiness contracts", () => {
     expect(schema).toContain('"@type": ["Hotel", "LodgingBusiness", "Restaurant"]');
     expect(schema).toContain('"@type": "PostalAddress"');
     expect(schema).toContain('"@type": "GeoCoordinates"');
+    expect(schema).toContain("Evcil Hayvan Dostu");
+    expect(schema).toContain("Ücretsiz Otopark");
     expect(schema).not.toContain("starRating");
     expect(schema).not.toContain("aggregateRating");
     expect(schema).not.toContain("review:");
@@ -2029,6 +2031,8 @@ describe("production readiness contracts", () => {
     expect(dictionary).toContain("Terms Confirmed in Writing");
     expect(contactClient).toContain("canlı yol tarifini");
     expect(llms).toContain("canlı yol tarifi önerilir");
+    expect(llms).toContain("Tesiste ücretsiz açık otopark");
+    expect(llms).toContain("evcil hayvan dostu");
   });
 
   it("keeps public LLM and agent context evidence-gated", () => {
@@ -2060,6 +2064,8 @@ describe("production readiness contracts", () => {
 
     expect(llms).toContain("rezervasyon ekranı, WhatsApp, telefon veya e-posta");
     expect(llms).toContain("canlı online rezervasyon motoru yalnızca production HMS bağlantısı");
+    expect(llms).toContain("free open parking is available on site");
+    expect(llms).toContain("the hotel is pet-friendly");
     expect(llms).toContain("A live online booking engine is used only when the production HMS URL is configured.");
     expect(llmContextGenerator).toContain("availability_confirmation_required");
     expect(llmContextGenerator).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL");

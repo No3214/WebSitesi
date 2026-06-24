@@ -241,6 +241,13 @@ test.describe("Media, video and mobile publish readiness", () => {
     await expect(page.getByRole("heading", { name: "Mutfaktan Canlı Kareler" })).toBeVisible({
       timeout: 15000,
     });
+    await expect(page.getByRole("heading", { name: "Konağın Seçili Lezzetleri" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Kahvaltı", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Mezeler", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "MENÜNÜN TAMAMINI GÖR" })).toHaveAttribute(
+      "href",
+      "/menu",
+    );
 
     const playbackResults = await page.locator(playableVideoSelector).evaluateAll(async (videos) => {
       const results: Array<{

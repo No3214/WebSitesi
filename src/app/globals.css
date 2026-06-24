@@ -1177,6 +1177,132 @@
     text-align: center;
   }
 
+  .gastronomy-menu-preview {
+    padding: 76px 24px 68px;
+    background:
+      linear-gradient(180deg, rgba(250, 249, 246, 0.96), rgba(243, 237, 226, 0.92)),
+      var(--ivory);
+    border-top: 1px solid rgba(61, 74, 59, 0.1);
+    border-bottom: 1px solid rgba(61, 74, 59, 0.1);
+  }
+
+  .gastronomy-menu-preview-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    gap: 30px;
+  }
+
+  .gastronomy-menu-preview-head {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .gastronomy-menu-preview-head h2 {
+    margin: 8px 0 12px;
+    color: var(--olive);
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    line-height: 1.05;
+  }
+
+  .gastronomy-menu-preview-head p:not(.eyebrow) {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .gastronomy-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .gastronomy-menu-card {
+    min-width: 0;
+    border: 1px solid rgba(61, 74, 59, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 252, 246, 0.86);
+    padding: 22px;
+    display: grid;
+    gap: 18px;
+    box-shadow: 0 14px 34px rgba(31, 35, 30, 0.08);
+  }
+
+  .gastronomy-menu-card h3 {
+    margin: 0 0 6px;
+    color: var(--olive);
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    line-height: 1.2;
+  }
+
+  .gastronomy-menu-card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .gastronomy-menu-card ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 11px;
+  }
+
+  .gastronomy-menu-card li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: baseline;
+    color: var(--text);
+    font-size: 0.92rem;
+    line-height: 1.45;
+    border-top: 1px solid rgba(61, 74, 59, 0.1);
+    padding-top: 11px;
+  }
+
+  .gastronomy-menu-card li span {
+    min-width: 0;
+  }
+
+  .gastronomy-menu-card li strong {
+    color: var(--olive);
+    font-size: 0.86rem;
+    white-space: nowrap;
+  }
+
+  .gastronomy-menu-card small {
+    color: var(--gold);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .gastronomy-menu-link {
+    justify-self: center;
+  }
+
+  @media (max-width: 1024px) {
+    .gastronomy-menu-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .gastronomy-menu-preview {
+      padding: 58px 18px;
+    }
+
+    .gastronomy-menu-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .editorial-copy h3 {
     font-size: var(--fs-h3);
     color: var(--olive);

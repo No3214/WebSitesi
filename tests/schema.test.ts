@@ -13,6 +13,8 @@ describe("hotel structured data", () => {
     });
     expect(JSON.stringify(hotel)).toContain("180 Yıllık Taş Dibek Kahvesi");
     expect(JSON.stringify(hotel)).not.toContain("500 Yıllık Taş Dibek Kahvesi");
+    expect(JSON.stringify(hotel)).toContain("Ücretsiz Otopark");
+    expect(JSON.stringify(hotel)).toContain("Evcil Hayvan Dostu");
     expect(hotel).not.toHaveProperty("aggregateRating");
     expect(hotel).not.toHaveProperty("review");
     expect(hotel).not.toHaveProperty("starRating");

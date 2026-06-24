@@ -167,8 +167,13 @@ test.describe("EN public localization", () => {
     await page.goto("/en/dining");
 
     await expect(page.getByRole("heading", { name: "Culinary Heritage" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Selected Tastes of the Mansion" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Breakfast", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Mezes", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "VIEW FULL MENU" })).toHaveAttribute("href", "/en/menu");
     await expect(page.getByRole("heading", { name: "Live Frames from the Kitchen" })).toBeVisible();
     await expect(page.getByText("Gastronomi Mirası")).toHaveCount(0);
+    await expect(page.getByText("Konağın Seçili Lezzetleri")).toHaveCount(0);
     await expect(page.getByText("Mutfaktan Canlı Kareler")).toHaveCount(0);
   });
 
