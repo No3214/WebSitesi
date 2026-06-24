@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 test.skip(!!process.env.PW_BASE_URL, "Stres/monkey testleri canli prod ortaminda kosulmaz");
 
 const routes = ["/", "/odalar", "/menu", "/organizasyonlar", "/galeri", "/rezervasyon"];
+const navigationOptions = { waitUntil: "domcontentloaded" as const, timeout: 30000 };
 
 function seededRandom(seed = 20260613) {
   let state = seed;
@@ -47,11 +48,16 @@ async function assertPageStillHealthy(page: Page, errors: string[]) {
   expect(errors, errors.join("\n")).toEqual([]);
 }
 
+async function gotoRoute(page: Page, path: string) {
+  await page.goto(path, navigationOptions);
+  await page.locator("body").waitFor({ state: "visible", timeout: 10000 });
+}
+
 async function runMonkey(page: Page, iterations: number, seed: number) {
   const random = seededRandom(seed);
   const errors = collectClientErrors(page);
 
-  await page.goto("/", { waitUntil: "load" });
+  await gotoRoute(page, "/");
   await assertPageStillHealthy(page, errors);
 
   for (let i = 0; i < iterations; i += 1) {
@@ -78,7 +84,7 @@ async function runMonkey(page: Page, iterations: number, seed: number) {
     }
 
     if (action === "navigate") {
-      await page.goto(routes[Math.floor(random() * routes.length)], { waitUntil: "load" });
+      await gotoRoute(page, routes[Math.floor(random() * routes.length)]);
     }
 
     await assertPageStillHealthy(page, errors);
@@ -87,6 +93,8 @@ async function runMonkey(page: Page, iterations: number, seed: number) {
 }
 
 test.describe("Monkey stability", () => {
+  test.describe.configure({ mode: "serial" });
+
   test("desktop survives deterministic random interactions", async ({ page }) => {
     test.setTimeout(90000);
     await page.setViewportSize({ width: 1440, height: 1000 });

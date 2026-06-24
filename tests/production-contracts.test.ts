@@ -1953,6 +1953,7 @@ describe("production readiness contracts", () => {
   it("keeps CI running the launch smoke gate before publish verification", () => {
     const ciWorkflow = read(".github/workflows/ci.yml");
     const playwrightConfig = read("playwright.config.ts");
+    const monkey = read("tests/monkey.spec.ts");
     const launchSmokeIndex = ciWorkflow.indexOf("npm run launch:smoke");
     const publishVerifyIndex = ciWorkflow.indexOf("Publish verification tests");
 
@@ -1969,6 +1970,9 @@ describe("production readiness contracts", () => {
     expect(ciWorkflow).not.toContain("npx playwright install");
     expect(playwrightConfig).toContain("PW_USE_SYSTEM_CHROME");
     expect(playwrightConfig).toContain('channel: "chrome"');
+    expect(monkey).toContain('waitUntil: "domcontentloaded"');
+    expect(monkey).toContain('test.describe.configure({ mode: "serial" })');
+    expect(monkey).toContain("await assertPageStillHealthy(page, errors)");
   });
 
   it("keeps the health endpoint safe for uptime monitors", () => {
