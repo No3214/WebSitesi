@@ -60,6 +60,7 @@ describe("release verification runner", () => {
     expect(defaultScripts).toContain("analytics:verify:json");
     expect(defaultScripts).toContain("supabase:verify:json");
     expect(defaultScripts).toContain("vercel:env:json");
+    expect(defaultScripts).toContain("codex:tooling:json");
     expect(defaultScripts).not.toContain("launch:audit:strict");
     expect(defaultScripts).not.toContain("launch:cutover:strict");
     expect(defaultScripts).not.toContain("vercel:env:values:strict");
@@ -76,6 +77,7 @@ describe("release verification runner", () => {
     expect(commercialScripts).toContain("vercel:garanti:verify");
     expect(commercialScripts).toContain("vercel:analytics:verify");
     expect(commercialScripts).toContain("vercel:search:verify");
+    expect(commercialScripts).toContain("codex:tooling:json");
     expect(commercialScripts).not.toContain("launch:audit:json");
     expect(commercialScripts).not.toContain("launch:audit:strict");
     expect(commercialScripts).not.toContain("launch:cutover:json");

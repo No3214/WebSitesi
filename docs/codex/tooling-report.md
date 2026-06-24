@@ -29,6 +29,14 @@ Project file: `.codex/config.toml`
 - `magic`: present but disabled because no `API_KEY` is available and it is optional.
 - `motion-ai`: not declared as an MCP server because the official entrypoint is an installer (`npx motion-ai`) that requires Motion+ authentication.
 
+Guard command:
+
+```powershell
+npm run codex:tooling
+```
+
+This verifies the project MCP config, Motion installer guard, Codex docs, AGENTS.md tooling rules and package scripts without running an interactive installer.
+
 ## Motion AI Kit Status
 
 Official install command checked:

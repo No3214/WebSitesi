@@ -91,6 +91,10 @@ const baseGates = [
     label: "GitHub Actions CI readiness diagnosis",
   },
   {
+    script: "codex:tooling:json",
+    label: "Codex MCP and Motion tooling readiness",
+  },
+  {
     script: "publish:verify",
     label: "Full publish verification",
   },
