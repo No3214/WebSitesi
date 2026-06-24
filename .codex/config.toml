@@ -1,0 +1,32 @@
+# Project-scoped Codex tooling for Kozbeyli Konagi.
+# Restart the Codex session after changing MCP servers.
+
+[mcp_servers.shadcn]
+command = "cmd"
+args = ["/c", "npx", "-y", "shadcn@latest", "mcp"]
+startup_timeout_sec = 30
+tool_timeout_sec = 120
+enabled = true
+required = false
+
+[mcp_servers.chrome-devtools]
+command = "cmd"
+args = ["/c", "npx", "-y", "chrome-devtools-mcp@latest", "--no-usage-statistics", "--isolated", "--redact-network-headers"]
+startup_timeout_sec = 45
+tool_timeout_sec = 180
+enabled = true
+required = false
+
+[mcp_servers.magic]
+command = "cmd"
+args = ["/c", "npx", "-y", "@21st-dev/magic@latest"]
+env_vars = ["API_KEY"]
+startup_timeout_sec = 45
+tool_timeout_sec = 180
+enabled = false
+required = false
+
+# Motion AI Kit is intentionally not declared as a live MCP server here.
+# The official installer is `npx motion-ai`; it asks for a Motion+ API key
+# and can use MOTION_TOKEN to pre-fill that key. Run it only after the token is
+# available and after reviewing the files it wants to write.

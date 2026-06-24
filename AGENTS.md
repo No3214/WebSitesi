@@ -67,3 +67,10 @@ Use this as the repo-local operating layer. It complements, and does not replace
 - Report exact commands and outcomes, including failed or skipped gates.
 - Include a rollback note: revert the commit, disable the changed route/feature/env, or restore the previous provider setting. Do not claim provider/env rollback is proven without source-system evidence.
 - For an active user objective that explicitly requires continuous publish work, commit and push after verified improvements. Otherwise, ask before external mutation.
+
+### Project Tooling
+- Package manager: npm. Node target: 24.x.
+- Project MCP settings live in `.codex/config.toml`; restart Codex before claiming new MCP tools are active.
+- shadcn and Chrome DevTools MCP are optional helpers. Use repo evidence and existing components first.
+- Motion AI Kit may be installed only after `MOTION_TOKEN` / Motion+ credentials are available and the proposed file writes are reviewed.
+- Never treat Magic, Motion, shadcn, or any AI-generated output as verified hotel media or legal/commercial evidence.
