@@ -11,9 +11,9 @@ export const metadata: Metadata = {
   title: "Curated Offers",
   description:
     "Seasonal stay and event offers at Kozbeyli Konağı. Contact the guest relations team for curated romantic escapes, family weekends and private event proposals.",
-  alternates: { canonical: "/en/teklifler" },
+  alternates: { canonical: "/en/offers" },
   openGraph: {
-    url: absoluteUrl("/en/teklifler"),
+    url: absoluteUrl("/en/offers"),
     title: "Curated Offers | Kozbeyli Konağı",
     description:
       "Seasonal accommodation and private event offers curated with Aegean hospitality.",
@@ -29,21 +29,21 @@ const offers = [
     no: "01",
     title: "Romantic Aegean Escape",
     text: "Watch the sunset from a stone room with an Aegean view, then begin the morning slowly with a curated village breakfast in the courtyard. An authentic pause shaped for couples.",
-    href: "/en/rezervasyon",
+    href: "/en/booking",
     cta: "Plan Your Stay",
   },
   {
     no: "02",
     title: "Family Weekend in Kozbeyli",
     text: "Two-part family rooms, quiet garden access and a calm weekend rhythm for parents and children. Historic texture remains close while the experience stays comfortable and considered.",
-    href: "/en/rezervasyon",
+    href: "/en/booking",
     cta: "Explore Rooms",
   },
   {
     no: "03",
     title: "Private Event Curation",
     text: "Engagements, intimate celebrations and special dinners in the stone courtyard, paired with curated Antakya and Aegean menus for a memorable evening.",
-    href: "/en/organizasyonlar",
+    href: "/en/events",
     cta: "View Events",
   },
 ];

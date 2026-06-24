@@ -5,8 +5,8 @@ import { expect, test } from "@playwright/test";
 
 const publicDir = path.join(process.cwd(), "public");
 const mediaExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".mp4"]);
-const mobileRoutes = ["/", "/odalar", "/gastronomi", "/menu", "/galeri", "/rezervasyon", "/organizasyonlar", "/en/menu", "/en/organizasyonlar"];
-const visualRoutes = ["/", "/gastronomi", "/galeri", "/odalar", "/organizasyonlar", "/odalar/standart-bahce-manzarali-oda", "/en/menu", "/en/organizasyonlar"];
+const mobileRoutes = ["/", "/odalar", "/gastronomi", "/menu", "/galeri", "/rezervasyon", "/organizasyonlar", "/en/menu", "/en/events"];
+const visualRoutes = ["/", "/gastronomi", "/galeri", "/odalar", "/organizasyonlar", "/odalar/standart-bahce-manzarali-oda", "/en/menu", "/en/events"];
 const playableVideoSelector = 'video[data-event^="video_play_"]';
 
 test.describe.configure({ timeout: 120000 });

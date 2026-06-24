@@ -71,6 +71,7 @@ const requiredFiles = [
   "tests/supabase-security-readiness.test.ts",
   "tests/utils.test.ts",
   "tests/local-preview-verify.test.ts",
+  "tests/localized-routes.test.ts",
   "tests/search-local-seo-readiness.test.ts",
   "tests/vercel-ops-readiness.test.ts",
   "tests/e2e/health.spec.ts",
@@ -106,20 +107,20 @@ const publicRoutes = [
   "/cerez-politikasi",
   "/mesafeli-satis-sozlesmesi",
   "/en",
-  "/en/rezervasyon",
-  "/en/odalar",
-  "/en/odalar/standart-bahce-manzarali-oda",
-  "/en/gastronomi",
+  "/en/booking",
+  "/en/rooms",
+  "/en/rooms/standart-bahce-manzarali-oda",
+  "/en/dining",
   "/en/menu",
-  "/en/organizasyonlar",
-  "/en/misafir-rehberi",
-  "/en/hikayemiz",
-  "/en/deneyimler",
-  "/en/teklifler",
-  "/en/galeri",
-  "/en/sss",
-  "/en/iletisim",
-  "/en/lokasyon",
+  "/en/events",
+  "/en/guest-guide",
+  "/en/our-story",
+  "/en/experiences",
+  "/en/offers",
+  "/en/gallery",
+  "/en/faq",
+  "/en/contact",
+  "/en/location",
 ];
 
 const requiredEnvExampleKeys = [
@@ -174,16 +175,15 @@ const missingEnvExampleKeys = requiredEnvExampleKeys.filter(
 const sitemapSource = exists("src/app/sitemap.ts") ? read("src/app/sitemap.ts") : "";
 function sitemapSourceCoversRoute(route) {
   if (route === "/") return sitemapSource.includes("''");
-  if (route.startsWith("/en/odalar/")) return true;
+  if (route.startsWith("/en/rooms/")) return true;
   if (route.startsWith("/odalar/")) return true;
 
   if (route === "/en") {
-    return sitemapSource.includes("Array.from(EN_ROUTES)") && sitemapSource.includes("''");
+    return sitemapSource.includes("EN_ROUTE_BY_TR_ROUTE") && sitemapSource.includes("'': '/en'");
   }
 
   if (route.startsWith("/en/")) {
-    const trRoute = route.slice(3);
-    return sitemapSource.includes("Array.from(EN_ROUTES)") && sitemapSource.includes(`'${trRoute}'`);
+    return sitemapSource.includes(`'${route}'`) || sitemapSource.includes(`\"${route}\"`);
   }
 
   return sitemapSource.includes(`'${route}'`) || sitemapSource.includes(`\"${route}\"`);

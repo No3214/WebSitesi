@@ -26,7 +26,7 @@ const galleryCopy: Record<GalleryLocale, {
     title: "A Journal of Stone and Light",
     text: "Andesite stone walls, a courtyard waking to the morning sun and the table culture of the Aegean. Explore the mansion's daily rhythm through photographs.",
     schemaName: "Kozbeyli Konağı Gallery",
-    schemaUrl: "/en/galeri",
+    schemaUrl: "/en/gallery",
   },
 };
 

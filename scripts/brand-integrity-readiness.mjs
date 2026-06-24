@@ -27,7 +27,7 @@ const liveRoutes = [
   "/menu",
   "/misafir-rehberi",
   "/en",
-  "/en/rezervasyon",
+  "/en/booking",
   "/api/llm-context",
   "/llms.txt",
 ];

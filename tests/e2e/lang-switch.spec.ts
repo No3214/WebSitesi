@@ -50,9 +50,9 @@ test.describe("Dil degistirici", () => {
     await page.goto("/odalar");
     await expect(page.locator("header.site-header")).toBeVisible();
     const enLink = page.locator("header.site-header .lang-switcher").getByRole("link", { name: "EN", exact: true });
-    await expect(enLink).toHaveAttribute("href", "/en/odalar");
+    await expect(enLink).toHaveAttribute("href", "/en/rooms");
 
-    await Promise.all([page.waitForURL("**/en/odalar"), enLink.click()]);
+    await Promise.all([page.waitForURL("**/en/rooms"), enLink.click()]);
 
     const main = page.locator("main");
     const mobileActionBar = page.getByTestId("mobile-action-bar");
@@ -72,9 +72,9 @@ test.describe("Dil degistirici", () => {
     await page.goto("/odalar/uc-kisilik-oda");
     await expect(page.locator("header.site-header")).toBeVisible();
     const enLink = page.locator("header.site-header .lang-switcher").getByRole("link", { name: "EN", exact: true });
-    await expect(enLink).toHaveAttribute("href", "/en/odalar/uc-kisilik-oda");
+    await expect(enLink).toHaveAttribute("href", "/en/rooms/uc-kisilik-oda");
 
-    await Promise.all([page.waitForURL("**/en/odalar/uc-kisilik-oda"), enLink.click()]);
+    await Promise.all([page.waitForURL("**/en/rooms/uc-kisilik-oda"), enLink.click()]);
 
     await expect(page.getByRole("heading", { name: "Triple Room" })).toBeVisible();
     await expect(page.getByText("3 Adults")).toBeVisible();

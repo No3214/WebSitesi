@@ -36,10 +36,10 @@ describe("sitemap", () => {
       "/odeme",
       "/en",
       "/en/menu",
-      "/en/misafir-rehberi",
-      "/en/lokasyon",
-      "/en/organizasyonlar",
-      "/en/teklifler",
+      "/en/guest-guide",
+      "/en/location",
+      "/en/events",
+      "/en/offers",
     ].forEach((route) => {
       expect(urls).toContain(`${BASE_URL}${route}`);
     });

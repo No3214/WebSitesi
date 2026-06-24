@@ -79,7 +79,7 @@ test.describe("Launch localization smoke", () => {
 
   test("mobile English room browsing does not expose Turkish room copy", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/en/odalar");
+    await page.goto("/en/rooms");
 
     const main = page.locator("main");
     await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe("en");
@@ -90,7 +90,7 @@ test.describe("Launch localization smoke", () => {
     await expect(main.getByText("3 Yetişkin")).toHaveCount(0);
     await expect(main.getByText("Köy ve Doğa")).toHaveCount(0);
 
-    await page.goto("/en/odalar/uc-kisilik-oda");
+    await page.goto("/en/rooms/uc-kisilik-oda");
 
     await expect(page.getByRole("heading", { name: "Triple Room" })).toBeVisible();
     await expect(page.getByText("3 Adults")).toBeVisible();
@@ -104,7 +104,7 @@ test.describe("Launch localization smoke", () => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     for (const room of englishRoomExpectations) {
-      await page.goto(`/en/odalar/${room.slug}`);
+      await page.goto(`/en/rooms/${room.slug}`);
 
       await expect.poll(() => page.evaluate(() => document.documentElement.lang)).toBe("en");
       await expect(page.getByRole("heading", { name: room.title, exact: true })).toBeVisible();

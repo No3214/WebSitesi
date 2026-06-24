@@ -7,9 +7,9 @@ export const metadata: Metadata = {
   title: "Weddings & Private Events",
   description:
     "Curated boutique weddings, private celebrations and corporate gatherings in the registered stone courtyard of Kozbeyli Konağı, Foça.",
-  alternates: { canonical: "/en/organizasyonlar" },
+  alternates: { canonical: "/en/events" },
   openGraph: {
-    url: absoluteUrl("/en/organizasyonlar"),
+    url: absoluteUrl("/en/events"),
     title: "Weddings & Private Events | Kozbeyli Konağı",
     description:
       "A historic stone setting in Foça for refined weddings, private celebrations and corporate off-sites.",

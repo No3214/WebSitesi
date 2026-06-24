@@ -9,15 +9,7 @@ import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
 import { LogoMark } from "./logo-mark";
 import { CookiePreferencesButton } from "./cookie-preferences-button";
 import { getLegalHref } from "@/lib/legal-routes";
-
-function isEnPath(pathname: string): boolean {
-  return pathname === "/en" || pathname.startsWith("/en/");
-}
-
-function localizedHref(href: string, english: boolean): string {
-  if (!english) return href;
-  return href === "/" ? "/en" : `/en${href}`;
-}
+import { isEnglishPath, localizedHref } from "@/lib/localized-routes";
 
 const legalLinks = {
   tr: [
@@ -38,7 +30,7 @@ export function SiteFooter() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
   const pathname = usePathname();
-  const englishPath = isEnPath(pathname || "/");
+  const englishPath = isEnglishPath(pathname || "/");
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {

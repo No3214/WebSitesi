@@ -27,7 +27,7 @@ export async function generateMetadata({
   return {
     title: `${room.title} | Accommodation`,
     description: room.short,
-    alternates: { canonical: `/en/odalar/${slug}` },
+    alternates: { canonical: `/en/rooms/${slug}` },
     openGraph: {
       images: [absoluteUrl(room.images[0])],
       title: `${room.title} - Kozbeyli Konağı`,
@@ -68,7 +68,7 @@ export default async function EnglishRoomDetailPage({ params }: Props) {
       name: "Kozbeyli Konağı Stone Hotel & Restaurant",
       url: absoluteUrl("/en"),
     },
-    url: absoluteUrl(`/en/odalar/${room.slug}`),
+    url: absoluteUrl(`/en/rooms/${room.slug}`),
   };
 
   const breadcrumbJsonLd = {
@@ -76,8 +76,8 @@ export default async function EnglishRoomDetailPage({ params }: Props) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl("/en") },
-      { "@type": "ListItem", position: 2, name: "Rooms", item: absoluteUrl("/en/odalar") },
-      { "@type": "ListItem", position: 3, name: room.title, item: absoluteUrl(`/en/odalar/${room.slug}`) },
+      { "@type": "ListItem", position: 2, name: "Rooms", item: absoluteUrl("/en/rooms") },
+      { "@type": "ListItem", position: 3, name: room.title, item: absoluteUrl(`/en/rooms/${room.slug}`) },
     ],
   };
 

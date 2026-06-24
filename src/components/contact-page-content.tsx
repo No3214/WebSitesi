@@ -21,7 +21,7 @@ const contactCopy = {
     eyebrow: "CONTACT",
     title: "Contact the Mansion",
     text: "Phone, WhatsApp support and directions — our team replies to guest questions the same day.",
-    url: "/en/iletisim",
+    url: "/en/contact",
   },
 } as const;
 

@@ -5,50 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { CSSProperties } from "react";
 import type { MouseEvent } from "react";
-
-// /en altında birebir karşılığı bulunan rota kökleri ("" = ana sayfa).
-// Alt detaylar (örn. /odalar/[slug]) kök eşleşmesi üzerinden /en'e taşınır.
-const EN_ROUTES = [
-  "",
-  "/odalar",
-  "/menu",
-  "/gastronomi",
-  "/organizasyonlar",
-  "/rezervasyon",
-  "/iletisim",
-  "/lokasyon",
-  "/sss",
-  "/galeri",
-  "/hikayemiz",
-  "/misafir-rehberi",
-  "/deneyimler",
-  "/teklifler",
-  "/kvkk",
-  "/gizlilik-politikasi",
-  "/cerez-politikasi",
-  "/mesafeli-satis-sozlesmesi",
-];
-
-function isEnPath(pathname: string): boolean {
-  return pathname === "/en" || pathname.startsWith("/en/");
-}
-
-function getEnglishHref(pathname: string): string {
-  if (isEnPath(pathname)) return pathname;
-  if (pathname === "/") return "/en";
-
-  const root = `/${pathname.split("/")[1] ?? ""}`;
-  return EN_ROUTES.includes(root) ? `/en${pathname}` : "/en";
-}
-
-function getTurkishHref(pathname: string): string {
-  if (isEnPath(pathname)) return pathname.slice(3) || "/";
-  return pathname || "/";
-}
+import { getEnglishHref, getTurkishHref, isEnglishPath } from "@/lib/localized-routes";
 
 export function LanguageSwitcher() {
   const pathname = usePathname() ?? "/";
-  const isEnglish = isEnPath(pathname);
+  const isEnglish = isEnglishPath(pathname);
   const trHref = getTurkishHref(pathname);
   const enHref = getEnglishHref(pathname);
 
@@ -58,7 +19,7 @@ export function LanguageSwitcher() {
 
     // /en dışında TR seçimi: mevcut tam sayfa yenileme davranışı korunur,
     // çerez tabanlı içerik dili böylece tazelenir.
-    if (locale === "tr" && !isEnPath(pathname)) {
+    if (locale === "tr" && !isEnglishPath(pathname)) {
       event.preventDefault();
       window.location.reload();
     }

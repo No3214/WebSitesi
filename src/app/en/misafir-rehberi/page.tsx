@@ -11,9 +11,9 @@ export const metadata: Metadata = {
   title: "Guest Guide & Stay Information",
   description:
     "Check-in and check-out hours, breakfast service, Wi-Fi, location, hygiene standards and cancellation details for guests of Kozbeyli Konağı.",
-  alternates: { canonical: "/en/misafir-rehberi" },
+  alternates: { canonical: "/en/guest-guide" },
   openGraph: {
-    url: absoluteUrl("/en/misafir-rehberi"),
+    url: absoluteUrl("/en/guest-guide"),
     title: "Guest Guide & Stay Information | Kozbeyli Konağı",
     description:
       "Practical stay details for guests planning a refined visit to Kozbeyli Konağı.",

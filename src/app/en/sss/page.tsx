@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   title: "Frequently Asked Questions",
   description:
     "Check-in hours, families, event bookings and stay details. Answers to the most frequently asked questions about Kozbeyli Konağı.",
-  alternates: { canonical: "/en/sss" },
+  alternates: { canonical: "/en/faq" },
   openGraph: {
-    url: absoluteUrl("/en/sss"),
+    url: absoluteUrl("/en/faq"),
     title: "Frequently Asked Questions | Kozbeyli Konağı",
     description: "Everything you may wish to know about your stay and reservations.",
   },

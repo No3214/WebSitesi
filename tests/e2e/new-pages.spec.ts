@@ -20,7 +20,7 @@ test.describe("Rezervasyon sayfasi", () => {
   });
 
   test("EN rezervasyon sayfasi Ingilizce kalir ve destek linkleri /en rotalarina gider", async ({ page }) => {
-    await page.goto("/en/rezervasyon?oda=uc-kisilik-oda");
+    await page.goto("/en/booking?oda=uc-kisilik-oda");
 
     const main = page.locator("main");
     await expect(page.getByRole("heading", { name: "Booking", level: 1 })).toBeVisible();
@@ -39,9 +39,9 @@ test.describe("Rezervasyon sayfasi", () => {
     await expect(main.getByText("Check-in Date")).toHaveCount(0);
     await expect(main.getByRole("button", { name: "List Rooms" })).toHaveCount(0);
     await expect(main.getByText("Tarih ve Konuk Seçimi")).toHaveCount(0);
-    await expect(main.getByRole("link", { name: "Explore Rooms" })).toHaveAttribute("href", "/en/odalar");
-    await expect(main.getByRole("link", { name: "Guest Guide" })).toHaveAttribute("href", "/en/misafir-rehberi");
-    await expect(main.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/en/iletisim");
+    await expect(main.getByRole("link", { name: "Explore Rooms" })).toHaveAttribute("href", "/en/rooms");
+    await expect(main.getByRole("link", { name: "Guest Guide" })).toHaveAttribute("href", "/en/guest-guide");
+    await expect(main.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/en/contact");
   });
 });
 
@@ -59,14 +59,14 @@ test.describe("EN public localization", () => {
     await expect(main.getByText("Tarihin Kalbinde")).toHaveCount(0);
     await expect(main.getByRole("link", { name: "Book Now" })).toHaveAttribute("href", HMS_BOOKING_URL);
     await expect(main.getByRole("link", { name: "Book Now" })).toHaveAttribute("target", "_blank");
-    await expect(main.getByRole("link", { name: "Plan an Event" })).toHaveAttribute("href", "/en/organizasyonlar");
+    await expect(main.getByRole("link", { name: "Plan an Event" })).toHaveAttribute("href", "/en/events");
     await expect(main.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("href", HMS_BOOKING_URL);
     await expect(main.getByRole("link", { name: "Book Your Stay" })).toHaveAttribute("target", "_blank");
   });
 
   test("EN rooms stay fully translated on mobile cards and detail pages", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/en/odalar");
+    await page.goto("/en/rooms");
 
     const main = page.locator("main");
     await expect
@@ -79,7 +79,7 @@ test.describe("EN public localization", () => {
     await expect(main.getByText("3 Yetişkin")).toHaveCount(0);
     await expect(main.getByText("Köy ve Doğa")).toHaveCount(0);
 
-    await page.goto("/en/odalar/uc-kisilik-oda");
+    await page.goto("/en/rooms/uc-kisilik-oda");
     await expect(page.getByRole("heading", { name: "Triple Room" })).toBeVisible();
     await expect(page.getByText("3 Adults")).toBeVisible();
     await expect(page.getByText("Village & Nature")).toBeVisible();
@@ -110,7 +110,7 @@ test.describe("EN public localization", () => {
   });
 
   test("EN iletisim sayfasi Ingilizce destek metinleriyle acilir", async ({ page }) => {
-    await page.goto("/en/iletisim");
+    await page.goto("/en/contact");
 
     const footer = page.locator("footer.footer");
 
@@ -148,7 +148,7 @@ test.describe("EN public localization", () => {
   });
 
   test("EN organizasyon teklif formu Ingilizce kalir", async ({ page }) => {
-    await page.goto("/en/organizasyonlar#teklif");
+    await page.goto("/en/events#teklif");
 
     await expect(page.getByRole("heading", { name: "Presentations and Information Forms" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Open Form" })).toHaveAttribute(
@@ -164,7 +164,7 @@ test.describe("EN public localization", () => {
   });
 
   test("EN gastronomy page body is localized", async ({ page }) => {
-    await page.goto("/en/gastronomi");
+    await page.goto("/en/dining");
 
     await expect(page.getByRole("heading", { name: "Culinary Heritage" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Live Frames from the Kitchen" })).toBeVisible();
@@ -173,7 +173,7 @@ test.describe("EN public localization", () => {
   });
 
   test("EN story page body is localized", async ({ page }) => {
-    await page.goto("/en/hikayemiz");
+    await page.goto("/en/our-story");
 
     await expect(page.getByRole("heading", { name: "Our Story" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Heritage Discovery Map" })).toBeVisible();
@@ -183,7 +183,7 @@ test.describe("EN public localization", () => {
   });
 
   test("EN FAQ page body is localized", async ({ page }) => {
-    await page.goto("/en/sss");
+    await page.goto("/en/faq");
 
     await expect(page.getByRole("heading", { name: "Before You Arrive" })).toBeVisible();
     await expect(page.getByText("What are the check-in / check-out times?")).toBeVisible();
@@ -194,7 +194,7 @@ test.describe("EN public localization", () => {
   });
 
   test("EN experiences page body is localized", async ({ page }) => {
-    await page.goto("/en/deneyimler");
+    await page.goto("/en/experiences");
 
     await expect(page.getByRole("heading", { name: "Experience Kozbeyli" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Aegean Gastronomy Route" })).toBeVisible();
@@ -278,7 +278,7 @@ test.describe("Iletisim sayfasi", () => {
 });
 
 test.describe("Global footer", () => {
-  for (const route of ["/galeri", "/sss", "/deneyimler", "/teklifler", "/en/teklifler"]) {
+  for (const route of ["/galeri", "/sss", "/deneyimler", "/teklifler", "/en/offers"]) {
     test(`${route} footer tek kez render olur`, async ({ page }) => {
       await page.goto(route);
 

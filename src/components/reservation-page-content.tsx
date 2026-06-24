@@ -27,7 +27,7 @@ const reservationCopy = {
     text: "Dates, guests and room selection open in the official HMS booking screen; our team remains available by WhatsApp and phone.",
     schemaName: "Kozbeyli Konağı Reservation",
     schemaDescription: "Direct availability and reservation request page for Kozbeyli Konağı stone boutique hotel.",
-    urlTemplate: "/en/rezervasyon",
+    urlTemplate: "/en/booking",
   },
 } as const;
 

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     canonical: "/lokasyon",
     languages: {
       tr: "/lokasyon",
-      en: "/en/lokasyon",
+      en: "/en/location",
     },
   },
   openGraph: {

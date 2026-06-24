@@ -36,7 +36,7 @@ const copy = {
     breadcrumbs: ["Ana Sayfa", "Lokasyon"],
   },
   en: {
-    path: "/en/lokasyon",
+    path: "/en/location",
     eyebrow: "LOCATION",
     title: "At the Heart of Kozbeyli",
     text: "Verified address, live directions and transfer planning links for Kozbeyli Konağı.",

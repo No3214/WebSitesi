@@ -165,7 +165,7 @@ export function HomeHero({ locale, eyebrow }: Props) {
   const heroTitle = locale === "tr" ? "Tarihin Kalbinde" : "In the Heart of History";
   const heroAccent = locale === "tr" ? "Zarif Bir Ege Kaçamağı" : "An Elegant Aegean Escape";
   const reservationHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
-  const eventsHref = locale === "en" ? "/en/organizasyonlar" : "/organizasyonlar";
+  const eventsHref = locale === "en" ? "/en/events" : "/organizasyonlar";
 
   return (
     <section className="hero grain">

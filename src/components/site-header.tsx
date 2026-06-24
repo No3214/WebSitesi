@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
+import { isEnglishPath, localizedHref } from "@/lib/localized-routes";
 import { publicEnv } from "@/lib/public-env";
 import { LanguageSwitcher } from "./language-switcher";
 import { LogoMark } from "./logo-mark";
@@ -28,15 +29,6 @@ const EN_LINKS: NavLink[] = [
   { href: "/iletisim", label: "Contact" },
 ];
 
-function isEnPath(pathname: string): boolean {
-  return pathname === "/en" || pathname.startsWith("/en/");
-}
-
-function localizedHref(href: string, english: boolean): string {
-  if (!english) return href;
-  return href === "/" ? "/en" : `/en${href}`;
-}
-
 type SiteHeaderProps = {
   /** "overlay": koyu hero üzerinde şeffaf başlar, scroll ile dolar. "solid": her zaman dolu. */
   variant?: "overlay" | "solid";
@@ -44,7 +36,7 @@ type SiteHeaderProps = {
 
 export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
   const pathname = usePathname();
-  const englishPath = isEnPath(pathname || "/");
+  const englishPath = isEnglishPath(pathname || "/");
   const [links, setLinks] = useState<NavLink[]>(englishPath ? EN_LINKS : DEFAULT_LINKS);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);

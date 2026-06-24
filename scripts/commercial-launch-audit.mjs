@@ -128,7 +128,7 @@ export const commercialLaunchGates = [
       },
       {
         label: "new-tab CTA proof",
-        pattern: "new tab|yeni sekme|/rezervasyon|/en/rezervasyon",
+        pattern: "new tab|yeni sekme|/rezervasyon|/en/booking",
       },
       {
         label: "live booking UAT proof",

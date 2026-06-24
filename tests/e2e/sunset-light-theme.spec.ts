@@ -140,7 +140,7 @@ test.describe("Sunset light theme", () => {
 
   test("english rooms page and room detail keep sunset palette stable", async ({ page }) => {
     await forceSunsetMode(page);
-    await page.goto("/en/odalar", { waitUntil: "domcontentloaded" });
+    await page.goto("/en/rooms", { waitUntil: "domcontentloaded" });
     await expect(page.locator(".room-card").first()).toBeVisible({ timeout: 15000 });
     await waitForSunsetPalette(page);
     await expect(page.getByTestId("sunset-mode-indicator")).toHaveAttribute("aria-label", "Appearance mode");

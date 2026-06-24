@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   title: "Experiences",
   description:
     "Curated guides to Kozbeyli Village, Foça and Aegean gastronomy: stone architecture, coastal routes and the dibek coffee ritual, all from the mansion.",
-  alternates: { canonical: "/en/deneyimler" },
+  alternates: { canonical: "/en/experiences" },
   openGraph: {
-    url: absoluteUrl("/en/deneyimler"),
+    url: absoluteUrl("/en/experiences"),
     title: "Experiences | Kozbeyli Konağı",
     description:
       "Set out from the mansion with curated guides to Kozbeyli, Foça and Aegean gastronomy.",

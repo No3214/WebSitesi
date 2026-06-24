@@ -293,7 +293,7 @@ function evidenceProofText(relPath: string) {
     ],
     "docs/evidence/hms-booking-engine.md": [
       "The approved HTTPS HMS host kozbeyli-konagi.hmshotel.net is used.",
-      "/rezervasyon and /en/rezervasyon CTAs open in a new tab.",
+      "/rezervasyon and /en/booking CTAs open in a new tab.",
       "Live booking UAT covers date, guest, room and rate selection.",
       "Cancellation, refund and modification handling is confirmed.",
       "Room/rate availability sync and stale stock ownership are documented.",

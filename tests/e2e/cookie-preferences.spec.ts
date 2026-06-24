@@ -50,7 +50,7 @@ test.describe("Cookie preferences control", () => {
   });
 
   test("English cookie banner links to the English legal route", async ({ page }) => {
-    await page.goto("/en/iletisim", { waitUntil: "load" });
+    await page.goto("/en/contact", { waitUntil: "load" });
 
     const dialog = page.getByRole("dialog", { name: "Cookie preferences" });
     await expect(dialog).toBeVisible({ timeout: 15000 });

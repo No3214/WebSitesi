@@ -1858,9 +1858,12 @@ describe("production readiness contracts", () => {
 
   it("keeps language switching on hydration-safe href navigation", () => {
     const switcher = read("src/components/language-switcher.tsx");
+    const localizedRoutes = read("src/lib/localized-routes.ts");
 
-    expect(switcher).toContain("function getTurkishHref");
-    expect(switcher).toContain("function getEnglishHref");
+    expect(switcher).toContain('from "@/lib/localized-routes"');
+    expect(localizedRoutes).toContain("function getTurkishHref");
+    expect(localizedRoutes).toContain("function getEnglishHref");
+    expect(localizedRoutes).toContain('"/odalar": "/en/rooms"');
     expect(switcher).toContain("href={trHref}");
     expect(switcher).toContain("href={enHref}");
     expect(switcher).not.toContain("router.push");
@@ -2074,9 +2077,9 @@ describe("production readiness contracts", () => {
     for (const expected of [
       '{ source: "/tr/room-type/:path*", destination: "/odalar", permanent: true }',
       '{ source: "/tr/blog", destination: "/deneyimler", permanent: true }',
-      '{ source: "/en-US/pages/rooms-rates", destination: "/en/odalar", permanent: true }',
-      '{ source: "/en-US/room-type/:path*", destination: "/en/odalar", permanent: true }',
-      '{ source: "/en-US/blog", destination: "/en/deneyimler", permanent: true }',
+      '{ source: "/en-US/pages/rooms-rates", destination: "/en/rooms", permanent: true }',
+      '{ source: "/en-US/room-type/:path*", destination: "/en/rooms", permanent: true }',
+      '{ source: "/en-US/blog", destination: "/en/experiences", permanent: true }',
     ]) {
       expect(nextConfig).toContain(expected);
     }
@@ -2150,12 +2153,12 @@ describe("production readiness contracts", () => {
     const locationContent = read("src/components/location-page-content.tsx");
     const sitemap = read("src/app/sitemap.ts");
     const footer = read("src/components/site-footer.tsx");
-    const languageSwitcher = read("src/components/language-switcher.tsx");
+    const localizedRoutes = read("src/lib/localized-routes.ts");
     const publishReadiness = read("scripts/publish-readiness.mjs");
     const publishRoutes = read("tests/e2e/publish-routes.spec.ts");
 
     expect(trLocation).toContain('canonical: "/lokasyon"');
-    expect(enLocation).toContain('canonical: "/en/lokasyon"');
+    expect(enLocation).toContain('canonical: "/en/location"');
     expect(locationContent).toContain('"@type": "LodgingBusiness"');
     expect(locationContent).toContain('"@type": "GeoCoordinates"');
     expect(locationContent).toContain('"@type": "BreadcrumbList"');
@@ -2163,11 +2166,11 @@ describe("production readiness contracts", () => {
     expect(locationContent).toContain("MAPS_URL");
     expect(sitemap).toContain("'/lokasyon'");
     expect(footer).toContain('localizedHref("/lokasyon", englishPath)');
-    expect(languageSwitcher).toContain('"/lokasyon"');
+    expect(localizedRoutes).toContain('"/lokasyon": "/en/location"');
     expect(publishReadiness).toContain('"/lokasyon"');
-    expect(publishReadiness).toContain('"/en/lokasyon"');
+    expect(publishReadiness).toContain('"/en/location"');
     expect(publishRoutes).toContain('"/lokasyon"');
-    expect(publishRoutes).toContain('"/en/lokasyon"');
+    expect(publishRoutes).toContain('"/en/location"');
   });
 
   it("keeps server env helpers out of client components", () => {

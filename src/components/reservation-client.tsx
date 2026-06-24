@@ -53,12 +53,11 @@ export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug,
 
   const t = dict.Reservation;
   const f = FALLBACK[locale];
-  const localePrefix = locale === "en" ? "/en" : "";
   const selectedLabel = locale === "tr" ? "Seçiminiz:" : "Your choice:";
   const supportLinks = [
-    { href: `${localePrefix}/odalar`, label: f.exploreRooms },
-    { href: `${localePrefix}/misafir-rehberi`, label: f.guestGuide },
-    { href: `${localePrefix}/iletisim`, label: f.contact },
+    { href: locale === "en" ? "/en/rooms" : "/odalar", label: f.exploreRooms },
+    { href: locale === "en" ? "/en/guest-guide" : "/misafir-rehberi", label: f.guestGuide },
+    { href: locale === "en" ? "/en/contact" : "/iletisim", label: f.contact },
   ];
 
   const trustItems = [

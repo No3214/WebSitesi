@@ -42,7 +42,7 @@ const gastronomyCopy = {
     playLabels: ["Kahvaltı videosunu oynat", "Mıhlama videosunu oynat", "Şef videosunu oynat"],
   },
   en: {
-    url: "/en/gastronomi",
+    url: "/en/dining",
     heroTitle: "Culinary Heritage",
     heroSubtitle: "A BRIDGE OF FLAVOUR FROM ANTAKYA TO THE AEGEAN",
     cuisine: ["Aegean Cuisine", "Antakya Cuisine", "Turkish Breakfast"],

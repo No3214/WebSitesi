@@ -36,7 +36,7 @@ export default function EnglishMenuPage() {
         signature="Chef Yunuscan Oruk"
         ctaTitle="Planning a Private Dinner?"
         ctaText="For celebrations, group dining and wine tasting requests, our guest relations team can curate the evening with you."
-        ctaHref="/en/organizasyonlar#teklif"
+        ctaHref="/en/events#teklif"
         ctaLabel="CONTACT GUEST RELATIONS"
         featuredLabel="Mansion Selection"
         bundleLabel="Curated Selection"

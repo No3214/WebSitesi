@@ -116,7 +116,8 @@ function sourceContracts(baseDir) {
       "Sitemap covers canonical, hreflang, location and Foça guide URLs",
       sitemap.includes("siteUrl") &&
         sitemap.includes("alternates") &&
-        sitemap.includes("EN_ROUTES") &&
+        sitemap.includes("EN_ROUTE_BY_TR_ROUTE") &&
+        sitemap.includes("'/lokasyon': '/en/location'") &&
         sitemap.includes("'/lokasyon'") &&
         sitemap.includes("'/deneyimler/foca-gezi-rehberi'") &&
         sitemap.includes("rooms.flatMap")

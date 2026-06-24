@@ -6,9 +6,9 @@ import { absoluteUrl } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Contact & Directions",
   description: `Reach Kozbeyli Konağı at ${ADDRESS_EN}. Phone, WhatsApp support, e-mail and live directions.`,
-  alternates: { canonical: "/en/iletisim" },
+  alternates: { canonical: "/en/contact" },
   openGraph: {
-    url: absoluteUrl("/en/iletisim"),
+    url: absoluteUrl("/en/contact"),
     title: "Contact & Directions | Kozbeyli Konağı",
     description: `${ADDRESS_EN}. Phone, WhatsApp support, e-mail and directions to the mansion.`,
   },

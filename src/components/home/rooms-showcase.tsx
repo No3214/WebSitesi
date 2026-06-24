@@ -30,7 +30,7 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
           <div className="card-grid">
             {localizedRooms.slice(0, 6).map((room) => (
               <FadeIn key={room.slug}>
-                <Link href={`${locale === "en" ? "/en" : ""}/odalar/${room.slug}`} className="card">
+                <Link href={`${locale === "en" ? "/en/rooms" : "/odalar"}/${room.slug}`} className="card">
                   <div className="card-media">
                     <Image
                       src={room.images[0]}
@@ -59,7 +59,7 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
         </StaggerContainer>
         <FadeIn delay={0.2}>
           <div style={{ textAlign: "center", marginTop: 56 }}>
-            <Link href={locale === "en" ? "/en/odalar" : "/odalar"} className="button secondary">
+            <Link href={locale === "en" ? "/en/rooms" : "/odalar"} className="button secondary">
               {locale === "tr" ? "Tüm Odaları Gör" : "View All Rooms"}
             </Link>
           </div>

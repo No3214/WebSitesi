@@ -15,11 +15,11 @@ const publicHandoffRoutes = [
   "/",
   "/en",
   "/odalar",
-  "/en/odalar",
+  "/en/rooms",
   "/rezervasyon",
-  "/en/rezervasyon",
+  "/en/booking",
   "/odalar/standart-bahce-manzarali-oda",
-  "/en/odalar/uc-kisilik-oda",
+  "/en/rooms/uc-kisilik-oda",
 ];
 
 function expectApprovedHmsLink(link: LinkSnapshot, context: string) {
@@ -113,7 +113,7 @@ test.describe("Booking handoff contract", () => {
   });
 
   test("reservation pages stay as handoff surfaces, not cramped embedded booking forms", async ({ page }) => {
-    for (const route of ["/rezervasyon", "/en/rezervasyon"]) {
+    for (const route of ["/rezervasyon", "/en/booking"]) {
       const response = await page.goto(route, { waitUntil: "load" });
       const main = page.locator("main");
 

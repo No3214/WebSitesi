@@ -23,7 +23,7 @@ const faqPageCopy = {
     title: "Before You Arrive",
     text: "We gathered the questions guests ask most while planning a stay. For anything more specific, our guest relations team is one message away.",
     booking: "Book Your Stay",
-    contactHref: "/en/iletisim",
+    contactHref: "/en/contact",
     contact: "Ask Another Question",
   },
 };

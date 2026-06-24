@@ -6,9 +6,9 @@ export const metadata: Metadata = {
   title: "Reservation",
   description:
     "Send a direct reservation request for your stone room stay at Kozbeyli Konağı; availability, room preferences and secure payment steps are confirmed by our team.",
-  alternates: { canonical: "/en/rezervasyon" },
+  alternates: { canonical: "/en/booking" },
   openGraph: {
-    url: absoluteUrl("/en/rezervasyon"),
+    url: absoluteUrl("/en/booking"),
     title: "Reservation | Kozbeyli Konağı",
     description:
       "Direct reservation support for availability, room preferences and secure payment confirmation.",

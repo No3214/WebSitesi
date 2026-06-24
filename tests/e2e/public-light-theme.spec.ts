@@ -13,8 +13,8 @@ const publicRoutes = [
   "/iletisim",
   "/lokasyon",
   "/rezervasyon",
-  "/en/odalar",
-  "/en/gastronomi",
+  "/en/rooms",
+  "/en/dining",
 ];
 
 function luminance(rgb: string) {

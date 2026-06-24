@@ -109,10 +109,10 @@ describe("brand integrity readiness", () => {
     const result = await brandIntegrity.evaluateBrandIntegrityReadiness({
       baseDir: dir,
       origin: "https://www.kozbeylikonagi.com",
-      routes: ["/", "/en/rezervasyon"],
+      routes: ["/", "/en/booking"],
       fetchImpl: mockFetchByRoute({
         "/": { body: "<html>Kozbeyli Konağı</html>" },
-        "/en/rezervasyon": { body: "<html>Direct Concierge for a 200-year-old story</html>" },
+        "/en/booking": { body: "<html>Direct Concierge for a 200-year-old story</html>" },
       }),
     });
 
