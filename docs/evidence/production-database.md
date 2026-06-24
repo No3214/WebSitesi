@@ -19,6 +19,14 @@ blocked until the real Supabase or managed Postgres connection string and
 Payload secret are set in Vercel Production and verified without exposing
 secrets.
 
+Latest live verification on 2026-06-24: the public admin route no longer leaks
+a fatal stack trace, but Payload initialization was blocked by a production
+database host that could not be resolved from Vercel. Treat this as a
+production `DATABASE_URI` value/drift issue, not an admin route or auth issue.
+After replacing the production database connection string, run
+`npm run vercel:supabase:verify`, `npm run admin:verify:strict` and
+`npm run readiness:summary:json`.
+
 Supabase can be used for this gate when the project Postgres pooler connection
 string is stored only in Vercel production environment variables. The Supabase
 MCP server is optional developer tooling and is not a production dependency.

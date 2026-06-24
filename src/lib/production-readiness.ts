@@ -12,6 +12,7 @@ type RuntimeGate = {
 };
 
 type RuntimeConfigurationSource = "env" | "code_fallback" | "missing" | "partial" | "invalid" | "not_applicable";
+type RuntimeReadiness = ReturnType<typeof getRuntimeReadiness>;
 
 const placeholderPattern = /(replace_with|changeme|change-me|dummy|example|todo|tbd|test_only)/i;
 const officialHmsBookingEnginePattern = new RegExp(
@@ -175,6 +176,37 @@ export function getRuntimeReadiness(env: NodeJS.ProcessEnv = process.env) {
     return {
       id: gate.id,
       ...evaluation,
+    };
+  });
+  const blockedGates = checks.filter((check) => !check.ready).map((check) => check.id);
+
+  return {
+    status: blockedGates.length === 0 ? "ready" : "blocked",
+    ready: blockedGates.length === 0,
+    blockedGates,
+    configuredGates: checks.filter((check) => check.ready).map((check) => check.id),
+    checks,
+  };
+}
+
+export function applyRuntimeGateOperationalStatus(
+  readiness: RuntimeReadiness,
+  gateId: string,
+  status: { ready: true; code: "ready" } | { ready: false; code: string },
+): RuntimeReadiness {
+  if (status.ready) return readiness;
+
+  const checks = readiness.checks.map((check) => {
+    if (check.id !== gateId) return check;
+
+    return {
+      ...check,
+      ready: false,
+      invalidCount: Math.max(check.invalidCount, check.missingCount === 0 ? 1 : check.invalidCount),
+      configurationSource: (check.configurationSource === "missing"
+        ? check.configurationSource
+        : "invalid") as RuntimeConfigurationSource,
+      operationalStatus: status.code,
     };
   });
   const blockedGates = checks.filter((check) => !check.ready).map((check) => check.id);

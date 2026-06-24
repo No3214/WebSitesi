@@ -144,7 +144,15 @@ function buildNextActions(summary) {
     actions.push(summary.vercel.warnings[0]?.remediation || "Review Vercel warnings, then run npm run vercel:ops:strict.");
   }
 
-  if (summary.admin.decision !== "ADMIN SURFACE READY") {
+  const adminDependencyBlocked = summary.admin.blockers.some((blocker) =>
+    blocker.includes("live_payload_admin_dependency_ready") || blocker.includes("dependency-unavailable"),
+  );
+
+  if (adminDependencyBlocked) {
+    actions.push(
+      "Fix the Vercel Production DATABASE_URI/PAYLOAD_SECRET dependency for Payload admin, then run npm run vercel:supabase:verify and npm run admin:verify:strict.",
+    );
+  } else if (summary.admin.decision !== "ADMIN SURFACE READY") {
     actions.push("Protect the admin growth surface, then run npm run admin:verify:strict.");
   }
 

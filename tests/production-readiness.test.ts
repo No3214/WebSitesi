@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { getRuntimeReadiness } from "../src/lib/production-readiness";
+import {
+  applyRuntimeGateOperationalStatus,
+  getRuntimeReadiness,
+} from "../src/lib/production-readiness";
 
 const readyEnv = {
   NODE_ENV: "production",
@@ -126,6 +129,32 @@ describe("runtime production readiness", () => {
       invalidCount: 1,
       configurationSource: "invalid",
     });
+  });
+
+  it("downgrades production database readiness when operational dependency checks fail", () => {
+    const baseReadiness = getRuntimeReadiness(readyEnv as NodeJS.ProcessEnv);
+    const result = applyRuntimeGateOperationalStatus(baseReadiness, "production_database", {
+      ready: false,
+      code: "database_dns_unresolved",
+    });
+    const databaseCheck = result.checks.find((check) => check.id === "production_database");
+
+    expect(baseReadiness.ready).toBe(true);
+    expect(result.ready).toBe(false);
+    expect(result.status).toBe("blocked");
+    expect(result.configuredGates).not.toContain("production_database");
+    expect(result.blockedGates).toContain("production_database");
+    expect(databaseCheck).toMatchObject({
+      ready: false,
+      configuredCount: 2,
+      missingCount: 0,
+      invalidCount: 1,
+      configurationSource: "invalid",
+      operationalStatus: "database_dns_unresolved",
+    });
+    expect(JSON.stringify(result)).not.toContain("DATABASE_URI");
+    expect(JSON.stringify(result)).not.toContain("PAYLOAD_SECRET");
+    expect(JSON.stringify(result)).not.toContain("postgres:password");
   });
 
   it("blocks HMS when an explicit booking engine env value is invalid", () => {

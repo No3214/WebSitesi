@@ -202,6 +202,39 @@ describe("readiness summary", () => {
     expect(report).not.toContain("GA4_API_SECRET=");
   });
 
+  it("points admin dependency outages at the production database env instead of the auth surface", async () => {
+    const { buildReadinessSummary } = await loadReadinessSummaryModule();
+    const summary = buildReadinessSummary({
+      generatedAt: "2026-06-23T00:00:00.000Z",
+      domainResult,
+      launchResult,
+      githubCiResult: {
+        ...githubCiResult,
+        decision: "GITHUB CI PASS",
+        conclusion: "success",
+        failedJobs: [],
+        blockers: [],
+        remediation: [],
+      },
+      vercelOpsResult,
+      adminSurfaceResult: {
+        decision: "ADMIN SURFACE BLOCKED",
+        live: {
+          target: "https://www.kozbeylikonagi.com/admin/growth",
+          status: 307,
+          location: "/admin",
+        },
+        blockers: [
+          "live live_payload_admin_dependency_ready: Payload admin returned controlled dependency-unavailable screen",
+        ],
+      },
+    });
+
+    expect(summary.nextActions.join("\n")).toContain("DATABASE_URI/PAYLOAD_SECRET");
+    expect(summary.nextActions.join("\n")).toContain("npm run vercel:supabase:verify");
+    expect(summary.nextActions.join("\n")).not.toContain("Protect the admin growth surface");
+  });
+
   it("retries transient domain transport failures before reporting public release blocked", async () => {
     const { collectReadinessSummary, shouldRetryDomainReadiness } =
       await loadReadinessSummaryModule();

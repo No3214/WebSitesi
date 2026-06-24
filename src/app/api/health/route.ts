@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 
-import { getRuntimeReadiness } from "@/lib/production-readiness";
+import { getAdminDependencyStatus } from "@/lib/admin-runtime";
+import {
+  applyRuntimeGateOperationalStatus,
+  getRuntimeReadiness,
+} from "@/lib/production-readiness";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 export const revalidate = 0;
 
 function shortCommit() {
@@ -13,7 +18,14 @@ function deploymentEnvironment() {
   return process.env.VERCEL_ENV || (process.env.NODE_ENV === "production" ? "production" : "development");
 }
 
-export function GET() {
+export async function GET() {
+  const adminDependencyStatus = await getAdminDependencyStatus();
+  const runtimeConfiguration = applyRuntimeGateOperationalStatus(
+    getRuntimeReadiness(),
+    "production_database",
+    adminDependencyStatus,
+  );
+
   return NextResponse.json(
     {
       status: "ok",
@@ -24,7 +36,7 @@ export function GET() {
         runtime: "nodejs",
       },
       readiness: {
-        runtimeConfiguration: getRuntimeReadiness(),
+        runtimeConfiguration,
       },
       deployment: {
         environment: deploymentEnvironment(),
