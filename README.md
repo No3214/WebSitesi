@@ -100,6 +100,7 @@ npm run launch:smoke             # Lokal production build'e kritik launch smoke
 npm run launch:smoke:preview     # Vercel preview URL'ye kritik launch smoke
 npm run launch:smoke:live        # Canonical www domain üstünde kritik launch smoke
 npm run localization:verify:live # Canonical www domain üstünde EN/TR dil, EN public sayfalar ve mobil bar kontrolü
+npm run live:verify              # Canonical domain + live smoke + EN/TR + video playback toplu kontrolü
 npm run quality                  # lint + typecheck + unit + build
 npm run release:verify           # Lokal release gate: security + publish + smoke + stress + audit JSON
 npm run release:verify:commercial # 100/100 booking/payment için strict audit + strict cutover gate
@@ -131,6 +132,7 @@ npm run launch:smoke             # Public rota, health, hero video, konum ve med
 npm run launch:smoke:preview     # https://kozbeyli-konagi.vercel.app üzerinde aynı smoke
 npm run launch:smoke:live        # https://www.kozbeylikonagi.com üzerinde aynı smoke
 npm run localization:verify:live # https://www.kozbeylikonagi.com EN/TR oda, EN public sayfa ve switcher doğrulaması
+npm run live:verify              # Canlı domain, smoke, lokalizasyon ve video playback üst kapısı
 npm run release:verify           # Lokal final release kapısı (commercial/domain strict ayrı)
 npm run release:verify:commercial # Tam ticari launch iddiası için strict kırmızı/yeşil kapı
 
@@ -212,13 +214,15 @@ envanteri kalır.
 Deploy sonrası canlı yüzey için hızlı doğrulama:
 
 ```bash
-npm run launch:smoke:live
+npm run live:verify
 ```
 
-Bu komut public rotaları, ana ekran hero videosunu, düğün/organizasyon medyasını,
-iletişim konumunu ve görünür medya kırıklarını canonical production domain
-üzerinde tekrar kontrol eder. Vercel preview hostunu ayrıca kontrol etmek için
-`npm run launch:smoke:preview` kullanılır.
+Bu komut canonical domain/current commit, public route smoke, EN/TR localization,
+mobil rezervasyon CTA'sı ve canlı video playback kontrollerini tek sırada
+çalıştırır. `readiness:summary:json` ve `github:ci:json` sonuçlarını tanı olarak
+ekler; GitHub billing gibi dış hesap blokları public site sağlığını yanlış fail
+gibi göstermesin diye kırmızı kapı yapılmaz. Vercel preview hostunu ayrıca
+kontrol etmek için `npm run launch:smoke:preview` kullanılır.
 
 Vercel env/deploy/log kontrolü için Vercel CLI oturumu (`vercel login`) veya
 Vercel panel erişimi gerekir.

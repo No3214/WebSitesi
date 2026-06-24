@@ -24,6 +24,7 @@ npm run launch:audit:json
 npm run launch:audit:live
 npm run launch:audit:live:strict
 npm run readiness:summary:json
+npm run live:verify
 npm run evidence:handoff:live
 npm run evidence:templates:live
 npm run evidence:templates:live:runtime-ready
@@ -162,11 +163,18 @@ CI her push/PR'da release gate manifestini doğrular ve aynı smoke gate'i publi
 verification'dan önce çalıştırır. Canonical production domain için:
 
 ```bash
+npm run live:verify
 npm run launch:smoke:live
 npm run media:playback:live
 npm run localization:verify:live
 npm run domain:verify:strict
 ```
+
+`live:verify`, canonical production domain için `domain:verify:strict`,
+`launch:smoke:live`, `localization:verify:live` ve `media:playback:live`
+kapılarını tek sıraya alır. `readiness:summary:json` ve `github:ci:json`
+sonuçları tanısaldır; GitHub billing veya dış hesap blokları public live sağlık
+kanıtını yanlış fail durumuna çekmez.
 
 Vercel preview hostu ayrıca kontrol edilecekse:
 

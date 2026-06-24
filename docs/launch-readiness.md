@@ -185,6 +185,12 @@ sayfa içi çeviri kaçakları bu kapıyla tekrar üretilebilir hale getirildi.
 production domain üstünde kahvaltı, mıhlama ve şef videolarının gerçek `play()`
 akışıyla ilerlediğini smoke paketinden ayrı doğrular. Kullanıcıdan gelen
 "mıhlama/video oynamıyor mu?" raporu bu kapıyla hızlı tekrar üretilebilir.
+2026-06-24 live production üst kapısı: `live:verify`, canonical domain strict
+kontrolü, canlı launch smoke, EN/TR localization smoke ve canlı video playback
+gate'ini tek komutta toplar. Readiness summary ve GitHub CI çıktıları tanısal
+kalır; dış hesap/billing blokları public live site sağlığını yanlış kırmızı
+göstermesin diye release kararı bu komutta sadece zorunlu public gate'lere
+bağlanır.
 2026-06-23 commercial audit runtime ayrımı: `launch:audit:live`, canonical
 production `/api/health` runtime readiness bilgisini audit raporuna ayrı
 `runtime lane` olarak ekler. Bu canlı env durumunu görünür kılar; fakat

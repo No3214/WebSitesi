@@ -261,6 +261,8 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"readiness:summary"');
     expect(readinessScript).toContain('"readiness:summary:json"');
     expect(readinessScript).toContain('"readiness:summary:strict"');
+    expect(readinessScript).toContain('"live:verify"');
+    expect(readinessScript).toContain('"live:verify:list"');
     expect(readinessScript).toContain('"launch:smoke"');
     expect(readinessScript).toContain('"launch:smoke:preview"');
     expect(readinessScript).toContain('"launch:smoke:live"');
@@ -460,6 +462,10 @@ describe("production readiness contracts", () => {
     expect(packageJson.scripts?.["readiness:summary:strict"]).toBe(
       "node scripts/readiness-summary.mjs --strict",
     );
+    expect(packageJson.scripts?.["live:verify"]).toBe("node scripts/live-production-verify.mjs");
+    expect(packageJson.scripts?.["live:verify:list"]).toBe(
+      "node scripts/live-production-verify.mjs --list",
+    );
     const readinessSummary = read("scripts/readiness-summary.mjs");
     expect(readinessSummary).toContain("collectReadinessSummary");
     expect(readinessSummary).toContain("evaluateDomainReadiness");
@@ -488,6 +494,7 @@ describe("production readiness contracts", () => {
       "node scripts/release-verify.mjs --commercial-strict",
     );
     expect(readinessScript).toContain('"scripts/clean-next-build.mjs"');
+    expect(readinessScript).toContain('"scripts/live-production-verify.mjs"');
     expect(readinessScript).toContain('"src/app/api/health/route.ts"');
     expect(readinessScript).toContain('"src/lib/production-readiness.ts"');
     expect(readinessScript).toContain('"src/lib/webhook-body-limit.ts"');
@@ -522,6 +529,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"scripts/vercel-env-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/github-ci-readiness.mjs"');
     expect(readinessScript).toContain('"scripts/local-preview-verify.mjs"');
+    expect(readinessScript).toContain('"scripts/live-production-verify.mjs"');
     expect(readinessScript).toContain('"scripts/readiness-summary.mjs"');
     expect(readinessScript).toContain("evaluateCommercialLaunch");
     expect(readinessScript).toContain("commercial launch progress notes");
@@ -540,6 +548,28 @@ describe("production readiness contracts", () => {
     expect(localPreview).not.toContain("Start-Process");
     expect(localPreview).not.toContain("playwright");
     expect(localPreview).not.toContain("page.goto");
+  });
+
+  it("keeps live production verification focused on public live gates", () => {
+    const liveVerify = read("scripts/live-production-verify.mjs");
+
+    for (const gate of [
+      "domain:verify:strict",
+      "launch:smoke:live",
+      "localization:verify:live",
+      "media:playback:live",
+      "readiness:summary:json",
+      "github:ci:json",
+    ]) {
+      expect(liveVerify).toContain(`script: "${gate}"`);
+    }
+
+    expect(liveVerify).toContain("Kozbeyli Konagi live production verification");
+    expect(liveVerify).toContain("Kozbeyli Konagi live production verification summary");
+    expect(liveVerify).toContain("required: true");
+    expect(liveVerify).toContain("required: false");
+    expect(liveVerify).toContain("Readiness summary and GitHub CI are diagnostic");
+    expect(liveVerify).toContain("if (result.status !== 0 && gate.required)");
   });
 
   it("keeps release verification orchestrating the full local release gate", () => {
