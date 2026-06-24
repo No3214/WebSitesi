@@ -17,7 +17,13 @@ type ReadinessSummaryModule = {
     nextActions: string[];
     finalVerificationCommands: string[];
   };
+  collectReadinessSummary: (input: Record<string, unknown>) => Promise<{
+    decision: string;
+    domain: { decision: string };
+    nextActions: string[];
+  }>;
   formatReadinessSummary: (summary: Record<string, unknown>) => string;
+  shouldRetryDomainReadiness: (input: Record<string, unknown>) => boolean;
 };
 
 async function loadReadinessSummaryModule() {
@@ -118,6 +124,29 @@ const adminSurfaceResult = {
   blockers: [],
 };
 
+const transientDomainResult = {
+  ...domainResult,
+  decision: "CANONICAL DOMAIN NO-GO",
+  canonicalReady: false,
+  canonical: [
+    {
+      origin: "https://www.kozbeylikonagi.com",
+      ready: false,
+      health: {
+        status: 0,
+        deploymentCommit: "",
+        error: "fetch failed",
+      },
+      home: {
+        status: 0,
+        hasOpeningHeroVideo: false,
+        error: "fetch failed",
+      },
+    },
+  ],
+  blockers: ["https://www.kozbeylikonagi.com does not serve kozbeyli-konagi at current commit"],
+};
+
 describe("readiness summary", () => {
   it("summarizes live publish state without pretending commercial launch is complete", async () => {
     const { buildReadinessSummary } = await loadReadinessSummaryModule();
@@ -171,5 +200,38 @@ describe("readiness summary", () => {
     expect(report).not.toContain("SUPABASE_SERVICE_ROLE_KEY=");
     expect(report).not.toContain("GARANTI_3D_STORE_KEY=");
     expect(report).not.toContain("GA4_API_SECRET=");
+  });
+
+  it("retries transient domain transport failures before reporting public release blocked", async () => {
+    const { collectReadinessSummary, shouldRetryDomainReadiness } =
+      await loadReadinessSummaryModule();
+    let domainCalls = 0;
+
+    expect(shouldRetryDomainReadiness(transientDomainResult)).toBe(true);
+
+    const summary = await collectReadinessSummary({
+      generatedAt: "2026-06-23T00:00:00.000Z",
+      compareDnsResolvers: true,
+      allowNpxFallback: true,
+      domainRetryDelayMs: 0,
+      evaluateDomainReadinessImpl: async (input: { compareDnsResolvers?: boolean }) => {
+        expect(input.compareDnsResolvers).toBe(true);
+        domainCalls += 1;
+        return domainCalls === 1 ? transientDomainResult : domainResult;
+      },
+      collectGithubCiReadinessImpl: () => githubCiResult,
+      evaluateVercelOpsReadinessImpl: (input: { allowNpxFallback?: boolean }) => {
+        expect(input.allowNpxFallback).toBe(true);
+        return vercelOpsResult;
+      },
+      evaluateAdminSurfaceReadinessImpl: () => adminSurfaceResult,
+      fetchRuntimeReadinessImpl: async () => launchResult.runtimeReadiness,
+      evaluateCommercialLaunchImpl: () => launchResult,
+    });
+
+    expect(domainCalls).toBe(2);
+    expect(summary.domain.decision).toBe("CANONICAL DOMAIN GO");
+    expect(summary.decision).toBe("PUBLIC SITE LIVE; FULL COMMERCIAL LAUNCH BLOCKED");
+    expect(summary.nextActions.join("\n")).not.toContain("Restore canonical domain health");
   });
 });

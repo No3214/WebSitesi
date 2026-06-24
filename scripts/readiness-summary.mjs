@@ -163,6 +163,62 @@ function buildNextActions(summary) {
   return unique(actions);
 }
 
+function readinessOrigins(result = {}) {
+  return [result.preview, ...(result.canonical || []), ...(result.brand || [])].filter(Boolean);
+}
+
+function originHasTransportFailure(origin = {}) {
+  return (origin.health?.status || 0) === 0 || (origin.home?.status || 0) === 0;
+}
+
+export function shouldRetryDomainReadiness(result) {
+  if (!result || result.decision === "CANONICAL DOMAIN GO") return false;
+  return readinessOrigins(result).some(originHasTransportFailure);
+}
+
+export function rankDomainReadiness(result) {
+  if (!result) return -1;
+
+  const origins = readinessOrigins(result);
+  const decisionScore = result.decision === "CANONICAL DOMAIN GO" ? 1000000 : 0;
+  const readyScore = origins.filter((origin) => origin.ready).length * 100;
+  const responseScore = origins.reduce((score, origin) => {
+    return score + ((origin.health?.status || 0) > 0 ? 1 : 0) + ((origin.home?.status || 0) > 0 ? 1 : 0);
+  }, 0);
+  const blockerPenalty = (result.blockers || []).length;
+
+  return decisionScore + readyScore + responseScore - blockerPenalty;
+}
+
+function wait(ms) {
+  if (ms <= 0) return Promise.resolve();
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function collectDomainReadinessWithRetry({
+  compareDnsResolvers,
+  evaluateDomainReadinessImpl,
+  domainRetryDelayMs,
+  domainMaxAttempts,
+}) {
+  let bestResult;
+
+  for (let attempt = 0; attempt < domainMaxAttempts; attempt += 1) {
+    const result = await evaluateDomainReadinessImpl({ compareDnsResolvers });
+    if (!bestResult || rankDomainReadiness(result) > rankDomainReadiness(bestResult)) {
+      bestResult = result;
+    }
+
+    if (!shouldRetryDomainReadiness(result) || attempt === domainMaxAttempts - 1) {
+      return bestResult;
+    }
+
+    await wait(domainRetryDelayMs);
+  }
+
+  return bestResult;
+}
+
 export function buildReadinessSummary({
   generatedAt = new Date().toISOString(),
   domainResult,
@@ -199,25 +255,39 @@ export async function collectReadinessSummary({
   runtimeHealthUrl = DEFAULT_RUNTIME_HEALTH_URL,
   compareDnsResolvers = true,
   allowNpxFallback = false,
+  evaluateDomainReadinessImpl = evaluateDomainReadiness,
+  collectGithubCiReadinessImpl = collectGithubCiReadiness,
+  evaluateVercelOpsReadinessImpl = evaluateVercelOpsReadiness,
+  evaluateAdminSurfaceReadinessImpl = evaluateAdminSurfaceReadiness,
+  fetchRuntimeReadinessImpl = fetchRuntimeReadiness,
+  evaluateCommercialLaunchImpl = evaluateCommercialLaunch,
+  domainRetryDelayMs = 1500,
+  domainMaxAttempts = 2,
 } = {}) {
-  const [domainResult, githubCiResult, vercelOpsResult, adminSurfaceResult] = await Promise.all([
-    evaluateDomainReadiness({ compareDnsResolvers }),
-    Promise.resolve(collectGithubCiReadiness()),
-    Promise.resolve(evaluateVercelOpsReadiness({ allowNpxFallback })),
-    evaluateAdminSurfaceReadiness(),
+  const domainResult = await collectDomainReadinessWithRetry({
+    compareDnsResolvers,
+    evaluateDomainReadinessImpl,
+    domainRetryDelayMs,
+    domainMaxAttempts,
+  });
+
+  const [githubCiResult, vercelOpsResult, adminSurfaceResult] = await Promise.all([
+    Promise.resolve(collectGithubCiReadinessImpl()),
+    Promise.resolve(evaluateVercelOpsReadinessImpl({ allowNpxFallback })),
+    Promise.resolve(evaluateAdminSurfaceReadinessImpl()),
   ]);
 
   let runtimeReadiness;
   let runtimeReadinessError;
   if (runtimeHealthUrl) {
     try {
-      runtimeReadiness = await fetchRuntimeReadiness(runtimeHealthUrl);
+      runtimeReadiness = await fetchRuntimeReadinessImpl(runtimeHealthUrl);
     } catch (error) {
       runtimeReadinessError = error instanceof Error ? error.message : String(error);
     }
   }
 
-  const launchResult = evaluateCommercialLaunch({
+  const launchResult = evaluateCommercialLaunchImpl({
     ...(runtimeReadiness ? { runtimeReadiness, runtimeSource: runtimeHealthUrl } : {}),
     ...(runtimeReadinessError ? { runtimeReadinessError, runtimeSource: runtimeHealthUrl } : {}),
   });
