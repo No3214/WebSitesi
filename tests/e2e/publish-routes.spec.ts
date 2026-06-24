@@ -48,6 +48,14 @@ const htmlRoutes = [
 
 const assetRoutes = ["/robots.txt", "/sitemap.xml", "/llms.txt", "/manifest.webmanifest"];
 
+const legacyRedirects = [
+  { from: "/tr/room-type/1247610", to: "/odalar" },
+  { from: "/tr/blog", to: "/deneyimler" },
+  { from: "/en-US/pages/rooms-rates", to: "/en/odalar" },
+  { from: "/en-US/room-type/1187066", to: "/en/odalar" },
+  { from: "/en-US/blog", to: "/en/deneyimler" },
+];
+
 test.describe("Publish route inventory", () => {
   test.describe.configure({ timeout: 120000 });
 
@@ -76,6 +84,15 @@ test.describe("Publish route inventory", () => {
 
       expect(response.status(), `${route} returned an error status`).toBeLessThan(400);
       expect((await response.text()).length, `${route} body should not be empty`).toBeGreaterThan(20);
+    });
+  }
+
+  for (const redirect of legacyRedirects) {
+    test(`${redirect.from} permanently redirects to ${redirect.to}`, async ({ request }) => {
+      const response = await request.get(redirect.from, { maxRedirects: 0 });
+
+      expect(response.status()).toBe(308);
+      expect(response.headers().location).toBe(redirect.to);
     });
   }
 });

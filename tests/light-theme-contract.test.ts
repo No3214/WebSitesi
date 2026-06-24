@@ -43,9 +43,8 @@ describe("public light theme contract", () => {
     expect(combined).toContain("#fbf7ed");
   });
 
-  it("keeps legacy cinematic widgets on light stone surfaces", () => {
+  it("keeps retired cinematic and urgency widgets out of the public surface", () => {
     const globals = read("src/app/globals.css");
-    const atmospheric = read("src/components/atmospheric-immersion.tsx");
     const heritage = read("src/components/heritage-archive.tsx");
     const floatingContact = read("src/components/floating-contact.tsx");
     const exitIntent = read("src/components/exit-intent.tsx");
@@ -60,7 +59,6 @@ describe("public light theme contract", () => {
     expect(sectionDarkBlock).not.toContain("color: var(--ivory)");
 
     const combined = [
-      atmospheric,
       heritage,
       floatingContact,
       exitIntent,
@@ -71,8 +69,9 @@ describe("public light theme contract", () => {
     expect(combined).not.toContain("bg-zinc-900");
     expect(combined).not.toContain("border-zinc-900");
     expect(combined).not.toContain("rgba(20, 22, 26");
-    expect(combined).toContain("bg-[#fffcf6]/95");
     expect(exists("src/components/reputation-ribbon.tsx")).toBe(false);
+    expect(exists("src/components/conversion-velocity.tsx")).toBe(false);
+    expect(exists("src/components/atmospheric-immersion.tsx")).toBe(false);
     expect(heritage).toContain("bg-[#fffcf6]/90");
     expect(exitIntent).toContain("bg-[rgba(61,74,59,0.38)]");
   });

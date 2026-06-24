@@ -7,6 +7,7 @@ import type { usePaymentWizard } from "../use-payment-wizard";
 // Adim 3: Duyusal oda atmosferi tercihleri
 export function SensoryStep({ wizard }: { wizard: ReturnType<typeof usePaymentWizard> }) {
   const { scent, setScent, pillow, setPillow, sound, setSound, light, setLight, setStep, copy, options } = wizard;
+  const fieldId = (field: string) => `sensory-${wizard.locale}-${field}`;
 
   return (
     <motion.div
@@ -26,8 +27,10 @@ export function SensoryStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20 }}>
         {/* Scent */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>{copy.sensory.scent}</span>
+          <label htmlFor={fieldId("scent")} style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>{copy.sensory.scent}</label>
           <select
+            id={fieldId("scent")}
+            name="scent"
             value={scent.id}
             onChange={(e) => setScent(options.scents.find(s => s.id === e.target.value) || options.scents[0])}
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6, background: "transparent" }}
@@ -39,8 +42,10 @@ export function SensoryStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
 
         {/* Pillow */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>{copy.sensory.pillow}</span>
+          <label htmlFor={fieldId("pillow")} style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>{copy.sensory.pillow}</label>
           <select
+            id={fieldId("pillow")}
+            name="pillow"
             value={pillow.id}
             onChange={(e) => setPillow(options.pillows.find(p => p.id === e.target.value) || options.pillows[0])}
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6, background: "transparent" }}
@@ -52,8 +57,10 @@ export function SensoryStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
 
         {/* Sound */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>{copy.sensory.sound}</span>
+          <label htmlFor={fieldId("sound")} style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>{copy.sensory.sound}</label>
           <select
+            id={fieldId("sound")}
+            name="sound"
             value={sound.id}
             onChange={(e) => setSound(options.sounds.find(s => s.id === e.target.value) || options.sounds[0])}
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6, background: "transparent" }}
@@ -65,8 +72,10 @@ export function SensoryStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
 
         {/* Light */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>{copy.sensory.light}</span>
+          <label htmlFor={fieldId("light")} style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--olive)" }}>{copy.sensory.light}</label>
           <select
+            id={fieldId("light")}
+            name="light"
             value={light.id}
             onChange={(e) => setLight(options.lights.find(l => l.id === e.target.value) || options.lights[0])}
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6, background: "transparent" }}

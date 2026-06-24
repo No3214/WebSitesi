@@ -66,6 +66,28 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      { source: "/tr", destination: "/", permanent: true },
+      { source: "/tr/pages/rooms-rates", destination: "/odalar", permanent: true },
+      { source: "/tr/room-type/:path*", destination: "/odalar", permanent: true },
+      { source: "/tr/blog", destination: "/deneyimler", permanent: true },
+      { source: "/tr/gallery", destination: "/galeri", permanent: true },
+      { source: "/tr/contact", destination: "/iletisim", permanent: true },
+      { source: "/tr/about", destination: "/hikayemiz", permanent: true },
+      { source: "/tr/pages/:path*", destination: "/", permanent: true },
+      { source: "/tr/:path*", destination: "/", permanent: true },
+      { source: "/en-US", destination: "/en", permanent: true },
+      { source: "/en-US/pages/rooms-rates", destination: "/en/odalar", permanent: true },
+      { source: "/en-US/room-type/:path*", destination: "/en/odalar", permanent: true },
+      { source: "/en-US/blog", destination: "/en/deneyimler", permanent: true },
+      { source: "/en-US/gallery", destination: "/en/galeri", permanent: true },
+      { source: "/en-US/contact", destination: "/en/iletisim", permanent: true },
+      { source: "/en-US/about", destination: "/en/hikayemiz", permanent: true },
+      { source: "/en-US/pages/:path*", destination: "/en", permanent: true },
+      { source: "/en-US/:path*", destination: "/en", permanent: true },
+    ];
+  },
 };
 
 export default withPayload(nextConfig);

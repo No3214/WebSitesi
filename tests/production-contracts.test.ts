@@ -897,6 +897,7 @@ describe("production readiness contracts", () => {
     const paymentInfoPage = read("src/app/odeme/page.tsx");
     const wizardHook = read("src/components/payment-wizard/use-payment-wizard.ts");
     const paymentStep = read("src/components/payment-wizard/steps/payment-step.tsx");
+    const sensoryStep = read("src/components/payment-wizard/steps/sensory-step.tsx");
     const wizardTypes = read("src/components/payment-wizard/types.ts");
     const checkoutContract = read("tests/e2e/checkout-contract.spec.ts");
     const evidence = read("docs/evidence/garanti-pos.md");
@@ -949,6 +950,19 @@ describe("production readiness contracts", () => {
     expect(wizardTypes).not.toContain("Guest and Billing Details");
     expect(wizardTypes).not.toContain("Amount Collected");
     expect(paymentStep).not.toContain('type="password"');
+    for (const field of ["guest-name", "guest-phone", "guest-email"]) {
+      expect(paymentStep).toContain(`htmlFor={fieldId("${field}")}`);
+      expect(paymentStep).toContain(`id={fieldId("${field}")}`);
+    }
+    expect(paymentStep).toContain('autoComplete="name"');
+    expect(paymentStep).toContain('autoComplete="tel"');
+    expect(paymentStep).toContain('autoComplete="email"');
+    expect(paymentStep).toContain('<span aria-hidden="true">🌸</span>');
+    expect(paymentStep).toContain('<span aria-hidden="true">💡</span>');
+    for (const field of ["scent", "pillow", "sound", "light"]) {
+      expect(sensoryStep).toContain(`htmlFor={fieldId("${field}")}`);
+      expect(sensoryStep).toContain(`id={fieldId("${field}")}`);
+    }
     expect(checkoutContract).toContain("Kart alanı gönderilirse 400 ile reddedilir");
     expect(checkoutContract).toContain("cardNumber");
     expect(evidence).toContain("npm run garanti:verify");
@@ -1026,6 +1040,34 @@ describe("production readiness contracts", () => {
     expect(hmsReadiness).toContain("soleil-mansion");
     expect(hmsReadiness).toContain("wrong-property signal");
     expect(envExample).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL=https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine");
+  });
+
+  it("keeps the public FAQ corpus rich enough for guest support and FAQ schema", () => {
+    const faqs = read("src/data/faqs.ts");
+    const questionCount = (faqs.match(/\bq:\s*\{/g) ?? []).length;
+
+    expect(questionCount).toBeGreaterThanOrEqual(10);
+    for (const requiredTopic of [
+      "Kahvaltı",
+      "Restoranı",
+      "Otopark",
+      "Evcil hayvan",
+      "Düğün",
+      "İptal ve tarih değişikliği",
+      "Ödeme güvenliği",
+    ]) {
+      expect(faqs).toContain(requiredTopic);
+    }
+    expect(faqs).not.toContain("48 saat");
+    expect(faqs).not.toContain("ücretsiz iptal");
+  });
+
+  it("keeps room-facing copy free from the old Superrior typo", () => {
+    const rooms = read("src/data/rooms.ts");
+
+    expect(rooms).toContain("Superior 2 Kişilik Oda");
+    expect(rooms).toContain("Superior 3 Kişilik Oda");
+    expect(rooms).not.toContain("Superrior");
   });
 
   it("keeps the CSP frame surface narrow after moving booking to new-tab handoff", () => {
@@ -2021,6 +2063,20 @@ describe("production readiness contracts", () => {
     expect(llmContextRoute).not.toContain("X-Agentic-Architecture");
   });
 
+  it("redirects indexed legacy HotelRunner paths to canonical public pages", () => {
+    const nextConfig = read("next.config.ts");
+
+    for (const expected of [
+      '{ source: "/tr/room-type/:path*", destination: "/odalar", permanent: true }',
+      '{ source: "/tr/blog", destination: "/deneyimler", permanent: true }',
+      '{ source: "/en-US/pages/rooms-rates", destination: "/en/odalar", permanent: true }',
+      '{ source: "/en-US/room-type/:path*", destination: "/en/odalar", permanent: true }',
+      '{ source: "/en-US/blog", destination: "/en/deneyimler", permanent: true }',
+    ]) {
+      expect(nextConfig).toContain(expected);
+    }
+  });
+
   it("keeps lead API failure logging structured and free from raw payload dumps", () => {
     const leadRoute = read("src/app/api/lead/route.ts");
 
@@ -2039,6 +2095,36 @@ describe("production readiness contracts", () => {
     expect(leadForm).not.toContain("Lead submission failed");
     expect(leadForm).not.toContain("console.error");
     expect(leadForm).not.toContain("console.warn");
+  });
+
+  it("keeps the client lead form programmatically labelled and error-associated", () => {
+    const leadForm = read("src/components/lead-form.tsx");
+
+    for (const field of [
+      "name",
+      "phone",
+      "email",
+      "eventDate",
+      "guestCount",
+      "estimatedBudget",
+      "type",
+      "message",
+    ]) {
+      expect(leadForm).toContain(`htmlFor={fieldId("${field}")}`);
+      expect(leadForm).toContain(`id={fieldId("${field}")}`);
+      expect(leadForm).toContain(`aria-invalid={hasError("${field}") || undefined}`);
+      expect(leadForm).toContain(`aria-describedby={hasError("${field}") ? errorId("${field}") : undefined}`);
+    }
+
+    expect(leadForm).toContain('className="sr-only"');
+    expect(leadForm).toContain('role="alert"');
+    expect(leadForm).toContain('color: "#c2410c"');
+    expect(leadForm).not.toContain('color: "#b3925c"');
+  });
+
+  it("keeps retired urgency and immersion widgets deleted after trust review", () => {
+    expect(exists("src/components/conversion-velocity.tsx")).toBe(false);
+    expect(exists("src/components/atmospheric-immersion.tsx")).toBe(false);
   });
 
   it("keeps client error boundaries from dumping raw errors to the browser console", () => {

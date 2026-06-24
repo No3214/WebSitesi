@@ -2,6 +2,8 @@ import { expect, test } from "@playwright/test";
 
 const HMS_BOOKING_URL =
   "https://kozbeyli-konagi.hmshotel.net/?utm_source=website&utm_medium=booking_engine";
+const CONSENT_STORAGE_KEY = "cookie_consent_v2";
+const CONSENT_VERSION = "2026-03";
 
 const smokePages = [
   "/",
@@ -14,6 +16,25 @@ const smokePages = [
   "/deneyim-tasarimcisi",
   "/rezervasyon"
 ];
+
+async function prepareExitIntentTest(page: import("@playwright/test").Page) {
+  await page.addInitScript(
+    ({ key, version }) => {
+      window.sessionStorage.clear();
+      window.localStorage.setItem(
+        key,
+        JSON.stringify({
+          version,
+          necessary: true,
+          analytics: false,
+          marketing: false,
+          updatedAt: new Date().toISOString(),
+        }),
+      );
+    },
+    { key: CONSENT_STORAGE_KEY, version: CONSENT_VERSION },
+  );
+}
 
 test.describe("Site geneli smoke", () => {
   for (const path of smokePages) {
@@ -96,7 +117,7 @@ test.describe("Rezervasyon HMS handoff", () => {
   });
 
   test("exit-intent rezervasyon aksiyonu resmi HMS ekranina gider", async ({ page }) => {
-    await page.addInitScript(() => window.sessionStorage.clear());
+    await prepareExitIntentTest(page);
     await page.goto("/");
     await page.waitForTimeout(500);
 
@@ -113,7 +134,7 @@ test.describe("Rezervasyon HMS handoff", () => {
   });
 
   test("ingilizce exit-intent resmi HMS ekranina ingilizce metinle gider", async ({ page }) => {
-    await page.addInitScript(() => window.sessionStorage.clear());
+    await prepareExitIntentTest(page);
     await page.goto("/en");
     await page.waitForTimeout(500);
 

@@ -23,6 +23,7 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
   const t = copy.payment;
   const kvkkHref = getLegalHref("kvkk", wizard.locale);
   const privacyHref = getLegalHref("privacy", wizard.locale);
+  const fieldId = (field: string) => `payment-${wizard.locale}-${field}`;
 
   return (
     <motion.div
@@ -56,27 +57,40 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <label className="sr-only" htmlFor={fieldId("guest-name")}>{t.name}</label>
           <input
+            id={fieldId("guest-name")}
+            name="guestName"
             placeholder={t.name}
             value={guestName}
             onChange={(e) => setGuestName(e.target.value)}
             required
+            autoComplete="name"
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
           />
+          <label className="sr-only" htmlFor={fieldId("guest-phone")}>{t.phone}</label>
           <input
+            id={fieldId("guest-phone")}
+            name="guestPhone"
             placeholder={t.phone}
+            type="tel"
             value={guestPhone}
             onChange={(e) => setGuestPhone(e.target.value)}
             required
+            autoComplete="tel"
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
           />
         </div>
+        <label className="sr-only" htmlFor={fieldId("guest-email")}>{t.email}</label>
         <input
+          id={fieldId("guest-email")}
+          name="guestEmail"
           placeholder={t.email}
           type="email"
           value={guestEmail}
           onChange={(e) => setGuestEmail(e.target.value)}
           required
+          autoComplete="email"
           style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
         />
 
@@ -146,10 +160,10 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
 
         <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16, display: "flex", flexDirection: "column", gap: 8, fontSize: "0.85rem" }}>
           <span style={{ fontWeight: 700, color: "var(--gold)" }}>{t.preferences}</span>
-          <div>🌸 {t.scent} {scent.label}</div>
-          <div>🪶 {t.pillow} {pillow.label}</div>
-          <div>🔊 {t.sound} {sound.label}</div>
-          <div>💡 {t.light} {light.label}</div>
+          <div><span aria-hidden="true">🌸</span> {t.scent} {scent.label}</div>
+          <div><span aria-hidden="true">🪶</span> {t.pillow} {pillow.label}</div>
+          <div><span aria-hidden="true">🔊</span> {t.sound} {sound.label}</div>
+          <div><span aria-hidden="true">💡</span> {t.light} {light.label}</div>
         </div>
 
         <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16, display: "grid", gap: 8 }}>
@@ -164,7 +178,7 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(61, 74, 59, 0.05)", padding: 12, borderRadius: 8, fontSize: "0.78rem", color: "var(--olive)", marginTop: 12 }}>
-          <ShieldCheck size={16} />
+          <ShieldCheck size={16} aria-hidden />
           <span>{t.cardSafety}</span>
         </div>
       </div>

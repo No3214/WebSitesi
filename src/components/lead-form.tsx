@@ -29,6 +29,16 @@ const leadFormCopy = {
       guestCount: "Tahmini Kişi Sayısı",
       message: "Özel talepleriniz ve diğer notlar...",
     },
+    labels: {
+      name: "Tam adınız",
+      phone: "Telefon numaranız",
+      email: "E-posta adresiniz",
+      eventDate: "Etkinlik tarihi",
+      guestCount: "Tahmini kişi sayısı",
+      estimatedBudget: "Tahmini bütçe",
+      type: "Organizasyon tercihi",
+      message: "Özel talepleriniz ve diğer notlar",
+    },
     budget: {
       label: "Tahmini bütçe",
       placeholder: "Tahmini Bütçe",
@@ -61,6 +71,16 @@ const leadFormCopy = {
       eventDate: "Event Date",
       guestCount: "Estimated Guest Count",
       message: "Special requests and additional notes...",
+    },
+    labels: {
+      name: "Full name",
+      phone: "Phone number",
+      email: "Email address",
+      eventDate: "Event date",
+      guestCount: "Estimated guest count",
+      estimatedBudget: "Estimated budget",
+      type: "Event preference",
+      message: "Special requests and additional notes",
     },
     budget: {
       label: "Estimated budget",
@@ -170,11 +190,19 @@ export function LeadForm({ locale = "tr" }: { locale?: LeadFormLocale }) {
   const renderError = (field: string) => {
     if (!errors[field]?.[0]) return null;
     return (
-      <div style={{ color: "#b3925c", fontSize: "0.82rem", marginTop: "-18px", marginBottom: "16px", fontWeight: 500 }}>
+      <div
+        id={errorId(field)}
+        role="alert"
+        style={{ color: "#c2410c", fontSize: "0.82rem", marginTop: "-18px", marginBottom: "16px", fontWeight: 500 }}
+      >
         {errors[field][0]}
       </div>
     );
   };
+
+  const fieldId = (field: string) => `lead-${locale}-${field}`;
+  const errorId = (field: string) => `${fieldId(field)}-error`;
+  const hasError = (field: string) => Boolean(errors[field]?.[0]);
 
   const getInputStyle = (field: string) => {
     if (errors[field]) {
@@ -189,25 +217,73 @@ export function LeadForm({ locale = "tr" }: { locale?: LeadFormLocale }) {
         <input name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <input name="name" placeholder={t.placeholders.name} required style={getInputStyle("name")} />
+      <label className="sr-only" htmlFor={fieldId("name")}>{t.labels.name}</label>
+      <input
+        id={fieldId("name")}
+        name="name"
+        placeholder={t.placeholders.name}
+        required
+        aria-invalid={hasError("name") || undefined}
+        aria-describedby={hasError("name") ? errorId("name") : undefined}
+        style={getInputStyle("name")}
+      />
       {renderError("name")}
 
-      <input name="phone" placeholder={t.placeholders.phone} required style={getInputStyle("phone")} />
+      <label className="sr-only" htmlFor={fieldId("phone")}>{t.labels.phone}</label>
+      <input
+        id={fieldId("phone")}
+        name="phone"
+        placeholder={t.placeholders.phone}
+        required
+        aria-invalid={hasError("phone") || undefined}
+        aria-describedby={hasError("phone") ? errorId("phone") : undefined}
+        style={getInputStyle("phone")}
+      />
       {renderError("phone")}
 
-      <input name="email" placeholder={t.placeholders.email} type="email" style={getInputStyle("email")} />
+      <label className="sr-only" htmlFor={fieldId("email")}>{t.labels.email}</label>
+      <input
+        id={fieldId("email")}
+        name="email"
+        placeholder={t.placeholders.email}
+        type="email"
+        aria-invalid={hasError("email") || undefined}
+        aria-describedby={hasError("email") ? errorId("email") : undefined}
+        style={getInputStyle("email")}
+      />
       {renderError("email")}
 
-      <input name="eventDate" placeholder={t.placeholders.eventDate} style={getInputStyle("eventDate")} />
+      <label className="sr-only" htmlFor={fieldId("eventDate")}>{t.labels.eventDate}</label>
+      <input
+        id={fieldId("eventDate")}
+        name="eventDate"
+        placeholder={t.placeholders.eventDate}
+        aria-invalid={hasError("eventDate") || undefined}
+        aria-describedby={hasError("eventDate") ? errorId("eventDate") : undefined}
+        style={getInputStyle("eventDate")}
+      />
       {renderError("eventDate")}
 
-      <input name="guestCount" type="number" min={1} placeholder={t.placeholders.guestCount} style={getInputStyle("guestCount")} />
+      <label className="sr-only" htmlFor={fieldId("guestCount")}>{t.labels.guestCount}</label>
+      <input
+        id={fieldId("guestCount")}
+        name="guestCount"
+        type="number"
+        min={1}
+        placeholder={t.placeholders.guestCount}
+        aria-invalid={hasError("guestCount") || undefined}
+        aria-describedby={hasError("guestCount") ? errorId("guestCount") : undefined}
+        style={getInputStyle("guestCount")}
+      />
       {renderError("guestCount")}
       
+      <label className="sr-only" htmlFor={fieldId("estimatedBudget")}>{t.labels.estimatedBudget}</label>
       <select
+        id={fieldId("estimatedBudget")}
         name="estimatedBudget"
-        aria-label={t.budget.label}
         defaultValue=""
+        aria-invalid={hasError("estimatedBudget") || undefined}
+        aria-describedby={hasError("estimatedBudget") ? errorId("estimatedBudget") : undefined}
         style={getInputStyle("estimatedBudget")}
       >
         <option value="" disabled>{t.budget.placeholder}</option>
@@ -218,11 +294,14 @@ export function LeadForm({ locale = "tr" }: { locale?: LeadFormLocale }) {
       </select>
       {renderError("estimatedBudget")}
 
+      <label className="sr-only" htmlFor={fieldId("type")}>{t.labels.type}</label>
       <select
+        id={fieldId("type")}
         name="type"
-        aria-label={t.eventType.label}
         required
         defaultValue=""
+        aria-invalid={hasError("type") || undefined}
+        aria-describedby={hasError("type") ? errorId("type") : undefined}
         style={getInputStyle("type")}
       >
         <option value="" disabled>{t.eventType.placeholder}</option>
@@ -233,10 +312,14 @@ export function LeadForm({ locale = "tr" }: { locale?: LeadFormLocale }) {
       </select>
       {renderError("type")}
 
+      <label className="sr-only" htmlFor={fieldId("message")}>{t.labels.message}</label>
       <textarea
+        id={fieldId("message")}
         name="message"
         placeholder={t.placeholders.message}
         required
+        aria-invalid={hasError("message") || undefined}
+        aria-describedby={hasError("message") ? errorId("message") : undefined}
         style={getInputStyle("message")}
       />
       {renderError("message")}
