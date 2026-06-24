@@ -1855,12 +1855,13 @@ describe("production readiness contracts", () => {
 
     expect(gastronomyEditorial).toContain("function LazyEditorialVideo");
     expect(gastronomyEditorial).toContain("IntersectionObserver");
-    expect(gastronomyEditorial).toContain('preload="none"');
+    expect(gastronomyEditorial).toContain('preload={shouldLoad ? "metadata" : "none"}');
+    expect(gastronomyEditorial).toContain('video.preload = "auto"');
     expect(gastronomyEditorial).toContain("controls={playbackBlocked}");
     expect(gastronomyEditorial).toContain("setPlaybackBlocked(true)");
     expect(gastronomyEditorial).toContain("editorial-video-control");
     expect(globals).toContain(".editorial-video-control");
-    expect(gastronomyEditorial).not.toContain('preload="metadata"');
+    expect(gastronomyEditorial).not.toContain("autoPlay={shouldLoad}");
   });
 
   it("keeps the homepage gastronomy editorial copy inside a safe text column", () => {

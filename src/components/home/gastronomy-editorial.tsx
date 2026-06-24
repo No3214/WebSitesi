@@ -16,7 +16,7 @@ type LazyEditorialVideoProps = {
 
 function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [shouldPlay, setShouldPlay] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackBlocked, setPlaybackBlocked] = useState(false);
 
@@ -39,6 +39,7 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
       video.defaultMuted = true;
       video.muted = true;
       video.playsInline = true;
+      video.preload = "auto";
       if (!video.currentSrc && video.networkState === HTMLMediaElement.NETWORK_EMPTY) {
         video.load();
       }
@@ -61,7 +62,7 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
       return;
     }
 
-    setShouldPlay(true);
+    setShouldLoad(true);
     void start();
   }, [isPlaying, start]);
 
@@ -70,14 +71,14 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
     if (!video) return;
 
     if (!("IntersectionObserver" in window)) {
-      setShouldPlay(true);
+      setShouldLoad(true);
       return;
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
-        setShouldPlay(true);
+        setShouldLoad(true);
         observer.disconnect();
       },
       { rootMargin: "320px 0px" }
@@ -87,26 +88,17 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (!shouldPlay) return;
-    void start();
-  }, [shouldPlay, start]);
-
   return (
     <>
       <video
         ref={videoRef}
         poster={poster}
-        autoPlay={shouldPlay}
         muted
         loop
         playsInline
         controls={playbackBlocked}
-        preload="none"
+        preload={shouldLoad ? "metadata" : "none"}
         aria-label={label}
-        onCanPlay={() => {
-          if (shouldPlay) void start();
-        }}
         onPlaying={() => {
           markPlaybackState();
           setPlaybackBlocked(false);
