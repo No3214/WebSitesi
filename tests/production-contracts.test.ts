@@ -1496,7 +1496,9 @@ describe("production readiness contracts", () => {
     expect(localizationScript).toContain("Kozbeyli Konagi localization readiness");
     expect(localizationScript).toContain("tests/e2e/launch-localization.spec.ts");
     expect(localizationScript).toContain("tests/e2e/lang-switch.spec.ts");
+    expect(localizationScript).toContain("tests/e2e/new-pages.spec.ts");
     expect(localizationScript).toContain("EN/TR room catalog");
+    expect(localizationScript).toContain("public EN pages");
     expect(localizationScript).toContain("mobile action bar");
     expect(localizationScript).toContain("PW_BASE_URL");
     expect(localizationScript).toContain("scripts/domain-readiness.mjs");

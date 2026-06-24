@@ -171,10 +171,10 @@ npm run localization:verify:preview
 ```
 
 `localization:verify:live`, canlı domainde EN/TR oda katalog ve detay
-çevirilerini, dil değiştirici linklerini ve mobil alt rezervasyon barı dilini
-tek başına doğrular. Bu kapı özellikle kullanıcıdan gelen "EN kısmında Türkçe
-kalan metin var mı?" kontrolünü smoke paketinden ayrı, hızlı tekrar edilebilir
-hale getirir.
+çevirilerini, İngilizce public sayfaları, dil değiştirici linklerini ve mobil
+alt rezervasyon barı dilini tek başına doğrular. Bu kapı özellikle kullanıcıdan
+gelen "EN kısmında Türkçe kalan metin var mı?" kontrolünü smoke paketinden ayrı,
+hızlı tekrar edilebilir hale getirir.
 
 Not: `release:verify` lokal repo/release yeşil kapısıdır ve `launch:audit:json`
 çıktısını raporlar; domain/commercial strict gate'leri dış kanıtlar hazır olana

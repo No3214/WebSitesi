@@ -6,6 +6,7 @@ const liveTarget = process.env.PW_BASE_URL;
 const playwrightSpecs = [
   "tests/e2e/launch-localization.spec.ts",
   "tests/e2e/lang-switch.spec.ts",
+  "tests/e2e/new-pages.spec.ts",
 ];
 const nodeBin = process.execPath;
 const playwrightCli = "node_modules/@playwright/test/cli.js";
@@ -52,7 +53,7 @@ function main() {
   const target = liveTarget || "local production server via Playwright webServer";
   console.log("Kozbeyli Konagi localization readiness");
   console.log(`Target: ${target}`);
-  console.log("Scope: EN/TR room catalog, room detail, language switcher and mobile action bar");
+  console.log("Scope: EN/TR room catalog, room detail, public EN pages, language switcher and mobile action bar");
 
   if (!liveTarget && !fs.existsSync(".next/BUILD_ID")) {
     console.error("FAIL local localization readiness needs a production build. Run `npm run build` first or set PW_BASE_URL.");
