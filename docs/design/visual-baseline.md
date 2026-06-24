@@ -17,9 +17,11 @@ The approved direction for the next visual wave is **Stone & Light Editorial**:
 Implemented in this wave:
 
 - `src/components/animations.tsx`: real lightweight `StaggerContainer`, `Parallax`, `RevealLines`, and `MagneticLink` primitives with reduced-motion fallbacks.
+- `src/components/animations.tsx`: `Parallax` is now clamped to a 24px travel budget and disabled on touch/mobile-width contexts; `TiltCard` is available for later real-artifact storytelling without WebGL.
 - `src/components/home/home-hero.tsx`: opening video contract preserved, editorial signature added, primary booking CTA gets the only magnetic interaction.
 - `src/components/home/rooms-showcase.tsx`: equal homepage room grid replaced with editorial mosaic while keeping existing room facts and links.
 - `src/app/globals.css`: Stone & Light surface tokens, hero reveal timing, magnetic CTA inner motion, responsive room mosaic.
+- `src/stories/MotionPrimitives.stories.tsx`: Storybook now exposes the brand motion primitives for review before wider rollout.
 
 Deferred by design:
 

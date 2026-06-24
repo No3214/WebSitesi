@@ -1,7 +1,17 @@
 "use client";
 
 import { Children, useEffect, useRef, useState } from "react";
-import type { AnchorHTMLAttributes, CSSProperties, PointerEvent as ReactPointerEvent, ReactNode } from "react";
+import type {
+  AnchorHTMLAttributes,
+  CSSProperties,
+  HTMLAttributes,
+  PointerEvent as ReactPointerEvent,
+  ReactNode,
+} from "react";
+
+function isCoarsePointer() {
+  return window.matchMedia("(pointer: coarse)").matches;
+}
 
 function useReducedMotionPreference() {
   const [reduced, setReduced] = useState(false);
@@ -17,30 +27,40 @@ function useReducedMotionPreference() {
   return reduced;
 }
 
-function useElementInView<T extends Element>(rootMargin = "-60px") {
+function useElementInView<T extends Element>(rootMargin = "-60px", fallbackMs = 1600) {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
-    if (!("IntersectionObserver" in window)) {
+    const fallbackTimer = fallbackMs > 0 ? window.setTimeout(() => setInView(true), fallbackMs) : 0;
+
+    const finish = () => {
+      if (fallbackTimer) window.clearTimeout(fallbackTimer);
       setInView(true);
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      finish();
       return;
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
-        setInView(true);
+        finish();
         observer.disconnect();
       },
       { rootMargin },
     );
 
     observer.observe(node);
-    return () => observer.disconnect();
-  }, [rootMargin]);
+    return () => {
+      if (fallbackTimer) window.clearTimeout(fallbackTimer);
+      observer.disconnect();
+    };
+  }, [fallbackMs, rootMargin]);
 
   return { ref, inView };
 }
@@ -186,11 +206,15 @@ export function Counter({
 export function Parallax({
   children,
   offset = 60,
+  distance,
   className,
+  disabledBelow = 768,
 }: {
   children: ReactNode;
   offset?: number;
+  distance?: number;
   className?: string;
+  disabledBelow?: number;
 }) {
   const reduceMotion = useReducedMotionPreference();
   const ref = useRef<HTMLDivElement>(null);
@@ -199,15 +223,22 @@ export function Parallax({
     const node = ref.current;
     if (!node || reduceMotion) return;
 
-    const distance = Math.max(-24, Math.min(24, offset));
+    const travel = Math.max(-24, Math.min(24, distance ?? offset));
     let raf = 0;
+
+    const disabled = () => window.innerWidth < disabledBelow || isCoarsePointer();
 
     const update = () => {
       raf = 0;
+      if (disabled()) {
+        node.style.transform = "none";
+        return;
+      }
+
       const rect = node.getBoundingClientRect();
       const viewport = window.innerHeight || 1;
       const progress = (rect.top + rect.height / 2 - viewport / 2) / viewport;
-      const y = Math.max(-1, Math.min(1, progress)) * -distance;
+      const y = Math.max(-1, Math.min(1, progress)) * -travel;
       node.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
     };
 
@@ -222,8 +253,9 @@ export function Parallax({
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
+      node.style.transform = "none";
     };
-  }, [offset, reduceMotion]);
+  }, [disabledBelow, distance, offset, reduceMotion]);
 
   return (
     <div ref={ref} className={className}>
@@ -299,7 +331,7 @@ export function MagneticLink({
 
   const move = (event: ReactPointerEvent<HTMLAnchorElement>) => {
     onPointerMove?.(event);
-    if (reduceMotion || window.matchMedia("(pointer: coarse)").matches) return;
+    if (reduceMotion || isCoarsePointer()) return;
 
     const node = ref.current;
     if (!node) return;
@@ -334,5 +366,60 @@ export function MagneticLink({
         {children}
       </span>
     </a>
+  );
+}
+
+export function TiltCard({
+  children,
+  className,
+  maxTilt = 3,
+  onPointerMove,
+  onPointerLeave,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & {
+  children: ReactNode;
+  maxTilt?: number;
+}) {
+  const reduceMotion = useReducedMotionPreference();
+  const ref = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const move = (event: ReactPointerEvent<HTMLDivElement>) => {
+    onPointerMove?.(event);
+    if (reduceMotion || isCoarsePointer()) return;
+
+    const node = ref.current;
+    if (!node) return;
+
+    const rect = node.getBoundingClientRect();
+    const dx = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+    const dy = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+    const limit = Math.max(0, Math.min(4, maxTilt));
+    setTilt({ x: -dy * limit, y: dx * limit });
+  };
+
+  const leave = (event: ReactPointerEvent<HTMLDivElement>) => {
+    onPointerLeave?.(event);
+    setTilt({ x: 0, y: 0 });
+  };
+
+  const innerStyle: CSSProperties = reduceMotion
+    ? {}
+    : {
+        transform: `rotateX(${tilt.x.toFixed(2)}deg) rotateY(${tilt.y.toFixed(2)}deg)`,
+      };
+
+  return (
+    <div
+      {...props}
+      ref={ref}
+      className={className ? `${className} tilt-card` : "tilt-card"}
+      onPointerMove={move}
+      onPointerLeave={leave}
+    >
+      <div className="tilt-card-inner" style={innerStyle}>
+        {children}
+      </div>
+    </div>
   );
 }

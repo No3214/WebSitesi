@@ -533,6 +533,21 @@
     transform: none !important;
   }
 
+  .tilt-card {
+    perspective: 900px;
+    transform-style: preserve-3d;
+  }
+
+  .tilt-card-inner {
+    height: 100%;
+    transition: transform var(--motion-base) var(--ease-editorial);
+    will-change: transform;
+  }
+
+  .tilt-card:focus-within .tilt-card-inner {
+    transform: none !important;
+  }
+
   /* ---------- Hero ---------- */
   .hero {
     position: relative;
@@ -1071,7 +1086,7 @@
   .room-mosaic-card:hover,
   .room-mosaic-card:focus-visible {
     opacity: 1;
-    transform: translateY(-8px);
+    transform: translateY(-3px);
     border-color: var(--line-gold);
     box-shadow: var(--shadow-editorial);
   }
@@ -1147,6 +1162,11 @@
 
   .room-mosaic-copy .card-link {
     margin-top: auto;
+  }
+
+  .room-mosaic-card:hover .card-link .arrow,
+  .room-mosaic-card:focus-visible .card-link .arrow {
+    transform: translateX(4px);
   }
 
   .rooms-catalog-section {
@@ -2397,9 +2417,16 @@
   .hero-actions,
   .magnetic-link-inner,
   .room-mosaic-card,
-  .room-mosaic-media img {
+  .room-mosaic-media img,
+  .tilt-card-inner {
     transform: none !important;
     opacity: 1 !important;
+  }
+}
+
+@media (pointer: coarse) {
+  .tilt-card-inner {
+    transform: none !important;
   }
 }
 
