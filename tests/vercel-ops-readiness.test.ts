@@ -40,11 +40,13 @@ describe("Vercel ops readiness", () => {
       checks: Array<{ id: string; status: string; detail: string; error?: string }>;
     };
     const cliCheck = result.checks.find((check) => check.id === "global_vercel_cli");
+    const scriptsCheck = result.checks.find((check) => check.id === "vercel_npm_scripts");
 
     expect(cliCheck).toMatchObject({
       status: "warn",
       detail: "Global Vercel CLI is not available on PATH; npx fallback was not executed.",
     });
+    expect(scriptsCheck?.detail).toContain("live:verify");
     expect(JSON.stringify(result)).not.toContain("npx --yes vercel");
   });
 });

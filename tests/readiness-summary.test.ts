@@ -142,6 +142,10 @@ describe("readiness summary", () => {
     expect(result.nextActions.join("\n")).toContain("Billing & plans");
     expect(result.nextActions.join("\n")).toContain("launch:audit:live:strict");
     expect(result.finalVerificationCommands).toContain("npm run readiness:summary:json");
+    expect(result.finalVerificationCommands).toContain("npm run live:verify");
+    expect(result.finalVerificationCommands.indexOf("npm run live:verify")).toBeLessThan(
+      result.finalVerificationCommands.indexOf("npm run launch:audit:live:strict"),
+    );
   });
 
   it("formats a concise operator report with the decisive blockers", async () => {

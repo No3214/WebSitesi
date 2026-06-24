@@ -153,6 +153,7 @@ After DNS and Vercel domain settings are corrected, run:
 
 ```bash
 npm run domain:verify:strict
+npm run live:verify
 npm run launch:smoke:live
 ```
 
@@ -166,9 +167,12 @@ ready:
   `/videos/hero.mp4`;
 - the Vercel preview remains healthy while the canonical hosts are switched.
 
-`npm run launch:smoke:live` runs the browser smoke suite against
-`https://www.kozbeylikonagi.com`. Use `npm run launch:smoke:preview` only when
-the Vercel preview host needs a separate check.
+`npm run live:verify` runs the canonical-domain, browser smoke, EN/TR
+localization and real video-playback gates together against
+`https://www.kozbeylikonagi.com`. `npm run launch:smoke:live` remains available
+when only the browser smoke suite needs a narrower rerun. Use
+`npm run launch:smoke:preview` only when the Vercel preview host needs a
+separate check.
 
 Only then update `docs/evidence/canonical-domain.md` from `pending` to `ready`.
 

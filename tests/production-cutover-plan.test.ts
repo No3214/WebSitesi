@@ -652,6 +652,7 @@ describe("production cutover plan", () => {
     expect(abuseControls?.commands).toContain("npm run launch:audit:live");
     expect(hms?.commands).toContain("npm run launch:audit:live");
     expect(legal?.commands).toContain("npm run launch:audit:live");
+    expect(plan.finalVerificationCommands).toContain("npm run live:verify");
     expect(plan.finalVerificationCommands).toContain("npm run launch:audit:live:strict");
     expect(plan.finalVerificationCommands).not.toContain("npm run launch:audit:strict");
     expect(formatted).toContain("runtime: https://www.kozbeylikonagi.com/api/health: ready");
@@ -687,6 +688,7 @@ describe("production cutover plan", () => {
     expect(plan.finalVerificationCommands).toContain("npm run vercel:garanti:verify");
     expect(plan.finalVerificationCommands).toContain("npm run vercel:analytics:verify");
     expect(plan.finalVerificationCommands).toContain("npm run vercel:search:verify");
+    expect(plan.finalVerificationCommands).toContain("npm run live:verify");
     expect(plan.finalVerificationCommands).toContain("npm run launch:audit:strict");
     expect(plan.finalVerificationCommands).not.toContain("npm run launch:audit:live:strict");
     expect(plan.finalVerificationCommands).toContain("npm run release:verify");

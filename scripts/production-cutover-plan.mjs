@@ -465,6 +465,7 @@ export function buildProductionCutoverPlan({
       "npm run vercel:commercial:verify",
       "npm run vercel:env:values:strict",
       "npm run domain:verify:strict",
+      "npm run live:verify",
       "npm run vercel:supabase:verify",
       "npm run vercel:abuse:verify",
       "npm run vercel:hms:verify",

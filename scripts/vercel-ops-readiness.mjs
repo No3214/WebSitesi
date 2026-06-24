@@ -15,6 +15,7 @@ const REQUIRED_PROJECT = {
 const REQUIRED_SCRIPTS = [
   "domain:verify",
   "domain:verify:strict",
+  "live:verify",
   "launch:smoke:live",
   "release:verify",
 ];

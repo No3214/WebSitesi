@@ -187,6 +187,7 @@ export function buildReadinessSummary({
     nextActions: buildNextActions(summary),
     finalVerificationCommands: [
       "npm run readiness:summary:json",
+      "npm run live:verify",
       "npm run domain:verify:strict",
       "npm run github:ci:strict",
       "npm run launch:audit:live:strict",
