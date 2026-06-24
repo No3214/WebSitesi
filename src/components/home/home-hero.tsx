@@ -9,6 +9,7 @@ import { publicEnv } from "@/lib/public-env";
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
 const HERO_VIDEO_SRC = "/videos/hero.mp4";
+const HERO_MOBILE_VIDEO_SRC = "/videos/hero-mobile.mp4";
 
 /**
  * Hero arka plan videosu:
@@ -21,6 +22,7 @@ const HERO_VIDEO_SRC = "/videos/hero.mp4";
 function HeroVideo({ locale }: Pick<Props, "locale">) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const userPausedRef = useRef(false);
+  const [activeSource, setActiveSource] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackBlocked, setPlaybackBlocked] = useState(false);
 
@@ -40,6 +42,20 @@ function HeroVideo({ locale }: Pick<Props, "locale">) {
       setIsPlaying(false);
       setPlaybackBlocked(true);
     }
+  }, []);
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia("(max-width: 767px)");
+    const chooseSource = () => {
+      setActiveSource(mobileQuery.matches ? HERO_MOBILE_VIDEO_SRC : HERO_VIDEO_SRC);
+    };
+
+    chooseSource();
+    mobileQuery.addEventListener("change", chooseSource);
+
+    return () => {
+      mobileQuery.removeEventListener("change", chooseSource);
+    };
   }, []);
 
   const togglePlayback = () => {
@@ -72,7 +88,7 @@ function HeroVideo({ locale }: Pick<Props, "locale">) {
       if (document.visibilityState === "visible") void start();
     };
 
-    void start();
+    if (activeSource) void start();
     timers.push(
       window.setTimeout(tryStart, 300),
       window.setTimeout(tryStart, 900),
@@ -89,7 +105,7 @@ function HeroVideo({ locale }: Pick<Props, "locale">) {
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("pointerdown", tryStart);
     };
-  }, [start]);
+  }, [activeSource, start]);
 
   const controlLabel =
     locale === "tr"
@@ -110,6 +126,9 @@ function HeroVideo({ locale }: Pick<Props, "locale">) {
         loop
         playsInline
         preload="auto"
+        src={activeSource || undefined}
+        data-desktop-src={HERO_VIDEO_SRC}
+        data-mobile-src={HERO_MOBILE_VIDEO_SRC}
         poster="/images/hero-video-poster-1280.webp"
         aria-hidden
         tabIndex={-1}
@@ -126,7 +145,6 @@ function HeroVideo({ locale }: Pick<Props, "locale">) {
           setPlaybackBlocked(true);
         }}
       >
-        <source src={HERO_VIDEO_SRC} type="video/mp4" />
       </video>
       <button
         type="button"

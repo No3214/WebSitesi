@@ -9,7 +9,8 @@
 //  - Stok/generic/uretilmis gorsel YOK.
 //  - Misafir/cift yuzu ana urun veya OG gorseli olamaz (izin riski).
 //  - Hero loop premium uzunlukta olmali: 15.78s montaj hero.mp4 onaylidir;
-//    2.75s hero-property.mp4 klibi superseded (sadece tarihsel/turev).
+//    mobilde ayni gercek montajin 720x1280 turevi kullanilir; 2.75s
+//    hero-property.mp4 klibi superseded (sadece tarihsel/turev).
 
 export type MediaRole =
   | "hero-video"
@@ -48,6 +49,16 @@ export const mediaManifest: MediaAsset[] = [
     approved: true,
     sha256:
       "62bb0b9fc0c71912913d763d1446a768e0718f4f9da689e76c4fe41d6f8b371e",
+  },
+  {
+    path: "/videos/hero-mobile.mp4",
+    page: "/",
+    topic: "Tas konak montaji mobil turev",
+    role: "hero-video",
+    source: "hero.mp4 kaynak montajindan 720x1280 mobil encode",
+    approved: true,
+    sha256:
+      "5fe89e7ae4e96498278c79ad83a1f587594f0a714105587565d660521e028cc9",
   },
   {
     path: "/images/hero-video-poster-1280.webp",

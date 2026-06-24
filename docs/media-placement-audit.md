@@ -16,7 +16,7 @@ desktop/mobile playback contract before a release is accepted.
 
 - Do not use generated, stock-like, or uncertain venue imagery for product sections.
 - Use existing site videos only where the video content matches the section:
-  - Homepage: `/videos/hero.mp4` — 15.78s high-quality cinematic montage (1280x2276, ~3.39 Mbps; stone exterior + atmosphere). The LCP poster (`hero-video-poster-*`) already fixes the first-paint on the exterior, so the longer montage is the premium loop. The 2.75s `/videos/hero-property.mp4` exterior clip is **superseded** (too short to loop premium) and kept only as a historical derivative.
+  - Homepage: `/videos/hero.mp4` — 15.78s high-quality cinematic montage (1280x2276, ~3.39 Mbps; stone exterior + atmosphere). Mobile viewports use `/videos/hero-mobile.mp4`, a 720x1280 derivative from the same approved montage (~1.65 Mbps, 3.25 MB) to reduce first-visit bandwidth while preserving the desktop fallback. The LCP poster (`hero-video-poster-*`) already fixes the first-paint on the exterior, so the longer montage is the premium loop. The 2.75s `/videos/hero-property.mp4` exterior clip is **superseded** (too short to loop premium) and kept only as a historical derivative.
   - Gastronomy: `/videos/kahvalti.mp4`, `/videos/mihlama.mp4`, `/videos/chef.mp4`
   - History/atmosphere: `/videos/sunset.mp4`
 - Do not present Instagram screenshot/PDF tiles as real videos. Reels covers can only be used as still references unless the original video file exists in `public/videos`.
@@ -27,7 +27,8 @@ desktop/mobile playback contract before a release is accepted.
 | Placement | Asset | Source basis | Reason |
 | --- | --- | --- | --- |
 | Homepage hero poster | `/images/hero-video-poster-1280.webp` | Exterior frame from `/videos/hero.mp4` | Keeps poster and intro video consistent; carries the exterior-first LCP impression. |
-| Homepage hero video | `/videos/hero.mp4` | Kozbeyli/Emergent high-quality montage (2026-06-18) | 15.78s, 1280x2276, ~3.39 Mbps cinematic loop; supersedes the 2.75s `hero-property.mp4` clip and the prior 720x1280 compressed derivative. |
+| Homepage hero video | `/videos/hero.mp4` | Kozbeyli/Emergent high-quality montage (2026-06-18) | 15.78s, 1280x2276, ~3.39 Mbps cinematic loop; desktop/premium fallback. |
+| Homepage hero mobile video | `/videos/hero-mobile.mp4` | Derived from `/videos/hero.mp4` with ffmpeg, no synthetic media | 15.78s, 720x1280, ~1.65 Mbps, 3.25 MB; selected on mobile viewports before the desktop MP4 fallback. |
 | Organization wedding card | `/images/organizasyonlar/butik-dugun.jpg` | Kozbeyli wedding presentation PDF | Shows real terrace wedding table setup and view. |
 | Organization wedding detail media | `/images/organizasyonlar/teras-davet.jpg` and `/images/organizasyonlar/butik-dugun.jpg` | Kozbeyli wedding presentation PDF | Uses real event setup instead of unrelated decorative video. |
 | Organization wedding gallery | `/images/organizasyonlar/teras-davet.jpg`, `/images/organizasyonlar/butik-dugun.jpg`, `/images/organizasyonlar/dugun/dugun-4.jpg`, `/images/organizasyonlar/dugun/dugun-3.jpg` | Kozbeyli wedding presentation PDF | Opens with venue/table/product context; keeps close-detail images only when no face or clear personal identity is shown. |
@@ -68,6 +69,7 @@ current extraction auditable.
 | `kozkon belgeler düğün şirket/Kozbeyli Konağı Toplantı Konaklama.pdf` | `215BD15E6CBDF68D6769C7CBD44EAB8B025F225A2C4894D7F63DAF8AD826BEAA` |
 | `Downloads/screencapture-instagram-kozbeylikonagi-2026-06-13-13_06_01.pdf` | `9781225E83FDB03AC6E83D5325F9F680E348262ED1D4D5DC7FFA323A4D93CBA0` |
 | `public/videos/hero.mp4` | `62BB0B9FC0C71912913D763D1446A768E0718F4F9DA689E76C4FE41D6F8B371E` |
+| `public/videos/hero-mobile.mp4` | `5FE89E7AE4E96498278C79AD83A1F587594F0A714105587565D660521E028CC9` |
 | `public/videos/hero-property.mp4` | `8CED7C302B0F684732C0F695958FBDA86EC07A5D630C558AF2F2B8FBED3DAD37` |
 | `public/images/hero-video-poster.jpg` | `3ADB687855ACC49FAA0E26EE975A3E175FCB28AA5FD3DC2E0D263E9421305180` |
 | `public/images/organizasyonlar/butik-dugun.jpg` | `5B7294E32076ECA11014009732E8F39793DFF8B7A26820B3BD16F9E61F94956F` |

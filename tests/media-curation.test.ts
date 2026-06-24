@@ -38,6 +38,10 @@ describe("media curation contract", () => {
   it("ana sayfa hero onayli montaj hero.mp4'u kullanir (hero-property superseded)", () => {
     const homeHero = read("src/components/home/home-hero.tsx");
     expect(homeHero).toContain('HERO_VIDEO_SRC = "/videos/hero.mp4"');
+    expect(homeHero).toContain('HERO_MOBILE_VIDEO_SRC = "/videos/hero-mobile.mp4"');
+    expect(homeHero).toContain('window.matchMedia("(max-width: 767px)")');
+    expect(homeHero).toContain("data-desktop-src={HERO_VIDEO_SRC}");
+    expect(homeHero).toContain("data-mobile-src={HERO_MOBILE_VIDEO_SRC}");
     expect(homeHero).not.toContain("hero-property.mp4");
   });
 

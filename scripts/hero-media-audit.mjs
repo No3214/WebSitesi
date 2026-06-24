@@ -8,6 +8,8 @@ const root = process.cwd();
 export const HERO_MEDIA_EXPECTATION = {
   videoPath: "public/videos/hero.mp4",
   publicVideoPath: "/videos/hero.mp4",
+  mobileVideoPath: "public/videos/hero-mobile.mp4",
+  publicMobileVideoPath: "/videos/hero-mobile.mp4",
   posterPaths: [
     "public/images/hero-video-poster-640.webp",
     "public/images/hero-video-poster-960.webp",
@@ -15,12 +17,17 @@ export const HERO_MEDIA_EXPECTATION = {
     "public/images/hero-video-poster-1440.webp",
   ],
   sha256: "62bb0b9fc0c71912913d763d1446a768e0718f4f9da689e76c4fe41d6f8b371e",
+  mobileSha256: "5fe89e7ae4e96498278c79ad83a1f587594f0a714105587565d660521e028cc9",
   width: 1280,
   height: 2276,
+  mobileWidth: 720,
+  mobileHeight: 1280,
   minDurationSec: 15.7,
   maxDurationSec: 15.9,
   minBitrateBps: 3_000_000,
   minSizeBytes: 6_000_000,
+  minMobileBitrateBps: 1_400_000,
+  maxMobileSizeBytes: 3_600_000,
   minPosterSizeBytes: 35_000,
   activeVideoAssets: [
     {
@@ -269,7 +276,9 @@ export function auditHeroMedia(options = {}) {
   const expected = options.expected || HERO_MEDIA_EXPECTATION;
   const checks = [];
   let metadata = null;
+  let mobileMetadata = null;
   let hash = null;
+  let mobileHash = null;
   const structures = {};
   const activeVideoMetadata = {};
 
@@ -321,6 +330,57 @@ export function auditHeroMedia(options = {}) {
       "Hero video bitrate stays above the visible quality floor",
       Boolean(metadata.bitrateBps && metadata.bitrateBps >= expected.minBitrateBps),
       metadata.bitrateBps ? `${metadata.bitrateBps} bps` : "bitrate unavailable",
+    );
+  }
+
+  const mobileVideoExists = exists(expected.mobileVideoPath, baseDir);
+  check(checks, "hero_mobile_video_file", "Hero mobile video derivative is present", mobileVideoExists, expected.mobileVideoPath);
+
+  if (mobileVideoExists) {
+    const mobileVideo = read(expected.mobileVideoPath, baseDir);
+    mobileMetadata = parseMp4Metadata(mobileVideo);
+    structures[expected.mobileVideoPath] = checkMp4PlaybackStructure(
+      checks,
+      "hero_mobile_video",
+      "Hero mobile video",
+      mobileVideo,
+    );
+    mobileHash = crypto.createHash("sha256").update(mobileVideo).digest("hex");
+
+    check(
+      checks,
+      "hero_mobile_video_hash",
+      "Hero mobile derivative matches the approved media manifest hash",
+      mobileHash === expected.mobileSha256,
+      mobileHash ? `${mobileHash.slice(0, 12)}...` : "missing hash",
+    );
+    check(
+      checks,
+      "hero_mobile_video_size",
+      "Hero mobile derivative stays within the mobile performance budget",
+      mobileMetadata.sizeBytes <= expected.maxMobileSizeBytes,
+      `${mobileMetadata.sizeBytes} bytes`,
+    );
+    check(
+      checks,
+      "hero_mobile_video_dimensions",
+      "Hero mobile derivative keeps the approved mobile vertical resolution",
+      mobileMetadata.width === expected.mobileWidth && mobileMetadata.height === expected.mobileHeight,
+      `${mobileMetadata.width || "?"}x${mobileMetadata.height || "?"}`,
+    );
+    check(
+      checks,
+      "hero_mobile_video_duration",
+      "Hero mobile derivative keeps the approved 15.78s cinematic loop length",
+      Boolean(mobileMetadata.durationSec && mobileMetadata.durationSec >= expected.minDurationSec && mobileMetadata.durationSec <= expected.maxDurationSec),
+      mobileMetadata.durationSec ? `${mobileMetadata.durationSec.toFixed(3)}s` : "duration unavailable",
+    );
+    check(
+      checks,
+      "hero_mobile_video_bitrate",
+      "Hero mobile derivative stays above the mobile visible quality floor",
+      Boolean(mobileMetadata.bitrateBps && mobileMetadata.bitrateBps >= expected.minMobileBitrateBps),
+      mobileMetadata.bitrateBps ? `${mobileMetadata.bitrateBps} bps` : "bitrate unavailable",
     );
   }
 
@@ -407,9 +467,14 @@ export function auditHeroMedia(options = {}) {
   check(
     checks,
     "hero_component_source",
-    "Homepage hero uses the approved opening video asset",
-    homeHero.includes(`HERO_VIDEO_SRC = "${expected.publicVideoPath}"`) && !homeHero.includes("hero-property.mp4"),
-    expected.publicVideoPath,
+    "Homepage hero uses the approved opening video assets",
+    homeHero.includes(`HERO_VIDEO_SRC = "${expected.publicVideoPath}"`) &&
+      homeHero.includes(`HERO_MOBILE_VIDEO_SRC = "${expected.publicMobileVideoPath}"`) &&
+      homeHero.includes('window.matchMedia("(max-width: 767px)")') &&
+      homeHero.includes("data-desktop-src={HERO_VIDEO_SRC}") &&
+      homeHero.includes("data-mobile-src={HERO_MOBILE_VIDEO_SRC}") &&
+      !homeHero.includes("hero-property.mp4"),
+    `${expected.publicMobileVideoPath} + ${expected.publicVideoPath}`,
   );
   check(
     checks,
@@ -438,9 +503,11 @@ export function auditHeroMedia(options = {}) {
     status: failures.length === 0 ? "PASS" : "FAIL",
     expected,
     metadata,
+    mobileMetadata,
     activeVideoMetadata,
     structures,
     sha256: hash,
+    mobileSha256: mobileHash,
     checks,
     failures,
   };
@@ -459,7 +526,14 @@ export function formatHeroMediaAudit(result) {
     );
   }
 
+  if (result.mobileMetadata) {
+    lines.push(
+      `Mobile metadata: ${result.mobileMetadata.width}x${result.mobileMetadata.height}, ${result.mobileMetadata.durationSec?.toFixed(3)}s, ${result.mobileMetadata.bitrateBps} bps, ${result.mobileMetadata.sizeBytes} bytes`,
+    );
+  }
+
   if (result.sha256) lines.push(`SHA-256: ${result.sha256}`);
+  if (result.mobileSha256) lines.push(`Mobile SHA-256: ${result.mobileSha256}`);
   lines.push("");
 
   for (const item of result.checks) {

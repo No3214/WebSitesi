@@ -8,8 +8,12 @@ type HeroMediaModule = {
   HERO_MEDIA_EXPECTATION: {
     videoPath: string;
     sha256: string;
+    mobileSha256: string;
     width: number;
     height: number;
+    mobileWidth: number;
+    mobileHeight: number;
+    mobileVideoPath: string;
     activeVideoAssets: Array<{ id: string; videoPath: string }>;
   };
   inspectMp4Structure: (buffer: Buffer) => {
@@ -29,9 +33,16 @@ type HeroMediaModule = {
   auditHeroMedia: () => {
     status: "PASS" | "FAIL";
     sha256: string | null;
+    mobileSha256: string | null;
     metadata: {
       width?: number;
       height?: number;
+    } | null;
+    mobileMetadata: {
+      width?: number;
+      height?: number;
+      sizeBytes: number;
+      bitrateBps?: number;
     } | null;
     activeVideoMetadata: Record<string, { width?: number; height?: number }>;
     structures: Record<string, { firstBoxType?: string; moovBeforeMdat: boolean }>;
@@ -99,14 +110,24 @@ describe("hero media audit", () => {
     expect(result.status).toBe("PASS");
     expect(result.failures).toEqual([]);
     expect(result.sha256).toBe(HERO_MEDIA_EXPECTATION.sha256);
+    expect(result.mobileSha256).toBe(HERO_MEDIA_EXPECTATION.mobileSha256);
     expect(result.metadata).toMatchObject({
       width: HERO_MEDIA_EXPECTATION.width,
       height: HERO_MEDIA_EXPECTATION.height,
     });
+    expect(result.mobileMetadata).toMatchObject({
+      width: HERO_MEDIA_EXPECTATION.mobileWidth,
+      height: HERO_MEDIA_EXPECTATION.mobileHeight,
+      sizeBytes: 3_248_055,
+    });
+    expect(result.mobileMetadata?.bitrateBps).toBeGreaterThanOrEqual(1_400_000);
     expect(result.checks.map((check) => check.id)).toEqual(
       expect.arrayContaining([
         "hero_video_hash",
         "hero_video_mp4_fast_start",
+        "hero_mobile_video_hash",
+        "hero_mobile_video_mp4_fast_start",
+        "hero_mobile_video_size",
         "hero_video_dimensions",
         "hero_video_duration",
         "hero_video_bitrate",
@@ -124,7 +145,10 @@ describe("hero media audit", () => {
     expect(formatted).toContain("Kozbeyli Konagi hero media audit");
     expect(formatted).toContain("RESULT PASS");
     expect(formatted).toContain("1280x2276");
+    expect(formatted).toContain("720x1280");
     expect(formatted).toContain("hero_video_bitrate");
+    expect(formatted).toContain("hero_mobile_video_size");
     expect(formatted).toContain(HERO_MEDIA_EXPECTATION.sha256);
+    expect(formatted).toContain(HERO_MEDIA_EXPECTATION.mobileSha256);
   });
 });

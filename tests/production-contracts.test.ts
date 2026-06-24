@@ -1707,8 +1707,13 @@ describe("production readiness contracts", () => {
     // oynayan videoyu opacity:0'da birakmamali.
     expect(homeHero).toContain('preload="auto"');
     // Onayli hero asseti kilitle: 15.78s montaj hero.mp4 (eski 2.75s hero-property
-    // klibi superseded). Bkz docs/media-placement-audit.md.
+    // klibi superseded). Mobilde ayni gercek montajin 720x1280 turevi kullanilir.
+    // Bkz docs/media-placement-audit.md.
     expect(homeHero).toContain('HERO_VIDEO_SRC = "/videos/hero.mp4"');
+    expect(homeHero).toContain('HERO_MOBILE_VIDEO_SRC = "/videos/hero-mobile.mp4"');
+    expect(homeHero).toContain('window.matchMedia("(max-width: 767px)")');
+    expect(homeHero).toContain("data-desktop-src={HERO_VIDEO_SRC}");
+    expect(homeHero).toContain("data-mobile-src={HERO_MOBILE_VIDEO_SRC}");
     expect(homeHero).not.toContain("hero-property.mp4");
     expect(homeHero).not.toContain("HERO_VIDEO_BOOT_DELAY_MS");
     expect(homeHero).not.toContain("requestIdleCallback");

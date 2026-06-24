@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-async function waitForHeroVideoSource(page: import("@playwright/test").Page) {
+async function waitForHeroVideoSource(page: import("@playwright/test").Page, expectedSource: string) {
   await expect
     .poll(
       async () =>
@@ -10,11 +10,11 @@ async function waitForHeroVideoSource(page: import("@playwright/test").Page) {
         }),
       { timeout: 15000 }
     )
-    .toContain("/videos/hero.mp4");
+    .toContain(expectedSource);
 }
 
-async function expectHeroVideoPlaying(page: import("@playwright/test").Page) {
-  await waitForHeroVideoSource(page);
+async function expectHeroVideoPlaying(page: import("@playwright/test").Page, expectedSource = "/videos/hero.mp4") {
+  await waitForHeroVideoSource(page, expectedSource);
   await expect
     .poll(
       async () =>
@@ -32,8 +32,11 @@ async function expectHeroVideoPlaying(page: import("@playwright/test").Page) {
     .toBe(true);
 }
 
-async function expectHeroVideoQuality(page: import("@playwright/test").Page) {
-  await waitForHeroVideoSource(page);
+async function expectHeroVideoQuality(
+  page: import("@playwright/test").Page,
+  expected: { width: number; height: number; source?: string } = { width: 1280, height: 2276, source: "/videos/hero.mp4" },
+) {
+  await waitForHeroVideoSource(page, expected.source ?? "/videos/hero.mp4");
   await expect
     .poll(
       async () =>
@@ -48,8 +51,8 @@ async function expectHeroVideoQuality(page: import("@playwright/test").Page) {
       { timeout: 15000 }
     )
     .toMatchObject({
-      width: 1280,
-      height: 2276,
+      width: expected.width,
+      height: expected.height,
       readyState: expect.any(Number),
     });
 }
@@ -75,8 +78,8 @@ test.describe("Homepage hero video", () => {
     await expect(page.locator(".hero h1")).toBeVisible({ timeout: 15000 });
     await expect(page.locator(".hero h1")).toContainText("Tarihin Kalbinde");
     await expect(page.locator(".hero-title-accent")).toContainText("Zarif Bir Ege Kaçamağı");
-    await expectHeroVideoPlaying(page);
-    await expectHeroVideoQuality(page);
+    await expectHeroVideoPlaying(page, "/videos/hero.mp4");
+    await expectHeroVideoQuality(page, { width: 1280, height: 2276, source: "/videos/hero.mp4" });
 
     const videoToggle = page.getByTestId("hero-video-toggle");
     await expect(videoToggle).toBeVisible();
@@ -87,7 +90,7 @@ test.describe("Homepage hero video", () => {
     await expect(videoToggle).toHaveAttribute("aria-label", "Açılış videosunu oynat");
 
     await videoToggle.click();
-    await expectHeroVideoPlaying(page);
+    await expectHeroVideoPlaying(page, "/videos/hero.mp4");
     await expect(videoToggle).toHaveAttribute("aria-label", "Açılış videosunu duraklat");
   });
 
@@ -96,8 +99,8 @@ test.describe("Homepage hero video", () => {
     await page.goto("/", { waitUntil: "domcontentloaded" });
 
     await expect(page.locator(".hero h1")).toBeVisible({ timeout: 15000 });
-    await expectHeroVideoPlaying(page);
-    await expectHeroVideoQuality(page);
+    await expectHeroVideoPlaying(page, "/videos/hero-mobile.mp4");
+    await expectHeroVideoQuality(page, { width: 720, height: 1280, source: "/videos/hero-mobile.mp4" });
     const accentBounds = await page.locator(".hero-title-accent").evaluate((element) => {
       const rect = element.getBoundingClientRect();
       return { left: rect.left, right: rect.right, viewportWidth: window.innerWidth };
