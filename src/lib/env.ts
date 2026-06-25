@@ -21,6 +21,7 @@ const rawEnvSchema = z.object({
   GA4_MEASUREMENT_ID: z.string().optional(),
   GA4_API_SECRET: z.string().optional(),
   META_CAPI_ACCESS_TOKEN: z.string().optional(),
+  META_CAPI_TEST_EVENT_CODE: z.string().optional(),
 });
 
 const raw = rawEnvSchema.parse(process.env);
@@ -63,6 +64,9 @@ export const env = {
   // Meta Conversions API (server-side Purchase). Pixel ID public, ama erisim
   // token'i SIR'dir → yalniz Vercel env. Bos ise modul sessizce no-op.
   META_CAPI_ACCESS_TOKEN: raw.META_CAPI_ACCESS_TOKEN || "",
+  // Doluysa Meta CAPI istekleri test_event_code ile gider → Events Manager >
+  // Test Events'te canli dogrulama. Uretimde BOS birakilir.
+  META_CAPI_TEST_EVENT_CODE: raw.META_CAPI_TEST_EVENT_CODE || "",
 };
 
 export function getAllowedOrigins() {

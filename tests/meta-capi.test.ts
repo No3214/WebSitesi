@@ -63,6 +63,27 @@ describe("meta-capi (Conversions API)", () => {
     expect(String(init.body)).not.toMatch(/email|phone|user_data|"em"|"ph"/i);
   });
 
+  it("META_CAPI_TEST_EVENT_CODE doluysa body'ye test_event_code ekler, boşsa eklemez", async () => {
+    setConfigured();
+    process.env.META_CAPI_TEST_EVENT_CODE = "TEST12345";
+    const fetchSpy = vi.fn().mockResolvedValue({ status: 200 });
+    vi.stubGlobal("fetch", fetchSpy);
+    const { sendMetaPurchase } = await import("@/lib/meta-capi");
+    await sendMetaPurchase({ transactionId: "RES-T", value: 5, currency: "TRY" });
+    const body = JSON.parse(String((fetchSpy.mock.calls[0] as [string, RequestInit])[1].body));
+    expect(body.test_event_code).toBe("TEST12345");
+
+    // boşken eklenmemeli
+    vi.resetModules();
+    delete process.env.META_CAPI_TEST_EVENT_CODE;
+    const fetchSpy2 = vi.fn().mockResolvedValue({ status: 200 });
+    vi.stubGlobal("fetch", fetchSpy2);
+    const { sendMetaPurchase: send2 } = await import("@/lib/meta-capi");
+    await send2({ transactionId: "RES-U", value: 5, currency: "TRY" });
+    const body2 = JSON.parse(String((fetchSpy2.mock.calls[0] as [string, RequestInit])[1].body));
+    expect(body2.test_event_code).toBeUndefined();
+  });
+
   it("fetch hata fırlatırsa throw ETMEZ, false döner", async () => {
     setConfigured();
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));

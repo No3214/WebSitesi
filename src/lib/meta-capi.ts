@@ -45,7 +45,7 @@ export async function sendMetaPurchase(input: MetaPurchaseInput): Promise<boolea
   const value = Number.isFinite(input.value) ? Math.max(0, input.value) : 0;
   const currency = (input.currency || "TRY").toUpperCase().slice(0, 3);
 
-  const body = {
+  const body: Record<string, unknown> = {
     data: [
       {
         event_name: "Purchase",
@@ -62,6 +62,10 @@ export async function sendMetaPurchase(input: MetaPurchaseInput): Promise<boolea
       },
     ],
   };
+  // Test modu: doluysa Events Manager > Test Events'te gorunur (uretimde bos).
+  if (env.META_CAPI_TEST_EVENT_CODE) {
+    body.test_event_code = env.META_CAPI_TEST_EVENT_CODE;
+  }
 
   const url =
     `https://graph.facebook.com/${META_GRAPH_VERSION}/` +
