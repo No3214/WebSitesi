@@ -41,3 +41,8 @@ gate-w6.log
 
 # Serena tool cache (memories versiyonlanir)
 .serena/cache/
+
+# stray uploads / referans dokumanlar (repoya girmesin)
+AGENTS(*).md
+codex-site-gelistirme-master-prompt.md
+jules_session_*.zip
