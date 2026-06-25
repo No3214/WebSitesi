@@ -171,7 +171,7 @@ function writeEvidence(baseDir: string, relPath: string, status = "ready") {
       `status: ${status}`,
       "date: 2026-06-14",
       "owner: launch-qa",
-      "source_refs: OPS-1234, UAT-5678",
+      "source_refs: OPS-LAUNCH-20260614, UAT-COMMERCIAL-20260614",
       "",
       "## Summary",
       "Redacted operational evidence confirms this launch gate was validated in the source system.",
@@ -634,6 +634,43 @@ describe("commercial launch audit", () => {
         reason: "missing source refs",
       },
     ]);
+  });
+
+  it("blocks ready evidence that copies template source reference examples", async () => {
+    const audit = await loadAuditModule();
+    const baseDir = makeTmpDir();
+    const env = makeReadyEnv(audit);
+
+    for (const gate of audit.commercialLaunchGates) {
+      for (const evidence of gate.evidence) writeEvidence(baseDir, evidence);
+    }
+
+    const hmsPath = path.join(baseDir, "docs/evidence/hms-booking-engine.md");
+    fs.writeFileSync(
+      hmsPath,
+      fs
+        .readFileSync(hmsPath, "utf8")
+        .replace(
+          /^source_refs:.*$/m,
+          "source_refs: OPS-1234, UAT-5678, VERCEL:ENV-20260623",
+        ),
+    );
+
+    const result = audit.evaluateCommercialLaunch({ env, baseDir });
+    const hmsGate = result.gateResults.find((gate) => gate.id === "hms_booking_engine");
+    const formatted = audit.formatCommercialLaunchReport(result);
+
+    expect(result.score).toBeLessThan(100);
+    expect(hmsGate?.ready).toBe(false);
+    expect(hmsGate?.missingEvidence).toEqual([
+      {
+        path: "docs/evidence/hms-booking-engine.md",
+        ready: false,
+        reason: "example source refs",
+      },
+    ]);
+    expect(formatted).toContain("example source refs");
+    expect(formatted).not.toContain("postgresql://");
   });
 
   it("blocks ready evidence that points source references at raw URLs or files", async () => {

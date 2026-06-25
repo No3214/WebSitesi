@@ -112,6 +112,7 @@ function buildTemplateMarkdown(template) {
     "date: YYYY-MM-DD",
     `owner: ${template.owner}`,
     "source_refs: OPS-1234, UAT-5678, VERCEL:ENV-20260623",
+    "<Replace the example source_refs above before changing status to ready. Copied examples are rejected by the launch audit.>",
     "",
     "## Operational Goal",
     template.operationalGoal,

@@ -349,7 +349,7 @@ function writeEvidence(baseDir: string, relPath: string) {
       "status: ready",
       "date: 2026-06-23",
       "owner: launch-qa",
-      "source_refs: OPS-1234, UAT-5678",
+      "source_refs: OPS-STANDUP-20260614, UAT-COMMERCIAL-20260614",
       "",
       "## Summary",
       "Redacted operational evidence confirms this launch gate was validated in the source system.",

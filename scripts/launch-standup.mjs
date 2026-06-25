@@ -14,7 +14,7 @@ import { buildVercelEnvSetupGuidance } from "./vercel-env-operator-guidance.mjs"
 const gateCatalog = new Map(commercialLaunchGates.map((gate) => [gate.id, gate]));
 
 const sourceRefsPolicy =
-  "Use only redacted source-system IDs such as OPS-1234, UAT-5678 or VERCEL:ENV-20260623; never raw URLs, local files, screenshots, credentials, database URLs, access tokens, contracts, card data, bank account details or customer PII.";
+  "Use real redacted source-system IDs from the provider/operator system. OPS-1234, UAT-5678 and VERCEL:ENV-20260623 are format examples only; never use copied examples, never raw URLs, local files, screenshots, credentials, database URLs, access tokens, contracts, card data, bank account details or customer PII.";
 
 function unique(values) {
   return [...new Set(values.filter(Boolean))];

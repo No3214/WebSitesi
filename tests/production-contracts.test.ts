@@ -705,6 +705,8 @@ describe("production readiness contracts", () => {
     expect(auditScript).toContain("source_refs");
     expect(auditScript).toContain("missing source refs");
     expect(auditScript).toContain("unsafe source refs");
+    expect(auditScript).toContain("example source refs");
+    expect(auditScript).toContain("exampleSourceRefs");
     expect(auditScript).toContain("future evidence date");
     expect(auditScript).toContain("stale evidence date");
     expect(auditScript).toContain("scanEvidenceSource");
@@ -715,8 +717,11 @@ describe("production readiness contracts", () => {
     expect(evidenceReadme).toContain("Ready evidence must include redacted source-system references");
     expect(evidenceReadme).toContain("raw URLs");
     expect(evidenceReadme).toContain("OPS-1234");
+    expect(evidenceReadme).toContain("format examples only");
+    expect(evidenceReadme).toContain("uses the exact template examples");
     expect(evidenceReadme).toContain("more than 45 days old");
     expect(evidenceHandoff).toContain("previous 45 days");
+    expect(evidenceHandoff).toContain("format examples only");
 
     const pendingEvidence = [
       "hms-booking-engine.md",

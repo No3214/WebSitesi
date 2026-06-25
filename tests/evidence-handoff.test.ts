@@ -270,7 +270,7 @@ function writeEvidence(baseDir: string, relPath: string) {
       "status: ready",
       "date: 2026-06-21",
       "owner: launch-qa",
-      "source_refs: OPS-1234, UAT-5678",
+      "source_refs: OPS-HANDOFF-20260614, UAT-COMMERCIAL-20260614",
       "",
       "## Summary",
       "Redacted operational evidence confirms this launch gate was validated in the source system.",
@@ -426,7 +426,8 @@ describe("evidence handoff", () => {
       expect.arrayContaining(["npm run domain:verify:strict", "npm run launch:smoke:live"]),
     );
     expect(canonical?.requiredSections).toContain("source_refs: <redacted-source-ids>");
-    expect(canonical?.sourceRefsPolicy).toContain("only redacted source-system IDs");
+    expect(canonical?.sourceRefsPolicy).toContain("real redacted source-system IDs");
+    expect(canonical?.sourceRefsPolicy).toContain("format examples only");
     expect(canonical?.sourceRefsPolicy).toContain("never raw URLs");
     expect(canonical?.sourceRefsPolicy).toContain("database URLs");
     expect(canonical?.sourceRefsPolicy).toContain("access tokens");

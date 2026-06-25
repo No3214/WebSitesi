@@ -295,6 +295,7 @@ const requiredReadySections = ["## Summary", "## Proof", "## Residual Risk"];
 const maxReadyEvidenceAgeDays = 45;
 const blockedEvidenceFieldPattern = /^(<.*>|replace_with.*|todo|tbd|none|pending|draft)$/i;
 const sourceRefIdPattern = /^(?:[A-Z][A-Z0-9]{1,24}-[A-Z0-9][A-Z0-9_-]{1,40}|[A-Z]{2,16}:[A-Z0-9][A-Z0-9_-]{1,40})$/;
+const exampleSourceRefs = new Set(["OPS-1234", "UAT-5678", "VERCEL:ENV-20260623"]);
 const unsafeSourceRefPatterns = [
   /https?:\/\//i,
   /\b[A-Z]:[\\/]/i,
@@ -355,6 +356,9 @@ function sourceRefsIssue(rawValue) {
 
   const refs = value.split(/[;,]/).map((item) => item.trim()).filter(Boolean);
   if (refs.length === 0) return "missing source refs";
+  if (refs.some((ref) => exampleSourceRefs.has(ref.toUpperCase()))) {
+    return "example source refs";
+  }
   if (refs.some((ref) => !sourceRefIdPattern.test(ref))) {
     return "unsafe source refs";
   }
