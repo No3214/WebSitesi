@@ -117,3 +117,15 @@ export async function verifyEs256Signature(
     return false;
   }
 }
+
+/**
+ * Sanitizes JSON-LD data to prevent XSS vulnerabilities when injected via dangerouslySetInnerHTML.
+ * Ensures undefined inputs are handled to prevent runtime errors with .replace().
+ */
+export function sanitizeJsonLd(data: unknown): string {
+  if (data === undefined || data === null) {
+    return '{}';
+  }
+  const jsonStr = typeof data === 'string' ? data : JSON.stringify(data);
+  return (jsonStr || '{}').replace(/</g, '\\u003c');
+}

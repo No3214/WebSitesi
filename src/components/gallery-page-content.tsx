@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
 import { galleryExtended } from "@/data/gallery";
 import { absoluteUrl } from "@/lib/utils";
+import { sanitizeJsonLd } from "@/lib/security";
 
 type GalleryLocale = "tr" | "en";
 
@@ -45,7 +46,7 @@ export function GalleryPageContent({ locale = "tr" }: { locale?: GalleryLocale }
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGalleryJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(imageGalleryJsonLd) }}
       />
       <SiteHeader />
       <main>

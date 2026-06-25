@@ -13,6 +13,7 @@ import {
 } from "@/lib/contact";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { absoluteUrl } from "@/lib/utils";
+import { sanitizeJsonLd } from "@/lib/security";
 
 type LocationLocale = "tr" | "en";
 
@@ -101,7 +102,7 @@ export function LocationPageContent({ locale }: { locale: LocationLocale }) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(jsonLd) }} />
       <SiteHeader variant="solid" />
       <PageHero eyebrow={t.eyebrow} title={t.title} text={t.text} />
       <main className="section location-page" id="icerik-lokasyon" style={{ paddingTop: 56 }}>
