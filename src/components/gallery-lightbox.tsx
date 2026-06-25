@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent, TouchEvent as ReactTouchEvent } from "react";
+import { createPortal } from "react-dom";
 
 type Shot = { src: string; caption: { tr: string; en: string } };
 type Locale = "tr" | "en";
@@ -137,7 +138,10 @@ export function GalleryLightbox({
         ))}
       </div>
 
-      {open ? (
+      {open && typeof document !== "undefined"
+        ? createPortal(
+        // Portal document.body'ye: transform/filter uygulayan ust kapsayicilar
+        // (orn. FadeIn) position:fixed overlay'i kendi kutusuna hapsetmesin diye.
         <div
           className="gallery-lightbox"
           role="dialog"
@@ -196,8 +200,10 @@ export function GalleryLightbox({
               ›
             </button>
           ) : null}
-        </div>
-      ) : null}
+        </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 }

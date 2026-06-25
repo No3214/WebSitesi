@@ -19,6 +19,13 @@ describe("Galeri lightbox kontrati", () => {
     expect(page).toContain("shots={galleryExtended}");
   });
 
+  it("overlay createPortal ile body'ye tasinir (transform'lu ust kapsayicidan kacar)", () => {
+    const c = read(COMPONENT);
+    expect(c).toContain('import { createPortal } from "react-dom"');
+    expect(c).toContain("createPortal(");
+    expect(c).toContain("document.body");
+  });
+
   it("erisilebilir: dialog/aria-modal, klavye gezinme ve odak yonetimi", () => {
     const c = read(COMPONENT);
     expect(c).toContain('role="dialog"');
