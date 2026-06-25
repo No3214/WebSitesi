@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/site-header";
 import { PageHero } from "@/components/page-hero";
 import { ReservationClient } from "@/components/reservation-client";
+import { ReviewBanner } from "@/components/reviews/review-banner";
 import { getDictionary } from "@/lib/dictionary";
 import { getLocalizedRoom, rooms } from "@/data/rooms";
 import { absoluteUrl } from "@/lib/utils";
@@ -76,6 +77,9 @@ export async function ReservationPageContent({
         text={copy.text}
       />
       <main className="section" style={{ paddingTop: 56 }}>
+        <div className="container" style={{ maxWidth: 900, marginBottom: 24 }}>
+          <ReviewBanner />
+        </div>
         <ReservationClient
           initialDict={initialDict}
           initialLocale={locale}

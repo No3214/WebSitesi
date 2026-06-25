@@ -65,6 +65,16 @@ export function hotelSchema() {
     },
     hasMenu: absoluteUrl("/menu"),
     ...(env.GOOGLE_MAPS_URL ? { hasMap: env.GOOGLE_MAPS_URL } : {}),
+    // sameAs: yalniz env'de gercek profil URL'leri verilmisse (uydurma URL yok).
+    // Entity netligi icindir; ucuncu-taraf yildiz/yorum yapisal verisi ASLA
+    // eklenmez (Google self-serving review politikasi → manuel ceza riski).
+    ...(() => {
+      const urls = (env.BRAND_PROFILE_URLS || "")
+        .split(",")
+        .map((u) => u.trim())
+        .filter((u) => /^https?:\/\//i.test(u));
+      return urls.length ? { sameAs: urls } : {};
+    })(),
   };
 
   const breadcrumbs = {

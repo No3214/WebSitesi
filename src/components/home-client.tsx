@@ -33,6 +33,9 @@ const ExperiencesTeaser = dynamic(() =>
 const TestimonialsSection = dynamic(() =>
   import("@/components/home/testimonials-section").then((module) => module.TestimonialsSection),
 );
+const ReviewsSection = dynamic(() =>
+  import("@/components/home/reviews-section").then((module) => module.ReviewsSection),
+);
 const BookingSection = dynamic(() =>
   import("@/components/home/booking-section").then((module) => module.BookingSection),
 );
@@ -88,6 +91,7 @@ export function HomeClient({ initialDict, initialLocale = "tr" }: HomeClientProp
         <GalleryStrip locale={locale} />
         <ExperiencesTeaser locale={locale} />
         <TestimonialsSection locale={locale} />
+        <ReviewsSection />
         <BookingSection locale={locale} eyebrow={nav.booking} />
         <FaqSection locale={locale} />
         <FinalCta locale={locale} />

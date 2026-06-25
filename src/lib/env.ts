@@ -33,6 +33,9 @@ const rawEnvSchema = z.object({
   // moderasyon uclari icin bearer secret. Bos ise ilgili uc fail-closed (503/401).
   CRON_SECRET: z.string().optional(),
   REVIEWS_ADMIN_TOKEN: z.string().optional(),
+  // JSON-LD sameAs icin resmi profil URL'leri (virgulle ayrik): Google Maps CID,
+  // Tripadvisor, Booking, Instagram vb. Bos ise sameAs eklenmez (uydurma URL yok).
+  BRAND_PROFILE_URLS: z.string().optional(),
 });
 
 const raw = rawEnvSchema.parse(process.env);
@@ -88,6 +91,7 @@ export const env = {
   // Review orchestration koruma secret'lari (bos ise ilgili uc fail-closed).
   CRON_SECRET: raw.CRON_SECRET || "",
   REVIEWS_ADMIN_TOKEN: raw.REVIEWS_ADMIN_TOKEN || "",
+  BRAND_PROFILE_URLS: raw.BRAND_PROFILE_URLS || "",
 };
 
 export function getAllowedOrigins() {
