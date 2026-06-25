@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
 import { sendGa4Purchase } from "@/lib/ga4-server";
+import { sendMetaPurchase } from "@/lib/meta-capi";
 import { getPayloadClient } from "@/lib/payload";
 import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
@@ -241,11 +242,21 @@ export async function POST(req: Request) {
     status.includes(s)
   );
   if (!isCancelled) {
+    const purchaseValue = Number(reservation.total_price) || 0;
+    const purchaseCurrency = safeText(reservation.currency_code || "TRY", 10);
+    const purchaseRoom = safeText(reservation.room_type_name || "Konaklama Rezervasyonu", 120);
     await sendGa4Purchase({
       transactionId: reservationId,
-      value: Number(reservation.total_price) || 0,
-      currency: safeText(reservation.currency_code || "TRY", 10),
-      itemName: safeText(reservation.room_type_name || "Konaklama Rezervasyonu", 120),
+      value: purchaseValue,
+      currency: purchaseCurrency,
+      itemName: purchaseRoom,
+    });
+    // Meta CAPI Purchase — ayni event_id (rezervasyon no) ile tarayici Pixel'iyle dedupe.
+    await sendMetaPurchase({
+      transactionId: reservationId,
+      value: purchaseValue,
+      currency: purchaseCurrency,
+      roomName: purchaseRoom,
     });
   }
 

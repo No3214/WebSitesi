@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { env } from "@/lib/env";
 import { sendGa4Purchase } from "@/lib/ga4-server";
+import { sendMetaPurchase } from "@/lib/meta-capi";
 import { getPayloadClient } from "@/lib/payload";
 import { logEvent } from "@/lib/logger";
 import { hasSeen, markSeen } from "@/lib/rate-limit";
@@ -223,6 +224,13 @@ export async function POST(req: Request) {
       value: Number(body.price) || 0,
       currency: safeText(body.currency || "TRY", 10),
       itemName: "Konaklama Rezervasyonu",
+    });
+    // Meta CAPI Purchase — ayni event_id (bookingId) ile tarayici Pixel'iyle dedupe.
+    await sendMetaPurchase({
+      transactionId: bookingId,
+      value: Number(body.price) || 0,
+      currency: safeText(body.currency || "TRY", 10),
+      roomName: "Konaklama Rezervasyonu",
     });
   }
 

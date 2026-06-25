@@ -20,6 +20,7 @@ const rawEnvSchema = z.object({
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().optional(),
   GA4_MEASUREMENT_ID: z.string().optional(),
   GA4_API_SECRET: z.string().optional(),
+  META_CAPI_ACCESS_TOKEN: z.string().optional(),
 });
 
 const raw = rawEnvSchema.parse(process.env);
@@ -59,6 +60,9 @@ export const env = {
   // HMS rezervasyon webhook'u purchase eventini sunucudan gönderir.
   GA4_MEASUREMENT_ID: raw.GA4_MEASUREMENT_ID || "",
   GA4_API_SECRET: raw.GA4_API_SECRET || "",
+  // Meta Conversions API (server-side Purchase). Pixel ID public, ama erisim
+  // token'i SIR'dir → yalniz Vercel env. Bos ise modul sessizce no-op.
+  META_CAPI_ACCESS_TOKEN: raw.META_CAPI_ACCESS_TOKEN || "",
 };
 
 export function getAllowedOrigins() {
