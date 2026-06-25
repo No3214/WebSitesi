@@ -1887,14 +1887,19 @@ describe("production readiness contracts", () => {
 
   it("keeps the full gallery from blocking visible image decode on optimizer or lazy-load work", () => {
     const galleryPageContent = read("src/components/gallery-page-content.tsx");
+    const galleryLightbox = read("src/components/gallery-lightbox.tsx");
     const globals = read("src/app/globals.css");
 
+    // Sayfa, eager kaynak setini tanimlar ve lightbox'a aktarir.
     expect(galleryPageContent).not.toContain('from "next/image"');
-    expect(galleryPageContent).toContain("<img");
     expect(galleryPageContent).toContain('const eagerImageSources = new Set(["/images/galeri/tas-firin-pide.jpg"])');
-    expect(galleryPageContent).toContain('loading={i < 4 || eagerImageSources.has(shot.src) ? "eager" : "lazy"}');
-    expect(galleryPageContent).toContain('decoding="async"');
-    expect(galleryPageContent).toContain('fetchPriority={i < 4 || eagerImageSources.has(shot.src) ? "high" : "auto"}');
+    expect(galleryPageContent).toContain("eager={eagerImageSources}");
+    // Goruntu decode davranisi lightbox bileseninde dogrudan <img> ile korunur.
+    expect(galleryLightbox).not.toContain('from "next/image"');
+    expect(galleryLightbox).toContain("<img");
+    expect(galleryLightbox).toContain('loading={i < 4 || eager?.has(shot.src) ? "eager" : "lazy"}');
+    expect(galleryLightbox).toContain('decoding="async"');
+    expect(galleryLightbox).toContain('fetchPriority={i < 4 || eager?.has(shot.src) ? "high" : "auto"}');
     expect(globals).toContain(".gallery-grid-item img {\n    width: 100%;\n    height: 100%;\n    display: block;");
   });
 

@@ -51,9 +51,11 @@ describe("English public copy contracts", () => {
     const englishGalleryPage = read("src/app/en/galeri/page.tsx");
     const galleryContent = read("src/components/gallery-page-content.tsx");
 
+    const galleryLightbox = read("src/components/gallery-lightbox.tsx");
     expect(englishGalleryPage).toContain("<GalleryPageContent locale=\"en\" />");
     expect(englishGalleryPage).not.toContain("export default Page");
-    expect(galleryContent).toContain("shot.caption[locale]");
+    // Yerellestirilmis basliklar lightbox bileseninde render edilir.
+    expect(galleryLightbox).toContain("shot.caption[locale]");
     expect(galleryContent).toContain("FRAMES FROM THE MANSION");
   });
 

@@ -1790,6 +1790,169 @@
     }
   }
 
+  /* ---------- Galeri lightbox (Cult/Ruixen UI fikrinden markaya uyarli) ---------- */
+  .gallery-grid-trigger {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+    overflow: hidden;
+  }
+
+  .gallery-grid-trigger:focus-visible {
+    outline: 2px solid var(--gold, #c4a265);
+    outline-offset: -3px;
+  }
+
+  .gallery-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: clamp(12px, 4vw, 48px);
+    animation: lightbox-in 0.28s var(--ease-lux, ease);
+  }
+
+  .gallery-lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    cursor: zoom-out;
+    background: rgba(28, 32, 26, 0.92);
+    backdrop-filter: blur(6px);
+  }
+
+  .gallery-lightbox-figure {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    max-width: min(1180px, 96vw);
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: lightbox-pop 0.32s var(--ease-lux, ease);
+  }
+
+  .gallery-lightbox-figure img {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 2px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .gallery-lightbox-figure figcaption {
+    color: var(--ivory, #f8f5f0);
+    text-align: center;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .gallery-lightbox-count {
+    color: var(--gold, #c4a265);
+  }
+
+  .gallery-lightbox-close,
+  .gallery-lightbox-nav {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(248, 245, 240, 0.3);
+    border-radius: 50%;
+    background: rgba(28, 32, 26, 0.55);
+    color: var(--ivory, #f8f5f0);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+
+  .gallery-lightbox-close:hover,
+  .gallery-lightbox-nav:hover {
+    background: rgba(196, 162, 101, 0.85);
+    border-color: var(--gold, #c4a265);
+  }
+
+  .gallery-lightbox-close:focus-visible,
+  .gallery-lightbox-nav:focus-visible {
+    outline: 2px solid var(--gold, #c4a265);
+    outline-offset: 2px;
+  }
+
+  .gallery-lightbox-close {
+    top: clamp(12px, 3vw, 28px);
+    right: clamp(12px, 3vw, 28px);
+  }
+
+  .gallery-lightbox-prev {
+    left: clamp(8px, 2vw, 24px);
+  }
+
+  .gallery-lightbox-next {
+    right: clamp(8px, 2vw, 24px);
+  }
+
+  @keyframes lightbox-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes lightbox-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+
+  /* Aurora hero eyebrow'unda ince altin parilti (hero efekti, saf CSS) */
+  .page-hero-aurora .eyebrow {
+    position: relative;
+    background: linear-gradient(
+      100deg,
+      var(--gold, #c4a265) 0%,
+      #e7d3a6 45%,
+      var(--gold, #c4a265) 60%,
+      var(--gold, #c4a265) 100%
+    );
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: eyebrow-shimmer 6s ease-in-out infinite;
+  }
+
+  @keyframes eyebrow-shimmer {
+    0%,
+    100% {
+      background-position: 120% 0;
+    }
+    50% {
+      background-position: -20% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gallery-lightbox,
+    .gallery-lightbox-figure {
+      animation: none;
+    }
+    .page-hero-aurora .eyebrow {
+      animation: none;
+    }
+  }
+
   /* ---------- Testimonials ---------- */
   .testimonial-grid {
     display: grid;

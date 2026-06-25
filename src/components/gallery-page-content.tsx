@@ -2,6 +2,7 @@
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
+import { GalleryLightbox } from "@/components/gallery-lightbox";
 import { galleryExtended } from "@/data/gallery";
 import { absoluteUrl } from "@/lib/utils";
 
@@ -54,21 +55,7 @@ export function GalleryPageContent({ locale = "tr" }: { locale?: GalleryLocale }
         <section className="section">
           <div className="container" style={{ width: "min(1400px, 100%)" }}>
             <FadeIn>
-              <div className="gallery-grid">
-                {galleryExtended.map((shot, i) => (
-                  <figure key={shot.src} className="gallery-grid-item" style={{ margin: 0 }}>
-                    <img
-                      src={shot.src}
-                      alt={shot.caption[locale]}
-                      className="object-cover"
-                      loading={i < 4 || eagerImageSources.has(shot.src) ? "eager" : "lazy"}
-                      decoding="async"
-                      fetchPriority={i < 4 || eagerImageSources.has(shot.src) ? "high" : "auto"}
-                    />
-                    <figcaption>{shot.caption[locale]}</figcaption>
-                  </figure>
-                ))}
-              </div>
+              <GalleryLightbox shots={galleryExtended} locale={locale} eager={eagerImageSources} />
             </FadeIn>
           </div>
         </section>
