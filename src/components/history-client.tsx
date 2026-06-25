@@ -4,6 +4,7 @@ import { StoryHero, StorySegment } from "@/components/storytelling";
 import { SiteHeader } from "@/components/site-header";
 import { LivingMuseumMap } from "@/components/living-museum-map";
 import { HeritageArchive } from "@/components/heritage-archive";
+import { HeritageTimeline } from "@/components/heritage-timeline";
 
 type Locale = "tr" | "en";
 
@@ -83,6 +84,10 @@ export function HistoryClient({ locale = "tr" }: { locale?: Locale }) {
           subtitle={copy.heroSubtitle}
         />
       </div>
+
+      <section className="py-20 px-6">
+        <HeritageTimeline locale={locale} />
+      </section>
 
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <LivingMuseumMap locale={locale} />

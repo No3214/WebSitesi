@@ -1953,6 +1953,91 @@
     }
   }
 
+  /* ---------- Heritage timeline (dogrulanmis tarihler, hairline omurga) ---------- */
+  .heritage-timeline-wrap {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .heritage-timeline-head {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .heritage-timeline-heading {
+    color: var(--olive, #505d4b);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    margin-top: 6px;
+  }
+
+  .heritage-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+
+  /* ince dikey hairline omurga */
+  .heritage-timeline::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: 7px;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(196, 162, 101, 0.55) 12%,
+      rgba(80, 93, 75, 0.4) 88%,
+      transparent
+    );
+  }
+
+  .heritage-timeline-item {
+    position: relative;
+    padding: 0 0 30px 38px;
+  }
+
+  .heritage-timeline-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .heritage-timeline-dot {
+    position: absolute;
+    left: 1px;
+    top: 5px;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--ivory, #f8f5f0);
+    border: 2px solid var(--gold, #c4a265);
+    box-shadow: 0 0 0 4px rgba(196, 162, 101, 0.12);
+  }
+
+  .heritage-timeline-year {
+    display: inline-block;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold, #c4a265);
+    margin-bottom: 4px;
+  }
+
+  .heritage-timeline-title {
+    color: var(--olive, #505d4b);
+    font-family: var(--font-serif, "Cormorant Garamond", serif);
+    font-size: 1.35rem;
+    margin: 0 0 6px;
+  }
+
+  .heritage-timeline-text {
+    color: var(--muted, #6b6f64);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+
   /* ---------- Testimonials ---------- */
   .testimonial-grid {
     display: grid;
