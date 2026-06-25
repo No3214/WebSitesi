@@ -57,14 +57,18 @@ export function GalleryLightbox({
   );
   const close = useCallback(() => setActive(null), []);
 
-  // body scroll kilidi + acilinca kapatma butonuna odak
+  // body scroll kilidi + Lenis duraklatma + acilinca kapatma butonuna odak
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Lenis aktifse sayfayi duraklat ki arka plan lightbox arkasinda kaymasin.
+    const lenis = (window as unknown as { __lenis?: { stop: () => void; start: () => void } }).__lenis;
+    lenis?.stop();
     closeRef.current?.focus();
     return () => {
       document.body.style.overflow = prev;
+      lenis?.start();
     };
   }, [open]);
 

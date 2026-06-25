@@ -22,4 +22,15 @@ describe("Galeri smooth-scroll (Lenis) wiring kontrati", () => {
     expect(provider).toContain("lenis.destroy()");
     expect(provider).toContain("cancelAnimationFrame(raf)");
   });
+
+  it("modal kilidi icin lenis ornegini window'a verir ve temizler", () => {
+    const provider = read("src/lib/animation/smooth-scroll.tsx");
+    expect(provider).toContain("__lenis");
+    expect(provider).toMatch(/delete w\.__lenis/);
+    const lightbox = read("src/components/gallery-lightbox.tsx");
+    // lightbox acilinca Lenis duraklatir, kapaninca devam ettirir
+    expect(lightbox).toContain("__lenis");
+    expect(lightbox).toContain("lenis?.stop()");
+    expect(lightbox).toContain("lenis?.start()");
+  });
 });

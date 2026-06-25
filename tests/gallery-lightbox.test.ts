@@ -57,10 +57,12 @@ describe("Galeri lightbox kontrati", () => {
     expect(css).toContain("eyebrow-shimmer");
   });
 
-  it("yeni runtime bagimliligi getirmez (framer-motion/gsap import etmez)", () => {
+  it("yeni runtime bagimliligi IMPORT etmez (framer-motion/gsap/lenis)", () => {
     const c = read(COMPONENT);
+    // Lenis ornegine yalniz window.__lenis uzerinden erisir; paket import etmez.
     for (const dep of ["framer-motion", "gsap", "lenis"]) {
-      expect(c.includes(dep), `yasak bagimlilik: ${dep}`).toBe(false);
+      expect(c.includes(`from "${dep}"`), `yasak import: ${dep}`).toBe(false);
+      expect(c.includes(`from '${dep}'`), `yasak import: ${dep}`).toBe(false);
     }
   });
 });

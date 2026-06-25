@@ -22,6 +22,9 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     if (reduce) return;
 
     const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    // Modal/lightbox gibi bilesenlerin sayfayi kilitleyebilmesi icin ornegi
+    // window'a verir (lenis.stop()/start()). Teardown'da temizlenir.
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
     let raf = 0;
     const loop = (time: number) => {
       lenis.raf(time);
@@ -44,6 +47,8 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       cancelAnimationFrame(raf);
       detach?.();
       lenis.destroy();
+      const w = window as unknown as { __lenis?: Lenis };
+      if (w.__lenis === lenis) delete w.__lenis;
     };
   }, []);
 
