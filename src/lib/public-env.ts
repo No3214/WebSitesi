@@ -5,6 +5,9 @@ export const publicEnv = {
   // Set edilirse iframe yerine inline widget script'i yuklenir.
   NEXT_PUBLIC_HMS_SCRIPT_URL:
     process.env.NEXT_PUBLIC_HMS_SCRIPT_URL?.trim() || "",
+  // Public reklam/olcum kimlikleri process.env'den okunur. Uretim degerleri
+  // .env.production (repo'da, public ID'ler) veya Vercel env'den gelir; Vercel
+  // env oncelikli. Sunucu sirlari (server-side secret'lar) ASLA burada tutulmaz.
   NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID?.trim() || "",
   NEXT_PUBLIC_GA4_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID?.trim() || "",
   NEXT_PUBLIC_GOOGLE_ADS_ID: process.env.NEXT_PUBLIC_GOOGLE_ADS_ID?.trim() || "",
