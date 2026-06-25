@@ -70,13 +70,12 @@ export function PageHero({
 
   return (
     <section
-      className={`page-hero ${tone === "light" ? "page-hero-light" : "section-dark"} grain`}
-      style={aurora ? { position: "relative", overflow: "hidden" } : undefined}
+      className={`page-hero ${tone === "light" ? "page-hero-light" : "section-dark"} grain${aurora ? " page-hero-aurora" : ""}`}
     >
       {aurora ? <GrainOverlay /> : null}
       <div className="container" style={{ position: "relative", zIndex: 2 }}>
         <span className="eyebrow">{eyebrow}</span>
-        <h1 ref={titleRef} style={revealTitle ? { overflow: "hidden" } : undefined}>
+        <h1 ref={titleRef} className={revealTitle ? "reveal-clip" : undefined}>
           {title}
         </h1>
         {text ? <p>{text}</p> : null}

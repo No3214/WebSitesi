@@ -1114,7 +1114,7 @@ describe("production readiness contracts", () => {
     expect(nextConfig).toContain('"form-action \'self\'"');
     expect(nextConfig).toContain('process.env.NODE_ENV !== "production" ? "\'unsafe-eval\'" : ""');
     expect(nextConfig).toContain(
-      '"frame-src \'self\' https://www.openstreetmap.org https://www.googletagmanager.com https://challenges.cloudflare.com"',
+      '"frame-src \'self\' https://www.google.com https://maps.google.com https://www.googletagmanager.com https://challenges.cloudflare.com"',
     );
     expect(nextConfig).toContain("https://www.googleadservices.com");
     expect(nextConfig).toContain("https://googleads.g.doubleclick.net");

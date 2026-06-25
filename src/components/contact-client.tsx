@@ -6,7 +6,7 @@ import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 import { LeadForm } from "@/components/lead-form";
 import { ADDRESS_EN, ADDRESS_TR, getWhatsAppHref, MAPS_URL, PHONE_DISPLAY, PHONE_E164 } from "@/lib/contact";
-import { KOZBEYLI_COORDS } from "@/lib/free-apis";
+import { googleMapsEmbedUrl } from "@/lib/free-apis";
 import { getDictionary } from "@/lib/dictionary";
 
 const EMAIL = "info@kozbeylikonagi.com";
@@ -18,7 +18,7 @@ const FALLBACK = {
     whatsappMessage: "Merhaba, web sitesinden ulaşıyorum.",
     addressLine: ADDRESS_TR,
     addressNote: "Güncel rota ve trafik bilgisi için canlı yol tarifini kullanabilirsiniz.",
-    mapTitle: "Kozbeyli Konağı Konum — OpenStreetMap",
+    mapTitle: "Kozbeyli Konağı Konum — Google Haritalar",
     formText:
       "Düğün, organizasyon ve grup konaklama talepleri için formu doldurun; aynı gün dönüş yapalım.",
   },
@@ -27,7 +27,7 @@ const FALLBACK = {
     whatsappMessage: "Hello, I am reaching out from the website.",
     addressLine: ADDRESS_EN,
     addressNote: "Use live directions for current route and traffic information.",
-    mapTitle: "Kozbeyli Konağı Location — OpenStreetMap",
+    mapTitle: "Kozbeyli Konağı Location — Google Maps",
     formText:
       "Fill out the form for wedding, event and group stay requests; we will get back to you the same day.",
   },
@@ -61,11 +61,7 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
 
   const whatsappHref = getWhatsAppHref(f.whatsappMessage);
 
-  const { lat, lng } = KOZBEYLI_COORDS;
-  const bbox = `${lng - 0.02},${lat - 0.012},${lng + 0.02},${lat + 0.012}`;
-  const osmEmbed = `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(
-    bbox,
-  )}&layer=mapnik&marker=${lat},${lng}`;
+  const mapEmbed = googleMapsEmbedUrl(locale === "en" ? "en" : "tr");
 
   return (
     <div className="container" style={{ maxWidth: 1040 }}>
@@ -122,10 +118,11 @@ export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClie
 
           <div className="detail-box" style={{ overflow: "hidden", padding: 0 }}>
             <iframe
-              src={osmEmbed}
+              src={mapEmbed}
               title={f.mapTitle}
               style={{ width: "100%", height: 300, border: 0, display: "block" }}
               loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
             />
           </div>
         </div>

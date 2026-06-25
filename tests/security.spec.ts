@@ -36,7 +36,7 @@ test.describe("Security Audit Test", () => {
     expect(headers["content-security-policy"]).toContain("base-uri 'self'");
     expect(headers["content-security-policy"]).toContain("form-action 'self'");
     expect(headers["content-security-policy"]).toContain(
-      "frame-src 'self' https://www.openstreetmap.org https://www.googletagmanager.com https://challenges.cloudflare.com",
+      "frame-src 'self' https://www.google.com https://maps.google.com https://www.googletagmanager.com https://challenges.cloudflare.com",
     );
     expect(headers["content-security-policy"]).not.toContain("frame-src https:");
     expect(headers["content-security-policy"]).not.toContain("unsafe-eval");

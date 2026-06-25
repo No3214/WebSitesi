@@ -11,7 +11,7 @@ import {
   PHONE_DISPLAY,
   PHONE_E164,
 } from "@/lib/contact";
-import { KOZBEYLI_COORDS } from "@/lib/free-apis";
+import { KOZBEYLI_COORDS, googleMapsEmbedUrl } from "@/lib/free-apis";
 import { absoluteUrl } from "@/lib/utils";
 
 type LocationLocale = "tr" | "en";
@@ -32,7 +32,7 @@ const copy = {
     whatsapp: "Transfer Planlama",
     whatsappMessage: "Merhaba, Kozbeyli Konağı için ulaşım ve transfer bilgisi almak istiyorum.",
     phone: "Telefon",
-    mapTitle: "Kozbeyli Konağı konumu - OpenStreetMap",
+    mapTitle: "Kozbeyli Konağı konumu - Google Haritalar",
     breadcrumbs: ["Ana Sayfa", "Lokasyon"],
   },
   en: {
@@ -48,7 +48,7 @@ const copy = {
     whatsapp: "Transfer Planning",
     whatsappMessage: "Hello, I would like route and transfer information for Kozbeyli Konağı.",
     phone: "Phone",
-    mapTitle: "Kozbeyli Konağı location - OpenStreetMap",
+    mapTitle: "Kozbeyli Konağı location - Google Maps",
     breadcrumbs: ["Home", "Location"],
   },
 } as const;
@@ -56,10 +56,7 @@ const copy = {
 export function LocationPageContent({ locale }: { locale: LocationLocale }) {
   const t = copy[locale];
   const { lat, lng } = KOZBEYLI_COORDS;
-  const bbox = `${lng - 0.02},${lat - 0.012},${lng + 0.02},${lat + 0.012}`;
-  const osmEmbed = `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(
-    bbox,
-  )}&layer=mapnik&marker=${lat},${lng}`;
+  const mapEmbed = googleMapsEmbedUrl(locale === "en" ? "en" : "tr");
 
   const jsonLd = [
     {
@@ -145,10 +142,11 @@ export function LocationPageContent({ locale }: { locale: LocationLocale }) {
 
             <div className="detail-box overflow-hidden p-0">
               <iframe
-                src={osmEmbed}
+                src={mapEmbed}
                 title={t.mapTitle}
                 style={{ width: "100%", height: 520, border: 0, display: "block" }}
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
           </div>

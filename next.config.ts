@@ -11,7 +11,8 @@ import type { NextConfig } from "next";
 // (*.google-analytics.com incl. regional endpoints), GTM/gtag config fetches,
 // Google Ads conversion beacons and Meta Pixel beacons.
 // img-src: data:/blob:/https: keeps tracking pixels and external images working.
-// frame-src stays intentionally narrow: OpenStreetMap for contact maps, GTM
+// frame-src stays intentionally narrow: Google Maps (keyless output=embed) for
+// contact/location maps, GTM
 // noscript iframe, and Cloudflare Turnstile. HMS booking opens in a new tab, not
 // an iframe, so broad https/blob frame access is not needed.
 const scriptSrc = [
@@ -32,7 +33,7 @@ const csp = [
   "connect-src 'self' https://*.posthog.com https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://connect.facebook.net https://www.facebook.com https://challenges.cloudflare.com https://app.hms.gen.tr https://kozbeyli-konagi.hmshotel.net",
   "img-src 'self' data: blob: https:",
   "media-src 'self' blob:",
-  "frame-src 'self' https://www.openstreetmap.org https://www.googletagmanager.com https://challenges.cloudflare.com",
+  "frame-src 'self' https://www.google.com https://maps.google.com https://www.googletagmanager.com https://challenges.cloudflare.com",
   "frame-ancestors 'self'",
 ].join("; ");
 

@@ -11,6 +11,17 @@
 // Kozbeyli Konağı, Kozbeyli Köyü Küme Evler No:188, Foça / İzmir
 export const KOZBEYLI_COORDS = { lat: 38.713943, lng: 26.896018 } as const;
 
+/**
+ * Google Haritalar gömme (embed) URL'si — API KEY GEREKTİRMEZ (output=embed).
+ * Resmi Maps Embed API (embed/v1) faturalandırma + key ister; bu klasik
+ * yöntem keyless, ücretsiz ve marker'lı Google döşemeleri gösterir.
+ * Dil parametresiyle yerelleştirilebilir.
+ */
+export function googleMapsEmbedUrl(locale: "tr" | "en" = "tr"): string {
+  const { lat, lng } = KOZBEYLI_COORDS;
+  return `https://maps.google.com/maps?q=${lat},${lng}&z=15&hl=${locale}&output=embed`;
+}
+
 const REVALIDATE_30M = 1800;
 const REVALIDATE_12H = 43200;
 const REVALIDATE_24H = 86400;

@@ -818,6 +818,17 @@
     color: var(--text);
   }
 
+  /* Opt-in aurora kapsayicisi: GrainOverlay'i kirpar (inline stil yerine). */
+  .page-hero-aurora {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* SplitText reveal: kelimeler yukaridan acilirken tasmayi gizler. */
+  .page-hero h1.reveal-clip {
+    overflow: hidden;
+  }
+
   .page-hero-light.grain::after {
     mix-blend-mode: multiply;
     opacity: 0.28;

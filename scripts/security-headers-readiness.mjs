@@ -65,7 +65,7 @@ const requiredCspDirectives = [
   "connect-src 'self'",
   "img-src 'self' data: blob: https:",
   "media-src 'self' blob:",
-  "frame-src 'self' https://www.openstreetmap.org https://www.googletagmanager.com https://challenges.cloudflare.com",
+  "frame-src 'self' https://www.google.com https://maps.google.com https://www.googletagmanager.com https://challenges.cloudflare.com",
   "frame-ancestors 'self'",
 ];
 
