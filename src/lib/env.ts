@@ -29,6 +29,10 @@ const rawEnvSchema = z.object({
   GOOGLE_BUSINESS_OAUTH_REFRESH_TOKEN: z.string().optional(),
   GOOGLE_BUSINESS_ACCOUNT_ID: z.string().optional(),
   GOOGLE_BUSINESS_LOCATION_ID: z.string().optional(),
+  // Review orchestration koruma: cron senkronu (Vercel Cron) ve admin yenileme/
+  // moderasyon uclari icin bearer secret. Bos ise ilgili uc fail-closed (503/401).
+  CRON_SECRET: z.string().optional(),
+  REVIEWS_ADMIN_TOKEN: z.string().optional(),
 });
 
 const raw = rawEnvSchema.parse(process.env);
@@ -81,6 +85,9 @@ export const env = {
   GOOGLE_BUSINESS_OAUTH_REFRESH_TOKEN: raw.GOOGLE_BUSINESS_OAUTH_REFRESH_TOKEN || "",
   GOOGLE_BUSINESS_ACCOUNT_ID: raw.GOOGLE_BUSINESS_ACCOUNT_ID || "",
   GOOGLE_BUSINESS_LOCATION_ID: raw.GOOGLE_BUSINESS_LOCATION_ID || "",
+  // Review orchestration koruma secret'lari (bos ise ilgili uc fail-closed).
+  CRON_SECRET: raw.CRON_SECRET || "",
+  REVIEWS_ADMIN_TOKEN: raw.REVIEWS_ADMIN_TOKEN || "",
 };
 
 export function getAllowedOrigins() {
