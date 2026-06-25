@@ -127,6 +127,41 @@ const launchResultWithRuntimeReadyEvidenceOnly = {
   ],
 };
 
+const launchResultWithDatabaseDnsBlocker = {
+  ...launchResult,
+  runtimeReadiness: {
+    ...launchResult.runtimeReadiness,
+    configuredGates: ["canonical_domain", "hms_booking_engine"],
+    blockedGates: ["production_database", "production_abuse_controls", "garanti_pos", "analytics_purchase"],
+  },
+  gateResults: [
+    ...launchResult.gateResults,
+    {
+      id: "production_database",
+      label: "Production database and CMS secret",
+      ready: false,
+      points: 5,
+      awardedPoints: 0,
+      missingEvidence: [],
+      missingEnv: [],
+      missingEnvCount: 0,
+      runtimeConfiguration: {
+        source: "https://www.kozbeylikonagi.com/api/health",
+        status: "blocked",
+        ready: false,
+        operationalStatus: "database_dns_unresolved",
+        configurationSource: "env",
+        requiredCount: 2,
+        configuredCount: 1,
+        missingCount: 0,
+        invalidCount: 1,
+        placeholderCount: 0,
+        fallbackApplied: false,
+      },
+    },
+  ],
+};
+
 const githubCiResult = {
   decision: "GITHUB CI ACCOUNT BLOCKED",
   repo: "No3214/WebSitesi",
@@ -309,6 +344,41 @@ describe("readiness summary", () => {
     expect(summary.nextActions.join("\n")).toContain("DATABASE_URI/PAYLOAD_SECRET");
     expect(summary.nextActions.join("\n")).toContain("npm run vercel:supabase:verify");
     expect(summary.nextActions.join("\n")).not.toContain("Protect the admin growth surface");
+  });
+
+  it("narrows the admin dependency action to DATABASE_URI when live runtime reports database DNS failure", async () => {
+    const { buildReadinessSummary } = await loadReadinessSummaryModule();
+    const summary = buildReadinessSummary({
+      generatedAt: "2026-06-23T00:00:00.000Z",
+      domainResult,
+      launchResult: launchResultWithDatabaseDnsBlocker,
+      githubCiResult: {
+        ...githubCiResult,
+        decision: "GITHUB CI PASS",
+        conclusion: "success",
+        failedJobs: [],
+        blockers: [],
+        remediation: [],
+      },
+      vercelOpsResult,
+      adminSurfaceResult: {
+        decision: "ADMIN SURFACE BLOCKED",
+        live: {
+          target: "https://www.kozbeylikonagi.com/admin/growth",
+          status: 307,
+          location: "/admin",
+        },
+        blockers: [
+          "live live_payload_admin_dependency_ready: Payload admin returned controlled dependency-unavailable screen",
+        ],
+      },
+    });
+    const nextActions = summary.nextActions.join("\n");
+
+    expect(nextActions).toContain("DATABASE_URI host/connection string");
+    expect(nextActions).toContain("database_dns_unresolved");
+    expect(nextActions).toContain("PAYLOAD_SECRET appears configured");
+    expect(nextActions).not.toContain("DATABASE_URI/PAYLOAD_SECRET");
   });
 
   it("retries transient domain transport failures before reporting public release blocked", async () => {

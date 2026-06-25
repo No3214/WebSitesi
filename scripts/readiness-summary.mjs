@@ -167,6 +167,20 @@ function overallDecision(summary) {
   return "FULL COMMERCIAL GO";
 }
 
+function findLaunchGate(summary, gateId) {
+  return summary.launch.blockedGates.find((gate) => gate.id === gateId);
+}
+
+function adminDependencyAction(summary) {
+  const databaseGate = findLaunchGate(summary, "production_database");
+
+  if (databaseGate?.runtimeOperationalStatus === "database_dns_unresolved") {
+    return "Fix the Vercel Production DATABASE_URI host/connection string for Payload admin (runtime reports database_dns_unresolved; PAYLOAD_SECRET appears configured), trigger a production redeploy, then run npm run vercel:supabase:verify and npm run admin:verify:strict.";
+  }
+
+  return "Fix the Vercel Production DATABASE_URI/PAYLOAD_SECRET dependency for Payload admin, then run npm run vercel:supabase:verify and npm run admin:verify:strict.";
+}
+
 function buildNextActions(summary) {
   const actions = [];
 
@@ -186,9 +200,7 @@ function buildNextActions(summary) {
   );
 
   if (adminDependencyBlocked) {
-    actions.push(
-      "Fix the Vercel Production DATABASE_URI/PAYLOAD_SECRET dependency for Payload admin, then run npm run vercel:supabase:verify and npm run admin:verify:strict.",
-    );
+    actions.push(adminDependencyAction(summary));
   } else if (summary.admin.decision !== "ADMIN SURFACE READY") {
     actions.push("Protect the admin growth surface, then run npm run admin:verify:strict.");
   }
