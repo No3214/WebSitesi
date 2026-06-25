@@ -16,12 +16,14 @@ Yanlış-pozitif bir "env.ts truncated" iddiası doğrulandı ve REDDEDİLDİ (d
   → 200 ama `admin:verify` canlı kontrolü `live_payload_admin_dependency_ready`
   **FAIL** ("controlled dependency-unavailable screen"). Supabase `WebSitesi`
   DB'sinde Payload tabloları YOK (yalnız ilgisiz 4 tablo var), `migrations: []`.
-- Kök neden: `@payloadcms/db-postgres` prod'da `push` varsayılan KAPALI; migration
-  çalıştırılmamış → şema hiç oluşmamış. Admin kodu bunu zarifçe yakalayıp kontrollü
-  "bağımlılık yok" ekranı gösteriyor (çökme yok — iyi tasarım).
-- Düzeltme: `payload.config.ts` → `push: true` + `migrationDir`. İlk boot'ta tüm
-  collection tabloları oluşur. DB'de Payload verisi olmadığı için güvenli.
-- Detay + RLS/anon-REST güvenliği: `docs/supabase-vercel-setup.md`.
+- Kök neden (Payload kaynak kodu `db-postgres/connect.ts`): otomatik `push`
+  YALNIZ `NODE_ENV !== "production"` iken çalışır → prod'da `push:true` NO-OP.
+  Migration hiç çalıştırılmamış → şema yok. Admin kodu bunu zarifçe yakalayıp
+  kontrollü "bağımlılık yok" ekranı gösteriyor (çökme yok — iyi tasarım).
+- Repo hazırlandı: `migrationDir` + `migrate*`/`ci` script'leri. Şema TEK SEFERLİK
+  migration ile kurulur (prod DATABASE_URI gerekir → yalnız kullanıcı çalıştırabilir;
+  elle SQL Payload migration-state'ini bozacağı için kasıtlı yapılmadı).
+- Tam adımlar + RLS/anon-REST güvenliği: `docs/supabase-vercel-setup.md`.
 
 ## 2. Güvenlik başlıkları / CSP — TEMİZ
 `next.config.ts`: CSP (prod'da `unsafe-eval` yok), X-Frame-Options SAMEORIGIN,
@@ -69,7 +71,8 @@ Next 15.5, React 19, Payload 3.85, TS 5.7, Node 24. Remotion devDep. Terk edilmi
 çift state lib yok.
 
 ## Uygulanan düzeltmeler (bu tur)
-1. Payload `push:true` + `migrationDir` → admin şeması kurulur.
+1. Payload `migrationDir` + `migrate*`/`ci` script'leri → admin şeması tek
+   seferlik `npm run migrate` ile kurulur (prod DATABASE_URI ile).
 2. `EnLocaleSync` → `/en` için `<html lang=en>`.
 3. Supabase advisor bulguları + güvenli remediation → `docs/supabase-vercel-setup.md`.
 4. Local SEO/GBP aksiyon planı → `docs/local-seo-google-business-plan.md`.

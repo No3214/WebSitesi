@@ -145,6 +145,11 @@
     "publish:target": "node scripts/publish-readiness.mjs",
     "publish:verify": "npm run quality && playwright test tests/e2e/ tests/security.spec.ts tests/prestige-verification.spec.ts tests/a11y.spec.ts --reporter=line && npm run publish:target",
     "payload:types": "cross-env PAYLOAD_CONFIG_PATH=payload.config.ts payload generate:types",
+    "payload": "cross-env PAYLOAD_CONFIG_PATH=payload.config.ts payload",
+    "migrate:create": "cross-env PAYLOAD_CONFIG_PATH=payload.config.ts PAYLOAD_MIGRATING=true payload migrate:create",
+    "migrate": "cross-env PAYLOAD_CONFIG_PATH=payload.config.ts PAYLOAD_MIGRATING=true payload migrate",
+    "migrate:status": "cross-env PAYLOAD_CONFIG_PATH=payload.config.ts PAYLOAD_MIGRATING=true payload migrate:status",
+    "ci": "npm run migrate && npm run build",
     "seed": "node scripts/seed.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

@@ -29,13 +29,16 @@ export default buildConfig({
       connectionString: env.DATABASE_URI,
     },
     // Supabase/Postgres şema yönetimi.
-    // Prod DB'de Payload tabloları yoktu (yeni kurulum) → admin /api/users 500
-    // veriyordu. `push` açık: ilk boot'ta tüm collection tabloları otomatik
-    // oluşturulur/senkronlanır. DB'de Payload verisi olmadığı için bu güvenlidir.
-    // İçerik girdikten sonra migration disiplinine geçmek için payload/migrations
-    // + `payload migrate` kullanılabilir (migrationDir hazır).
-    // ÖNEMLİ: DDL push, Supabase "Session"/"Direct" connection string ile çalışır;
-    // "Transaction pooler" (6543) prepared-statement/DDL'i kısıtlayabilir.
+    // ÖNEMLİ (Payload kaynak davranışı): otomatik `push` YALNIZ
+    // NODE_ENV !== "production" iken çalışır → prod'da `push: true` NO-OP'tur.
+    // Prod şeması MIGRATION ile kurulur (dev'de push açık, yerel kolaylık).
+    // Prod kurulumu (tek seferlik, DATABASE_URI prod'a bakarken):
+    //   npm run migrate:create -- initial   # payload/migrations üretir
+    //   npm run migrate                      # prod DB'ye uygular
+    // Sürekli otomatik: Vercel "Build Command" = `npm run ci`
+    //   (önce payload migrate, sonra next build). Detay: docs/supabase-vercel-setup.md.
+    // Bağlantı: DDL/migration için Supabase "Session"/"Direct" string kullan;
+    // "Transaction pooler" (6543) DDL/prepared-statement'ı kısıtlar.
     push: true,
     migrationDir: path.resolve(process.cwd(), "payload/migrations"),
   }),

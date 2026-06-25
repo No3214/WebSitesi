@@ -11,10 +11,23 @@ Tarih: 2026-06. Kaynak: canlı Vercel + Supabase MCP yoklaması.
 - Payload kontratları PASS: postgres adapter + DATABASE_URI + PAYLOAD_SECRET;
   prod'da ikisi de zorunlu (`env.ts`).
 
-## A) Admin/şema kurulumu (yapıldı)
+## A) Admin/şema kurulumu (TEK SEFERLİK migration gerekir)
 Sorun: Payload tabloları bu DB'de yoktu → `/api/users` 500, admin "dependency
-unavailable" ekranı. Düzeltme: `payload.config.ts` → `push: true` + `migrationDir`.
-Sonraki deploy + ilk `/admin` isteğinde tüm collection tabloları oluşur.
+unavailable" ekranı.
+KESİN KÖK NEDEN (Payload kaynak kodu, `db-postgres/connect.ts`): otomatik `push`
+YALNIZ `NODE_ENV !== "production"` iken çalışır. Yani prod'da `push: true`
+**NO-OP**'tur (kanıt: deploy READY + `push:true` sonrası Supabase'de hâlâ tablo
+yok). Prod şeması yalnız MIGRATION ile kurulur.
+Repo hazırlandı: `migrationDir` + `migrate*`/`ci` script'leri (package.json).
+TEK SEFERLİK (DATABASE_URI prod'a bakarken — parolayı sohbete yazma):
+```
+vercel env pull .env.production.local   # DATABASE_URI'yi getirir
+npm run migrate:create -- initial       # payload/migrations üretir
+npm run migrate                          # prod DB'ye uygular
+git add payload/migrations && git commit -m "chore(db): initial payload migration" && git push
+```
+Sürekli otomatik için: Vercel Project → Settings → Build Command = `npm run ci`
+(önce `payload migrate`, sonra `next build`). Böylece her deploy şemayı uygular.
 
 ### A.1 ÖNEMLİ — DATABASE_URI bağlantı tipi
 Şema oluşturma (DDL/push) ve Payload sorguları için Supabase bağlantı dizgisi:
@@ -29,11 +42,11 @@ Vercel env: `DATABASE_URI` (Production). Sırrı repoya/sohbete yazma.
 Şema oluştuktan sonra `https://www.kozbeylikonagi.com/admin` → "create first
 user" ekranı gelir. İlk kullanıcı oluşturulunca admin tam aktif.
 
-### A.3 push → migration disiplinine geçiş (öneri)
-`push: true` ilk kurulum için pratik ve güvenli (boş DB). İçerik girildikten
-SONRA, prod'da otomatik şema-sync sürprizlerini önlemek için:
-1) `npm run payload:types` sonrası `payload migrate:create`,
-2) commit, 3) `payload.config` → `push:false`, 4) deploy'da `payload migrate`.
+### A.3 Migration disiplini (özet)
+`push` yalnız dev'de etkilidir; prod tamamen migration ile yönetilir. Yeni
+collection/field eklediğinde: `npm run migrate:create -- <ad>` → commit →
+deploy (Build Command `npm run ci` ise otomatik uygulanır). `npm run migrate:status`
+ile uygulanan/bekleyen migration'ları gör.
 
 ## B) RLS / anon-REST maruziyeti (KRİTİK güvenlik)
 Supabase her `public` tabloyu otomatik **PostgREST** (anon key) ile dışarı açar.
