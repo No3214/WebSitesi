@@ -49,7 +49,7 @@ export function GalleryPageContent({ locale = "tr" }: { locale?: GalleryLocale }
       />
       <SiteHeader />
       <main>
-        <PageHero eyebrow={copy.eyebrow} title={copy.title} text={copy.text} revealTitle />
+        <PageHero eyebrow={copy.eyebrow} title={copy.title} text={copy.text} revealTitle aurora />
 
         <section className="section">
           <div className="container" style={{ width: "min(1400px, 100%)" }}>

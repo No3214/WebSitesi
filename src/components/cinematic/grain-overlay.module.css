@@ -1,0 +1,46 @@
+/* GrainOverlay — Stone & Light sicak grain/aurora dokusu.
+   Magic UI / React Bits "Grainient" fikrinden esinlenildi; markaya (amber/zeytin/fildizi)
+   yeniden yazildi. Saf CSS, sifir JS dependency. Dekoratif: pointer-events yok, aria-hidden.
+   prefers-reduced-motion: drift animasyonu kapalı, statik kalir. */
+
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* sicak amber + zeytin radial katmanlari, cok dusuk opacity */
+  background:
+    radial-gradient(60% 50% at 18% 12%, rgba(196, 162, 101, 0.14), transparent 70%),
+    radial-gradient(55% 45% at 85% 20%, rgba(80, 93, 75, 0.12), transparent 72%),
+    radial-gradient(70% 60% at 50% 100%, rgba(196, 162, 101, 0.08), transparent 75%);
+  background-size: 160% 160%;
+  animation: grain-drift 28s ease-in-out infinite alternate;
+  opacity: 0.9;
+}
+
+/* ince film grain dokusu (CSS-only, tekrarli noktasal desen) */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background-image: radial-gradient(rgba(44, 55, 41, 0.05) 1px, transparent 1px);
+  background-size: 3px 3px;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+@keyframes grain-drift {
+  0% {
+    background-position: 0% 0%, 100% 0%, 50% 100%;
+  }
+  100% {
+    background-position: 20% 10%, 80% 15%, 50% 90%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain {
+    animation: none;
+  }
+}

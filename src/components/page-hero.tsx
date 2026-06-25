@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
+import { GrainOverlay } from "./cinematic/grain-overlay";
+
 type PageHeroProps = {
   eyebrow: string;
   title: string;
@@ -9,6 +11,8 @@ type PageHeroProps = {
   tone?: "dark" | "light";
   /** Opt-in: basligi GSAP SplitText ile kelime-kelime reveal et. */
   revealTitle?: boolean;
+  /** Opt-in: arka plana markaya uyarli sicak grain/aurora dokusu. */
+  aurora?: boolean;
 };
 
 /**
@@ -25,6 +29,7 @@ export function PageHero({
   text,
   tone = "light",
   revealTitle = false,
+  aurora = false,
 }: PageHeroProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
 
@@ -64,7 +69,11 @@ export function PageHero({
   }, [revealTitle]);
 
   return (
-    <section className={`page-hero ${tone === "light" ? "page-hero-light" : "section-dark"} grain`}>
+    <section
+      className={`page-hero ${tone === "light" ? "page-hero-light" : "section-dark"} grain`}
+      style={aurora ? { position: "relative", overflow: "hidden" } : undefined}
+    >
+      {aurora ? <GrainOverlay /> : null}
       <div className="container" style={{ position: "relative", zIndex: 2 }}>
         <span className="eyebrow">{eyebrow}</span>
         <h1 ref={titleRef} style={revealTitle ? { overflow: "hidden" } : undefined}>
