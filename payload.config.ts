@@ -12,6 +12,10 @@ import { OrganizationPackages } from "./payload/collections/OrganizationPackages
 import { OrganizationLeads } from "./payload/collections/OrganizationLeads";
 import { AgentPerformanceLogs } from "./payload/collections/AgentPerformanceLogs";
 import { WebhookEvents } from "./payload/collections/WebhookEvents";
+import { ReviewSources } from "./payload/collections/ReviewSources";
+import { ReviewItems } from "./payload/collections/ReviewItems";
+import { ReviewPublicationRules } from "./payload/collections/ReviewPublicationRules";
+import { ReviewModerationEvents } from "./payload/collections/ReviewModerationEvents";
 
 export default buildConfig({
   secret: env.PAYLOAD_SECRET,
@@ -36,6 +40,10 @@ export default buildConfig({
     OrganizationLeads,
     AgentPerformanceLogs,
     WebhookEvents,
+    ReviewSources,
+    ReviewItems,
+    ReviewPublicationRules,
+    ReviewModerationEvents,
   ],
   typescript: {
     outputFile: path.resolve(process.cwd(), "payload-types.ts"),

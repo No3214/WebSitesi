@@ -75,6 +75,10 @@ export interface Config {
     'organization-leads': OrganizationLead;
     'agent-performance-logs': AgentPerformanceLog;
     'webhook-events': WebhookEvent;
+    'review-sources': ReviewSource;
+    'review-items': ReviewItem;
+    'review-publication-rules': ReviewPublicationRule;
+    'review-moderation-events': ReviewModerationEvent;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -90,6 +94,10 @@ export interface Config {
     'organization-leads': OrganizationLeadsSelect<false> | OrganizationLeadsSelect<true>;
     'agent-performance-logs': AgentPerformanceLogsSelect<false> | AgentPerformanceLogsSelect<true>;
     'webhook-events': WebhookEventsSelect<false> | WebhookEventsSelect<true>;
+    'review-sources': ReviewSourcesSelect<false> | ReviewSourcesSelect<true>;
+    'review-items': ReviewItemsSelect<false> | ReviewItemsSelect<true>;
+    'review-publication-rules': ReviewPublicationRulesSelect<false> | ReviewPublicationRulesSelect<true>;
+    'review-moderation-events': ReviewModerationEventsSelect<false> | ReviewModerationEventsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -302,6 +310,72 @@ export interface WebhookEvent {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "review-sources".
+ */
+export interface ReviewSource {
+  id: number;
+  name: string;
+  key: string;
+  type: 'api' | 'manual' | 'first-party';
+  sourceUrl?: string | null;
+  iconKey?: string | null;
+  isActive?: boolean | null;
+  displayPolicy: 'full-text' | 'score-and-link' | 'score-only';
+  lastSyncAt?: string | null;
+  lastSyncStatus?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "review-items".
+ */
+export interface ReviewItem {
+  id: number;
+  source: number | ReviewSource;
+  externalId?: string | null;
+  rating: number;
+  reviewBody?: string | null;
+  authorDisplay?: string | null;
+  datePublished?: string | null;
+  lang?: string | null;
+  status: 'pending' | 'published' | 'hidden' | 'flagged';
+  isFeatured?: boolean | null;
+  pulledAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "review-publication-rules".
+ */
+export interface ReviewPublicationRule {
+  id: number;
+  label?: string | null;
+  /**
+   * Bu puan ve uzeri yorumlar otomatik yayinlanabilir.
+   */
+  autoPublishThreshold?: number | null;
+  requireManualReview?: boolean | null;
+  featuredLabelText?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "review-moderation-events".
+ */
+export interface ReviewModerationEvent {
+  id: number;
+  reviewItem: number | ReviewItem;
+  action: 'publish' | 'hide' | 'flag' | 'unflag' | 'source-mismatch';
+  reason?: string | null;
+  actor?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -355,6 +429,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'webhook-events';
         value: number | WebhookEvent;
+      } | null)
+    | ({
+        relationTo: 'review-sources';
+        value: number | ReviewSource;
+      } | null)
+    | ({
+        relationTo: 'review-items';
+        value: number | ReviewItem;
+      } | null)
+    | ({
+        relationTo: 'review-publication-rules';
+        value: number | ReviewPublicationRule;
+      } | null)
+    | ({
+        relationTo: 'review-moderation-events';
+        value: number | ReviewModerationEvent;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -548,6 +638,65 @@ export interface WebhookEventsSelect<T extends boolean = true> {
   errorMessage?: T;
   payloadJson?: T;
   receivedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "review-sources_select".
+ */
+export interface ReviewSourcesSelect<T extends boolean = true> {
+  name?: T;
+  key?: T;
+  type?: T;
+  sourceUrl?: T;
+  iconKey?: T;
+  isActive?: T;
+  displayPolicy?: T;
+  lastSyncAt?: T;
+  lastSyncStatus?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "review-items_select".
+ */
+export interface ReviewItemsSelect<T extends boolean = true> {
+  source?: T;
+  externalId?: T;
+  rating?: T;
+  reviewBody?: T;
+  authorDisplay?: T;
+  datePublished?: T;
+  lang?: T;
+  status?: T;
+  isFeatured?: T;
+  pulledAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "review-publication-rules_select".
+ */
+export interface ReviewPublicationRulesSelect<T extends boolean = true> {
+  label?: T;
+  autoPublishThreshold?: T;
+  requireManualReview?: T;
+  featuredLabelText?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "review-moderation-events_select".
+ */
+export interface ReviewModerationEventsSelect<T extends boolean = true> {
+  reviewItem?: T;
+  action?: T;
+  reason?: T;
+  actor?: T;
   updatedAt?: T;
   createdAt?: T;
 }
