@@ -1313,6 +1313,11 @@
     display: block;
   }
 
+  .editorial-media video[data-video-state="paused"],
+  .kitchen-video-shell video[data-video-state="paused"] {
+    cursor: pointer;
+  }
+
   .editorial-media .media-frame {
     position: absolute;
     inset: 14px;
@@ -1324,8 +1329,9 @@
     position: absolute;
     inset: 50% auto auto 50%;
     z-index: 3;
-    width: 58px;
+    min-width: 58px;
     height: 58px;
+    padding: 0 18px;
     transform: translate(-50%, -50%);
     border: 1px solid rgba(250, 249, 246, 0.76);
     border-radius: 999px;
@@ -1334,6 +1340,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     box-shadow: 0 18px 48px rgba(31, 35, 30, 0.22);
     cursor: pointer;
     transition:
@@ -1353,6 +1360,19 @@
   .editorial-video-control[data-state="blocked"] {
     background: var(--gold);
     color: var(--on-gold);
+  }
+
+  .editorial-video-control[data-state="playing"],
+  .kitchen-video-control[data-state="playing"] {
+    background: rgba(250, 249, 246, 0.82);
+  }
+
+  .video-control-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
   }
 
   .kitchen-video-card {
@@ -1380,8 +1400,9 @@
     position: absolute;
     inset: 50% auto auto 50%;
     z-index: 3;
-    width: 58px;
+    min-width: 58px;
     height: 58px;
+    padding: 0 18px;
     transform: translate(-50%, -50%);
     border: 1px solid rgba(250, 249, 246, 0.78);
     border-radius: 999px;
@@ -1390,6 +1411,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     box-shadow: 0 18px 48px rgba(31, 35, 30, 0.22);
     cursor: pointer;
     transition:
@@ -1409,6 +1431,20 @@
   .kitchen-video-control[data-state="blocked"] {
     background: var(--gold);
     color: var(--on-gold);
+  }
+
+  @media (max-width: 640px) {
+    .editorial-video-control,
+    .kitchen-video-control {
+      height: 52px;
+      min-width: 112px;
+      padding: 0 16px;
+      box-shadow: 0 14px 34px rgba(31, 35, 30, 0.24);
+    }
+
+    .video-control-label {
+      font-size: 0.68rem;
+    }
   }
 
   .kitchen-video-card figcaption {

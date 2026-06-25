@@ -4,7 +4,7 @@ import { Pause, Play } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { FadeIn } from "@/components/animations";
+import { FadeIn, Parallax } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 
 type LazyEditorialVideoProps = {
@@ -91,6 +91,14 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
     return () => observer.disconnect();
   }, []);
 
+  const controlText = playLabel.toLowerCase().startsWith("play")
+    ? isPlaying
+      ? "Pause"
+      : "Play"
+    : isPlaying
+      ? "Duraklat"
+      : "Oynat";
+
   return (
     <>
       <video
@@ -102,6 +110,8 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
         controls={playbackBlocked}
         preload={shouldLoad ? "metadata" : "none"}
         aria-label={label}
+        data-video-state={isPlaying ? "playing" : playbackBlocked ? "blocked" : "paused"}
+        onClick={togglePlayback}
         onPlaying={() => {
           markPlaybackState();
           setPlaybackBlocked(false);
@@ -125,6 +135,7 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
         onClick={togglePlayback}
       >
         {isPlaying ? <Pause aria-hidden size={22} strokeWidth={2.2} /> : <Play aria-hidden size={22} strokeWidth={2.2} />}
+        <span className="video-control-label">{controlText}</span>
       </button>
     </>
   );
@@ -149,7 +160,7 @@ export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
         <div style={{ display: "grid", gap: "clamp(48px, 7vw, 96px)" }}>
           <FadeIn>
             <div className="editorial">
-              <div className="editorial-media">
+              <Parallax className="editorial-media" distance={10}>
                 <LazyEditorialVideo
                   src="/videos/kahvalti.mp4"
                   poster="/videos/kahvalti-poster.jpg"
@@ -157,7 +168,7 @@ export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
                   playLabel={locale === "tr" ? "Kahvaltı videosunu oynat" : "Play breakfast video"}
                 />
                 <span className="media-frame" aria-hidden />
-              </div>
+              </Parallax>
               <div className="editorial-copy">
                 <span className="eyebrow">{locale === "tr" ? "SABAH GÜNEŞİ" : "MORNING SUN"}</span>
                 <h3>{locale === "tr" ? "Köy Kahvaltısı Töreni" : "The Village Breakfast Ceremony"}</h3>
@@ -180,7 +191,7 @@ export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
 
           <FadeIn>
             <div className="editorial reverse">
-              <div className="editorial-media">
+              <Parallax className="editorial-media" distance={12}>
                 <LazyEditorialVideo
                   src="/videos/mihlama.mp4"
                   poster="/videos/mihlama-poster.jpg"
@@ -188,7 +199,7 @@ export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
                   playLabel={locale === "tr" ? "Mıhlama videosunu oynat" : "Play mıhlama video"}
                 />
                 <span className="media-frame" aria-hidden />
-              </div>
+              </Parallax>
               <div className="editorial-copy">
                 <span className="eyebrow">{locale === "tr" ? "OCAK BAŞI" : "BY THE HEARTH"}</span>
                 <h3>{locale === "tr" ? "İnci Hanım'ın Mutfağı" : "İnci Hanım's Kitchen"}</h3>

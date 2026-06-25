@@ -73,6 +73,26 @@ describe("Stone & Light motion primitives", () => {
     expect(globals).toContain(".gallery-item,\n    .gallery-item-hero,\n    .gallery-item-portrait,\n    .gallery-item-wide");
   });
 
+  it("keeps homepage gastronomy videos tactile without adding heavy motion dependencies", () => {
+    const gastronomyEditorial = read("src/components/home/gastronomy-editorial.tsx");
+    const gastronomyPage = read("src/components/gastronomy-page-content.tsx");
+    const globals = read("src/app/globals.css");
+
+    expect(gastronomyEditorial).toContain("FadeIn, Parallax");
+    expect(gastronomyEditorial).toContain('className="editorial-media" distance={10}');
+    expect(gastronomyEditorial).toContain('className="editorial-media" distance={12}');
+    expect(gastronomyEditorial).toContain('data-video-state={isPlaying ? "playing" : playbackBlocked ? "blocked" : "paused"}');
+    expect(gastronomyEditorial).toContain("video-control-label");
+    expect(gastronomyEditorial).not.toContain("framer-motion");
+    expect(gastronomyEditorial).not.toContain("autoPlay");
+
+    expect(gastronomyPage).toContain("toggleVideo");
+    expect(gastronomyPage).toContain("video-control-label");
+    expect(gastronomyPage).toContain('data-testid={`kitchen-video-play-${event.replace("video_play_", "")}`}');
+    expect(globals).toContain(".video-control-label");
+    expect(globals).toContain('video[data-video-state="paused"]');
+  });
+
   it("documents the first visual wave and the deferred heavy media work", () => {
     const baseline = read("docs/design/visual-baseline.md");
     const inventory = read("docs/design/media-usage-inventory.md");

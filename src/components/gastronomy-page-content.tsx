@@ -1,6 +1,6 @@
 "use client";
 
-import { Play } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
@@ -114,9 +114,10 @@ type KitchenVideoCardProps = {
   event: string;
   caption: string;
   playLabel: string;
+  locale: Locale;
 };
 
-function KitchenVideoCard({ poster, src, event, caption, playLabel }: KitchenVideoCardProps) {
+function KitchenVideoCard({ poster, src, event, caption, playLabel, locale }: KitchenVideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackBlocked, setPlaybackBlocked] = useState(false);
@@ -137,6 +138,21 @@ function KitchenVideoCard({ poster, src, event, caption, playLabel }: KitchenVid
     }
   }
 
+  function toggleVideo() {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (!video.paused) {
+      video.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    void playVideo();
+  }
+
+  const controlText = locale === "en" ? (isPlaying ? "Pause" : "Play") : isPlaying ? "Duraklat" : "Oynat";
+
   return (
     <figure className="kitchen-video-card">
       <div className="kitchen-video-shell">
@@ -147,6 +163,8 @@ function KitchenVideoCard({ poster, src, event, caption, playLabel }: KitchenVid
           playsInline
           poster={poster}
           data-event={event}
+          data-video-state={isPlaying ? "playing" : playbackBlocked ? "blocked" : "paused"}
+          onClick={toggleVideo}
           onPlaying={() => {
             setIsPlaying(true);
             setPlaybackBlocked(false);
@@ -160,20 +178,19 @@ function KitchenVideoCard({ poster, src, event, caption, playLabel }: KitchenVid
         >
           <source src={src} type="video/mp4" />
         </video>
-        {!isPlaying ? (
-          <button
-            type="button"
-            className="kitchen-video-control"
-            data-state={playbackBlocked ? "blocked" : "paused"}
-            data-testid={`kitchen-video-play-${event.replace("video_play_", "")}`}
-            aria-label={playLabel}
-            onClick={() => {
-              void playVideo();
-            }}
-          >
-            <Play aria-hidden size={22} strokeWidth={2.2} />
-          </button>
-        ) : null}
+        <button
+          type="button"
+          className="kitchen-video-control"
+          data-state={isPlaying ? "playing" : playbackBlocked ? "blocked" : "paused"}
+          data-testid={`kitchen-video-play-${event.replace("video_play_", "")}`}
+          aria-label={isPlaying ? `${controlText} ${caption}` : playLabel}
+          onClick={() => {
+            toggleVideo();
+          }}
+        >
+          {isPlaying ? <Pause aria-hidden size={22} strokeWidth={2.2} /> : <Play aria-hidden size={22} strokeWidth={2.2} />}
+          <span className="video-control-label">{controlText}</span>
+        </button>
       </div>
       <figcaption>{caption}</figcaption>
     </figure>
@@ -288,6 +305,7 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
               event={video.event}
               caption={copy.videos[index]}
               playLabel={copy.playLabels[index]}
+              locale={locale}
             />
           ))}
         </div>
