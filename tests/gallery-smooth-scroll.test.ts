@@ -7,11 +7,16 @@ const root = process.cwd();
 const read = (p: string) => fs.readFileSync(path.join(root, p), "utf8");
 
 describe("Galeri smooth-scroll (Lenis) wiring kontrati", () => {
-  it("galeri sayfasi SmoothScrollProvider ile sarmalanir", () => {
-    const page = read("src/components/gallery-page-content.tsx");
-    expect(page).toContain('import { SmoothScrollProvider } from "@/lib/animation/smooth-scroll"');
-    expect(page).toContain("<SmoothScrollProvider>");
-    expect(page).toContain("</SmoothScrollProvider>");
+  it("uzun icerik sayfalari SmoothScrollProvider ile sarmalanir (galeri + hikayemiz)", () => {
+    for (const f of [
+      "src/components/gallery-page-content.tsx",
+      "src/components/history-client.tsx",
+    ]) {
+      const page = read(f);
+      expect(page, f).toContain('import { SmoothScrollProvider } from "@/lib/animation/smooth-scroll"');
+      expect(page, f).toContain("<SmoothScrollProvider>");
+      expect(page, f).toContain("</SmoothScrollProvider>");
+    }
   });
 
   it("saglayici reduced-motion'da Lenis baslatmaz ve temiz teardown yapar", () => {

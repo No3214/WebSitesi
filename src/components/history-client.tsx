@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { LivingMuseumMap } from "@/components/living-museum-map";
 import { HeritageArchive } from "@/components/heritage-archive";
 import { HeritageTimeline } from "@/components/heritage-timeline";
+import { SmoothScrollProvider } from "@/lib/animation/smooth-scroll";
 
 type Locale = "tr" | "en";
 
@@ -75,7 +76,8 @@ export function HistoryClient({ locale = "tr" }: { locale?: Locale }) {
   const copy = historyCopy[locale];
 
   return (
-    <main className="min-h-screen history-story-page" style={{ background: "var(--ivory)" }}>
+    <SmoothScrollProvider>
+      <main className="min-h-screen history-story-page" style={{ background: "var(--ivory)" }}>
       <SiteHeader variant="solid" />
 
       <div className="relative">
@@ -132,6 +134,7 @@ export function HistoryClient({ locale = "tr" }: { locale?: Locale }) {
           side={segment.side}
         />
       ))}
-    </main>
+      </main>
+    </SmoothScrollProvider>
   );
 }
