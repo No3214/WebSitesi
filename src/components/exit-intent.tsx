@@ -57,21 +57,28 @@ export const ExitIntent = () => {
     }
     if (alreadyShown) return;
 
-    const handleMouseLeave = (e: MouseEvent) => {
-      // Trigger when mouse leaves the top of the viewport (intent to close/change tab)
-      if (e.clientY <= 0) {
-        setIsVisible(true);
-        setHasShown(true);
-        try {
-          sessionStorage.setItem("exitIntentShown", "1");
-        } catch {
-          // ignore storage errors
-        }
+    const showOffer = () => {
+      setIsVisible(true);
+      setHasShown(true);
+      try {
+        sessionStorage.setItem("exitIntentShown", "1");
+      } catch {
+        // ignore storage errors
       }
     };
 
-    document.addEventListener("mouseleave", handleMouseLeave);
-    return () => document.removeEventListener("mouseleave", handleMouseLeave);
+    const handleTopExit = (e: MouseEvent) => {
+      // Trigger when the pointer leaves or crosses above the top viewport edge.
+      // Some headless browsers do not consistently emit mouseleave for this path.
+      if (e.clientY <= 0) showOffer();
+    };
+
+    document.addEventListener("mousemove", handleTopExit, { passive: true });
+    document.addEventListener("mouseleave", handleTopExit);
+    return () => {
+      document.removeEventListener("mousemove", handleTopExit);
+      document.removeEventListener("mouseleave", handleTopExit);
+    };
   }, [hasShown]);
 
   if (!isVisible) return null;

@@ -36,6 +36,27 @@ async function prepareExitIntentTest(page: import("@playwright/test").Page) {
   );
 }
 
+async function triggerExitIntentDialog(page: import("@playwright/test").Page, name: string) {
+  const dialog = page.getByRole("dialog", { name });
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await page.waitForTimeout(attempt === 0 ? 700 : 300);
+    await page.mouse.move(300, 300);
+    await page.mouse.move(300, 1);
+    await page.mouse.move(300, -10);
+
+    try {
+      await expect(dialog).toBeVisible({ timeout: 1800 });
+      return dialog;
+    } catch {
+      // Retry the same top-exit gesture; hydration timing can lag in parallel CI.
+    }
+  }
+
+  await expect(dialog).toBeVisible({ timeout: 5000 });
+  return dialog;
+}
+
 test.describe("Site geneli smoke", () => {
   for (const path of smokePages) {
     test(`${path} sayfasi yuklenir ve baslik render olur`, async ({ page }) => {
@@ -119,13 +140,8 @@ test.describe("Rezervasyon HMS handoff", () => {
   test("exit-intent rezervasyon aksiyonu resmi HMS ekranina gider", async ({ page }) => {
     await prepareExitIntentTest(page);
     await page.goto("/");
-    await page.waitForTimeout(500);
 
-    await page.mouse.move(300, 300);
-    await page.mouse.move(300, -10);
-
-    const exitIntentDialog = page.getByRole("dialog", { name: "Direkt rezervasyon teklifi" });
-    await expect(exitIntentDialog).toBeVisible();
+    const exitIntentDialog = await triggerExitIntentDialog(page, "Direkt rezervasyon teklifi");
 
     const exitIntentBooking = exitIntentDialog.getByRole("link", { name: "REZERVASYON YAP", exact: true });
     await expect(exitIntentBooking).toBeVisible();
@@ -136,13 +152,8 @@ test.describe("Rezervasyon HMS handoff", () => {
   test("ingilizce exit-intent resmi HMS ekranina ingilizce metinle gider", async ({ page }) => {
     await prepareExitIntentTest(page);
     await page.goto("/en");
-    await page.waitForTimeout(500);
 
-    await page.mouse.move(300, 300);
-    await page.mouse.move(300, -10);
-
-    const exitIntentDialog = page.getByRole("dialog", { name: "Direct booking offer" });
-    await expect(exitIntentDialog).toBeVisible();
+    const exitIntentDialog = await triggerExitIntentDialog(page, "Direct booking offer");
     await expect(exitIntentDialog.getByText("Official Direct Reservation")).toBeVisible();
     await expect(exitIntentDialog.getByText("Resmi Direkt Rezervasyon")).toHaveCount(0);
 

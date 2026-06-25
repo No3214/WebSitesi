@@ -19,7 +19,6 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
   const [shouldLoad, setShouldLoad] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackBlocked, setPlaybackBlocked] = useState(false);
-  const [playRequest, setPlayRequest] = useState(0);
 
   const markPlaybackState = useCallback(() => {
     const video = videoRef.current;
@@ -67,13 +66,8 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
     }
 
     setShouldLoad(true);
-    setPlayRequest((current) => current + 1);
-  }, [isPlaying]);
-
-  useEffect(() => {
-    if (playRequest === 0 || !shouldLoad) return;
     void start();
-  }, [playRequest, shouldLoad, start]);
+  }, [isPlaying, start]);
 
   useEffect(() => {
     const video = videoRef.current;

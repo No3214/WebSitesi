@@ -1699,6 +1699,8 @@ describe("production readiness contracts", () => {
     const exitIntent = read("src/components/exit-intent.tsx");
     expect(exitIntent).toContain("getConfiguredBookingEngineHref");
     expect(exitIntent).toContain("usePathname");
+    expect(exitIntent).toContain('document.addEventListener("mousemove", handleTopExit');
+    expect(exitIntent).toContain('document.addEventListener("mouseleave", handleTopExit');
     expect(exitIntent).toContain('target="_blank"');
     expect(exitIntent).not.toContain('|| "/rezervasyon"');
     expect(exitIntent).toContain("Kozbeyli Konağı");
