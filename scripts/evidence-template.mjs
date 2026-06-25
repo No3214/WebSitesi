@@ -30,6 +30,9 @@ const guestFacingCopyByGate = {
     "Rezervasyon, etkinlik ve iletisim surecleri KVKK ve ticari kosullar cercevesinde yurutulur.",
 };
 
+const compactSourceRefsPolicy =
+  "real redacted source-system IDs only; no copied examples, raw URLs, local file paths, secrets, card/bank data or guest PII";
+
 function indexSteps(plan) {
   return new Map((plan.gateSteps || []).map((step) => [step.id, step]));
 }
@@ -296,6 +299,7 @@ export function buildCompactEvidenceTemplates(result) {
       runtimeStatusText: template.runtimeStatusText,
       envNames: [...(template.envSetup?.envNames || [])],
       requiredProofSignals: [...template.requiredProofSignals],
+      sourceRefsPolicy: compactSourceRefsPolicy,
       commands: [...template.commands],
     })),
   };
@@ -327,6 +331,7 @@ export function formatCompactEvidenceTemplates(result) {
     lines.push(`  runtime: ${template.runtimeStatusText}`);
     if (template.envNames.length > 0) lines.push(`  env names: ${template.envNames.join(", ")}`);
     lines.push(`  proof: ${template.requiredProofSignals.join("; ") || "redacted source-system proof"}`);
+    lines.push(`  source refs: ${template.sourceRefsPolicy}`);
     lines.push(`  commands: ${template.commands.join(" && ")}`);
   }
 

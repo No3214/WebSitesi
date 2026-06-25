@@ -493,15 +493,18 @@ describe("evidence templates", () => {
     expect(serialized).toContain("docs/evidence/hms-booking-engine.md");
     expect(serialized).not.toContain("production_abuse_controls");
     expect(serialized).not.toContain("safeEvidenceRules");
-    expect(serialized).not.toContain("sourceRefsPolicy");
+    expect(serialized).toContain("sourceRefsPolicy");
+    expect(serialized).toContain("real redacted source-system IDs only");
+    expect(serialized).not.toContain("OPS-1234");
     expect(formatted).toContain("Kozbeyli Konagi compact evidence templates");
     expect(formatted).toContain("Runtime-ready only: yes");
     expect(formatted).toContain("production_database: docs/evidence/production-database.md");
     expect(formatted).toContain("hms_booking_engine: docs/evidence/hms-booking-engine.md");
+    expect(formatted).toContain("source refs: real redacted source-system IDs only");
     expect(formatted).not.toContain("vercel env add DATABASE_URI production");
   });
 
-  it("writes compact evidence templates without verbose policy payload", async () => {
+  it("writes compact evidence templates with a concise source_refs policy and no verbose policy payload", async () => {
     const audit = await loadAuditModule();
     const cutover = await loadCutoverModule();
     const templates = await loadTemplateModule();
@@ -532,8 +535,10 @@ describe("evidence templates", () => {
     expect(writtenPath).toBe(path.join(cwd, ".codex-artifacts", "evidence-templates-runtime-ready.json"));
     expect(written).toContain('"runtimeReadyOnly": true');
     expect(written).toContain('"templateCount": 2');
+    expect(written).toContain('"sourceRefsPolicy"');
+    expect(written).toContain("real redacted source-system IDs only");
     expect(written).not.toContain("safeEvidenceRules");
-    expect(written).not.toContain("sourceRefsPolicy");
+    expect(written).not.toContain("OPS-1234");
   });
 
   it("narrows partial analytics environment guidance to the actual missing secret", async () => {

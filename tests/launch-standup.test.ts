@@ -619,14 +619,17 @@ describe("launch standup", () => {
     expect(serialized).toContain("Revenue / booking operator");
     expect(serialized).toContain("hms_booking_engine");
     expect(serialized).not.toContain("safeEvidenceRules");
-    expect(serialized).not.toContain("sourceRefsPolicy");
+    expect(serialized).toContain("sourceRefsPolicy");
+    expect(serialized).toContain("real redacted source-system IDs only");
+    expect(serialized).not.toContain("OPS-1234");
     expect(formatted).toContain("Kozbeyli Konagi compact launch standup");
     expect(formatted).toContain("Lanes: env=");
     expect(formatted).toContain("Owner queues:");
+    expect(formatted).toContain("source refs (hms_booking_engine)=real redacted source-system IDs only");
     expect(formatted).toContain("Verify:");
   });
 
-  it("writes compact launch standup artifacts without the verbose evidence policy payload", async () => {
+  it("writes compact launch standup artifacts with concise source_refs policy and no verbose payload", async () => {
     const audit = await loadAuditModule();
     const cutover = await loadCutoverModule();
     const standup = await loadStandupModule();
@@ -648,8 +651,10 @@ describe("launch standup", () => {
     expect(writtenPath).toBe(path.join(cwd, ".codex-artifacts", "launch-standup-compact.json"));
     expect(written).toContain('"ownerQueues"');
     expect(written).toContain('"NEXT_PUBLIC_SITE_URL"');
+    expect(written).toContain('"sourceRefsPolicy"');
+    expect(written).toContain("real redacted source-system IDs only");
     expect(written).not.toContain("safeEvidenceRules");
-    expect(written).not.toContain("sourceRefsPolicy");
+    expect(written).not.toContain("OPS-1234");
   });
 
   it("surfaces Vercel CLI bootstrap before production env edits when ops tooling is not ready", async () => {

@@ -15,6 +15,8 @@ const gateCatalog = new Map(commercialLaunchGates.map((gate) => [gate.id, gate])
 
 const sourceRefsPolicy =
   "Use real redacted source-system IDs from the provider/operator system. OPS-1234, UAT-5678 and VERCEL:ENV-20260623 are format examples only; never use copied examples, never raw URLs, local files, screenshots, credentials, database URLs, access tokens, contracts, card data, bank account details or customer PII.";
+const compactSourceRefsPolicy =
+  "real redacted source-system IDs only; no copied examples, raw URLs, local file paths, secrets, card/bank data or guest PII";
 
 function unique(values) {
   return [...new Set(values.filter(Boolean))];
@@ -410,6 +412,7 @@ export function formatLaunchStandup(result) {
         lines.push(
           `  required proof (${gate.id}): ${gate.evidenceSetup.requiredProofSignals.join(", ") || "redacted source-system proof"}`,
         );
+        lines.push(`  source refs (${gate.id}): ${compactSourceRefsPolicy}`);
       }
       lines.push(`  gates: ${queue.gates.map((gate) => gate.id).join(", ")}`);
     }
@@ -434,6 +437,7 @@ function compactGate(gate) {
     ...(gate.runtimeOperationalStatus ? { runtimeOperationalStatus: gate.runtimeOperationalStatus } : {}),
     missingEnv: [...(gate.envSetup?.envNames || gate.missingEnv || [])],
     evidencePaths: [...(gate.evidencePaths || [])],
+    ...(gate.evidencePaths?.length ? { sourceRefsPolicy: compactSourceRefsPolicy } : {}),
     nextCommand: gate.nextCommand,
     verificationCommand: gate.verificationCommand,
   };
@@ -480,6 +484,7 @@ export function buildCompactLaunchStandup(result) {
           nextCommand: result.nextGate.nextCommand,
           verificationCommand: result.nextGate.verificationCommand,
           evidencePaths: [...(result.nextGate.evidencePaths || [])],
+          ...(result.nextGate.evidencePaths?.length ? { sourceRefsPolicy: compactSourceRefsPolicy } : {}),
           envNames: [...(result.nextGate.envSetup?.envNames || [])],
         }
       : null,
@@ -522,6 +527,7 @@ export function formatCompactLaunchStandup(result) {
     }
     if (result.nextGate.evidencePaths.length > 0) {
       lines.push(`Evidence: ${result.nextGate.evidencePaths.join(", ")}`);
+      if (result.nextGate.sourceRefsPolicy) lines.push(`Source refs: ${result.nextGate.sourceRefsPolicy}`);
     }
     lines.push("");
     lines.push(
@@ -531,6 +537,9 @@ export function formatCompactLaunchStandup(result) {
     for (const queue of result.ownerQueues) {
       lines.push(`- ${queue.owner}: ${queue.totalBlockedPoints} pts; command=${queue.nextCommand}`);
       lines.push(`  gates=${queue.gates.map((gate) => gate.id).join(", ")}`);
+      for (const gate of queue.gates.filter((item) => item.sourceRefsPolicy)) {
+        lines.push(`  source refs (${gate.id})=${gate.sourceRefsPolicy}`);
+      }
     }
   }
 
