@@ -35,6 +35,13 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="tr">
       <body>
+        {/* dns-prefetch: ucuncu-parti olcum/booking domainleri icin yalniz DNS
+            cozumu (baglanti/veri YOK → consent'e duyarli kalir, ama onay sonrasi
+            script yuklenmesi daha hizli). React 19 bu link'leri <head>'e hoist eder. */}
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://connect.facebook.net" />
+        <link rel="dns-prefetch" href="https://app.hms.gen.tr" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelSchema()) }}
