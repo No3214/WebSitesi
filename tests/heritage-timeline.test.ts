@@ -30,6 +30,16 @@ describe("Heritage timeline kontrati", () => {
     }
   });
 
+  it("nokta (dot) FadeIn DISINDA render edilir (transform absolute konumu bozmasin)", () => {
+    const c = read(COMPONENT);
+    const dotIdx = c.indexOf("heritage-timeline-dot");
+    const fadeIdx = c.indexOf("<FadeIn>");
+    expect(dotIdx).toBeGreaterThan(0);
+    expect(fadeIdx).toBeGreaterThan(0);
+    // dot, FadeIn acilisindan ONCE gelmeli (li'nin dogrudan cocugu)
+    expect(dotIdx).toBeLessThan(fadeIdx);
+  });
+
   it("scroll-hijack YOK (ScrollTrigger/pin/scrub kullanmaz)", () => {
     const c = read(COMPONENT);
     for (const bad of ["ScrollTrigger", "pin:", "scrub", "gsap"]) {
