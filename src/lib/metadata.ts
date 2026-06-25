@@ -35,7 +35,7 @@ export const defaultMetadata: Metadata = {
     "taş ev konaklama izmir",
     "ege mutfağı gurme restoran",
     "antakya mutfağı izmir",
-    "evcil hayvan dostu taş otel",
+    "evcil hayvan kabul eden taş otel",
     "horasan harçlı mimari otel",
   ],
   authors: [{ name: "Kozbeyli Konağı Team" }],
@@ -61,9 +61,9 @@ export const defaultMetadata: Metadata = {
     locale: "tr_TR",
     url: absoluteUrl("/"),
     siteName: "Kozbeyli Konağı",
-    title: "Kozbeyli Konağı | Lüks Taş Butik Otel & Gurme Restoran | Foça",
+    title: "Kozbeyli Konağı | Taş Butik Otel & Ege Restoranı | Foça",
     description:
-      "Tarihin kalbinde, lüks ve konforun buluşma noktası. Taş mimari odalar, ödüllü mutfak ve Ege'nin en huzurlu köyü Kozbeyli'de sizi bekliyoruz.",
+      "Tarihin kalbinde taş mimari odalar, Antakya & Ege mutfağı ve Kozbeyli köy dokusuna yakın sakin bir konaklama deneyimi.",
     images: [
       {
         url: absoluteUrl("/images/hero.jpg"),
@@ -75,7 +75,7 @@ export const defaultMetadata: Metadata = {
     card: "summary_large_image",
     site: "@kozbeylikonagi",
     creator: "@kozbeylikonagi",
-    title: "Kozbeyli Konağı | Foça'nın En Prestijli Butik Oteli",
+    title: "Kozbeyli Konağı | Foça Taş Butik Otel & Restoran",
     description: "Taş mimari, gurme lezzetler ve eşsiz bir Ege köyü hikayesi.",
     images: [absoluteUrl("/images/hero.jpg")],
   },

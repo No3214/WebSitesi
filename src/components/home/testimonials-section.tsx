@@ -3,30 +3,36 @@
 import { FadeIn } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
 
-const testimonials = [
+const guestMoments = [
   {
-    quote: {
-      tr: "Taş duvarların arasında uyanmak, avluda dibek kahvesi içmek... Şehirden sonra bambaşka bir zaman dilimi.",
-      en: "Waking up between stone walls, sipping dibek coffee in the courtyard... a different dimension of time after the city.",
+    title: {
+      tr: "Romantik Kaçamak",
+      en: "Romantic Escape",
     },
-    name: "Elif & Mert",
-    meta: { tr: "İSTANBUL — BALAYI", en: "ISTANBUL — HONEYMOON" },
+    text: {
+      tr: "Taş duvarların sakinliği, avluda kahve ritüeli ve Foça rotalarına yakın konum çiftler için rafine bir hafta sonu akışı kurar.",
+      en: "Stone-wall calm, a courtyard coffee ritual and proximity to Foça routes create a refined weekend rhythm for couples.",
+    },
   },
   {
-    quote: {
-      tr: "Kahvaltı bir öğün değil, bir tören. İnci Hanım'ın mutfağından çıkan her tabakta bir hikaye var.",
-      en: "Breakfast is not a meal here, it's a ceremony. Every plate from İnci Hanım's kitchen tells a story.",
+    title: {
+      tr: "Gastronomi Molası",
+      en: "Gastronomy Break",
     },
-    name: "Zeynep K.",
-    meta: { tr: "ANKARA — GASTRONOMİ KAÇAMAĞI", en: "ANKARA — GASTRONOMY ESCAPE" },
+    text: {
+      tr: "Antakya aile reçeteleri, Ege ürünleri ve taş fırın lezzetleri aynı sofrada buluşur.",
+      en: "Antakya family recipes, Aegean produce and stone-oven flavours meet at the same table.",
+    },
   },
   {
-    quote: {
-      tr: "Kızımızın nişanını konağın avlusunda yaptık. Ekip her detayı bizden önce düşündü.",
-      en: "We hosted our daughter's engagement in the courtyard. The team thought of every detail before we did.",
+    title: {
+      tr: "Özel Davet",
+      en: "Private Event",
     },
-    name: "Ayhan Ailesi",
-    meta: { tr: "İZMİR — ÖZEL DAVET", en: "IZMIR — PRIVATE EVENT" },
+    text: {
+      tr: "Bahçe, avlu ve taş doku; düğün, nişan ve butik davetlerde kişiye özel kurgu için güçlü bir zemin sunar.",
+      en: "The garden, courtyard and stone texture provide a strong setting for curated weddings, engagements and intimate events.",
+    },
   },
 ];
 
@@ -37,17 +43,17 @@ export function TestimonialsSection({ locale }: { locale: "tr" | "en" }) {
         <FadeIn>
           <SectionTitle
             eyebrow={locale === "tr" ? "MİSAFİR DEFTERİ" : "GUEST BOOK"}
-            title={locale === "tr" ? "Konaktan Ayrılanların Sözleri" : "Words From Our Departing Guests"}
+            title={locale === "tr" ? "Konakta Yaşanan Anlar" : "Moments Shaped at the Mansion"}
           />
         </FadeIn>
         <div className="testimonial-grid">
-          {testimonials.map((item, idx) => (
+          {guestMoments.map((item, idx) => (
             <FadeIn key={idx} delay={idx * 0.12}>
               <figure className="testimonial" style={{ margin: 0 }}>
-                <span className="stars" aria-label="5 yıldız">★★★★★</span>
-                <blockquote>“{item.quote[locale]}”</blockquote>
+                <h3>{item.title[locale]}</h3>
+                <blockquote>{item.text[locale]}</blockquote>
                 <figcaption>
-                  {item.name} · {item.meta[locale]}
+                  {locale === "tr" ? "Kozbeyli Konağı deneyim kurgusu" : "Kozbeyli Konağı experience cue"}
                 </figcaption>
               </figure>
             </FadeIn>

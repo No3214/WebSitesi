@@ -1805,10 +1805,15 @@
     background: var(--white);
   }
 
-  .testimonial .stars {
-    color: var(--gold);
-    letter-spacing: 4px;
-    font-size: 0.9rem;
+  .testimonial h3 {
+    margin: 0;
+    color: var(--gold-text);
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    line-height: 1.35;
+    text-transform: uppercase;
   }
 
   .testimonial blockquote {

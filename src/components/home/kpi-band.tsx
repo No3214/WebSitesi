@@ -3,7 +3,7 @@
 import { FadeIn } from "@/components/animations";
 
 export function KpiBand({ locale }: { locale: "tr" | "en" }) {
-  const experienceScore = locale === "tr" ? "9,4/10" : "9.4/10";
+  const roomCount = "16";
   const receptionHours = locale === "tr" ? "12 Saat" : "12 Hrs";
 
   return (
@@ -12,8 +12,8 @@ export function KpiBand({ locale }: { locale: "tr" | "en" }) {
         <FadeIn>
           <div className="kpi-row">
             <div>
-              <strong>{experienceScore}</strong>
-              <span>{locale === "tr" ? "Misafir Deneyimi" : "Guest Experience"}</span>
+              <strong>{roomCount}</strong>
+              <span>{locale === "tr" ? "Butik Oda" : "Boutique Rooms"}</span>
             </div>
             <div>
               <strong>500+</strong>

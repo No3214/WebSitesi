@@ -4,6 +4,7 @@ import { Clock, Coffee, HeartPulse, MapPin, ShieldCheck, Wifi } from "lucide-rea
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
+import { operationalPolicies } from "@/data/operational-policies";
 import { getWhatsAppHref } from "@/lib/contact";
 import { absoluteUrl } from "@/lib/utils";
 
@@ -30,8 +31,7 @@ const guideItems = [
   {
     icon: <Coffee className="w-6 h-6 text-gold" />,
     title: "Breakfast Hours",
-    content:
-      "The Kozbeyli village breakfast is served each morning between 09:00 and 11:30 in the restaurant or garden.",
+    content: operationalPolicies.en.breakfast,
   },
   {
     icon: <Wifi className="w-6 h-6 text-gold" />,

@@ -1,3 +1,4 @@
+import { operationalPolicies } from "@/data/operational-policies";
 import { env } from "@/lib/env";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { absoluteUrl } from "./utils";
@@ -46,8 +47,8 @@ export function hotelSchema() {
       { "@type": "LocationFeatureSpecification", name: "İnci Hanım Güvencesinde Antakya & Ege Mutfağı", value: true },
       { "@type": "LocationFeatureSpecification", name: "180 Yıllık Taş Dibek Kahvesi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Yavaş Yaşam (Slow Living) Deneyimi", value: true },
-      { "@type": "LocationFeatureSpecification", name: "Evcil Hayvan Dostu", value: true },
-      { "@type": "LocationFeatureSpecification", name: "Ücretsiz Otopark", value: true },
+      { "@type": "LocationFeatureSpecification", name: operationalPolicies.tr.pets, value: true },
+      { "@type": "LocationFeatureSpecification", name: "Açık otopark alanı ve varış yönlendirmesi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Kahvaltı", value: true },
       { "@type": "LocationFeatureSpecification", name: "Klima", value: true },
     ],

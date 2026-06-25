@@ -859,6 +859,7 @@ describe("production readiness contracts", () => {
     const sitemap = read("src/app/sitemap.ts");
     const robots = read("src/app/robots.ts");
     const schema = read("src/lib/schema.ts");
+    const operationalPolicies = read("src/data/operational-policies.ts");
     const locationContent = read("src/components/location-page-content.tsx");
     const evidence = read("docs/evidence/search-local-seo.md");
 
@@ -882,8 +883,11 @@ describe("production readiness contracts", () => {
     expect(schema).toContain('"@type": ["Hotel", "LodgingBusiness", "Restaurant"]');
     expect(schema).toContain('"@type": "PostalAddress"');
     expect(schema).toContain('"@type": "GeoCoordinates"');
-    expect(schema).toContain("Evcil Hayvan Dostu");
-    expect(schema).toContain("Ücretsiz Otopark");
+    expect(schema).toContain("Açık otopark alanı ve varış yönlendirmesi");
+    expect(schema).toContain("operationalPolicies.tr.pets");
+    expect(operationalPolicies).toContain("rezervasyon öncesinde yazılı teyit gerekir");
+    expect(schema).not.toContain("Evcil Hayvan Dostu");
+    expect(schema).not.toContain("Ücretsiz Otopark");
     expect(schema).not.toContain("starRating");
     expect(schema).not.toContain("aggregateRating");
     expect(schema).not.toContain("review:");
@@ -1896,15 +1900,24 @@ describe("production readiness contracts", () => {
 
   it("keeps homepage KPI values truthful in server-rendered HTML", () => {
     const kpiBand = read("src/components/home/kpi-band.tsx");
+    const testimonials = read("src/components/home/testimonials-section.tsx");
+    const metadata = read("src/lib/metadata.ts");
+    const homepage = read("src/app/page.tsx");
 
     expect(kpiBand).not.toContain("Counter");
-    expect(kpiBand).toContain('"9,4/10"');
-    expect(kpiBand).toContain('"9.4/10"');
+    expect(kpiBand).toContain('const roomCount = "16"');
+    expect(kpiBand).not.toContain('"9,4/10"');
+    expect(kpiBand).not.toContain('"9.4/10"');
     expect(kpiBand).toContain("<strong>500+</strong>");
     expect(kpiBand).toContain('"12 Saat"');
     expect(kpiBand).toContain('"Resepsiyon · 24:00');
     expect(kpiBand).not.toContain('"24 Saat"');
     expect(kpiBand).not.toContain('to={500}');
+    expect(testimonials).not.toContain("★★★★★");
+    expect(testimonials).not.toContain("aria-label=\"5 yıldız\"");
+    expect(metadata).not.toContain("ödüllü mutfak");
+    expect(metadata).not.toContain("En Prestijli");
+    expect(homepage).not.toContain("En Prestijli");
   });
 
   it("keeps production builds independent from Google Fonts network fetches", () => {
@@ -2139,6 +2152,7 @@ describe("production readiness contracts", () => {
     const contactClient = read("src/components/contact-client.tsx");
     const salesAgreement = read("src/app/mesafeli-satis-sozlesmesi/page.tsx");
     const dictionary = read("src/lib/dictionary.ts");
+    const operationalPolicies = read("src/data/operational-policies.ts");
 
     for (const source of [trGuide, enGuide, llms, contactPage, enContactPage, contactClient, salesAgreement, dictionary]) {
       expect(source).not.toMatch(/48\s*(saat|hours)/i);
@@ -2156,8 +2170,12 @@ describe("production readiness contracts", () => {
     expect(dictionary).toContain("Terms Confirmed in Writing");
     expect(contactClient).toContain("canlı yol tarifini");
     expect(llms).toContain("canlı yol tarifi önerilir");
-    expect(llms).toContain("Tesiste ücretsiz açık otopark");
-    expect(llms).toContain("evcil hayvan dostu");
+    expect(llms).toContain("operationalPolicies.tr.parking");
+    expect(llms).toContain("operationalPolicies.tr.pets");
+    expect(operationalPolicies).toContain("Tesisin açık otopark alanı ve köy içi varış yönlendirmesi");
+    expect(operationalPolicies).toContain("rezervasyon öncesinde yazılı teyit gerekir");
+    expect(llms).not.toContain("Tesiste ücretsiz açık otopark");
+    expect(llms).not.toContain("evcil hayvan dostu");
   });
 
   it("keeps public LLM and agent context evidence-gated", () => {
@@ -2165,6 +2183,7 @@ describe("production readiness contracts", () => {
     const llmContextGenerator = read("src/lib/ai/llm-context-generator.ts");
     const specialistHospitality = read("src/lib/ai/specialist-hospitality.ts");
     const llmContextRoute = read("src/app/api/llm-context/route.ts");
+    const operationalPolicies = read("src/data/operational-policies.ts");
     const combined = [llms, llmContextGenerator, specialistHospitality, llmContextRoute].join("\n");
 
     for (const forbidden of [
@@ -2189,8 +2208,12 @@ describe("production readiness contracts", () => {
 
     expect(llms).toContain("rezervasyon ekranı, WhatsApp, telefon veya e-posta");
     expect(llms).toContain("canlı online rezervasyon motoru yalnızca production HMS bağlantısı");
-    expect(llms).toContain("free open parking is available on site");
-    expect(llms).toContain("the hotel is pet-friendly");
+    expect(llms).toContain("operationalPolicies.en.parking");
+    expect(llms).toContain("operationalPolicies.en.pets");
+    expect(operationalPolicies).toContain("On-site open parking and village-arrival guidance are available");
+    expect(operationalPolicies).toContain("Pet acceptance depends on room type");
+    expect(llms).not.toContain("free open parking is available on site");
+    expect(llms).not.toContain("the hotel is pet-friendly");
     expect(llms).toContain("A live online booking engine is used only when the production HMS URL is configured.");
     expect(llmContextGenerator).toContain("availability_confirmation_required");
     expect(llmContextGenerator).toContain("NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL");

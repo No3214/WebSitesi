@@ -40,6 +40,13 @@ describe("English public copy contracts", () => {
     }
   });
 
+  it("routes the English homepage menu call-to-action to the English menu", () => {
+    const gastronomyEditorial = read("src/components/home/gastronomy-editorial.tsx");
+
+    expect(gastronomyEditorial).toContain('href={locale === "en" ? "/en/menu" : "/menu"}');
+    expect(gastronomyEditorial).not.toContain('href="/menu" className="button secondary"');
+  });
+
   it("renders the English gallery through localized captions instead of the Turkish page default", () => {
     const englishGalleryPage = read("src/app/en/galeri/page.tsx");
     const galleryContent = read("src/components/gallery-page-content.tsx");

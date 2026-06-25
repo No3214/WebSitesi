@@ -4,6 +4,7 @@ import { PageHero } from "@/components/page-hero";
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { Clock, Coffee, Wifi, MapPin, ShieldCheck, HeartPulse } from "lucide-react";
 import { getWhatsAppHref } from "@/lib/contact";
+import { operationalPolicies } from "@/data/operational-policies";
 
 import { absoluteUrl } from "@/lib/utils";
 
@@ -46,7 +47,7 @@ const guideItems = [
   {
     icon: <Coffee className="w-6 h-6 text-gold" />,
     title: "Kahvaltı Saatleri",
-    content: "Kozbeyli serpme köy kahvaltımız her sabah 09:00 - 11:30 saatleri arasında restorantımızda veya bahçemizde servis edilir."
+    content: operationalPolicies.tr.breakfast
   },
   {
     icon: <Wifi className="w-6 h-6 text-gold" />,
