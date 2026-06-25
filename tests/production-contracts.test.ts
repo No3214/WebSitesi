@@ -2105,7 +2105,10 @@ describe("production readiness contracts", () => {
     expect(design).toContain('accent: "#B3925C"');
     expect(design).toContain('textColor: "{colors.ink}"');
     expect(globals).toContain("--on-gold: #14161a");
-    expect(globals).toContain(".button.gold {\n    background: linear-gradient(135deg, var(--gold), #9a7c49);\n    color: var(--on-gold);");
+    // Altin buton: fildisi yazi + derinlestirilmis altin (siyah-uzerine-altin
+    // uyumsuzlugu giderildi). ::selection/video kontrolleri hala --on-gold (koyu) kullanir.
+    expect(globals).toContain("background: linear-gradient(135deg, #a8824a, #74592e)");
+    expect(globals).toContain("color: var(--ivory);\n    text-shadow: 0 1px 1px rgba(38, 28, 12, 0.28);");
     expect(design).toContain("real Kozbeyli Konagi property, food, room, event or approved brand assets");
     expect(design).toContain("reception until 24:00");
     expect(design).toContain("menu and room pricing conservative");

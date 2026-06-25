@@ -487,8 +487,12 @@
   }
 
   .button.gold {
-    background: linear-gradient(135deg, var(--gold), #9a7c49);
-    color: var(--on-gold);
+    /* Fildisi yazi + derinlestirilmis zengin altin: siyah-uzerine-altin uyumsuzlugu
+       giderildi; ivory metin marka diline (luxury) uyar, ince golge okunabilirligi
+       gradient'in acik bolgesinde de korur. */
+    background: linear-gradient(135deg, #a8824a, #74592e);
+    color: var(--ivory);
+    text-shadow: 0 1px 1px rgba(38, 28, 12, 0.28);
     border: 1px solid transparent;
     box-shadow: var(--shadow-gold);
   }
