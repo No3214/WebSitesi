@@ -48,16 +48,51 @@ function compactDomain(result) {
   };
 }
 
+function gatePointsBlocked(gate) {
+  return Math.max(0, Number(gate.points || 0) - Number(gate.awardedPoints || 0));
+}
+
+function gateMissingEnvCount(gate) {
+  return Number(gate.missingEnvCount ?? gate.missingEnv?.length ?? 0);
+}
+
+function gateMissingEvidenceCount(gate) {
+  return Number(gate.missingEvidence?.length ?? 0);
+}
+
+function gateRuntimeReady(gate) {
+  return Boolean(gate.runtimeConfiguration?.ready || gate.runtimeSatisfiedByProduction);
+}
+
+function runtimeReadyEvidenceOnly(gate) {
+  return !gate.ready && gateRuntimeReady(gate) && gateMissingEnvCount(gate) === 0 && gateMissingEvidenceCount(gate) > 0;
+}
+
+function compactGate(gate) {
+  return {
+    id: gate.id,
+    label: gate.label,
+    pointsBlocked: gatePointsBlocked(gate),
+    missingEvidenceCount: gateMissingEvidenceCount(gate),
+    missingEnvCount: gateMissingEnvCount(gate),
+    runtimeReady: gateRuntimeReady(gate),
+    evidencePaths: (gate.missingEvidence || []).map((item) => item.path).filter(Boolean),
+    ...(gate.runtimeConfiguration?.operationalStatus
+      ? { runtimeOperationalStatus: gate.runtimeConfiguration.operationalStatus }
+      : {}),
+  };
+}
+
 function compactLaunch(result) {
   const blockedGates = result.gateResults
     .filter((gate) => !gate.ready)
-    .map((gate) => ({
-      id: gate.id,
-      label: gate.label,
-      pointsBlocked: Math.max(0, Number(gate.points || 0) - Number(gate.awardedPoints || 0)),
-      missingEvidenceCount: gate.missingEvidence?.length || 0,
-      missingEnvCount: gate.missingEnvCount || gate.missingEnv?.length || 0,
-    }));
+    .map(compactGate);
+  const runtimeReadyEvidenceOnlyGates = result.gateResults
+    .filter(runtimeReadyEvidenceOnly)
+    .map(compactGate);
+  const providerOrOperatorBlockedGates = result.gateResults
+    .filter((gate) => !gate.ready && !runtimeReadyEvidenceOnly(gate))
+    .map(compactGate);
 
   return {
     score: result.score,
@@ -75,6 +110,8 @@ function compactLaunch(result) {
       : undefined,
     readyGates: result.gateResults.filter((gate) => gate.ready).map((gate) => gate.id),
     blockedGates,
+    runtimeReadyEvidenceOnlyGates,
+    providerOrOperatorBlockedGates,
   };
 }
 
@@ -163,6 +200,13 @@ function buildNextActions(summary) {
   }
 
   if (summary.launch.score < summary.launch.target) {
+    if (summary.launch.runtimeReadyEvidenceOnlyGates.length > 0) {
+      const gateIds = summary.launch.runtimeReadyEvidenceOnlyGates.map((gate) => gate.id).join(", ");
+      actions.push(
+        `Complete runtime-ready evidence-only gates (${gateIds}) with real redacted source_refs, then run npm run evidence:templates:live:runtime-ready and npm run launch:audit:live:strict.`,
+      );
+    }
+
     const gateIds = summary.launch.blockedGates.map((gate) => gate.id).join(", ");
     actions.push(`Close commercial launch gates (${gateIds}), then run npm run launch:audit:live:strict.`);
     actions.push("Use npm run launch:standup:live for owner queues and npm run evidence:handoff:live for redacted proof files.");
@@ -328,6 +372,16 @@ export function formatReadinessSummary(summary) {
   lines.push(
     `Launch: ${summary.launch.decision}; blocked=${summary.launch.blockedGates.length === 0 ? "none" : summary.launch.blockedGates.map((gate) => gate.id).join(", ")}`,
   );
+  if (summary.launch.runtimeReadyEvidenceOnlyGates.length > 0) {
+    lines.push(
+      `Runtime-ready evidence-only: ${summary.launch.runtimeReadyEvidenceOnlyGates.map((gate) => `${gate.id} (+${gate.pointsBlocked})`).join(", ")}`,
+    );
+  }
+  if (summary.launch.providerOrOperatorBlockedGates.length > 0) {
+    lines.push(
+      `Provider/operator blocked: ${summary.launch.providerOrOperatorBlockedGates.map((gate) => gate.id).join(", ")}`,
+    );
+  }
   if (summary.launch.runtimeReadiness) {
     lines.push(
       `Runtime: ${summary.launch.runtimeReadiness.status} from ${summary.launch.runtimeReadiness.source}; configured=${summary.launch.runtimeReadiness.configuredGates.join(", ") || "none"}; blocked=${summary.launch.runtimeReadiness.blockedGates.join(", ") || "none"}`,

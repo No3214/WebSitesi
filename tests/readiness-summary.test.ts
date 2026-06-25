@@ -10,6 +10,8 @@ type ReadinessSummaryModule = {
       score: number;
       target: number;
       blockedGates: Array<{ id: string; pointsBlocked: number }>;
+      runtimeReadyEvidenceOnlyGates: Array<{ id: string; pointsBlocked: number; evidencePaths: string[] }>;
+      providerOrOperatorBlockedGates: Array<{ id: string; pointsBlocked: number }>;
       runtimeReadiness?: { status: string; blockedGates: string[] };
     };
     domain: { origins: Array<{ origin: string; openingHeroVideo: boolean }> };
@@ -82,6 +84,45 @@ const launchResult = {
       missingEvidence: [{ path: "docs/evidence/analytics-purchase.md" }],
       missingEnv: ["GA4_API_SECRET"],
       missingEnvCount: 1,
+    },
+  ],
+};
+
+const launchResultWithRuntimeReadyEvidenceOnly = {
+  ...launchResult,
+  runtimeReadiness: {
+    ...launchResult.runtimeReadiness,
+    configuredGates: [
+      "canonical_domain",
+      "production_database",
+      "hms_booking_engine",
+    ],
+    blockedGates: ["production_abuse_controls", "garanti_pos", "analytics_purchase"],
+  },
+  gateResults: [
+    ...launchResult.gateResults,
+    {
+      id: "hms_booking_engine",
+      label: "HMS booking engine handoff and booking UAT evidence",
+      ready: false,
+      points: 4,
+      awardedPoints: 0,
+      missingEvidence: [{ path: "docs/evidence/hms-booking-engine.md" }],
+      missingEnv: [],
+      missingEnvCount: 0,
+      runtimeSatisfiedByProduction: true,
+      runtimeConfiguration: {
+        source: "https://www.kozbeylikonagi.com/api/health",
+        status: "ready",
+        ready: true,
+        configurationSource: "env",
+        requiredCount: 1,
+        configuredCount: 1,
+        missingCount: 0,
+        invalidCount: 0,
+        placeholderCount: 0,
+        fallbackApplied: false,
+      },
     },
   ],
 };
@@ -199,6 +240,41 @@ describe("readiness summary", () => {
     expect(report).toContain("analytics_purchase");
     expect(report).not.toContain("SUPABASE_SERVICE_ROLE_KEY=");
     expect(report).not.toContain("GARANTI_3D_STORE_KEY=");
+    expect(report).not.toContain("GA4_API_SECRET=");
+  });
+
+  it("surfaces runtime-ready evidence-only gates as the fastest commercial closeout lane", async () => {
+    const { buildReadinessSummary, formatReadinessSummary } = await loadReadinessSummaryModule();
+    const summary = buildReadinessSummary({
+      generatedAt: "2026-06-23T00:00:00.000Z",
+      domainResult,
+      launchResult: launchResultWithRuntimeReadyEvidenceOnly,
+      githubCiResult: {
+        ...githubCiResult,
+        decision: "GITHUB CI PASS",
+        conclusion: "success",
+        failedJobs: [],
+        blockers: [],
+        remediation: [],
+      },
+      vercelOpsResult,
+      adminSurfaceResult,
+    });
+    const report = formatReadinessSummary(summary);
+
+    expect(summary.launch.runtimeReadyEvidenceOnlyGates).toEqual([
+      expect.objectContaining({
+        id: "hms_booking_engine",
+        pointsBlocked: 4,
+        evidencePaths: ["docs/evidence/hms-booking-engine.md"],
+      }),
+    ]);
+    expect(summary.launch.providerOrOperatorBlockedGates.map((gate) => gate.id)).toEqual(["analytics_purchase"]);
+    expect(summary.nextActions.join("\n")).toContain("runtime-ready evidence-only gates (hms_booking_engine)");
+    expect(summary.nextActions.join("\n")).toContain("real redacted source_refs");
+    expect(summary.nextActions.join("\n")).toContain("npm run evidence:templates:live:runtime-ready");
+    expect(report).toContain("Runtime-ready evidence-only: hms_booking_engine (+4)");
+    expect(report).toContain("Provider/operator blocked: analytics_purchase");
     expect(report).not.toContain("GA4_API_SECRET=");
   });
 
