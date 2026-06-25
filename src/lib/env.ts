@@ -22,6 +22,13 @@ const rawEnvSchema = z.object({
   GA4_API_SECRET: z.string().optional(),
   META_CAPI_ACCESS_TOKEN: z.string().optional(),
   META_CAPI_TEST_EVENT_CODE: z.string().optional(),
+  // Google Business Profile (review orchestration — otelin KENDI dogrulanmis
+  // isletmesinin yorumlari). Hepsi optional; bos ise google adapter no-op olur.
+  GOOGLE_BUSINESS_OAUTH_CLIENT_ID: z.string().optional(),
+  GOOGLE_BUSINESS_OAUTH_CLIENT_SECRET: z.string().optional(),
+  GOOGLE_BUSINESS_OAUTH_REFRESH_TOKEN: z.string().optional(),
+  GOOGLE_BUSINESS_ACCOUNT_ID: z.string().optional(),
+  GOOGLE_BUSINESS_LOCATION_ID: z.string().optional(),
 });
 
 const raw = rawEnvSchema.parse(process.env);
@@ -67,6 +74,13 @@ export const env = {
   // Doluysa Meta CAPI istekleri test_event_code ile gider → Events Manager >
   // Test Events'te canli dogrulama. Uretimde BOS birakilir.
   META_CAPI_TEST_EVENT_CODE: raw.META_CAPI_TEST_EVENT_CODE || "",
+  // Google Business Profile (review orchestration). Hepsi bos ise google adapter
+  // no-op (yorum cekmez); GA4/Meta deseniyle ayni "konfigure degilse sus" mantigi.
+  GOOGLE_BUSINESS_OAUTH_CLIENT_ID: raw.GOOGLE_BUSINESS_OAUTH_CLIENT_ID || "",
+  GOOGLE_BUSINESS_OAUTH_CLIENT_SECRET: raw.GOOGLE_BUSINESS_OAUTH_CLIENT_SECRET || "",
+  GOOGLE_BUSINESS_OAUTH_REFRESH_TOKEN: raw.GOOGLE_BUSINESS_OAUTH_REFRESH_TOKEN || "",
+  GOOGLE_BUSINESS_ACCOUNT_ID: raw.GOOGLE_BUSINESS_ACCOUNT_ID || "",
+  GOOGLE_BUSINESS_LOCATION_ID: raw.GOOGLE_BUSINESS_LOCATION_ID || "",
 };
 
 export function getAllowedOrigins() {
