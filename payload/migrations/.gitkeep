@@ -1,0 +1,2 @@
+# Payload migrations dizini. `payload migrate:create` ile üretilen dosyalar buraya gelir.
+# push:true ile şu an şema otomatik senkronlanıyor; içerik girdikten sonra migration'a geçilebilir.

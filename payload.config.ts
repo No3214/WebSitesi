@@ -28,6 +28,16 @@ export default buildConfig({
     pool: {
       connectionString: env.DATABASE_URI,
     },
+    // Supabase/Postgres şema yönetimi.
+    // Prod DB'de Payload tabloları yoktu (yeni kurulum) → admin /api/users 500
+    // veriyordu. `push` açık: ilk boot'ta tüm collection tabloları otomatik
+    // oluşturulur/senkronlanır. DB'de Payload verisi olmadığı için bu güvenlidir.
+    // İçerik girdikten sonra migration disiplinine geçmek için payload/migrations
+    // + `payload migrate` kullanılabilir (migrationDir hazır).
+    // ÖNEMLİ: DDL push, Supabase "Session"/"Direct" connection string ile çalışır;
+    // "Transaction pooler" (6543) prepared-statement/DDL'i kısıtlayabilir.
+    push: true,
+    migrationDir: path.resolve(process.cwd(), "payload/migrations"),
   }),
   cors: getAllowedOrigins(),
   csrf: getAllowedOrigins(),
