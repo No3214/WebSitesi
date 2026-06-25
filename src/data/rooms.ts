@@ -31,6 +31,7 @@ export function getLocalizedRooms(locale: RoomLocale): Room[] {
 export const rooms: Room[] = [
   {
     slug: "standart-bahce-manzarali-oda",
+    video: "/videos/rooms/standart-bahce-manzarali-oda.mp4",
     title: "Standart Bahçe Manzaralı Oda",
     short: "Kozbeyli Konağı'nın 24 metrekarelik, iç bahçe manzaralı huzurlu odası.",
     description: "Kozbeyli'nin 1870-1891 tüccar mirasını en saf haliyle yansıtan bu oda, orijinal andezit taş duvarları ve Horasan harcı detaylarıyla doğal bir termal kütle etkisi sunar. 180 yıllık tarihi Dibek Kahvesi ritüelinin gerçekleştiği avluya sadece bir adım uzaklıkta olup, köyün beş asırlık yerleşim hafızasını pencerelerinden içeri taşır. İç bahçe manzarasıyla 'Slow Living' felsefesini tam merkezinde deneyimlemek isteyen misafirlerimiz için tasarlanmıştır.",
@@ -52,6 +53,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "standart-deniz-manzarali-oda",
+    video: "/videos/rooms/standart-deniz-manzarali-oda.mp4",
     title: "Standart Deniz Manzaralı Oda",
     short: "Ege Denizi manzaralı, 24 metrekarelik otantik konaklama birimi.",
     description: "Standart Deniz Manzaralı oda tipi, Kozbeyli Konağı'nın yüksek konum avantajını kullanarak misafirlerine panoramik Ege Denizi manzarası sunar. 24 metrekarelik yaşam alanına sahip olan bu odalar, 19. yüzyıl Osmanlı taş işçiliğinin estetik detaylarını modern konfor detaylarıyla harmanlar. Her bir odada özel banyo, minibar, klima ve televizyon bulunmaktadır. Ege Denizi üzerinden batan güneşin eşsiz manzarasını odanın mahremiyetinde izleme imkanı sunan bu birimler, özellikle romantik kaçamaklar ve huzur arayan çiftler tarafından tercih edilmektedir. Taş duvarların sağladığı doğal izolasyon, yaz aylarında serin, kış aylarında ise sıcak bir iç mekan iklimi oluşturarak konforu maksimize eder.",
@@ -73,6 +75,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "uc-kisilik-oda",
+    video: "/videos/rooms/uc-kisilik-oda.mp4",
     title: "Üç Kişilik Oda",
     short: "3 yetişkin kapasiteli, 28 metrekarelik geniş konaklama alanı.",
     description: "28 metrekarelik geniş yerleşimiyle küçük gruplar için ideal bir 'miras sığınağı' olan Üç Kişilik Oda, yüksek tavanlı Osmanlı kentsel konut mimarisinin (L-Tipi Sofa) ferahlığını sunar. Oda, Kozbeyli'nin sismik dirençli andezit kaya tabanı üzerinde, kalın taş duvarların sağladığı doğal mikro-klima avantajıyla her zaman ideal bir serinliğe sahiptir. Pencerelerden giren Poyraz rüzgarları, köyün 180 metre rakımlı temiz havasını odanızın asaletine entegre eder.",
@@ -94,6 +97,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "4-kisilik-aile-odasi",
+    video: "/videos/rooms/4-kisilik-aile-odasi.mp4",
     title: "4 Kişilik Aile Odası",
     short: "45 metrekarelik, geniş aileler için tasarlanmış lüks taş süit.",
     description: "4 Kişilik Aile Odası, Kozbeyli Konağı'nın butik hizmet anlayışını geniş aile konseptiyle buluşturan 45 metrekarelik bir süit yapısındadır. İki ayrı bölümden oluşan yerleşim planı, ebeveynler ve çocuklar için ideal bir mahremiyet dengesi kurar. Odada çift kişilik yatak ile birlikte esnek yatak düzenlemeleri sunulabilmektedir. Taş mimarinin sunduğu prestijli görünüm, klima ile iklim kontrolü, geniş oturma grupları ve modern banyo üniteleriyle desteklenmiştir. 5 kişiye kadar genişletilebilen kapasitesiyle bölgedeki en kapsamlı aile konaklama seçeneklerinden biridir. Ücretsiz bebek yatağı hizmeti ve ailelere özel hazırlanan buklet setleri, konaklama boyunca yüksek konfor sağlar. Tesisin tarihi avlusuna ve restoran alanına kolay erişim imkanı bulunmaktadır.",
@@ -115,6 +119,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "4-kisilik-aile-odasi-balkonlu",
+    video: "/videos/rooms/4-kisilik-aile-odasi-balkonlu.mp4",
     title: "4 Kişilik Aile Odası Balkonlu Oda",
     short: "50 metrekarelik, özel balkonlu en prestijli aile ünitesi.",
     description: "Balkonlu Aile Odası, Kozbeyli Konağı'nın sunduğu en geniş iç mekan olan 50 metrekarelik alanıyla tesisin zirve konaklama birimlerinden biridir. Kendine ait geniş balkonu, misafirlere Kozbeyli Köyü'nün tarihi dokusunu ve temiz havasını özel bir alanda deneyimleme fırsatı verir. Taş duvarlar ve el işçiliği ahşap detaylarla süslenmiş bu birimde, televizyon ve genişletilmiş minibar servisi mevcuttur. Oda, çok çocuklu ailelerin ihtiyaçlarını karşılamak üzere tasarlanmış olup, konforu bir üst seviyeye taşıyan geniş banyo ve özel oturma köşesine sahiptir. Balkon alanı, sabah kahvesi veya akşam dinlenmesi için ideal bir kaçış noktasıdır. Tesisin tarihsel mirası ve modern lüksü, bu odanın her detayında somutlaşmaktadır.",
@@ -136,6 +141,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "superior-2-kisilik-oda",
+    video: "/videos/rooms/superior-2-kisilik-oda.mp4",
     title: "Superior 2 Kişilik Oda",
     short: "40 metrekarelik, küvetli ve panoramik deniz manzaralı lüks süit.",
     description: "Superior 2 Kişilik Oda, Kozbeyli Konağı'nın sunduğu en yüksek konfor standartlarını temsil eden 40 metrekarelik bir lüks süittir. Kesintisiz Ege Denizi manzarasına sahip olan bu oda, içerisinde bulunan özel tasarım küvetiyle bir spa deneyimi vaat eder. Teknik donanımında kaliteli ses sistemi, çay/kahve ikramı ve premium banyo malzemeleri yer almaktadır. Antika mobilyalarla döşenmiş olan iç mekan, 19. yüzyılın asaletini 21. yüzyıl teknolojileriyle başarıyla entegre eder. Özellikle balayı çiftleri ve özel yıl dönümü kutlamaları için tasarlanan bu oda, misafirlerine Kozbeyli Köyü'ndeki en prestijli konaklama deneyimini sunar. Yastık tercihi ve kişiye özel ikram seçenekleriyle her anı kişiselleştirilmiş bir hizmet sunulmaktadır.",
@@ -157,6 +163,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "superior-3-kisilik-oda",
+    video: "/videos/rooms/superior-3-kisilik-oda.mp4",
     title: "Superior 3 Kişilik Oda",
     short: "42 metrekarelik, 3 kişi kapasiteli, küvetli lüks deniz manzaralı süit.",
     description: "Alaybey Süit, Kozbeyli'nin beş asırlık köy dokusunu 19. yüzyıl tescilli konak mimarisiyle buluşturan, Horasan harcı izleri ve tüccar ailelerin mirasını yansıtan 'Slow Living' konseptiyle tasarlandı. / Alaybey Suite brings Kozbeyli's five-century village texture together with 19th-century registered mansion architecture, Horasan mortar details and a 'Slow Living' concept reflecting merchant heritage.",

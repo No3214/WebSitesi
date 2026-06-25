@@ -44,6 +44,7 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
         image: "image",
         prevImage: "Previous image",
         nextImage: "Next image",
+        introVideo: "Room intro video",
         badge: "HERITAGE STONE ROOM",
         size: "Size",
         capacity: "Capacity",
@@ -64,6 +65,7 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
         image: "görsel",
         prevImage: "Önceki görsel",
         nextImage: "Sonraki görsel",
+        introVideo: "Oda tanıtım videosu",
         badge: "MÜHÜRLÜ TAŞ KONAK",
         size: "Büyüklük",
         capacity: "Kapasite",
@@ -190,6 +192,18 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
                       {`${copy.image} ${activeImg + 1} / ${room.images.length}`}
                     </span>
                  </div>
+                 {room.video && (
+                   <video
+                     className="room-intro-video"
+                     src={room.video}
+                     poster={room.images[0]}
+                     controls
+                     muted
+                     playsInline
+                     preload="metadata"
+                     aria-label={`${room.title} — ${copy.introVideo}`}
+                   />
+                 )}
                  {room.images.length > 1 && (
                    <div className="image-strip" role="group" aria-label={copy.gallery}>
                      {room.images.map((img, i) => (
@@ -294,6 +308,18 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
           border-radius: 12px;
           overflow: hidden;
           box-shadow: 0 30px 60px -12px rgba(0,0,0,0.25);
+        }
+
+        .room-intro-video {
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          object-fit: cover;
+          border-radius: 12px;
+          overflow: hidden;
+          margin-bottom: 24px;
+          background: #000;
+          display: block;
+          box-shadow: 0 20px 50px -16px rgba(0, 0, 0, 0.28);
         }
 
         .image-strip {
