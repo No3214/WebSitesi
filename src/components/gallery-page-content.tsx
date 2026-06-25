@@ -3,6 +3,7 @@ import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
 import { GalleryLightbox } from "@/components/gallery-lightbox";
+import { SmoothScrollProvider } from "@/lib/animation/smooth-scroll";
 import { galleryExtended } from "@/data/gallery";
 import { absoluteUrl } from "@/lib/utils";
 
@@ -43,7 +44,7 @@ export function GalleryPageContent({ locale = "tr" }: { locale?: GalleryLocale }
   };
 
   return (
-    <>
+    <SmoothScrollProvider>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGalleryJsonLd) }}
@@ -60,6 +61,6 @@ export function GalleryPageContent({ locale = "tr" }: { locale?: GalleryLocale }
           </div>
         </section>
       </main>
-    </>
+    </SmoothScrollProvider>
   );
 }
