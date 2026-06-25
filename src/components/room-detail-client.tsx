@@ -5,7 +5,8 @@ import { notFound } from "next/navigation";
 import { Check } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FadeIn } from "@/components/animations";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, TouchEvent as ReactTouchEvent } from "react";
 import { getDictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
 import { WeatherRibbon } from "@/components/weather-ribbon";
@@ -13,10 +14,24 @@ import { getLocalizedRoom, rooms as fallbackRooms } from "@/data/rooms";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
 
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  return reduced;
+}
+
 export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string; initialLocale?: "tr" | "en" }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dict, setDict] = useState<any>(null);
   const [activeImg, setActiveImg] = useState(0);
+  const reduced = useReducedMotion();
+  const touchStartX = useRef<number | null>(null);
   const locale = initialLocale;
   const baseRoom = fallbackRooms.find((item) => item.slug === slug);
   const room = baseRoom ? getLocalizedRoom(baseRoom, locale) : undefined;
@@ -27,6 +42,8 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
     ? {
         gallery: "Room gallery",
         image: "image",
+        prevImage: "Previous image",
+        nextImage: "Next image",
         badge: "HERITAGE STONE ROOM",
         size: "Size",
         capacity: "Capacity",
@@ -45,6 +62,8 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
     : {
         gallery: "Oda galerisi",
         image: "görsel",
+        prevImage: "Önceki görsel",
+        nextImage: "Sonraki görsel",
         badge: "MÜHÜRLÜ TAŞ KONAK",
         size: "Büyüklük",
         capacity: "Kapasite",
@@ -61,6 +80,44 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
         cta: "EN İYİ FİYATLA YERİNİZİ AYIRIN",
       };
 
+  const imageCount = room?.images.length ?? 0;
+  const goNext = useCallback(
+    () => setActiveImg((p) => (imageCount ? (p + 1) % imageCount : p)),
+    [imageCount],
+  );
+  const goPrev = useCallback(
+    () => setActiveImg((p) => (imageCount ? (p - 1 + imageCount) % imageCount : p)),
+    [imageCount],
+  );
+  const onGalleryKeyDown = useCallback(
+    (e: ReactKeyboardEvent) => {
+      if (imageCount < 2) return;
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goNext();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goPrev();
+      }
+    },
+    [imageCount, goNext, goPrev],
+  );
+  const onTouchStart = useCallback((e: ReactTouchEvent) => {
+    touchStartX.current = e.touches[0]?.clientX ?? null;
+  }, []);
+  const onTouchEnd = useCallback(
+    (e: ReactTouchEvent) => {
+      if (touchStartX.current == null) return;
+      const dx = (e.changedTouches[0]?.clientX ?? 0) - touchStartX.current;
+      if (Math.abs(dx) > 40) {
+        if (dx < 0) goNext();
+        else goPrev();
+      }
+      touchStartX.current = null;
+    },
+    [goNext, goPrev],
+  );
+
   useEffect(() => {
     getDictionary(locale).then(setDict);
   }, [locale]);
@@ -76,14 +133,23 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
           <div className="detail-layout">
             <FadeIn direction="left">
               <div className="detail-media">
-                 <div className="main-image-wrapper">
+                 <div
+                    className="main-image-wrapper"
+                    role="group"
+                    aria-roledescription={copy.gallery}
+                    aria-label={`${room.title} — ${copy.gallery}`}
+                    tabIndex={imageCount > 1 ? 0 : -1}
+                    onKeyDown={onGalleryKeyDown}
+                    onTouchStart={onTouchStart}
+                    onTouchEnd={onTouchEnd}
+                 >
                     <AnimatePresence mode="popLayout" initial={false}>
                       <motion.div
                         key={activeImg}
-                        initial={{ opacity: 0, scale: 1.04 }}
+                        initial={reduced ? { opacity: 1 } : { opacity: 0, scale: 1.04 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                        exit={reduced ? { opacity: 1 } : { opacity: 0 }}
+                        transition={{ duration: reduced ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
                         style={{ position: "absolute", inset: 0 }}
                       >
                         <Image
@@ -97,8 +163,31 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
                         />
                       </motion.div>
                     </AnimatePresence>
+                    {imageCount > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          className="gallery-nav gallery-nav-prev"
+                          onClick={goPrev}
+                          aria-label={copy.prevImage}
+                        >
+                          <span aria-hidden>‹</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="gallery-nav gallery-nav-next"
+                          onClick={goNext}
+                          aria-label={copy.nextImage}
+                        >
+                          <span aria-hidden>›</span>
+                        </button>
+                      </>
+                    )}
                     <span className="image-counter" aria-hidden>
                       {activeImg + 1} / {room.images.length}
+                    </span>
+                    <span className="visually-hidden" aria-live="polite">
+                      {`${copy.image} ${activeImg + 1} / ${room.images.length}`}
                     </span>
                  </div>
                  {room.images.length > 1 && (
@@ -247,6 +336,66 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
           padding: 6px 12px;
           border-radius: 40px;
           backdrop-filter: blur(6px);
+        }
+
+        .main-image-wrapper:focus-visible {
+          outline: 2px solid var(--gold);
+          outline-offset: 3px;
+        }
+
+        .strip-item:focus-visible {
+          outline-color: var(--gold);
+          opacity: 1;
+        }
+
+        .gallery-nav {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 3;
+          width: 44px;
+          height: 44px;
+          display: grid;
+          place-items: center;
+          border: none;
+          border-radius: 999px;
+          background: rgba(61, 74, 59, 0.55);
+          color: var(--ivory, #fffdf8);
+          font-size: 1.6rem;
+          line-height: 1;
+          cursor: pointer;
+          backdrop-filter: blur(6px);
+          opacity: 0;
+          transition: opacity 0.3s ease, background 0.3s ease;
+        }
+
+        .main-image-wrapper:hover .gallery-nav,
+        .gallery-nav:focus-visible {
+          opacity: 1;
+        }
+
+        .gallery-nav:hover { background: var(--gold); }
+        .gallery-nav:focus-visible {
+          outline: 2px solid var(--ivory, #fffdf8);
+          outline-offset: 2px;
+        }
+        .gallery-nav-prev { left: 14px; }
+        .gallery-nav-next { right: 14px; }
+
+        @media (pointer: coarse) {
+          .gallery-nav { opacity: 1; }
+        }
+
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
         }
 
         .premium-badge {
