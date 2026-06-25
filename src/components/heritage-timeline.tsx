@@ -78,8 +78,11 @@ export function HeritageTimeline({ locale = "tr" }: { locale?: Locale }) {
       <ol className="heritage-timeline">
         {t.entries.map((e) => (
           <li key={e.year} className="heritage-timeline-item">
+            {/* Dot, FadeIn'in DISINDA: FadeIn transform uyguladigi icin absolute
+                dot'u kendi kutusuna gore konumlandirip yili ortmesin diye li'nin
+                dogrudan cocugu olarak omurgaya hizalanir. */}
+            <span className="heritage-timeline-dot" aria-hidden />
             <FadeIn>
-              <span className="heritage-timeline-dot" aria-hidden />
               <span className="heritage-timeline-year">{e.year}</span>
               <h4 className="heritage-timeline-title">{e.title}</h4>
               <p className="heritage-timeline-text">{e.text}</p>
