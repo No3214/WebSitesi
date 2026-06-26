@@ -182,7 +182,7 @@ export function GastronomyEditorial({ locale }: { locale: "tr" | "en" }) {
                   <li>{locale === "tr" ? "Taş dibekte dövülen kahve ritüeli" : "Coffee ritual in the stone dibek"}</li>
                   <li>{locale === "tr" ? "Konak misafirlerine özel sofra düzeni" : "A table reserved for mansion guests"}</li>
                 </ul>
-                <Link href="/gastronomi" className="button secondary">
+                <Link href={locale === "en" ? "/en/dining" : "/gastronomi"} className="button secondary">
                   {locale === "tr" ? "Gastronomi Hikayesi" : "Gastronomy Story"}
                 </Link>
               </div>

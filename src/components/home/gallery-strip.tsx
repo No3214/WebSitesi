@@ -55,7 +55,7 @@ export function GalleryStrip({ locale }: { locale: "tr" | "en" }) {
             ))}
           </div>
           <div style={{ display: "flex", justifyContent: "center", marginTop: 28 }}>
-            <Link className="button secondary sm" href="/galeri" data-event="gallery_view_all">
+            <Link className="button secondary sm" href={locale === "en" ? "/en/gallery" : "/galeri"} data-event="gallery_view_all">
               {locale === "tr" ? "Tüm Galeriyi Gör" : "View Full Gallery"}
             </Link>
           </div>

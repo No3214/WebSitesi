@@ -83,7 +83,7 @@ export function ExperiencesTeaser({ locale }: { locale: "tr" | "en" }) {
           <div style={{ display: "flex", justifyContent: "center", marginTop: 28 }}>
             <Link
               className="button secondary sm"
-              href="/deneyimler"
+              href={locale === "en" ? "/en/experiences" : "/deneyimler"}
               data-event="experiences_teaser_view_all"
             >
               {locale === "tr" ? "Tüm Deneyimler" : "All Experiences"}
