@@ -796,8 +796,6 @@ describe("production readiness contracts", () => {
     const trackingScripts = read("src/components/tracking-scripts.tsx");
     const gtm = read("src/lib/gtm.ts");
     const ga4Server = read("src/lib/ga4-server.ts");
-    const hotelrunnerWebhook = read("src/app/api/webhook/hotelrunner/route.ts");
-    const iyzicoWebhook = read("src/app/api/webhook/iyzico/route.ts");
     const publicEnv = read("src/lib/public-env.ts");
 
     expect(packageJson.scripts?.["analytics:verify:strict"]).toBe(
@@ -812,7 +810,6 @@ describe("production readiness contracts", () => {
     expect(analyticsReadiness).toContain("NEXT_PUBLIC_GA4_MEASUREMENT_ID must look like G-XXXX");
     expect(analyticsReadiness).toContain("NEXT_PUBLIC_GOOGLE_ADS_ID must look like AW-XXXXXXXXX");
     expect(analyticsReadiness).toContain("direct_google_tag_fallback");
-    expect(analyticsReadiness).toContain("iyzico_purchase_hook");
     expect(analyticsReadiness).toContain("meta_legacy_key_removed");
     expect(analyticsReadiness).toContain("loadEnvFileSnapshot");
     expect(analyticsReadiness).toContain("loadProcessEnvSnapshot");
@@ -838,14 +835,6 @@ describe("production readiness contracts", () => {
     expect(gtm).toContain("trackGenerateLead");
     expect(ga4Server).toContain("sendGa4Purchase");
     expect(ga4Server).toContain("https://www.google-analytics.com/mp/collect");
-    expect(hotelrunnerWebhook).toContain("sendGa4Purchase");
-    expect(hotelrunnerWebhook).toContain("if (!isCancelled)");
-    expect(iyzicoWebhook).toContain("sendGa4Purchase");
-    expect(iyzicoWebhook).toContain("reservationFound && paymentSucceeded");
-    expect(iyzicoWebhook).toContain("transactionId: bookingId");
-    expect(iyzicoWebhook).toContain('itemName: "Konaklama Rezervasyonu"');
-    expect(hotelrunnerWebhook).toContain("return notFound();");
-    expect(hotelrunnerWebhook).not.toContain('status: "active"');
     expect(publicEnv).not.toContain("GA4_API_SECRET");
   });
 
@@ -1380,16 +1369,6 @@ describe("production readiness contracts", () => {
     expect(availabilityRoute.indexOf("ALLOW_STATIC_AVAILABILITY")).toBeLessThan(
       availabilityRoute.indexOf("available: true"),
     );
-  });
-
-  it("keeps Iyzico webhook verification independent from HMS ES256 signing", () => {
-    const iyzicoRoute = read("src/app/api/webhook/iyzico/route.ts");
-
-    expect(iyzicoRoute).toContain("createDigest(bodyText)");
-    expect(iyzicoRoute).toContain("return notFound();");
-    expect(iyzicoRoute).not.toContain('status: "active"');
-    expect(iyzicoRoute).not.toContain("HMS_WEBHOOK_ES256_PUBLIC_KEY");
-    expect(iyzicoRoute).not.toContain("verifyEs256Signature");
   });
 
   it("keeps admin growth dashboard restricted to Payload admins", () => {

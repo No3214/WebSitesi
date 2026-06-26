@@ -5,8 +5,6 @@ const rawEnvSchema = z.object({
   PAYLOAD_SECRET: z.string().optional(),
   DATABASE_URI: z.string().optional(),
   NEXT_PUBLIC_SITE_URL: z.string().optional(),
-  HOTELRUNNER_WEBHOOK_SECRET: z.string().optional(),
-  IYZICO_WEBHOOK_SECRET: z.string().optional(),
   HMS_WEBHOOK_ES256_PUBLIC_KEY: z.string().optional(),
   NEXT_PUBLIC_GTM_ID: z.string().optional(),
   NEXT_PUBLIC_GA4_MEASUREMENT_ID: z.string().optional(),
@@ -56,11 +54,6 @@ export const env = {
   PAYLOAD_SECRET: isProd && !isBuild ? requireEnv("PAYLOAD_SECRET", raw.PAYLOAD_SECRET) : raw.PAYLOAD_SECRET || "dev-only-secret-change-me",
   DATABASE_URI: isProd && !isBuild ? requireEnv("DATABASE_URI", raw.DATABASE_URI) : raw.DATABASE_URI || "postgresql://postgres:password@localhost:5432/kozbeyli",
   NEXT_PUBLIC_SITE_URL: isProd && !isBuild ? requireEnv("NEXT_PUBLIC_SITE_URL", raw.NEXT_PUBLIC_SITE_URL) : raw.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-  // HMS geçişi: rezervasyon webhook'u HMAC (legacy) + ES256 (HMS) destekler.
-  HOTELRUNNER_WEBHOOK_SECRET: isProd && !isBuild
-    ? requireEnv("HOTELRUNNER_WEBHOOK_SECRET", raw.HOTELRUNNER_WEBHOOK_SECRET)
-    : raw.HOTELRUNNER_WEBHOOK_SECRET || "hotelrunner-dev-secret",
-  IYZICO_WEBHOOK_SECRET: raw.IYZICO_WEBHOOK_SECRET || (isProd && !isBuild ? "" : "iyzico-dev-secret"),
   HMS_WEBHOOK_ES256_PUBLIC_KEY: raw.HMS_WEBHOOK_ES256_PUBLIC_KEY || "",
   NEXT_PUBLIC_GTM_ID: raw.NEXT_PUBLIC_GTM_ID || "",
   NEXT_PUBLIC_GA4_MEASUREMENT_ID: raw.NEXT_PUBLIC_GA4_MEASUREMENT_ID || "",
