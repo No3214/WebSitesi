@@ -11,7 +11,7 @@ test.describe("Contact location", () => {
     await expect(directions).toHaveAttribute("href", new RegExp(`${EXPECTED_LAT}.*${EXPECTED_LNG}`));
 
     const mapSrc = await page.locator('iframe[title*="Kozbeyli Konağı Konum"]').getAttribute("src");
-    expect(mapSrc).toContain(`marker=${EXPECTED_LAT},${EXPECTED_LNG}`);
+    expect(mapSrc).toContain(`q=${EXPECTED_LAT},${EXPECTED_LNG}`);
 
     const jsonLd = await page.locator('script[type="application/ld+json"]').first().textContent();
     expect(jsonLd).toContain(`"latitude":${EXPECTED_LAT}`);
