@@ -89,26 +89,25 @@ alter table public.users enable row level security;
 
 ## C) Supabase advisor bulguları (ilgisiz 4-tablo yan-şeması)
 Bu tablolar (organizations/organization_members/hotels/restaurants) web sitesine
-ait DEĞİL, boş (0 satır) ve ayrı bir Supabase-Auth modeli. Web sitesini
-etkilemez. Kör değiştirilMEDİ; remediation aşağıda (uygulamak kullanıcının
-kararına bırakıldı):
+ait DEĞİL, boş (0 satır) ve ayrı bir Supabase-Auth modeli. Web sitesini etkilemez.
 
-Güvenlik:
-- `function_search_path_mutable` (`current_user_org_ids`): 
-  `alter function public.current_user_org_ids() set search_path = public, pg_temp;`
-- `rls_auto_enable` SECURITY DEFINER anon/authenticated'a açık:
-  `revoke execute on function public.rls_auto_enable() from anon, authenticated;`
+GÜVENLİK — UYGULANDI ✓ (migration: `harden_side_schema_functions`; logic değişmedi):
+- `function_search_path_mutable` → `alter function public.current_user_org_ids()
+  set search_path = public, auth, pg_temp;` (pinlendi).
+- `rls_auto_enable` SECURITY DEFINER → `revoke execute ... from public, anon,
+  authenticated;` (artık anon/authenticated çağıramaz).
+- DOĞRULAMA: `get_advisors(security)` → **0 lint** (tertemiz).
 
-Performans:
-- `auth_rls_initplan` (4 policy): policy içindeki `auth.uid()`/`current_setting()`
-  çağrılarını `(select auth.uid())` ile sar (satır-başı yeniden değerlendirmeyi
-  önler).
+PERFORMANS — kullanıcı kararına bırakıldı (yalnız bu boş yan-şemayı etkiler):
+- `auth_rls_initplan` (4 policy): `auth.uid()`/`current_setting()` çağrılarını
+  `(select auth.uid())` ile sar. RLS POLICY LOGIC'i olduğu için kör değiştirilMEDİ.
 - `unused_index` (4 index): tablolar boş; kullanılmıyorsa kaldırılabilir (INFO).
 
-**Ek — gizli mantık hatası:** `org_members_*` policy'lerinde
-`me.organization_id = me.organization_id` (her zaman true) görülüyor; muhtemelen
-`me.organization_id = organization_members.organization_id` olmalı. Bu tablolar
-canlıya girmeden DÜZELTİLMELİ (yetki sızıntısı riski). Web sitesini etkilemez.
+**Ek — gizli mantık hatası (DÜZELTİLMEDİ, bilinçli):** `org_members_*`
+policy'lerinde `me.organization_id = me.organization_id` (her zaman true);
+muhtemelen `= organization_members.organization_id` olmalı. Bu tablolar canlıya
+girmeden DÜZELTİLMELİ (yetki sızıntısı riski). Sahibi olmadığımız güvenlik
+mantığını kör değiştirmedim. Web sitesini etkilemez.
 
 ## D) IP ban / rate-limit / kota (sistem patlamasın)
 - Uygulama rate-limit'leri zaten var: checkout 5/dk, lead 8/10dk, swarm 20/10dk,
