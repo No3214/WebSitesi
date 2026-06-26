@@ -21,7 +21,7 @@
 ## Konum & Ulaşım
 - **Adres:** Kozbeyli Köyü Küme Evler No:188, 35680 Foça / İzmir
 - **Koordinat:** 38.713943, 26.896018
-- **İzmir Adnan Menderes Havalimanı:** ~95 km (ETS verisi: 94.7 km)
+- **İzmir Adnan Menderes Havalimanı:** ~95 km (doğrulandı — ETS 94.7 km; kaynaklar 94–99 km, rota/trafiğe göre 80–104 km arası değişebilir, canlı yol tarifi önerilir)
 - **Foça (Yeni Terminal):** ~19 km
 - Köy içi ulaşımda **canlı yol tarifi** önerilir (harita mesafeleri trafiğe/mevsime göre değişebilir).
 - Yakın tarihî yerler: Kyme Antik Kenti, Pers Anıt Mezarı (Taş Ev), Foça tarihî yel değirmenleri, Athena Tapınağı.
@@ -59,12 +59,12 @@
 - **Hizmet:** Havalimanı gidiş-dönüş transferi (ücretli) · oda servisi · çamaşırhane/kuru temizleme · emanet kasası · valiz dolabı · çok dilli personel · kütüphane · bisiklet saklama · 25 m² toplantı/konferans alanı
 - **Evcil hayvan:** Kedi & köpek (toplam 1), ücretsiz, mama/su kabı; rehber hayvan kabul.
 - **Erişilebilirlik:** Tek katlı (asansör yok) · tekerlekli sandalyeye uygun (kısıtlamalı) · 10 araçlık engelli otoparkı · merdivensiz giriş · tırabzanlar
-- **Etkinlik:** Düğün/nişan/kurumsal davet; bahçe-avlu-taş doku. (Kapasite: DOĞRULA — bir kaynak "200 kişiye kadar" diyor, teyit edilmeden yazma.)
+- **Etkinlik:** Düğün/nişan/kurumsal davet; bahçe-avlu-taş doku. **Kapasite: 150 kişi oturmalı (yemekli) / 200 kişi ayakta.**
 
-## DOĞRULANACAKLAR (teyit edilmeden YAYINLANMAZ)
-- **Havuz:** Durum kaynaklar arası çelişiyor; resmî OTA içeriğinde havuz görünmüyor. Teyit edilmeden "havuz" iddiası YAPMA.
-- **Etkinlik kapasitesi** (200 kişi?).
-- **Havalimanı mesafesi** kesin değeri (ETS 94.7 km; kesinleştir).
+## Doğrulandı (Yunuscan teyidi — 2026)
+- **Havuz YOK.** Tesiste havuz bulunmuyor — hiçbir metinde "havuz" iddiası YAPMA.
+- **Etkinlik kapasitesi:** 150 kişi oturmalı (yemekli) / 200 kişi ayakta.
+- **Havalimanı:** İzmir Adnan Menderes ~95 km.
 
 ## YASAK İDDİALAR (asla yayınlama)
 - Yıldız sayısı (resmî yıldız sınıfı belirtme).
