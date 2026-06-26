@@ -70,10 +70,15 @@ export function hotelSchema() {
     // Entity netligi icindir; ucuncu-taraf yildiz/yorum yapisal verisi ASLA
     // eklenmez (Google self-serving review politikasi → manuel ceza riski).
     ...(() => {
-      const urls = (env.BRAND_PROFILE_URLS || "")
+      // Dogrulanmis kanonik profil (kozbeyli-facts.md SSOT) her zaman dahil;
+      // ek profiller env'den (BRAND_PROFILE_URLS) gelir. Uydurma URL yok —
+      // Facebook ground-truth'ta dogrulanmadigi icin eklenmez.
+      const verified = ["https://www.instagram.com/kozbeylikonagi/"];
+      const fromEnv = (env.BRAND_PROFILE_URLS || "")
         .split(",")
         .map((u) => u.trim())
         .filter((u) => /^https?:\/\//i.test(u));
+      const urls = Array.from(new Set([...verified, ...fromEnv]));
       return urls.length ? { sameAs: urls } : {};
     })(),
   };
