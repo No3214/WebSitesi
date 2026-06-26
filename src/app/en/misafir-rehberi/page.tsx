@@ -6,13 +6,14 @@ import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
 import { operationalPolicies } from "@/data/operational-policies";
 import { getWhatsAppHref } from "@/lib/contact";
+import { altLanguagesEn } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Guest Guide & Stay Information",
   description:
     "Check-in and check-out hours, breakfast service, Wi-Fi, location, hygiene standards and cancellation details for guests of Kozbeyli Konağı.",
-  alternates: { canonical: "/en/guest-guide" },
+  alternates: altLanguagesEn("/misafir-rehberi", "/en/guest-guide"),
   openGraph: {
     url: absoluteUrl("/en/guest-guide"),
     title: "Guest Guide & Stay Information | Kozbeyli Konağı",

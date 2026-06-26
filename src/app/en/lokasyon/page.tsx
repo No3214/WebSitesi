@@ -9,10 +9,7 @@ export const metadata: Metadata = {
   description: `Verified address for Kozbeyli Konağı: ${ADDRESS_EN}. Live directions, phone and transfer planning links.`,
   alternates: {
     canonical: "/en/location",
-    languages: {
-      tr: "/lokasyon",
-      en: "/en/location",
-    },
+    languages: { tr: "/lokasyon", en: "/en/location", "x-default": "/lokasyon" },
   },
   openGraph: {
     title: "Location & Directions | Kozbeyli Konağı",

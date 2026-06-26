@@ -5,13 +5,14 @@ import { FadeIn } from "@/components/animations";
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
 import { getWhatsAppHref } from "@/lib/contact";
+import { altLanguagesEn } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Curated Offers",
   description:
     "Seasonal stay and event offers at Kozbeyli Konağı. Contact the guest relations team for curated romantic escapes, family weekends and private event proposals.",
-  alternates: { canonical: "/en/offers" },
+  alternates: altLanguagesEn("/teklifler", "/en/offers"),
   openGraph: {
     url: absoluteUrl("/en/offers"),
     title: "Curated Offers | Kozbeyli Konağı",

@@ -27,6 +27,18 @@ export function altLanguages(tr: string, en: string) {
   } as const;
 }
 
+/**
+ * EN tarafı için aynı hreflang seti, ama canonical EN sayfanın kendisidir
+ * (self-referencing canonical). TR ve EN aynı dil setini bildirir → karşılıklı
+ * (reciprocal) hreflang. x-default daima TR (sitenin birincil dili).
+ */
+export function altLanguagesEn(tr: string, en: string) {
+  return {
+    canonical: en,
+    languages: { tr, en, "x-default": tr },
+  } as const;
+}
+
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {

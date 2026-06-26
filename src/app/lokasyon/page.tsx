@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     languages: {
       tr: "/lokasyon",
       en: "/en/location",
+      "x-default": "/lokasyon",
     },
   },
   openGraph: {

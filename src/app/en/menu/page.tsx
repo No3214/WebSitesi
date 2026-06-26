@@ -3,13 +3,14 @@ import type { Metadata } from "next";
 import { MenuBook } from "@/components/menu-book";
 import { SiteHeader } from "@/components/site-header";
 import { englishMenuSections } from "@/data/menu-en";
+import { altLanguagesEn } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Restaurant Menu | Stone Oven & Village Breakfast",
   description:
     "Kozbeyli Konağı restaurant menu: curated village breakfast, Antakya mezes, wood-fired stone oven flavours, künefe and dibek coffee.",
-  alternates: { canonical: "/en/menu" },
+  alternates: altLanguagesEn("/menu", "/en/menu"),
   openGraph: {
     url: absoluteUrl("/en/menu"),
     title: "Restaurant Menu | Kozbeyli Konağı",

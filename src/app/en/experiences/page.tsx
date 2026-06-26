@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 
 import { ExperiencesPageContent } from "@/components/experiences-page-content";
+import { altLanguagesEn } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Experiences",
   description:
     "Curated guides to Kozbeyli Village, Foça and Aegean gastronomy: stone architecture, coastal routes and the dibek coffee ritual, all from the mansion.",
-  alternates: { canonical: "/en/experiences" },
+  alternates: altLanguagesEn("/deneyimler", "/en/experiences"),
   openGraph: {
     url: absoluteUrl("/en/experiences"),
     title: "Experiences | Kozbeyli Konağı",

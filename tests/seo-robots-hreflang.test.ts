@@ -4,7 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import robots from "@/app/robots";
-import { altLanguages } from "@/lib/metadata";
+import { altLanguages, altLanguagesEn } from "@/lib/metadata";
 
 const root = process.cwd();
 const read = (p: string) => fs.readFileSync(path.join(root, p), "utf8");
@@ -30,6 +30,14 @@ describe("SEO: robots AI botları + hreflang helper", () => {
   it("altLanguages canonical + tr/en/x-default döner", () => {
     const a = altLanguages("/odalar", "/en/rooms");
     expect(a.canonical).toBe("/odalar");
+    expect(a.languages.tr).toBe("/odalar");
+    expect(a.languages.en).toBe("/en/rooms");
+    expect(a.languages["x-default"]).toBe("/odalar");
+  });
+
+  it("altLanguagesEn EN-self canonical + aynı dil setini döner (reciprocal)", () => {
+    const a = altLanguagesEn("/odalar", "/en/rooms");
+    expect(a.canonical).toBe("/en/rooms");
     expect(a.languages.tr).toBe("/odalar");
     expect(a.languages.en).toBe("/en/rooms");
     expect(a.languages["x-default"]).toBe("/odalar");
