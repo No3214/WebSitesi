@@ -40,6 +40,7 @@ export function hotelSchema() {
     },
     checkinTime: "14:00",
     checkoutTime: "12:00",
+    petsAllowed: true,
     priceRange: "₺₺₺",
     servesCuisine: "Aegean, Turkish, Breakfast, Antakya",
     amenityFeature: [
