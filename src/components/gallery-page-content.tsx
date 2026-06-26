@@ -1,3 +1,4 @@
+import { sanitizeJsonLd } from "@/lib/security";
 /* eslint-disable @next/next/no-img-element -- The full gallery serves approved public assets directly to avoid image optimizer contention during heavy parallel release checks. */
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
@@ -47,7 +48,7 @@ export function GalleryPageContent({ locale = "tr" }: { locale?: GalleryLocale }
     <SmoothScrollProvider>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGalleryJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(imageGalleryJsonLd) }}
       />
       <SiteHeader />
       <main>

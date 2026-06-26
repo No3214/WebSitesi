@@ -1,3 +1,4 @@
+import { sanitizeJsonLd } from "@/lib/security";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -85,11 +86,11 @@ export default async function EnglishRoomDetailPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(roomJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(roomJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(breadcrumbJsonLd) }}
       />
       <RoomViewTracker slug={room.slug} title={room.title} />
       <RoomDetailClient slug={slug} initialLocale="en" />
