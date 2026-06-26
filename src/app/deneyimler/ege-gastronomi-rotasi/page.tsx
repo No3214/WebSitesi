@@ -5,6 +5,7 @@ import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
 import { SectionTitle } from "@/components/section-title";
 import { FadeIn } from "@/components/animations";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -47,7 +48,7 @@ export default function EgeGastronomiRotasiPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
       />
       <SiteHeader />
       <main>

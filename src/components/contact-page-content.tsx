@@ -2,6 +2,7 @@ import { SiteHeader } from "@/components/site-header";
 import { PageHero } from "@/components/page-hero";
 import { ContactClient } from "@/components/contact-client";
 import { getDictionary } from "@/lib/dictionary";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { PHONE_E164 } from "@/lib/contact";
 import { absoluteUrl } from "@/lib/utils";
@@ -49,7 +50,7 @@ export async function ContactPageContent({ locale = "tr" }: { locale?: ContactLo
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
       <SiteHeader variant="solid" />
       <PageHero
         eyebrow={copy.eyebrow}

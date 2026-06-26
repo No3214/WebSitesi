@@ -4,6 +4,7 @@ import { FadeIn } from "@/components/animations";
 import { GalleryLightbox } from "@/components/gallery-lightbox";
 import { SmoothScrollProvider } from "@/lib/animation/smooth-scroll";
 import { galleryExtended } from "@/data/gallery";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { absoluteUrl } from "@/lib/utils";
 
 type GalleryLocale = "tr" | "en";
@@ -46,7 +47,7 @@ export function GalleryPageContent({ locale = "tr" }: { locale?: GalleryLocale }
     <SmoothScrollProvider>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(imageGalleryJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(imageGalleryJsonLd) }}
       />
       <SiteHeader />
       <main>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FadeIn } from "@/components/animations";
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { absoluteUrl } from "@/lib/utils";
 
 type Locale = "tr" | "en";
@@ -89,7 +90,7 @@ export function ExperiencesPageContent({ locale = "tr" }: { locale?: Locale }) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(itemListJsonLd) }}
       />
       <SiteHeader />
       <main>

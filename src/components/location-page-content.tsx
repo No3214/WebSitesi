@@ -12,6 +12,7 @@ import {
   PHONE_E164,
 } from "@/lib/contact";
 import { KOZBEYLI_COORDS, googleMapsEmbedUrl } from "@/lib/free-apis";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { absoluteUrl } from "@/lib/utils";
 
 type LocationLocale = "tr" | "en";
@@ -98,7 +99,7 @@ export function LocationPageContent({ locale }: { locale: LocationLocale }) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }} />
       <SiteHeader variant="solid" />
       <PageHero eyebrow={t.eyebrow} title={t.title} text={t.text} />
       <main className="section location-page" id="icerik-lokasyon" style={{ paddingTop: 56 }}>

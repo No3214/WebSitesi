@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { HomeClient } from "@/components/home-client";
 import { faqs } from "@/data/faqs";
 import { getDictionary } from "@/lib/dictionary";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { defaultMetadata } from "@/lib/metadata";
 
 type HomeLocale = "tr" | "en";
@@ -35,7 +36,7 @@ export async function HomePageContent({ locale = "tr" }: { locale?: HomeLocale }
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqJsonLd) }}
       />
       <HomeClient initialDict={initialDict} initialLocale={locale} />
     </>

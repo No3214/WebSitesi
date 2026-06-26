@@ -5,6 +5,7 @@ import { CookieConsent } from "@/components/cookie-consent";
 import { SiteFooter } from "@/components/site-footer";
 import { TrackingScripts } from "@/components/tracking-scripts";
 import { WebVitalsReporter } from "@/components/web-vitals-reporter";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { defaultMetadata } from "@/lib/metadata";
 import { hotelSchema } from "@/lib/schema";
 import "./globals.css";
@@ -45,7 +46,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <link rel="dns-prefetch" href="https://app.hms.gen.tr" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelSchema()) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(hotelSchema()) }}
         />
         <ErrorBoundary>
           <CSPostHogProvider>

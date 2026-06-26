@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/site-header";
 import { StoryHero, StorySegment } from "@/components/storytelling";
 import { englishMenuSections } from "@/data/menu-en";
 import { menuSections, type MenuSection } from "@/data/menu";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { absoluteUrl } from "@/lib/utils";
 
 type Locale = "tr" | "en";
@@ -225,7 +226,7 @@ export function GastronomyPageContent({ locale = "tr" }: { locale?: Locale }) {
     <main className="min-h-screen gastronomy-story-page" style={{ background: "var(--ivory)" }}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(restaurantJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(restaurantJsonLd) }}
       />
       <SiteHeader variant="solid" />
 

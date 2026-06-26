@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { rooms as fallbackRooms } from "@/data/rooms";
 import { RoomDetailClient } from "@/components/room-detail-client";
 import { RoomViewTracker } from "@/components/room-view-tracker";
+import { serializeJsonLd } from "@/lib/json-ld";
 import { absoluteUrl } from "@/lib/utils";
 
 type Props = {
@@ -80,11 +81,11 @@ export default async function RoomDetailPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(roomJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(roomJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
       />
       <RoomViewTracker slug={room.slug} title={room.title} />
       <RoomDetailClient slug={slug} initialLocale="tr" />
