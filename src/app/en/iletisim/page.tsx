@@ -12,6 +12,12 @@ export const metadata: Metadata = {
     url: absoluteUrl("/en/contact"),
     title: "Contact & Directions | Kozbeyli Konağı",
     description: `${ADDRESS_EN}. Phone, WhatsApp support, e-mail and directions to the mansion.`,
+    images: [
+      {
+        url: absoluteUrl("/images/hero.jpg"),
+        alt: "Kozbeyli Konağı — Contact and directions",
+      },
+    ],
   },
 };
 

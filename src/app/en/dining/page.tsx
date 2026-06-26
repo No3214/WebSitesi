@@ -14,6 +14,12 @@ export const metadata: Metadata = {
     title: "Dining & Aegean-Antakya Cuisine | Kozbeyli Konağı",
     description:
       "Where Antakya and Aegean cuisines meet in Foça. Stone-oven flavours and freshly ground dibek coffee.",
+    images: [
+      {
+        url: absoluteUrl("/videos/kahvalti-poster.jpg"),
+        alt: "Generous village breakfast spread at Kozbeyli Konağı",
+      },
+    ],
   },
 };
 

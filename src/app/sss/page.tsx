@@ -13,6 +13,12 @@ export const metadata: Metadata = {
     title: "Sık Sorulan Sorular | Kozbeyli Konağı",
     description: "Konaklama ve rezervasyon hakkında merak edilenler.",
     url: absoluteUrl("/sss"),
+    images: [
+      {
+        url: absoluteUrl("/images/hero.jpg"),
+        alt: "Kozbeyli Konağı — Sıkça sorulan sorular",
+      },
+    ],
   },
 };
 

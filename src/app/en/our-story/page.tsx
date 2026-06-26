@@ -14,6 +14,12 @@ export const metadata: Metadata = {
     title: "Our Story & Living Museum | Kozbeyli Konağı",
     description:
       "Kozbeyli's five-century village texture and the restoration story of a 19th-century registered stone mansion.",
+    images: [
+      {
+        url: absoluteUrl("/images/odalar/standart-oda/1.jpg"),
+        alt: "Historic stone-walled room at Kozbeyli Konağı",
+      },
+    ],
   },
 };
 

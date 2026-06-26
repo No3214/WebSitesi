@@ -19,6 +19,12 @@ export const metadata: Metadata = {
     title: "Guest Guide & Stay Information | Kozbeyli Konağı",
     description:
       "Practical stay details for guests planning a refined visit to Kozbeyli Konağı.",
+    images: [
+      {
+        url: absoluteUrl("/images/odalar/superior-oda-deniz-manzarali/1.jpg"),
+        alt: "Sea-view stone room at Kozbeyli Konağı",
+      },
+    ],
   },
 };
 

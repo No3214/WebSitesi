@@ -12,6 +12,12 @@ export const metadata: Metadata = {
     url: absoluteUrl("/en/gallery"),
     title: "Gallery | Kozbeyli Konağı",
     description: "The stone courtyard, historic rooms and Aegean tables in photographs.",
+    images: [
+      {
+        url: absoluteUrl("/images/hero.jpg"),
+        alt: "Stone courtyard of Kozbeyli Konağı",
+      },
+    ],
   },
 };
 

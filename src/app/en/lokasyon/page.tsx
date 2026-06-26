@@ -15,6 +15,12 @@ export const metadata: Metadata = {
     title: "Location & Directions | Kozbeyli Konağı",
     description: "Verified Kozbeyli Konağı address and live route links.",
     url: absoluteUrl("/en/location"),
+    images: [
+      {
+        url: absoluteUrl("/images/hero.jpg"),
+        alt: "Kozbeyli Konağı — Location and directions",
+      },
+    ],
   },
 };
 

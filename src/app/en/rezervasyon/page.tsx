@@ -13,6 +13,12 @@ export const metadata: Metadata = {
     title: "Reservation | Kozbeyli Konağı",
     description:
       "Direct reservation support for availability, room preferences and secure payment confirmation.",
+    images: [
+      {
+        url: absoluteUrl("/images/hero.jpg"),
+        alt: "Kozbeyli Konağı — Reservation and stay booking",
+      },
+    ],
   },
 };
 

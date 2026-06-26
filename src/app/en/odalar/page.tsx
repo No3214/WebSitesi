@@ -13,6 +13,12 @@ export const metadata: Metadata = {
     title: "Our Rooms | Kozbeyli Konağı",
     description:
       "High-ceilinged stone rooms restored with Horasan mortar. A serene, secluded boutique stay amid historic architecture in Foça.",
+    images: [
+      {
+        url: absoluteUrl("/images/hero.jpg"),
+        alt: "Kozbeyli Konağı — Stone rooms and boutique stay",
+      },
+    ],
   },
 };
 

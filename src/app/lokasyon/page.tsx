@@ -19,6 +19,12 @@ export const metadata: Metadata = {
     title: "Lokasyon & Yol Tarifi | Kozbeyli Konağı",
     description: "Kozbeyli Konağı'nın doğrulanmış adresi ve canlı yol tarifi bağlantıları.",
     url: absoluteUrl("/lokasyon"),
+    images: [
+      {
+        url: absoluteUrl("/images/hero.jpg"),
+        alt: "Kozbeyli Konağı — Konum ve ulaşım",
+      },
+    ],
   },
 };
 

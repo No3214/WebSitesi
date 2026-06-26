@@ -13,6 +13,12 @@ export const metadata: Metadata = {
     title: "Kozbeyli Konağı | Historic Stone Hotel & Restaurant in Foça",
     description:
       "A 19th-century registered stone mansion within Kozbeyli's five-century village texture. Antakya and Aegean cuisine, personalised hospitality, and Horasan mortar heritage.",
+    images: [
+      {
+        url: absoluteUrl("/images/hero.jpg"),
+        alt: "Kozbeyli Konağı — Foça stone boutique hotel & restaurant",
+      },
+    ],
   },
 };
 

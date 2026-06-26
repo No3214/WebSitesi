@@ -12,6 +12,12 @@ export const metadata: Metadata = {
     title: "Experiences | Kozbeyli Konağı",
     description:
       "Set out from the mansion with curated guides to Kozbeyli, Foça and Aegean gastronomy.",
+    images: [
+      {
+        url: absoluteUrl("/images/galeri/tas-cephe.jpg"),
+        alt: "Stone facade of Kozbeyli Konağı",
+      },
+    ],
   },
 };
 

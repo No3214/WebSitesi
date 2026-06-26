@@ -17,6 +17,12 @@ export const metadata: Metadata = {
     title: "Teklifler | Kozbeyli Konağı",
     description: "Dönemsel konaklama ve davet paketleri hakkında bilgi alın.",
     url: absoluteUrl("/teklifler"),
+    images: [
+      {
+        url: absoluteUrl("/images/hero.jpg"),
+        alt: "Kozbeyli Konağı — Özel teklifler",
+      },
+    ],
   },
 };
 

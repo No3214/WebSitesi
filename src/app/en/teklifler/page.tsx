@@ -18,6 +18,12 @@ export const metadata: Metadata = {
     title: "Curated Offers | Kozbeyli Konağı",
     description:
       "Seasonal accommodation and private event offers curated with Aegean hospitality.",
+    images: [
+      {
+        url: absoluteUrl("/images/hero.jpg"),
+        alt: "Kozbeyli Konağı — Curated seasonal offers",
+      },
+    ],
   },
 };
 
