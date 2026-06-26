@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { MenuBook } from "@/components/menu-book";
 import { SiteHeader } from "@/components/site-header";
 import { menuSections } from "@/data/menu";
+import { altLanguages } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     "foça akşam yemeği mekanları",
     "paşaeli şarap eşleşmeleri",
   ],
-  alternates: { canonical: "/menu" },
+  alternates: altLanguages("/menu", "/en/menu"),
   openGraph: {
     title: "Gurme Yemek Menüsü | Kozbeyli Konağı",
     description:

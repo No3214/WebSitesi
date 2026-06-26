@@ -6,6 +6,7 @@ import { Clock, Coffee, Wifi, MapPin, ShieldCheck, HeartPulse } from "lucide-rea
 import { getWhatsAppHref } from "@/lib/contact";
 import { operationalPolicies } from "@/data/operational-policies";
 
+import { altLanguages } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     "butik otel giriş çıkış saatleri",
     "kozbeyli konağı iletişim"
   ],
-  alternates: { canonical: "/misafir-rehberi" },
+  alternates: altLanguages("/misafir-rehberi", "/en/guest-guide"),
   openGraph: {
     title: "Misafir Rehberi & Konaklama Bilgileri | Kozbeyli Konağı",
     description: "Kozbeyli Konağı giriş-çıkış saatleri, serpme köy kahvaltısı saatleri, fiber internet, konaklama ve iptal politikaları.",

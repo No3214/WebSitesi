@@ -5,13 +5,14 @@ import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
 import { getWhatsAppHref } from "@/lib/contact";
+import { altLanguages } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Teklifler",
   description:
     "Romantik kaçamaklar, aile hafta sonları ve taş avluda özel davetler. Kozbeyli Konağı'nın dönemsel teklifleri için rezervasyon ekibimizle iletişime geçin.",
-  alternates: { canonical: "/teklifler" },
+  alternates: altLanguages("/teklifler", "/en/offers"),
   openGraph: {
     title: "Teklifler | Kozbeyli Konağı",
     description: "Dönemsel konaklama ve davet paketleri hakkında bilgi alın.",

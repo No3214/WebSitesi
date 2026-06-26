@@ -1,11 +1,13 @@
 import { Metadata } from "next";
 import { RoomsClient } from "@/components/rooms-client";
 import { getDictionary } from "@/lib/dictionary";
+import { altLanguages } from "@/lib/metadata";
 
 export const metadata: Metadata = {
   title: "Lüks Taş Odalar & Konaklama",
   description: "Kozbeyli Konağı'nın Horasan harcıyla restore edilmiş, yüksek tavanlı ve nefes alan taş odaları. Foça'da sükunet dolu, izole ve lüks butik konaklama deneyimi. Tarihi mimari ile buluşun.",
   keywords: ["kozbeyli taş odalar", "foça butik otel", "tarihi mimari konaklama", "izole butik tatil", "foça lüks konaklama", "izmir butik otel odaları", "restore edilmiş konak", "sessiz doğa tatili"],
+  alternates: altLanguages("/odalar", "/en/rooms"),
 };
 
 export default async function RoomsPage() {

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 
 import { ReservationPageContent } from "@/components/reservation-page-content";
+import { altLanguages } from "@/lib/metadata";
 
 type ReservationPageProps = {
   searchParams: Promise<{ oda?: string }>;
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
     "kozbeyli köyü konaklama",
     "taş otel izmir rezervasyon",
   ],
-  alternates: { canonical: "/rezervasyon" },
+  alternates: altLanguages("/rezervasyon", "/en/booking"),
 };
 
 export default async function ReservationPage(props: ReservationPageProps) {

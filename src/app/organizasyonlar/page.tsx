@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { OrganizationsClient } from "@/components/organizations-client";
 
+import { altLanguages } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
     "taş ev düğünü",
     "butik nişan yeri izmir"
   ],
-  alternates: { canonical: "/organizasyonlar" },
+  alternates: altLanguages("/organizasyonlar", "/en/events"),
   openGraph: {
     title: "Düğün & Özel Davetler | Kozbeyli Konağı",
     description: "Foça'da tescilli taş konak avlusunda masalsı butik düğünler, nişan davetleri ve kurumsal 'off-site' toplantılar.",

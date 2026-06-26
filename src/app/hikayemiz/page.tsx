@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { HistoryClient } from "@/components/history-client";
 
+import { altLanguages } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
     "taş konak tarihi",
     "living museum foca"
   ],
-  alternates: { canonical: "/hikayemiz" },
+  alternates: altLanguages("/hikayemiz", "/en/our-story"),
   openGraph: {
     title: "Tarihimiz & Living Museum | Kozbeyli Konağı",
     description: "Beş asırlık Kozbeyli köy dokusu ve 19. yüzyıl tescilli taş konağın restorasyon hikayesi.",

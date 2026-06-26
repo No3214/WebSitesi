@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 
 import { GastronomyPageContent } from "@/components/gastronomy-page-content";
+import { altLanguages } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     "foça butik otel kahvaltı",
     "ege yöresel lezzetler",
   ],
-  alternates: { canonical: "/gastronomi" },
+  alternates: altLanguages("/gastronomi", "/en/dining"),
   openGraph: {
     title: "Gastronomi & Ege-Antakya Mutfağı | Kozbeyli Konağı",
     description:
