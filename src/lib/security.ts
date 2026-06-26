@@ -117,3 +117,17 @@ export async function verifyEs256Signature(
     return false;
   }
 }
+
+/**
+ * Safely serializes data to JSON and escapes characters that could be used
+ * for XSS attacks when injected into a `<script>` tag.
+ */
+export function sanitizeJsonLd(data: unknown): string {
+  // Use "|| '{}'" to prevent runtime errors with .replace() if undefined is passed
+  const jsonString = JSON.stringify(data) || '{}';
+  return jsonString
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/'/g, '\\u0027');
+}

@@ -1,3 +1,4 @@
+import { sanitizeJsonLd } from "@/lib/security";
 import { SiteHeader } from "@/components/site-header";
 import { PageHero } from "@/components/page-hero";
 import { ReservationClient } from "@/components/reservation-client";
@@ -69,7 +70,7 @@ export async function ReservationPageContent({
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(jsonLd) }} />
       <SiteHeader variant="solid" />
       <PageHero
         eyebrow={copy.eyebrow}

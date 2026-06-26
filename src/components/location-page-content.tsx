@@ -1,3 +1,4 @@
+import { sanitizeJsonLd } from "@/lib/security";
 import { MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
 
 import { PageHero } from "@/components/page-hero";
@@ -98,7 +99,7 @@ export function LocationPageContent({ locale }: { locale: LocationLocale }) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(jsonLd) }} />
       <SiteHeader variant="solid" />
       <PageHero eyebrow={t.eyebrow} title={t.title} text={t.text} />
       <main className="section location-page" id="icerik-lokasyon" style={{ paddingTop: 56 }}>
