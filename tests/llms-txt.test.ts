@@ -20,15 +20,22 @@ describe("public/llms.txt — AEO/GEO ground-truth (truthful, no hallucination)"
     expect(llms.match(/^Q: /gm)?.length ?? 0).toBeGreaterThanOrEqual(5);
   });
 
-  it("DOĞRULUK BEKÇİSİ: fiyat/starRating/uydurma sayısal iddia İÇERMEZ", () => {
+  it("DOĞRULUK BEKÇİSİ: fiyat/starRating İÇERMEZ", () => {
     // statik fiyat yok (HMS tek kaynak; bayat fiyat halüsinasyonunu önler)
     expect(llms).not.toMatch(/\d[\d.,]*\s*(TL|₺)/i);
     expect(llms).not.toMatch(/\bTL\b/);
     // self-serving yıldız puanı yok (Google self-serving review cezası riski)
     expect(llms.toLowerCase()).not.toContain("starrating");
     expect(llms).not.toMatch(/\b4[.,]5\b/);
-    // doğrulanmamış spesifikler yok (oda sayısı, havalimanı mesafesi)
-    expect(llms).not.toMatch(/16\s+(oda|room|boutique|butik)/i);
+    // uydurma kesin havalimanı mesafesi yok (sahibi "~82 km" teyit etti)
     expect(llms).not.toContain("81.6");
+  });
+
+  it("otel-sahibi teyitli dürüst gerçekleri içerir (16 oda + dürüst negatifler)", () => {
+    expect(llms).toContain("16");
+    expect(llms).toMatch(/82\s*km/i);
+    // AI'ın yanlış tanımlamasını önleyen dürüst negatifler
+    expect(llms.toLowerCase()).toContain("not 24/7");
+    expect(llms.toLowerCase()).toContain("no resort");
   });
 });
