@@ -30,7 +30,17 @@ export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
           return (
             <div
               key={room.slug}
+              role="button"
+              tabIndex={0}
+              aria-pressed={isSelected}
+              aria-label={locale === "tr" ? `${room.title} odasını seç` : `Select ${room.title}`}
               onClick={() => setSelectedRoom(room)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedRoom(room);
+                }
+              }}
               style={{
                 display: "flex",
                 justifyContent: "space-between",

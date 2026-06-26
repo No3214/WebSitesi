@@ -8,12 +8,19 @@ export function DesignerProgressBar({ designer }: { designer: ExperienceDesigner
   const { step } = designer;
 
   return (
-    <div className="progress-container">
+    <div
+      className="progress-container"
+      role="progressbar"
+      aria-valuemin={1}
+      aria-valuemax={4}
+      aria-valuenow={step}
+      aria-label="Deneyim tasarımı ilerlemesi"
+    >
       <div className="progress-bar" style={{ width: `${((step - 1) / 3) * 100}%` }} />
       <div className="steps-indicators">
         {[1, 2, 3].map((s) => (
           <div key={s} className={`step-dot ${step >= s ? "active" : ""}`}>
-            {step > s ? <Check size={12} /> : s}
+            {step > s ? <Check size={12} aria-hidden /> : s}
           </div>
         ))}
       </div>

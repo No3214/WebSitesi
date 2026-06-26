@@ -19,9 +19,10 @@ export function WhatsAppBridge() {
       animate={{ scale: 1, opacity: 1 }}
       whileHover={{ scale: 1.1, translateY: -5 }}
       title="Organizasyon Uzmanına Bağlan"
+      aria-label="WhatsApp ile organizasyon uzmanına bağlanın"
     >
       <div className="whatsapp-icon-wrapper">
-        <MessageCircle size={32} />
+        <MessageCircle size={32} aria-hidden />
         <span className="expert-badge">EXPERT</span>
       </div>
 

@@ -23,7 +23,7 @@ export function SuccessStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
       style={{ textAlign: "center", display: "grid", gap: 24, padding: "20px 0" }}
     >
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <CheckCircle2 size={64} style={{ color: "var(--olive)" }} />
+        <CheckCircle2 size={64} aria-hidden style={{ color: "var(--olive)" }} />
       </div>
 
       <h3 className="serif" style={{ fontSize: "2rem", color: "var(--olive)", margin: 0 }}>{t.title}</h3>

@@ -2453,6 +2453,15 @@
     border-color: var(--gold);
   }
 
+  /* Klavye odağı görünür kalsın: outline:none üstüne :focus-visible halkası
+     (fare odağında renk ipucu yeterli, klavyede net halka gerekir). */
+  .lead-form input:focus-visible,
+  .lead-form select:focus-visible,
+  .lead-form textarea:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
   .serif-text {
     font-family: var(--sans);
     color: #333;
