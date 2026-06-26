@@ -34,7 +34,7 @@ export const FloatingContact = () => {
       icon: <Phone className="w-5 h-5" />,
       label: callLabel,
       href: getPhoneHref(),
-      color: "bg-blue-600",
+      color: "bg-[#2f5d68]",
     },
     {
       icon: <MessageCircle className="w-5 h-5" />,
