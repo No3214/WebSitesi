@@ -27,7 +27,7 @@ const MAP = {
   "superior-3-kisilik-oda": "superior-3-kisilik-oda-deniz-manzarali",
 };
 
-const DUR = 3.8, XF = 0.7, FPS = 25, W = 1280, H = 720, OW = 1920, OH = 1080;
+const DUR = 4.0, XF = 0.8, FPS = 30, W = 1280, H = 720, OW = 1920, OH = 1080;
 const FR = Math.round(DUR * FPS);
 const ZE = "min(zoom+0.0009,1.10)";
 const XPAN = ["iw/2-(iw/zoom/2)", "(iw-iw/zoom)*0.06", "(iw-iw/zoom)*0.94", "iw/2-(iw/zoom/2)"];
@@ -45,10 +45,13 @@ function run(args) {
 function makeClip(img, idx, tmp) {
   const xp = XPAN[idx % 4], yp = YPAN[idx % 4];
   const clip = path.join(tmp, `c${idx}.mp4`);
+  // Anti-jitter: zoompan'i TAM cozunurlukte (OWxOH) render et; downscale'i AYRI
+  // lanczos ile yap. zoompan kendi icinde kucultunce piksel-yuvarlama adim-adim
+  // titreme (jitter) uretir; ayri lanczos camsi-puruzsuz push-in verir.
   const vf =
     `scale=${OW}:${OH}:force_original_aspect_ratio=increase,crop=${OW}:${OH},` +
-    `zoompan=z='${ZE}':x='${xp}':y='${yp}':d=${FR}:s=${W}x${H}:fps=${FPS},` +
-    `setsar=1,format=yuv420p`;
+    `zoompan=z='${ZE}':x='${xp}':y='${yp}':d=${FR}:s=${OW}x${OH}:fps=${FPS},` +
+    `scale=${W}:${H}:flags=lanczos,setsar=1,format=yuv420p`;
   const r = run([
     "-y", "-loop", "1", "-i", img,
     "-vf", vf, "-t", String(DUR), "-an",
