@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { getDictionary } from "@/lib/dictionary";
+import { getDictionary, type Dictionary } from "@/lib/dictionary";
 import { ADDRESS_EN, ADDRESS_TR, getPhoneHref, MAPS_URL, PHONE_DISPLAY } from "@/lib/contact";
 import { Instagram, Facebook, MapPin, Phone, Mail } from "lucide-react";
 import { LogoMark } from "./logo-mark";
@@ -27,8 +27,7 @@ const legalLinks = {
 };
 
 export function SiteFooter() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(null);
+  const [dict, setDict] = useState<Dictionary | null>(null);
   const pathname = usePathname();
   const englishPath = isEnglishPath(pathname || "/");
   const currentYear = new Date().getFullYear();

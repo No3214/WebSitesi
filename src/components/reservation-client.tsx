@@ -7,7 +7,7 @@ import { BadgeCheck, CalendarClock, MessageCircle } from "lucide-react";
 
 import { HMSBookingEmbed } from "@/components/hms-booking-embed";
 import { WeatherRibbon } from "@/components/weather-ribbon";
-import { getDictionary } from "@/lib/dictionary";
+import { getDictionary, type Dictionary } from "@/lib/dictionary";
 
 // Keys not present in the dictionary Reservation section — component-level fallback.
 const FALLBACK = {
@@ -24,16 +24,14 @@ const FALLBACK = {
 };
 
 type ReservationClientProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialDict?: any;
+  initialDict?: Dictionary;
   initialLocale?: 'tr' | 'en';
   roomSlug?: string;
   roomTitle?: string;
 };
 
 export function ReservationClient({ initialDict, initialLocale = 'tr', roomSlug, roomTitle }: ReservationClientProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(initialDict ?? null);
+  const [dict, setDict] = useState<Dictionary | null>(initialDict ?? null);
   const [locale, setLocale] = useState<'tr' | 'en'>(initialLocale);
   const pathname = usePathname();
 

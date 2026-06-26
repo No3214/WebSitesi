@@ -7,7 +7,7 @@ import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { LeadForm } from "@/components/lead-form";
 import { ADDRESS_EN, ADDRESS_TR, getWhatsAppHref, MAPS_URL, PHONE_DISPLAY, PHONE_E164 } from "@/lib/contact";
 import { googleMapsEmbedUrl } from "@/lib/free-apis";
-import { getDictionary } from "@/lib/dictionary";
+import { getDictionary, type Dictionary } from "@/lib/dictionary";
 
 const EMAIL = "info@kozbeylikonagi.com";
 
@@ -34,14 +34,12 @@ const FALLBACK = {
 };
 
 type ContactClientProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialDict?: any;
+  initialDict?: Dictionary;
   initialLocale?: 'tr' | 'en';
 };
 
 export function ContactClient({ initialDict, initialLocale = 'tr' }: ContactClientProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(initialDict ?? null);
+  const [dict, setDict] = useState<Dictionary | null>(initialDict ?? null);
   const [locale, setLocale] = useState<'tr' | 'en'>(initialLocale);
   const pathname = usePathname();
 

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { SiteHeader } from "@/components/site-header";
-import { getDictionary } from "@/lib/dictionary";
+import { getDictionary, type Dictionary } from "@/lib/dictionary";
 
 import { HomeHero } from "@/components/home/home-hero";
 
@@ -52,14 +52,12 @@ const FinalCta = dynamic(() =>
  * bu dosya yalnızca sözlük/locale durumunu yönetir ve bölümleri sıralar.
  */
 type HomeClientProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialDict?: any;
+  initialDict?: Dictionary;
   initialLocale?: "tr" | "en";
 };
 
 export function HomeClient({ initialDict, initialLocale = "tr" }: HomeClientProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(initialDict ?? null);
+  const [dict, setDict] = useState<Dictionary | null>(initialDict ?? null);
   const [locale, setLocale] = useState<"tr" | "en">(initialLocale);
   const pathname = usePathname();
 

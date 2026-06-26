@@ -8,10 +8,10 @@ import { SiteHeader } from "@/components/site-header";
 import { PageHero } from "@/components/page-hero";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
+import type { Dictionary } from "@/lib/dictionary";
 
 type RoomsClientProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialDict?: any;
+  initialDict?: Dictionary;
   initialLocale?: "tr" | "en";
 };
 

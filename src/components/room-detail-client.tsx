@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FadeIn } from "@/components/animations";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { KeyboardEvent as ReactKeyboardEvent, TouchEvent as ReactTouchEvent } from "react";
-import { getDictionary } from "@/lib/dictionary";
+import { getDictionary, type Dictionary } from "@/lib/dictionary";
 import { SiteHeader } from "@/components/site-header";
 import { WeatherRibbon } from "@/components/weather-ribbon";
 import { getLocalizedRoom, rooms as fallbackRooms } from "@/data/rooms";
@@ -27,8 +27,7 @@ function useReducedMotion() {
 }
 
 export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string; initialLocale?: "tr" | "en" }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [dict, setDict] = useState<any>(null);
+  const [dict, setDict] = useState<Dictionary | null>(null);
   const [activeImg, setActiveImg] = useState(0);
   const reduced = useReducedMotion();
   const touchStartX = useRef<number | null>(null);

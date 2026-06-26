@@ -57,3 +57,10 @@ const dictionaries = {
 export const getDictionary = async (locale: 'en' | 'tr') => {
   return dictionaries[locale] ? dictionaries[locale]() : dictionaries.tr();
 };
+
+/**
+ * Sözlük (i18n) nesnesinin tam tipi — JSON varsayılanı + extras merge'inden
+ * türetilir. Client bileşenlerinde `any` yerine kullanılır (SSR-hydration
+ * sınırında tip güvenliği; runtime davranışı değişmez).
+ */
+export type Dictionary = Awaited<ReturnType<typeof getDictionary>>;
