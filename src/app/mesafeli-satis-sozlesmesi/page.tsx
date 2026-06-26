@@ -29,15 +29,16 @@ export default function SalesAgreementPage() {
                 <ul className="list-disc pl-5 space-y-2">
                   <li>Rezervasyonun kesinleşmesi için toplam tutarın tamamının veya belirlenen depozito tutarının kredi kartı veya havale ile ödenmesi gerekmektedir.</li>
                   <li>Fiyatlara KDV dahildir. Kahvaltı servisi oda fiyatına dahildir (aksi belirtilmedikçe).</li>
+                  <li>Fiyatlar sezon, dönem ve doluluk durumuna göre değişiklik gösterebilir; güncel fiyat ve müsaitlik resmi rezervasyon ekranında netleşir.</li>
                 </ul>
               </section>
 
               <section>
                 <h2 className="text-zinc-900 font-bold mb-4">4. İPTAL VE İADE KOŞULLARI</h2>
                 <ul className="list-disc pl-5 space-y-2">
-                  <li>İptal, değişiklik ve iade koşulları rezervasyon kanalı, seçilen teklif, ödeme tipi, dönem ve konaklama tarihine göre değişebilir.</li>
-                  <li>Misafire uygulanacak güncel koşullar rezervasyon kesinleşmeden önce rezervasyon ekranında, teklif formunda veya yazılı teyit mesajında paylaşılır.</li>
-                  <li>Erken ayrılma, geç iptal ve rezervasyona gelmeme durumları için uygulanacak koşullar, onaylanan rezervasyon şartlarına göre değerlendirilir.</li>
+                  <li>Konaklama tarihine 72 saat (3 gün) ve daha kısa süre kala iletilen iptal ve değişikliklerde ücret iadesi yapılmaz; konaklama bedelinin tamamı tahsil edilir.</li>
+                  <li>72 saatten önce iletilen iptal ve tarih değişikliği talepleri; seçilen tarife, ödeme tipi ve rezervasyon kanalı koşullarına göre değerlendirilir ve güncel koşullar rezervasyon teyidi sırasında yazılı olarak paylaşılır.</li>
+                  <li>Rezervasyona gelmeme (no-show) ve erken ayrılma durumlarında konaklama bedelinin tamamı tahsil edilir.</li>
                 </ul>
               </section>
 

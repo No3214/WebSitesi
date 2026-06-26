@@ -2162,13 +2162,23 @@ describe("production readiness contracts", () => {
     const dictionary = read("src/lib/dictionary.ts");
     const operationalPolicies = read("src/data/operational-policies.ts");
 
-    for (const source of [trGuide, enGuide, llms, contactPage, enContactPage, contactClient, salesAgreement, dictionary]) {
+    // Pazarlama/rehber yüzeyleri zaman-temelli iptal vaadi VERMEZ (yalın kalır);
+    // somut iptal/iade politikası yalnız yasal belgede (mesafeli satış sözleşmesi)
+    // ve SSS'te yer alır — sahip kararı (72 saat / iade yok).
+    const marketingSurfaces = [trGuide, enGuide, llms, contactPage, enContactPage, contactClient, dictionary];
+    for (const source of marketingSurfaces) {
       expect(source).not.toMatch(/48\s*(saat|hours)/i);
       expect(source).not.toMatch(/72\s*(saat|hours)/i);
-      expect(source).not.toMatch(/ücretsiz iptal|free cancellation/i);
       expect(source).not.toMatch(/55\s*(dk|dakika|min|minutes)/i);
       expect(source).not.toMatch(/10[–-]15\s*(dk|dakika|min|minutes)/i);
     }
+    // "Ücretsiz/esnek iptal" yanıltıcı iddiası HİÇBİR yüzeyde olmaz (sözleşme dâhil).
+    for (const source of [...marketingSurfaces, salesAgreement]) {
+      expect(source).not.toMatch(/ücretsiz iptal|free cancellation/i);
+    }
+    // Mesafeli satış sözleşmesi somut iptal/iade politikasını barındırır.
+    expect(salesAgreement).toMatch(/72\s*saat/i);
+    expect(salesAgreement).toMatch(/ücret iadesi yapılmaz/i);
 
     expect(trGuide).toContain("rezervasyon kanalı, seçilen teklif, ödeme tipi");
     expect(enGuide).toContain("booking channel, selected offer, payment type");

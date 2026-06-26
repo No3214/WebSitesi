@@ -89,8 +89,8 @@ export const faqs = [
   {
     q: { tr: "İptal ve tarih değişikliği koşulları nedir?", en: "What are the cancellation and date-change terms?" },
     a: {
-      tr: "İptal ve tarih değişikliği koşulları seçilen tarih, oda, teklif ve rezervasyon kanalına göre değişebilir. Kesin koşullar rezervasyon teyidi sırasında yazılı olarak paylaşılır.",
-      en: "Cancellation and date-change terms may vary by selected date, room, offer and booking channel. Final terms are shared in writing during reservation confirmation."
+      tr: "Konaklama tarihinize 72 saat (3 gün) ve daha kısa süre kala iletilen iptallerde ücret iadesi yapılmaz; konaklama bedelinin tamamı tahsil edilir. 72 saatten önce iletilen iptal ve tarih değişikliği talepleri, seçilen tarife ve rezervasyon kanalı koşullarına göre değerlendirilir; kesin koşullar rezervasyon teyidi sırasında yazılı olarak paylaşılır. Fiyatlar sezon, dönem ve doluluk durumuna göre değişiklik gösterebilir.",
+      en: "Cancellations made 72 hours (3 days) or less before your check-in date are non-refundable and the full accommodation amount is charged. Cancellation and date-change requests made earlier than 72 hours are evaluated according to the selected rate and booking channel terms; final terms are shared in writing during reservation confirmation. Rates may vary by season, period and occupancy."
     }
   },
   {
