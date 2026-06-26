@@ -16,6 +16,7 @@ import { MobileActionBar } from "@/components/mobile-action-bar";
 import { LoadingBar } from "@/components/loading-bar";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { CSPostHogProvider } from "@/components/analytics-provider";
+import { CtaEventBridge } from "@/components/cta-event-bridge";
 import { DocumentLocaleSync } from "@/components/document-locale-sync";
 import { SkipLink } from "@/components/skip-link";
 
@@ -58,6 +59,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
                 ConversionVelocity/Motivators uydurma aciliyet üretiyordu (sahte
                 "%92 dolu" / "5 rezervasyon" — güven riski). Dördü de kaldırıldı. */}
             <TrackingScripts />
+            <CtaEventBridge />
             <WebVitalsReporter />
             <div id="icerik">{children}</div>
             <SiteFooter />
