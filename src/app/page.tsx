@@ -3,7 +3,7 @@ import { HomeClient } from "@/components/home-client";
 import { faqs } from "@/data/faqs";
 import { getDictionary } from "@/lib/dictionary";
 import { serializeJsonLd } from "@/lib/json-ld";
-import { defaultMetadata } from "@/lib/metadata";
+import { altLanguages, defaultMetadata } from "@/lib/metadata";
 
 type HomeLocale = "tr" | "en";
 
@@ -11,9 +11,7 @@ export const metadata: Metadata = {
   ...defaultMetadata,
   title: "Kozbeyli Konağı | Foça Taş Butik Otel & Restoran",
   description: "Foça’da beş asırlık köy dokusu içinde 19. yüzyıl tescilli taş konak, Antakya & Ege mutfağı ve kişiselleştirilmiş hizmet.",
-  alternates: {
-    canonical: "/",
-  }
+  alternates: altLanguages("/", "/en"),
 };
 
 const buildFaqJsonLd = (locale: HomeLocale) => ({

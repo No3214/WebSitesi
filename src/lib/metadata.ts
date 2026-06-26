@@ -14,6 +14,19 @@ const verification = {
     : {}),
 };
 
+/**
+ * Sayfa-bazlı canonical + hreflang (TR/EN + x-default).
+ * Sayfalar `...defaultMetadata` yayıp `alternates` set ettiğinde languages
+ * DÜŞÜYORDU (alternates objesi tümüyle eziliyor). Bu helper canonical ile
+ * birlikte languages'i de korur → `<head>`'de hreflang link'leri üretilir.
+ */
+export function altLanguages(tr: string, en: string) {
+  return {
+    canonical: tr,
+    languages: { tr, en, "x-default": tr },
+  } as const;
+}
+
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {
