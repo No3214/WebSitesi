@@ -1,0 +1,15 @@
+--- src/lib/security.ts
++++ src/lib/security.ts
+@@ -120,8 +120,9 @@
+  * Sanitizes JSON-LD output to prevent XSS vulnerabilities when injected
+- * via dangerouslySetInnerHTML in a <script> tag.
+- * Replaces <, >, &, ', and " with their unicode escapes.
++ * via dangerouslySetInnerHTML in a <script> tag.
++ * Replaces <, >, &, and ' with their unicode escapes.
+  */
+ export function sanitizeJsonLd(data: unknown): string {
+-  return JSON.stringify(data)
++  return (JSON.stringify(data) || '{}')
+     .replace(/</g, '\\u003c')
+     .replace(/>/g, '\\u003e')
+     .replace(/&/g, '\\u0026')

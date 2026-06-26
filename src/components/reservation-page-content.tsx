@@ -5,6 +5,7 @@ import { ReviewBanner } from "@/components/reviews/review-banner";
 import { getDictionary } from "@/lib/dictionary";
 import { getLocalizedRoom, rooms } from "@/data/rooms";
 import { absoluteUrl } from "@/lib/utils";
+import { sanitizeJsonLd } from "@/lib/security";
 
 type ReservationLocale = "tr" | "en";
 
@@ -69,7 +70,7 @@ export async function ReservationPageContent({
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(jsonLd) }} />
       <SiteHeader variant="solid" />
       <PageHero
         eyebrow={copy.eyebrow}

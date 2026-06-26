@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { faqs } from "@/data/faqs";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
+import { sanitizeJsonLd } from "@/lib/security";
 
 type Locale = "tr" | "en";
 
@@ -45,7 +46,7 @@ export function FaqPageContent({ locale = "tr" }: { locale?: Locale }) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(faqJsonLd) }}
       />
       <SiteHeader />
       <main>
