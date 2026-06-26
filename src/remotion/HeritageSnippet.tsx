@@ -7,7 +7,6 @@ export const HeritageSnippet: React.FC<{
   description: string;
 }> = ({ title, subtitle, description }) => {
   const frame = useCurrentFrame();
-  // const { width, height } = useVideoConfig();
 
   // Animations
   const opacity = interpolate(frame, [0, 15, 135, 150], [0, 1, 1, 0]);

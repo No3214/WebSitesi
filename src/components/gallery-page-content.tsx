@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element -- The full gallery serves approved public assets directly to avoid image optimizer contention during heavy parallel release checks. */
 import { PageHero } from "@/components/page-hero";
 import { SiteHeader } from "@/components/site-header";
 import { FadeIn } from "@/components/animations";
