@@ -171,10 +171,11 @@ export const LivingMuseumMap = ({ locale = "tr" }: { locale?: Locale }) => {
             }}
           >
           <div className="relative h-40 w-full mb-4 rounded-xl overflow-hidden transition-all duration-700">
-             <Image 
+             <Image
                 src={active?.image || ""}
                 alt={active?.title || copy.fallbackAlt}
-                fill 
+                fill
+                sizes="(max-width: 768px) 100vw, 400px"
                 className="object-cover"
              />
           </div>
