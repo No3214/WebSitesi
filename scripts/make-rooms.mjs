@@ -84,8 +84,13 @@ function joinClips(clips, out) {
   return run(args);
 }
 
+// Opsiyonel: yalnız verilen slug'ları üret (oda-oda çalıştırma için).
+// Örn: node scripts/make-rooms.mjs standart-deniz-manzarali-oda
+const ONLY = process.argv.slice(2).filter((a) => !a.startsWith("-"));
+
 let ok = 0, fail = 0;
 for (const [slug, folder] of Object.entries(MAP)) {
+  if (ONLY.length && !ONLY.includes(slug)) continue;
   const dir = path.join(IMG, folder);
   if (!fs.existsSync(dir)) { console.log(`SKIP ${slug} (yok)`); fail++; continue; }
   const imgs = fs.readdirSync(dir)
