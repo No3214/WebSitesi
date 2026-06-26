@@ -7,8 +7,12 @@ REM
 REM  Neden: Payload "push" YALNIZ dev'de calisir; prod semasi migration ile
 REM  kurulur. Bu script admin panelini canli eder.
 REM
-REM  ON KOSUL: DATABASE_URI prod'a (Supabase "Session"/"Direct", port 5432)
-REM  bakmali. "Transaction pooler" (6543) DDL'i kisitlar -> migration patlar.
+REM  ON KOSUL (KRITIK): Vercel'de DATABASE_URI = Supabase "SESSION POOLER"
+REM  dizgisi olmali: postgresql://postgres.<ref>:<PAROLA>@aws-<bolge>.pooler.supabase.com:5432/postgres
+REM   - Session pooler: IPv4 (Vercel cozer) + DDL destekler. DOGRU SECIM.
+REM   - "Direct" (db.<ref>.supabase.co): IPv6-only -> Vercel cozemez. KULLANMA.
+REM   - "Transaction pooler" (6543): DDL kisitlar -> migration patlar. KULLANMA.
+REM  Kanit: /api/health -> production_database "database_dns_unresolved".
 REM ==========================================================================
 setlocal EnableExtensions
 cd /d "%~dp0.."
@@ -57,7 +61,8 @@ goto :eof
 
 :err
 echo.
-echo HATA: migration uygulanamadi. En sik neden: DATABASE_URI "Transaction
-echo pooler" (6543). Supabase ^> Connect ^> "Session pooler" veya "Direct"
-echo dizgisini DATABASE_URI olarak ayarla ve scripti tekrar calistir.
+echo HATA: migration uygulanamadi. DATABASE_URI'yi Supabase "SESSION POOLER"
+echo dizgisi yap (IPv4 + DDL): Supabase ^> Connect ^> Session pooler ^>
+echo   postgresql://postgres.^<ref^>:^<PAROLA^>@aws-^<bolge^>.pooler.supabase.com:5432/postgres
+echo "Direct" (IPv6) ve "Transaction pooler" (6543) calismaz. Tekrar dene.
 exit /b 1

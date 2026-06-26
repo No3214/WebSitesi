@@ -29,14 +29,23 @@ git add payload/migrations && git commit -m "chore(db): initial payload migratio
 Sürekli otomatik için: Vercel Project → Settings → Build Command = `npm run ci`
 (önce `payload migrate`, sonra `next build`). Böylece her deploy şemayı uygular.
 
-### A.1 ÖNEMLİ — DATABASE_URI bağlantı tipi
-Şema oluşturma (DDL/push) ve Payload sorguları için Supabase bağlantı dizgisi:
-- **Session pooler** (port 5432, `...pooler.supabase.com`) veya **Direct**
-  (port 5432, `db.<ref>.supabase.co`) KULLAN → DDL + prepared statement çalışır.
-- **Transaction pooler** (port 6543) DDL/prepared-statement'ı kısıtlar → push
-  başarısız olabilir. Serverless'te runtime için transaction pooler tercih edilse
-  de, şema kurulumunu en az bir kez session/direct ile yap.
-Vercel env: `DATABASE_URI` (Production). Sırrı repoya/sohbete yazma.
+### A.1 ÖNEMLİ — DATABASE_URI = SESSION POOLER (Vercel için zorunlu)
+CANLI KANIT: `/api/health` → `production_database.operationalStatus =
+"database_dns_unresolved"`. Yani prod DATABASE_URI host'u Vercel'den ÇÖZÜLMÜYOR.
+Klasik neden: Supabase **Direct** bağlantısı (`db.<ref>.supabase.co`) artık
+IPv6-only; Vercel serverless IPv4 → çözemez/bağlanamaz. Bu, admin'in (ve tüm
+Payload sorgularının) patlamasının asıl sebebidir — şema eksikliğinden ÖNCE.
+
+ÇÖZÜM — DATABASE_URI olarak **Session pooler** dizgisini kullan:
+`postgresql://postgres.<ref>:<PAROLA>@aws-<region>.pooler.supabase.com:5432/postgres`
+- Session pooler **IPv4** (Vercel çözer) **ve** DDL/prepared-statement destekler
+  (migration + runtime ikisi de çalışır). Supabase → Connect → "Session pooler".
+- **Transaction pooler** (6543): IPv4 ama DDL/prepared-statement KISITLAR →
+  migration patlar, runtime'da Payload sorunları. KULLANMA.
+- **Direct** (`db.<ref>...:5432`): IPv6-only → Vercel'de çözülmez. KULLANMA.
+Vercel → Settings → Environment Variables → `DATABASE_URI` (Production) = Session
+pooler dizgisi. Sonra yeniden deploy + `scripts\migrate-prod.cmd`. Sırrı
+repoya/sohbete yazma.
 
 ### A.2 İlk admin kullanıcısı
 Şema oluştuktan sonra `https://www.kozbeylikonagi.com/admin` → "create first
@@ -48,16 +57,22 @@ collection/field eklediğinde: `npm run migrate:create -- <ad>` → commit →
 deploy (Build Command `npm run ci` ise otomatik uygulanır). `npm run migrate:status`
 ile uygulanan/bekleyen migration'ları gör.
 
-## B) RLS / anon-REST maruziyeti (KRİTİK güvenlik)
+## B) RLS / anon-REST maruziyeti — UYGULANDI ✓
 Supabase her `public` tabloyu otomatik **PostgREST** (anon key) ile dışarı açar.
 Payload tabloları `public`'te ve RLS'siz olursa `users` (parola hash'i),
-`organization-leads` (KVKK/PII) gibi tablolar anon key'le okunabilir.
+`organization-leads` (KVKK/PII) gibi tablolar anon key'le okunabilirdi.
 
-**En güvenli ve sıfır-risk çözüm (öneri):** Bu site Supabase PostgREST/anon
-API'sini HİÇ kullanmıyor (Payload doğrudan Postgres bağlanır). O yüzden:
-- Supabase Dashboard → **Project Settings → API → Data API**: `public` şemayı
-  "Exposed schemas" listesinden çıkar **veya** Data API'yi tamamen kapat.
-  Uygulamayı etkilemez (PostgREST kullanılmıyor), tüm anon maruziyetini sıfırlar.
+**UYGULANDI (DB-seviyesi, geri alınabilir):** `REVOKE USAGE ON SCHEMA public
+FROM PUBLIC, anon, authenticated` + tablo/sequence/function REVOKE + default
+privileges REVOKE. Supabase migration: `close_data_api_revoke_public_usage`.
+DOĞRULAMA (`has_schema_privilege`): anon=false, authenticated=false,
+service_role=true, postgres=true. Yani anon REST tamamen kapalı; Payload
+(postgres/owner) ve admin (service_role) erişmeye devam ediyor. Site canlı:
+home/health/review-summary = 200 (regresyon yok). Bu, "Data API'yi kapat"
+isteminin tam karşılığıdır (dashboard toggle'ı yerine SQL ile, çünkü site
+PostgREST'i hiç kullanmıyor → sıfır uygulama etkisi).
+> İsteğe bağlı ek (GUI): Supabase → Settings → API → Data API'yi tamamen
+> kapatmak da mümkün; gerek yok, DB-seviyesi kapatma yeterli.
 
 **Alternatif/defense-in-depth:** Payload tablolarında RLS deny-all. Ön koşul:
 Payload'ın bağlandığı rol RLS'i bypass etmeli (Supabase `postgres` süper-rolü
