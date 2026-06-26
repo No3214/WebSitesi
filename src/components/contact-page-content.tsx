@@ -5,6 +5,7 @@ import { getDictionary } from "@/lib/dictionary";
 import { KOZBEYLI_COORDS } from "@/lib/free-apis";
 import { PHONE_E164 } from "@/lib/contact";
 import { absoluteUrl } from "@/lib/utils";
+import { sanitizeJsonLd } from "@/lib/security";
 
 type ContactLocale = "tr" | "en";
 
@@ -49,7 +50,7 @@ export async function ContactPageContent({ locale = "tr" }: { locale?: ContactLo
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(jsonLd) }} />
       <SiteHeader variant="solid" />
       <PageHero
         eyebrow={copy.eyebrow}

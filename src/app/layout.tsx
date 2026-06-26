@@ -19,6 +19,7 @@ import { CSPostHogProvider } from "@/components/analytics-provider";
 import { CtaEventBridge } from "@/components/cta-event-bridge";
 import { DocumentLocaleSync } from "@/components/document-locale-sync";
 import { SkipLink } from "@/components/skip-link";
+import { sanitizeJsonLd } from "@/lib/security";
 
 
 export const metadata = defaultMetadata;
@@ -45,7 +46,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <link rel="dns-prefetch" href="https://app.hms.gen.tr" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelSchema()) }}
+          dangerouslySetInnerHTML={{ __html: sanitizeJsonLd(hotelSchema()) }}
         />
         <ErrorBoundary>
           <CSPostHogProvider>
