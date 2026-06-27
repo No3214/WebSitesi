@@ -62,7 +62,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
             <TrackingScripts />
             <CtaEventBridge />
             <WebVitalsReporter />
-            <div id="icerik">{children}</div>
+            <div id="icerik" tabIndex={-1}>{children}</div>
             <SiteFooter />
             <FloatingContact />
             <ExitIntent />

@@ -28,6 +28,21 @@ export function safeText(value: string, maxLength: number) {
     .slice(0, maxLength);
 }
 
+/**
+ * Sabit-zaman string karşılaştırma (bearer token / secret için). Düz `===` ilk
+ * farklı karakterde erken çıkıp teorik bir timing yan-kanalı sızdırabilir. Bu
+ * sürüm daima max(uzunluk) kadar işler ve uzunluk farkını da maskeler. WebCrypto
+ * veya node:crypto'ya bağımlı değil → hem edge hem node runtime'da çalışır.
+ */
+export function timingSafeEqualStr(a: string, b: string): boolean {
+  const length = Math.max(a.length, b.length);
+  let mismatch = a.length ^ b.length;
+  for (let i = 0; i < length; i++) {
+    mismatch |= (a.charCodeAt(i) | 0) ^ (b.charCodeAt(i) | 0);
+  }
+  return mismatch === 0;
+}
+
 export function validateSameOrigin(request: Request) {
   const origin = request.headers.get("origin");
   const host = request.headers.get("host");

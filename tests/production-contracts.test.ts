@@ -2059,7 +2059,7 @@ describe("production readiness contracts", () => {
     expect(roomsClient).toContain("rooms-catalog-section");
     expect(roomsClient).toContain("room-card");
     expect(roomsClient).toContain('id="icerik-odalar"');
-    expect(layout).toContain('<div id="icerik">{children}</div>');
+    expect(layout).toContain('<div id="icerik" tabIndex={-1}>{children}</div>');
     expect(pageHero).toContain('tone?: "dark" | "light"');
     expect(pageHero).toContain("page-hero-light");
     expect(globals).toContain(".page-hero-light");

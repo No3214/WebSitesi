@@ -2,6 +2,7 @@ import { getPayloadClient } from "@/lib/payload";
 import { logEvent } from "@/lib/logger";
 import type { NormalizedReview, ReviewDisplayPolicy } from "@/lib/reviews/types";
 import { applyDisplayPolicy } from "@/lib/reviews/adapters";
+import { timingSafeEqualStr } from "@/lib/security";
 
 // Review orchestration — sunucu-tarafli veri katmani (Payload Local API).
 // Public uclar yalniz published kayitlari ve displayPolicy'ye uygun alanlari doner.
@@ -43,8 +44,8 @@ export function isAuthorizedBearer(authHeader: string | null, secret: string): b
   if (!secret) return false;
   if (!authHeader) return false;
   const token = authHeader.replace(/^Bearer\s+/i, "").trim();
-  // sabit zaman karsilastirma yerine basit esitlik (secret yuksek entropili olmali)
-  return token.length > 0 && token === secret;
+  // Sabit-zaman karşılaştırma (timing yan-kanalına karşı; uzunluk farkı da maskeli).
+  return token.length > 0 && timingSafeEqualStr(token, secret);
 }
 
 /** Yayinda olan yorumlari (source populated) getirir. */

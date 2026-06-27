@@ -254,7 +254,7 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
                 </div>
 
                 <div className="amenities-grid-premium">
-                  <h3 className="serif text-xl mb-4">{copy.experience}</h3>
+                  <h2 className="serif text-xl mb-4">{copy.experience}</h2>
                   <div className="amenities-list">
                     {room.amenities.map((item, i) => (
                       <div key={i} className="amenity-item-premium">

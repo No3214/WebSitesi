@@ -5,6 +5,7 @@ import { env } from "@/lib/env";
 import { logEvent } from "@/lib/logger";
 import { googleReviewsAdapter } from "@/lib/reviews/adapters";
 import { upsertReviews } from "@/lib/reviews/store";
+import { timingSafeEqualStr } from "@/lib/security";
 
 // GET /api/cron/sync-google — Vercel Cron ile gece Google senkronu.
 // CRON_SECRET ile korunur (Authorization: Bearer <CRON_SECRET>). Fail-closed.
@@ -14,7 +15,7 @@ import { upsertReviews } from "@/lib/reviews/store";
 export async function GET(request: Request) {
   const auth = request.headers.get("authorization") || "";
   const token = auth.replace(/^Bearer\s+/i, "").trim();
-  if (!env.CRON_SECRET || token !== env.CRON_SECRET) {
+  if (!env.CRON_SECRET || !timingSafeEqualStr(token, env.CRON_SECRET)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   try {

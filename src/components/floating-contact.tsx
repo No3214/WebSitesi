@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MessageCircle, Phone, Instagram, X, MessageSquare } from "lucide-react";
 
@@ -22,6 +22,21 @@ export const FloatingContact = () => {
     : englishPath
       ? "Open contact options"
       : "İletişim seçeneklerini aç";
+
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  // Açık panelde Escape ile kapat ve odağı toggle butonuna geri taşı (a11y).
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isOpen]);
 
   const contactOptions = [
     {
@@ -50,7 +65,7 @@ export const FloatingContact = () => {
       data-testid="floating-contact"
     >
       {isOpen ? (
-        <div className="contact-fab-options flex flex-col gap-3 mb-2">
+        <div id="contact-fab-panel" className="contact-fab-options flex flex-col gap-3 mb-2">
           {contactOptions.map((option, index) => (
             <a
               key={option.label}
@@ -68,9 +83,11 @@ export const FloatingContact = () => {
       ) : null}
 
       <button
+        ref={toggleRef}
         onClick={() => setIsOpen(!isOpen)}
         aria-label={toggleLabel}
         aria-expanded={isOpen}
+        aria-controls="contact-fab-panel"
         className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl transition-all duration-300 ${
           isOpen ? "bg-[var(--olive)] rotate-90" : "bg-gold"
         }`}
