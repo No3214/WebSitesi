@@ -26,6 +26,7 @@ export function StepPace({ designer }: { designer: ExperienceDesigner }) {
         {paces.map((p) => (
           <button
             key={p.id}
+            aria-pressed={selectedPace.id === p.id}
             className={`option-btn ${selectedPace.id === p.id ? "selected" : ""}`}
             onClick={() => setSelectedPace(p)}
             style={{ position: "relative", overflow: "hidden", minHeight: "240px", justifyContent: "flex-end" }}

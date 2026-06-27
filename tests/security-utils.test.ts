@@ -5,6 +5,7 @@ import {
   enforceRateLimit,
   extractClientIp,
   safeText,
+  timingSafeEqualStr,
   validateSameOrigin,
 } from "@/lib/security";
 
@@ -82,5 +83,15 @@ describe("security helpers", () => {
       retryAfterSec: 30,
     });
     expect(rateLimit).toHaveBeenCalledWith("lead:203.0.113.10", 5, 60_000);
+  });
+
+  it("compares secrets in constant time, matching only on exact equality", () => {
+    expect(timingSafeEqualStr("s3cr3t-token", "s3cr3t-token")).toBe(true);
+    // tek karakter farkı → reddet
+    expect(timingSafeEqualStr("s3cr3t-token", "s3cr3t-toked")).toBe(false);
+    // farklı uzunluk → reddet (uzunluk farkı da maskeli işlenir)
+    expect(timingSafeEqualStr("short", "short-longer")).toBe(false);
+    expect(timingSafeEqualStr("a", "")).toBe(false);
+    expect(timingSafeEqualStr("", "")).toBe(true);
   });
 });

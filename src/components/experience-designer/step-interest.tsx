@@ -28,6 +28,7 @@ export function StepInterest({ designer }: { designer: ExperienceDesigner }) {
           return (
             <button
               key={i.id}
+              aria-pressed={selectedInterest.id === i.id}
               className={`option-btn ${selectedInterest.id === i.id ? "selected" : ""}`}
               onClick={() => setSelectedInterest(i)}
               style={{ position: "relative", overflow: "hidden", minHeight: "240px", justifyContent: "flex-end" }}

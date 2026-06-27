@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getDictionary } from "@/lib/dictionary";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { isEnglishPath, localizedHref } from "@/lib/localized-routes";
@@ -42,6 +42,7 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const bookingLabel = englishPath ? "Booking" : "Rezervasyon";
   const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const locale = englishPath ? "en" : "tr";
@@ -75,11 +76,20 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
     setMenuOpen(false);
   }, [pathname]);
 
-  // Menü açıkken body scroll kilidi
+  // Menü açıkken body scroll kilidi + Escape ile kapat (odağı toggle'a geri taşı).
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKey);
     };
   }, [menuOpen]);
 
@@ -139,6 +149,7 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
               {bookingLabel}
             </a>
             <button
+              ref={menuButtonRef}
               type="button"
               className={`menu-toggle ${menuOpen ? "open" : ""}`}
               aria-expanded={menuOpen}

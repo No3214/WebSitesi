@@ -26,6 +26,7 @@ export function StepDuration({ designer }: { designer: ExperienceDesigner }) {
         {durations.map((d) => (
           <button
             key={d.id}
+            aria-pressed={selectedDuration.id === d.id}
             className={`option-btn ${selectedDuration.id === d.id ? "selected" : ""}`}
             onClick={() => setSelectedDuration(d)}
             style={{ position: "relative", overflow: "hidden", minHeight: "240px", justifyContent: "flex-end" }}
