@@ -31,4 +31,12 @@ describe("build safety: no destructive schema push on deploy", () => {
     expect(guardIdx).toBeGreaterThanOrEqual(0);
     expect(bootIdx).toBeGreaterThan(guardIdx);
   });
+
+  it("payload.config gates schema push to a local DB host only (never remote/Supabase)", () => {
+    const src = fs.readFileSync(path.join(root, "payload.config.ts"), "utf8");
+    // an unconditional `push: true` would DROP/RECREATE remote tables (data + RLS wipe)
+    expect(src).not.toMatch(/push:\s*true\s*,/);
+    // push must be gated on a localhost DB host
+    expect(src).toMatch(/push:\s*\/[^/]*localhost/);
+  });
 });

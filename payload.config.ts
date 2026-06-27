@@ -34,22 +34,16 @@ export default buildConfig({
         ? { ssl: { rejectUnauthorized: false } }
         : {}),
     },
-    // Supabase/Postgres şema yönetimi.
-    // ÖNEMLİ (Payload kaynak davranışı): otomatik `push` YALNIZ
-    // NODE_ENV !== "production" iken çalışır → prod'da `push: true` NO-OP'tur.
-    // Prod şeması MIGRATION ile kurulur (dev'de push açık, yerel kolaylık).
-    // Prod kurulumu (tek seferlik, DATABASE_URI prod'a bakarken):
-    //   npm run migrate:create -- initial   # payload/migrations üretir
-    //   npm run migrate                      # prod DB'ye uygular
-    // Sürekli otomatik: Vercel "Build Command" = `npm run ci`
-    //   (önce payload migrate, sonra next build). Detay: docs/supabase-vercel-setup.md.
-    // Bağlantı: DDL/migration için Supabase "Session"/"Direct" string kullan;
-    // "Transaction pooler" (6543) DDL/prepared-statement'ı kısıtlar.
-    // Payload tablolari ayri "payload" şemasında: drizzle introspection mevcut
-    // public yan-tablolarına takılmaz (Supabase pooler prepared-statement sorunu);
-    // push boş şemada temiz çalışır. Mevcut public tablolar korunur.
+    // Payload tablolari ayri "payload" şemasinda (public yan-tablolar korunur).
     schemaName: "payload",
-    push: true,
+    // ŞEMA PUSH GÜVENLİĞİ — KRİTİK (asla uzak/Supabase'e push etme):
+    // `push`, drizzle ile tablolari model'e eslestirir; UZAK semaya calistiginda
+    // tablolari DROP/RECREATE edip TÜM VERİYİ (admin hesabi dahil) ve el ile uygulanan
+    // RLS'i SİLER. Bu yuzden push YALNIZ yerel (localhost) DB'de aciktir. Vercel build'i
+    // Supabase pooler host'una baglandigindan push otomatik KAPALI kalir — db-push.ts
+    // NODE_ENV=development'a zorlasa BİLE bu host kapisini gecemez. Uzak sema degisikligi
+    // icin GÜVENLİ yol Payload migration'dur (push DEĞİL).
+    push: /@(localhost|127\.0\.0\.1|\[::1\])[:/]/.test(env.DATABASE_URI),
     migrationDir: path.resolve(process.cwd(), "payload/migrations"),
   }),
   cors: getAllowedOrigins(),
