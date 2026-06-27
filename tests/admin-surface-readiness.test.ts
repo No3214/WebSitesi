@@ -56,7 +56,7 @@ function makeTmpProject(source: string, clientSource = safeClientSource) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "kozbeyli-admin-surface-"));
   tmpDirs.push(dir);
   const sourceDir = path.join(dir, "src/app/admin/growth");
-  const payloadAdminDir = path.join(dir, "src/app/(payload)/admin/[[...payload]]");
+  const payloadAdminDir = path.join(dir, "src/app/(payload)/admin/[[...segments]]");
   fs.mkdirSync(sourceDir, { recursive: true });
   fs.mkdirSync(payloadAdminDir, { recursive: true });
   fs.writeFileSync(path.join(sourceDir, "page.tsx"), source);

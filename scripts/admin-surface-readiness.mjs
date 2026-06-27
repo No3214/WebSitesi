@@ -8,8 +8,8 @@ const adminGrowthPath = "/admin/growth";
 const adminLoginPath = "/admin";
 const adminGrowthSourcePath = "src/app/admin/growth/page.tsx";
 const adminGrowthClientSourcePath = "src/app/admin/growth/growth-client.tsx";
-const adminPayloadPageSourcePath = "src/app/(payload)/admin/[[...payload]]/page.tsx";
-const adminPayloadLayoutSourcePath = "src/app/(payload)/admin/[[...payload]]/layout.tsx";
+const adminPayloadPageSourcePath = "src/app/(payload)/admin/[[...segments]]/page.tsx";
+const adminPayloadLayoutSourcePath = "src/app/(payload)/admin/[[...segments]]/layout.tsx";
 
 const requiredSourceSignals = [
   {
