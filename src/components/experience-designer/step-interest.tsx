@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { interests } from "./data";
 import type { ExperienceDesigner } from "./use-experience-designer";
@@ -9,13 +9,14 @@ import type { ExperienceDesigner } from "./use-experience-designer";
 // Not: styled-jsx scoped çalıştığı için ortak adım stilleri her adım dosyasında birebir tekrarlanır.
 export function StepInterest({ designer }: { designer: ExperienceDesigner }) {
   const { selectedInterest, setSelectedInterest, handleNext, handleBack } = designer;
+  const shouldReduce = useReducedMotion();
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 15 }}
+      initial={shouldReduce ? false : { opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -15 }}
-      transition={{ duration: 0.4 }}
+      exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -15 }}
+      transition={{ duration: shouldReduce ? 0 : 0.4 }}
       className="step-card"
     >
       <span className="eyebrow">AŞAMA 2 / 3</span>
