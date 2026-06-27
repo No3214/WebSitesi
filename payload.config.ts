@@ -45,6 +45,10 @@ export default buildConfig({
     //   (önce payload migrate, sonra next build). Detay: docs/supabase-vercel-setup.md.
     // Bağlantı: DDL/migration için Supabase "Session"/"Direct" string kullan;
     // "Transaction pooler" (6543) DDL/prepared-statement'ı kısıtlar.
+    // Payload tablolari ayri "payload" şemasında: drizzle introspection mevcut
+    // public yan-tablolarına takılmaz (Supabase pooler prepared-statement sorunu);
+    // push boş şemada temiz çalışır. Mevcut public tablolar korunur.
+    schemaName: "payload",
     push: true,
     migrationDir: path.resolve(process.cwd(), "payload/migrations"),
   }),
