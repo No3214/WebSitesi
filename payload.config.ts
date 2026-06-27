@@ -27,6 +27,12 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: env.DATABASE_URI,
+      // Supabase "Enforce SSL" açık → uzak (pooler/supabase) host'ta SSL zorunlu;
+      // localhost dev'de kapalı kalır. rejectUnauthorized:false → Supabase
+      // sertifikasını kabul eder (pg + Supabase standart kalıbı).
+      ...(/supabase\.(co|com)|pooler\./i.test(env.DATABASE_URI)
+        ? { ssl: { rejectUnauthorized: false } }
+        : {}),
     },
     // Supabase/Postgres şema yönetimi.
     // ÖNEMLİ (Payload kaynak davranışı): otomatik `push` YALNIZ
