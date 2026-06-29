@@ -34,8 +34,25 @@ const visualRoutes = [
 ];
 const playableVideoSelector = 'video[data-event^="video_play_"]';
 const kitchenVideoSources = ["/videos/kahvalti.mp4", "/videos/mihlama.mp4", "/videos/chef.mp4"];
+const consentStorageKey = "cookie_consent_v2";
+const necessaryOnlyConsent = {
+  version: "2026-03",
+  necessary: true,
+  analytics: false,
+  marketing: false,
+  updatedAt: "2026-06-29T00:00:00.000Z",
+};
 
 test.describe.configure({ mode: "serial", timeout: 120000 });
+
+async function seedNecessaryCookieConsent(page: import("@playwright/test").Page) {
+  await page.addInitScript(
+    ([key, value]) => {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    },
+    [consentStorageKey, necessaryOnlyConsent] as const
+  );
+}
 
 function listMediaFiles(dir: string): string[] {
   return fs
@@ -175,6 +192,7 @@ test.describe("Media, video and mobile publish readiness", () => {
 
   test("mobile homepage editorial videos expose controls and can start real clips", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
+    await seedNecessaryCookieConsent(page);
     const response = await page.goto("/", { waitUntil: "load" });
 
     expect(response?.status(), "/ should return usable HTML on mobile").toBeLessThan(400);
@@ -354,6 +372,7 @@ test.describe("Media, video and mobile publish readiness", () => {
   ]) {
     test(`mobile ${route.path} gastronomy video controls play breakfast, mihlama and chef clips`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
+      await seedNecessaryCookieConsent(page);
       const response = await page.goto(route.path, { waitUntil: "load" });
 
       expect(response?.status(), `${route.path} should return usable HTML on mobile`).toBeLessThan(400);

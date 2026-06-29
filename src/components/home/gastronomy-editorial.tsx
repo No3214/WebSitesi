@@ -14,6 +14,92 @@ type LazyEditorialVideoProps = {
   playLabel: string;
 };
 
+function waitForMediaData(video: HTMLVideoElement, timeoutMs = 5000) {
+  if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+    return Promise.resolve();
+  }
+
+  return new Promise<void>((resolve, reject) => {
+    const readyEvents = ["loadeddata", "canplay"];
+    let settled = false;
+
+    const cleanup = () => {
+      window.clearTimeout(timer);
+      readyEvents.forEach((event) => video.removeEventListener(event, settleReady));
+      video.removeEventListener("error", settleBlocked);
+    };
+
+    const settleReady = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve();
+    };
+
+    const settleBlocked = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error("video-data-unavailable"));
+    };
+
+    const timer = window.setTimeout(() => {
+      if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        settleReady();
+        return;
+      }
+      settleBlocked();
+    }, timeoutMs);
+
+    readyEvents.forEach((event) => video.addEventListener(event, settleReady));
+    video.addEventListener("error", settleBlocked);
+  });
+}
+
+function waitForPlaybackAdvance(video: HTMLVideoElement, timeoutMs = 5000) {
+  if (!video.paused && video.currentTime > 0) {
+    return Promise.resolve();
+  }
+
+  return new Promise<void>((resolve, reject) => {
+    let settled = false;
+
+    const cleanup = () => {
+      window.clearTimeout(timer);
+      video.removeEventListener("timeupdate", settleIfAdvanced);
+      video.removeEventListener("playing", settleIfAdvanced);
+      video.removeEventListener("error", settleBlocked);
+      video.removeEventListener("pause", settleBlocked);
+    };
+
+    const settleIfAdvanced = () => {
+      if (settled || video.paused || video.currentTime <= 0) return;
+      settled = true;
+      cleanup();
+      resolve();
+    };
+
+    const settleBlocked = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error("video-playback-unavailable"));
+    };
+
+    const timer = window.setTimeout(() => {
+      settleIfAdvanced();
+      if (!settled) {
+        settleBlocked();
+      }
+    }, timeoutMs);
+
+    video.addEventListener("timeupdate", settleIfAdvanced);
+    video.addEventListener("playing", settleIfAdvanced);
+    video.addEventListener("error", settleBlocked);
+    video.addEventListener("pause", settleBlocked);
+  });
+}
+
 function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [shouldLoad, setShouldLoad] = useState(false);
@@ -36,6 +122,7 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
     if (!video) return;
 
     try {
+      setShouldLoad(true);
       video.defaultMuted = true;
       video.muted = true;
       video.playsInline = true;
@@ -46,9 +133,12 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
       ) {
         video.load();
       }
+      await waitForMediaData(video);
       await video.play();
-      markPlaybackState();
       setPlaybackBlocked(false);
+      setIsPlaying(true);
+      await waitForPlaybackAdvance(video);
+      markPlaybackState();
     } catch {
       setIsPlaying(false);
       setPlaybackBlocked(true);
