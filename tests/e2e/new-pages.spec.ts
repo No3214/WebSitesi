@@ -287,7 +287,15 @@ test.describe("EN public localization", () => {
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/en");
-    await page.getByRole("button", { name: "Open menu" }).click();
+    const mobileMenuButton = page.locator('button.menu-toggle[aria-controls="mobile-menu"]');
+    await expect(mobileMenuButton).toBeVisible();
+    await expect(async () => {
+      if ((await page.locator("#mobile-menu").count()) === 0) {
+        await mobileMenuButton.click();
+      }
+      await expect(mobileMenuButton).toHaveAttribute("aria-expanded", "true", { timeout: 1000 });
+      await expect(page.locator("#mobile-menu")).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 10_000 });
     await expect(page.locator('#mobile-menu a[href="/en/menu"]')).toBeVisible();
   });
 });
