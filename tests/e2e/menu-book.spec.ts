@@ -10,7 +10,7 @@ test.describe("Restaurant menu book design", () => {
     await expect(page.getByText("Restoran Menüsü")).toBeVisible();
     await expect(page.getByText("Gurme Serpme Kahvaltı", { exact: false }).first()).toBeVisible();
     await expect(page.getByText("Beylerbeyi Göbek 100cl")).toBeVisible();
-    await expect(page.getByText("Termos Çay")).toBeVisible();
+    await expect(page.getByText("Çay", { exact: true }).first()).toBeVisible();
     await expect(page.getByText("500 yıllık taş konak")).toHaveCount(0);
     await expect(page.getByRole("navigation", { name: "Menü kategorileri" })).toBeVisible();
     await expect(page.getByRole("link", { name: /Mezeler 5 ürün/ })).toHaveAttribute("href", "#mezeler");

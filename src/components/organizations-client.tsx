@@ -425,6 +425,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
         }
 
         .org-content h2 {
+          color: var(--olive);
           font-size: 2.5rem;
           margin: 20px 0;
         }
@@ -432,13 +433,13 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
         .org-content .eyebrow,
         .wedding-copy .eyebrow,
         .lead-section :global(.eyebrow) {
-          color: var(--gold-text);
+          color: #6f4d1d;
         }
 
         .org-content p {
           font-size: 1.1rem;
           line-height: 1.8;
-          color: var(--muted);
+          color: #514b43;
           margin-bottom: 32px;
         }
 
@@ -486,7 +487,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
         }
 
         .wedding-copy > p {
-          color: var(--muted);
+          color: #514b43;
           font-size: 1.05rem;
           line-height: 1.85;
           margin: 0 0 22px;
@@ -494,7 +495,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
 
         .wedding-copy > strong {
           display: block;
-          color: var(--gold-text);
+          color: #6f4d1d;
           font-size: 0.92rem;
           letter-spacing: 0.08em;
           text-transform: uppercase;
@@ -519,7 +520,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
         }
 
         .wedding-detail-card p {
-          color: var(--muted);
+          color: #514b43;
           font-size: 0.92rem;
           line-height: 1.7;
           margin: 0;
@@ -538,7 +539,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
         }
 
         .event-documents-copy .eyebrow {
-          color: var(--gold-text);
+          color: #6f4d1d;
         }
 
         .event-documents-copy h2 {
@@ -550,7 +551,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
 
         .event-documents-copy p,
         .event-documents-note {
-          color: var(--muted);
+          color: #514b43;
           font-size: 1rem;
           line-height: 1.8;
           margin: 0;
@@ -599,7 +600,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
         }
 
         .wedding-gallery .eyebrow {
-          color: var(--gold-text);
+          color: #6f4d1d;
         }
 
         .wedding-gallery h2 {
@@ -609,7 +610,7 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
         }
 
         .wedding-gallery > p {
-          color: var(--muted);
+          color: #514b43;
           font-size: 1.05rem;
           line-height: 1.8;
           max-width: 620px;
@@ -635,6 +636,35 @@ export function OrganizationsClient({ locale = "tr" }: { locale?: Locale }) {
           margin-top: 150px;
           padding: 100px 0;
           background: var(--soft);
+        }
+
+        .lead-section :global(.eyebrow) {
+          color: #6f4d1d;
+        }
+
+        .lead-section :global(.section-title h2) {
+          color: var(--olive);
+        }
+
+        .lead-section :global(.section-text) {
+          color: #4f4a43;
+        }
+
+        .lead-section :global(.lead-form) {
+          color: #4f4a43;
+        }
+
+        .lead-section :global(input),
+        .lead-section :global(select),
+        .lead-section :global(textarea) {
+          color: #263524;
+          background: #fffefd;
+        }
+
+        .lead-section :global(input::placeholder),
+        .lead-section :global(textarea::placeholder) {
+          color: #5d5549;
+          opacity: 1;
         }
 
         @media (max-width: 1024px) {

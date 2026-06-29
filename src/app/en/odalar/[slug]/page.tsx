@@ -14,6 +14,7 @@ type Props = {
 export function generateStaticParams() {
   return rooms.map((room) => ({ slug: room.slug }));
 }
+export const dynamicParams = false;
 
 export async function generateMetadata({
   params,

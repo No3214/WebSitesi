@@ -252,6 +252,19 @@ test.describe("EN public localization", () => {
   });
 
   test("global chrome exposes the restaurant menu in TR and EN desktop and mobile navigation", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        "cookie_consent_v2",
+        JSON.stringify({
+          version: "2026-03",
+          necessary: true,
+          analytics: false,
+          marketing: false,
+          updatedAt: new Date().toISOString(),
+        }),
+      );
+    });
+
     await page.goto("/");
     await expect(page.locator("header.site-header").getByRole("link", { name: "Menü", exact: true })).toHaveAttribute(
       "href",
@@ -275,7 +288,7 @@ test.describe("EN public localization", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/en");
     await page.getByRole("button", { name: "Open menu" }).click();
-    await expect(page.locator("#mobile-menu").getByRole("link", { name: /Menu/ })).toHaveAttribute("href", "/en/menu");
+    await expect(page.locator('#mobile-menu a[href="/en/menu"]')).toBeVisible();
   });
 });
 

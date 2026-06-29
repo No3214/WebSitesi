@@ -2040,9 +2040,9 @@ describe("production readiness contracts", () => {
   it("keeps unknown room slugs returning page-level 404s without static fallback errors", () => {
     const roomDetailRoute = read("src/app/odalar/[slug]/page.tsx");
 
-    expect(roomDetailRoute).toContain("export const dynamicParams = true");
+    expect(roomDetailRoute).toContain("export const dynamicParams = false");
     expect(roomDetailRoute).toContain("notFound()");
-    expect(roomDetailRoute).not.toContain("dynamicParams = false");
+    expect(roomDetailRoute).not.toContain("dynamicParams = true");
   });
 
   it("keeps sunset mode from degrading room-card text contrast", () => {

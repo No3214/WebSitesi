@@ -39,6 +39,8 @@ function copyRequiredFixture(baseDir: string) {
     "src/lib/webhook-body-limit.ts",
     "tests/webhook-body-limit.test.ts",
     "src/lib/security.ts",
+    "src/app/api/webhook/hotelrunner/route.ts",
+    "src/app/api/webhook/iyzico/route.ts",
   ];
 
   for (const file of files) {
@@ -67,6 +69,12 @@ describe("webhook surface readiness", () => {
       ready: true,
     });
     expect(result.checks.find((check) => check.id === "body_limit_constant")).toMatchObject({
+      ready: true,
+    });
+    expect(result.checks.find((check) => check.id === "hotelrunner_post_missing_signature_401")).toMatchObject({
+      ready: true,
+    });
+    expect(result.checks.find((check) => check.id === "iyzico_get_405")).toMatchObject({
       ready: true,
     });
   });
@@ -104,18 +112,33 @@ describe("webhook surface readiness", () => {
     });
   });
 
-  it("blocks readiness if active legacy webhook route files are reintroduced", async () => {
+  it("blocks readiness if webhook route files are removed", async () => {
     const webhookSurface = await loadWebhookSurfaceModule();
     const dir = makeTmpDir();
     copyRequiredFixture(dir);
-    const legacyRoute = path.join(dir, "src/app/api/webhook/iyzico/route.ts");
-    fs.mkdirSync(path.dirname(legacyRoute), { recursive: true });
-    fs.writeFileSync(legacyRoute, "export async function GET() { return Response.json({ active: true }); }\n");
+    fs.rmSync(path.join(dir, "src/app/api/webhook/iyzico/route.ts"));
 
     const result = webhookSurface.evaluateWebhookSurfaceSource({ baseDir: dir });
 
     expect(result.ready).toBe(false);
-    expect(result.checks.find((check) => check.id.includes("iyzico_route_ts"))).toMatchObject({
+    expect(result.checks.find((check) => check.id === "iyzicoRoute_present")).toMatchObject({
+      ready: false,
+    });
+  });
+
+  it("blocks readiness if a webhook route leaks active provider status over GET", async () => {
+    const webhookSurface = await loadWebhookSurfaceModule();
+    const dir = makeTmpDir();
+    copyRequiredFixture(dir);
+    fs.writeFileSync(
+      path.join(dir, "src/app/api/webhook/iyzico/route.ts"),
+      'export function GET() { return Response.json({ active: true }); }\nexport async function POST() { return Response.json({ ok: true }); }\n',
+    );
+
+    const result = webhookSurface.evaluateWebhookSurfaceSource({ baseDir: dir });
+
+    expect(result.ready).toBe(false);
+    expect(result.checks.find((check) => check.id === "iyzico_get_405")).toMatchObject({
       ready: false,
     });
   });

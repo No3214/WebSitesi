@@ -11,6 +11,8 @@ const sourceFiles = {
   bodyLimit: "src/lib/webhook-body-limit.ts",
   bodyLimitTest: "tests/webhook-body-limit.test.ts",
   securityLib: "src/lib/security.ts",
+  hotelrunnerRoute: "src/app/api/webhook/hotelrunner/route.ts",
+  iyzicoRoute: "src/app/api/webhook/iyzico/route.ts",
 };
 
 const requiredSignals = {
@@ -121,13 +123,53 @@ const requiredSignals = {
       pattern: /timingSafeEqualStr[\s\S]*max\(a\.length,\s*b\.length\)[\s\S]*mismatch/,
     },
   ],
+  hotelrunnerRoute: [
+    {
+      id: "hotelrunner_route_no_store",
+      label: "HotelRunner webhook route responses must be no-store",
+      pattern: /"Cache-Control"\s*:\s*"no-store, max-age=0"/,
+    },
+    {
+      id: "hotelrunner_get_405",
+      label: "HotelRunner webhook GET must fail closed without provider status leakage",
+      pattern: /export function GET\(\)[\s\S]*methodNotAllowed\(\)/,
+    },
+    {
+      id: "hotelrunner_post_missing_signature_401",
+      label: "HotelRunner webhook POST must reject missing signatures before any backend work",
+      pattern: /export async function POST[\s\S]*x-payload-signature[\s\S]*unauthorized\(\)/,
+    },
+    {
+      id: "hotelrunner_signed_unavailable_503",
+      label: "HotelRunner signed webhook must not false-ack while processing is unavailable",
+      pattern: /Webhook processing unavailable[\s\S]*status:\s*503/,
+    },
+  ],
+  iyzicoRoute: [
+    {
+      id: "iyzico_route_no_store",
+      label: "Iyzico webhook route responses must be no-store",
+      pattern: /"Cache-Control"\s*:\s*"no-store, max-age=0"/,
+    },
+    {
+      id: "iyzico_get_405",
+      label: "Iyzico webhook GET must fail closed without provider status leakage",
+      pattern: /export function GET\(\)[\s\S]*methodNotAllowed\(\)/,
+    },
+    {
+      id: "iyzico_post_missing_signature_401",
+      label: "Iyzico webhook POST must reject missing signatures before any backend work",
+      pattern: /export async function POST[\s\S]*x-payload-signature[\s\S]*unauthorized\(\)/,
+    },
+    {
+      id: "iyzico_signed_unavailable_503",
+      label: "Iyzico signed webhook must not false-ack while processing is unavailable",
+      pattern: /Webhook processing unavailable[\s\S]*status:\s*503/,
+    },
+  ],
 };
 
-const forbiddenRouteFiles = [
-  "src/app/api/webhook/hotelrunner/route.ts",
-  "src/app/api/webhook/iyzico/route.ts",
-  "src/app/api/webhook/route.ts",
-];
+const forbiddenRouteFiles = ["src/app/api/webhook/route.ts"];
 
 function readIfExists(relPath, baseDir = root) {
   const fullPath = path.join(baseDir, relPath);
