@@ -58,7 +58,7 @@ export const mediaManifest: MediaAsset[] = [
     source: "hero.mp4 kaynak montajindan 720x1280 mobil encode",
     approved: true,
     sha256:
-      "5fe89e7ae4e96498278c79ad83a1f587594f0a714105587565d660521e028cc9",
+      "578dbf601366ce4ab1d0b92536b7f1afa579b9c3aac564001595d6da985f435c",
   },
   {
     path: "/images/hero-video-poster-1280.webp",

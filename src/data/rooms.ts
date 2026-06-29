@@ -166,7 +166,7 @@ export const rooms: Room[] = [
     video: "/videos/rooms/superior-3-kisilik-oda.mp4",
     title: "Superior 3 Kişilik Oda",
     short: "42 metrekarelik, 3 kişi kapasiteli, küvetli lüks deniz manzaralı süit.",
-    description: "Alaybey Süit, Kozbeyli'nin beş asırlık köy dokusunu 19. yüzyıl tescilli konak mimarisiyle buluşturan, Horasan harcı izleri ve tüccar ailelerin mirasını yansıtan 'Slow Living' konseptiyle tasarlandı. / Alaybey Suite brings Kozbeyli's five-century village texture together with 19th-century registered mansion architecture, Horasan mortar details and a 'Slow Living' concept reflecting merchant heritage.",
+    description: "Alaybey Süit, Kozbeyli'nin beş asırlık köy dokusunu 19. yüzyıl tescilli konak mimarisiyle buluşturan, Horasan harcı izleri ve tüccar ailelerin mirasını yansıtan 'Slow Living' konseptiyle tasarlandı.",
     capacity: "3 Yetişkin",
     size: "42 m²",
     view: "Panoramik Deniz",
@@ -176,7 +176,7 @@ export const rooms: Room[] = [
       en: {
         title: "Superior Triple Room",
         short: "A 42-square-meter premium room for 3 guests with panoramic sea views.",
-        description: "A wider superior room designed for three guests who want the comfort of a premium layout with the calm of a sea-facing stone stay. It balances group practicality with a more elevated room experience.",
+        description: "Alaybey Suite brings Kozbeyli's five-century village texture together with 19th-century registered mansion architecture, Horasan mortar details and a 'Slow Living' concept reflecting merchant heritage.",
         capacity: "3 Adults",
         view: "Panoramic Sea",
         amenities: ["Bathtub & Shower", "3-Guest Bed Setup", "Sea View", "Premium Bath Amenities", "Tea/Coffee Service"],

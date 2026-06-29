@@ -2,8 +2,8 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { Phone, MapPin, Calendar } from "lucide-react";
-import { getPhoneHref, MAPS_URL } from "@/lib/contact";
+import { Phone, MapPin, Calendar, MessageCircle } from "lucide-react";
+import { getPhoneHref, MAPS_URL, getWhatsAppHref } from "@/lib/contact";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
 
@@ -14,20 +14,29 @@ export const MobileActionBar = () => {
     ? {
         phone: "Call",
         map: "Location",
+        whatsapp: "Ask Us",
         booking: "Booking",
         phoneAria: "Call by phone",
         mapAria: "View on map",
+        whatsappAria: "WhatsApp - Ask us a question",
         bookingAria: "Booking - open official reservation screen",
       }
     : {
         phone: "ARA",
         map: "KONUM",
+        whatsapp: "SORUN",
         booking: "REZERVASYON",
         phoneAria: "Telefonla ara",
         mapAria: "Haritada görüntüle",
+        whatsappAria: "WhatsApp - Hemen sorun",
         bookingAria: "Rezervasyon - resmi rezervasyon ekranını aç",
       };
   const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
+  const whatsappHref = getWhatsAppHref(
+    englishPath
+      ? "Hello! I am visiting your website and have a question."
+      : "Merhaba! Web siteniz üzerinden ulaşıyorum, bilgi alabilir miyim?"
+  );
 
   return (
     <div
@@ -55,6 +64,19 @@ export const MobileActionBar = () => {
             <MapPin size={20} className="text-zinc-600" />
           </div>
           <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{labels.map}</span>
+        </a>
+
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-col items-center gap-1 group"
+          aria-label={labels.whatsappAria}
+        >
+          <div className="p-2 rounded-full group-active:bg-zinc-100 transition-colors">
+            <MessageCircle size={20} className="text-green-600" />
+          </div>
+          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{labels.whatsapp}</span>
         </a>
 
         <a

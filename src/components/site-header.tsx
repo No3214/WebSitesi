@@ -9,6 +9,7 @@ import { isEnglishPath, localizedHref } from "@/lib/localized-routes";
 import { publicEnv } from "@/lib/public-env";
 import { LanguageSwitcher } from "./language-switcher";
 import { LogoMark } from "./logo-mark";
+import { getWhatsAppHref } from "@/lib/contact";
 
 type NavLink = { href: string; label: string };
 
@@ -44,6 +45,11 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const bookingLabel = englishPath ? "Booking" : "Rezervasyon";
   const bookingHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);
+  const whatsappHref = getWhatsAppHref(
+    englishPath
+      ? "Hello! I am visiting your website and have a question."
+      : "Merhaba! Web siteniz üzerinden ulaşıyorum, bilgi alabilir miyim?"
+  );
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -137,6 +143,21 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
 
           <div className="header-actions">
             <LanguageSwitcher />
+            <a
+              className="button secondary sm"
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={
+                englishPath
+                  ? "WhatsApp - Ask us a question"
+                  : "WhatsApp - Hemen sorun"
+              }
+              style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+              <span>{englishPath ? "Ask Us" : "Hemen Sorun"}</span>
+            </a>
             <a
               className="button gold sm"
               href={bookingHref}

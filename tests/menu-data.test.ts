@@ -20,7 +20,7 @@ describe("menu data (src/data/menu.ts)", () => {
       "Kahvaltı",
       "Mezeler",
       "Ara Sıcaklar & Başlangıçlar",
-      "Napoliten Pizza & Sandviç",
+      "Taş Fırın Pizza & Sandviç",
       "Peynir Tabakları",
       "Ana Yemekler",
       "Tatlılar",
@@ -33,7 +33,7 @@ describe("menu data (src/data/menu.ts)", () => {
   });
 
   it("kaynak menüdeki geniş ürün kapsamını korur", () => {
-    expect(allItems.length).toBeGreaterThanOrEqual(120);
+    expect(allItems.length).toBeGreaterThanOrEqual(115);
   });
 
   it("her ürünün adı boş olmamalı", () => {
@@ -45,15 +45,15 @@ describe("menu data (src/data/menu.ts)", () => {
   });
 
   it("kaynak dosyadaki kritik ürün ve fiyatları korur", () => {
-    expect(findItem("Gurme Serpme Kahvaltı (kişi başı)")?.price).toBe("850 TL");
-    expect(findItem("Konağın Meze Tabağı (2 kişilik - 5 çeşit)")?.price).toBe("3.200 TL");
+    expect(findItem("Gurme Serpme Kahvaltı (kişi başı)")?.price).toBe("750 TL");
+    expect(findItem("Konağın Meze Tabağı (2 kişilik - 5 çeşit)")?.price).toBe("2.400 TL");
     expect(findItem("Paçanga Böreği (adet)")?.price).toBe("200 TL");
-    expect(findItem("Kavurmalı Konak Pizza")?.price).toBe("950 TL");
-    expect(findItem("Konağın Sac Kavurması")?.price).toBe("1.000 TL");
+    expect(findItem("Hindi Füme Pizza")?.price).toBe("900 TL");
+    expect(findItem("Konak Saç Kavurma")?.price).toBe("1.000 TL");
     expect(findItem("Beyaz Şarap Tadımı")?.price).toBe("1.600 TL");
-    expect(findItem("Beylerbeyi Göbek 100cl")?.price).toBe("4.600 TL");
+    expect(findItem("Beylerbeyi Göbek 100cl")?.price).toBe("3.850 TL");
     expect(findItem("Jack Daniel's 35cl")?.price).toBe("2.500 TL");
-    expect(findItem("Termos Çay")?.price).toBe("400 TL");
+    expect(findItem("Türk Kahvesi")?.price).toBe("150 TL");
   });
 
   it("doğrulanmamış eski tarih iddialarını menü verisine taşımaz", () => {

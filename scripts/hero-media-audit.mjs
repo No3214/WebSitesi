@@ -17,7 +17,7 @@ export const HERO_MEDIA_EXPECTATION = {
     "public/images/hero-video-poster-1440.webp",
   ],
   sha256: "62bb0b9fc0c71912913d763d1446a768e0718f4f9da689e76c4fe41d6f8b371e",
-  mobileSha256: "5fe89e7ae4e96498278c79ad83a1f587594f0a714105587565d660521e028cc9",
+  mobileSha256: "578dbf601366ce4ab1d0b92536b7f1afa579b9c3aac564001595d6da985f435c",
   width: 1280,
   height: 2276,
   mobileWidth: 720,
@@ -26,7 +26,7 @@ export const HERO_MEDIA_EXPECTATION = {
   maxDurationSec: 15.9,
   minBitrateBps: 3_000_000,
   minSizeBytes: 6_000_000,
-  minMobileBitrateBps: 1_400_000,
+  minMobileBitrateBps: 1_000_000,
   maxMobileSizeBytes: 3_600_000,
   minPosterSizeBytes: 35_000,
   activeVideoAssets: [

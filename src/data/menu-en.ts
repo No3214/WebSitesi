@@ -7,9 +7,9 @@ const sectionCopy: Record<string, { title: string; note?: string }> = {
     title: "Warm Starters & Appetizers",
     note: "A Gourmet Beginning",
   },
-  "Napoliten Pizza & Sandviç": {
-    title: "Neapolitan Pizza & Sandwich",
-    note: "Neapolitan Pizza Tradition",
+  "Taş Fırın Pizza & Sandviç": {
+    title: "Stone Oven Pizza & Sandwich",
+    note: "Stone Oven Pizza Tradition",
   },
   "Peynir Tabakları": { title: "Cheese Boards", note: "Designed for Sharing" },
   "Ana Yemekler": { title: "Main Courses", note: "From the Mansion Fire" },
@@ -25,28 +25,20 @@ const itemCopy: Record<string, Partial<MenuItem>> = {
   "Gurme Serpme Kahvaltı (kişi başı)": {
     name: "Gourmet Village Breakfast (per person)",
     description:
-      "Butter-fried eggs with sucuk, avocado, capia pepper, Hatay cracked olives, assorted cheeses, walnuts, seasonal fruit, jalapeno labneh, spicy ezme, tomato-cucumber, arugula, olive oil with zahter, fresh pişi, lepena, village bread, honey, clotted cream and house-made jams.",
+      "Butter-fried eggs with sucuk, avocado, Hatay cracked olives, assorted cheeses, walnuts, seasonal fruit, jalapeno labneh, spicy ezme, tomato-cucumber, arugula, olive oil with zahter, fresh pişi, village bread, honey, clotted cream and house-made jams.",
   },
   "Pişi Kahvaltı Tabağı": {
     name: "Pişi Breakfast Plate",
     description:
       "Two warm pişi pastries with white and tulum cheeses, olives, spicy ezme, jam, tomato and cucumber.",
   },
-  "Fransız Kahvaltı": {
-    name: "French Breakfast",
-    description:
-      "Two croissants with white and tulum cheeses, olives, spicy ezme, jam, tomato, cucumber and pesto.",
-  },
-  "Pastırmalı Sahanda Yumurta": { name: "Pan-Fried Eggs with Pastirma" },
-  "Kavurmalı Sahanda Yumurta": { name: "Pan-Fried Eggs with Roasted Beef" },
-  "Mıhlama": { name: "Mıhlama" },
-  "Sahanda Sucuklu Yumurta": { name: "Pan-Fried Eggs with Sucuk" },
   "Fransız Tereyağlı Kruvasan (2 Adet)": {
     name: "French Butter Croissants (2 pieces)",
     description: "Crisp croissants with sliced almonds. Served with jam or chocolate cream.",
   },
   "Sahanda Menemen": { name: "Pan-Fried Menemen" },
-  "Patates Kızartması": { name: "French Fries" },
+  "Sahanda Sucuklu Yumurta": { name: "Pan-Fried Eggs with Sucuk" },
+  "Patates Kızartması": { name: "French Fries", description: "Fried plain or spiced potatoes." },
   "Omlet (sade / peynirli)": { name: "Omelette (plain / cheese)" },
   "Sahanda Peynirli Yumurta": { name: "Pan-Fried Eggs with Cheese" },
   "Fesleğenli Domatesli Ciabatta (4 adet)": { name: "Basil & Tomato Ciabatta (4 pieces)" },
@@ -90,18 +82,6 @@ const itemCopy: Record<string, Partial<MenuItem>> = {
     name: "Jumbo Shrimp in Butter",
     description: "Jumbo shrimp sauteed in butter with garlic and fresh herbs.",
   },
-  "Hatay Usulü Kızarmış Peynir": {
-    name: "Hatay-Style Fried Cheese",
-    description: "Hot Hatay künefe cheese warmed in butter in a copper pan.",
-  },
-  "Antakya Usulü İçli Köfte (adet)": {
-    name: "Antakya-Style Stuffed Köfte (per piece)",
-    description: "Fine bulgur shell filled with minced beef and spices, served fried.",
-  },
-  "Paçanga Böreği (adet)": {
-    name: "Paçanga Pastry (per piece)",
-    description: "Thin pastry filled with pastirma and cheese, served fried.",
-  },
   "Kaşarlı Mantar": {
     name: "Baked Mushrooms with Kaşar Cheese",
     description: "Fresh mushrooms baked with kaşar cheese.",
@@ -126,56 +106,52 @@ const itemCopy: Record<string, Partial<MenuItem>> = {
     name: "Starter Plate (for 2)",
     description: "Olives, zahter, olive oil and rustic village bread.",
   },
-  "Baharatlı Çıtır Patates": {
-    name: "Spiced Crispy Potatoes",
-    description: "Fried plain or spiced potatoes.",
+  "Antakya Usulü İçli Köfte (adet)": {
+    name: "Antakya-Style Stuffed Köfte (per piece)",
+    description: "Fine bulgur shell filled with minced beef and spices, served fried.",
   },
-  "Parmesanlı Patates Kızartması": {
-    name: "Parmesan Fries",
-    description: "Crispy fries finished with grated parmesan.",
+  "Paçanga Böreği (adet)": {
+    name: "Paçanga Pastry (per piece)",
+    description: "Thin pastry filled with pastirma and cheese, served fried.",
   },
-  "Köy Usulü Konak Pizza": {
-    name: "Village-Style Mansion Pizza",
+
+  "Kalamar": {
+    name: "Calamari",
+    description: "Fried calamari rings, served with lemon and sauce.",
+  },
+  "Füme Dana Kaburga Pizza": {
+    name: "Smoked Beef Rib Pizza",
     description:
-      "Neapolitan dough enriched with butcher's sucuk, beef salami, beef cotto, beef bacon and buffalo cheese, finished with arugula, chilli olive oil and grated parmesan.",
+      "Thin crispy crust, melting mozzarella, smoked beef rib slices, fresh arugula and grated parmesan.",
   },
-  "Konak Tandır Pizza": {
-    name: "Mansion Tandoor Pizza",
+  "Hindi Füme Pizza": {
+    name: "Smoked Turkey Pizza",
     description:
-      "Slow-cooked pulled beef with Fior di Latte mozzarella, fresh arugula and grated parmesan, served from the stone oven.",
+      "Thin crispy crust, melting mozzarella, smoked turkey slices, fresh arugula and grated parmesan.",
   },
-  "Kavurmalı Konak Pizza": {
-    name: "Mansion Pizza with Roasted Beef",
+  "Taş Fırın Karışık Pizza": {
+    name: "Stone Oven Mixed Pizza",
     description:
-      "Pan-roasted beef pieces, caramelized onion, roasted pepper and Fior di Latte mozzarella, finished with arugula, chilli olive oil and grated parmesan from the stone oven.",
+      "Thin crispy crust, mozzarella, butcher's sucuk, beef salami, mushroom, olives, corn, fresh arugula and grated parmesan.",
   },
-  "Margherita Napoletana": {
-    name: "Margherita Napoletana",
+  "Taş Fırın Margarita Pizza": {
+    name: "Stone Oven Margherita Pizza",
     description:
-      "Roman-style peeled tomato, Fior di Latte mozzarella, Grana Padano D.O.P., fresh basil and extra-virgin olive oil, served from the stone oven with arugula and grated parmesan.",
-  },
-  "Pizza Ekstraları": {
-    name: "Pizza Extras",
-    description:
-      "Pesto sauce +100 TL, chilli garlic olive oil +100 TL, truffle mayonnaise +100 TL, truffle honey +150 TL, truffle olive oil +200 TL, arugula and parmesan finish +200 TL.",
+      "Thin crispy crust, mozzarella, Roman tomato sauce, fresh basil and extra-virgin olive oil.",
   },
   "Dana Kaburga Füme Etli Sandviç": {
     name: "Smoked Beef Rib Sandwich",
     description:
-      "Rustic baguette with smoked beef rib, white cheese, tomato, olive oil and greens.",
-  },
-  "Hindi Füme Etli Sandviç": {
-    name: "Smoked Turkey Sandwich",
-    description: "Rustic baguette with smoked turkey, white cheese, tomato, olive oil and greens.",
+      "Rustic baguette with smoked beef rib, white cheese, tomato.",
   },
   "Gurme Rustik Pesto Sandviç": {
     name: "Gourmet Rustic Pesto Sandwich",
-    description: "Rustic baguette with white cheese, tomato, olive oil, arugula and pesto sauce, served with fries.",
+    description: "Rustic baguette with white cheese, arugula and pesto sauce, served with fries.",
   },
   "Gurme Rustik Avokado Sandviç": {
     name: "Gourmet Rustic Avocado Sandwich",
     description:
-      "Rustic baguette with white cheese, tomato, olive oil, arugula and capia-pepper avocado, served with fries.",
+      "Rustic baguette with white cheese, arugula and capia-pepper avocado, served with fries.",
   },
   "Rakı Eşlikçisi Peynir Tabağı": {
     name: "Cheese Board for Raki",
@@ -195,19 +171,14 @@ const itemCopy: Record<string, Partial<MenuItem>> = {
     description:
       "Soft beef tenderloin over mashed potato with toasted sliced almonds, baby carrots and grilled corn.",
   },
-  "Sac Kavurma - Köy Usulü": {
-    name: "Village-Style Sac Kavurma",
-    description:
-      "Cubed beef roasted on a traditional metal griddle with garlic, onion, tomato and peppers, served with rosemary mashed potato.",
-  },
   "Izgara Pirzola": {
     name: "Grilled Lamb Chops",
     description:
       "Bone-in chops grilled over heat with mashed potato, toasted sliced almonds, baby carrots and grilled corn.",
   },
-  "Konağın Sac Kavurması": {
+  "Konak Saç Kavurma": {
     name: "Mansion Sac Kavurma",
-    description: "Tender beef pieces cooked on a copper griddle, served over mashed potato with toasted sliced almonds.",
+    description: "Tender beef pieces cooked on a traditional metal griddle, served over mashed potato with toasted sliced almonds.",
   },
   "Konak Köfte": {
     name: "Mansion Köfte",
@@ -242,36 +213,49 @@ const itemCopy: Record<string, Partial<MenuItem>> = {
   "Beyaz Şarap Tadımı": {
     name: "White Wine Tasting",
     description:
-      "Paşaeli SYS + Bir Varmış Bir Yokmuş Chardonnay (one glass) with a mini cheese board.",
+      "Paşaeli SYS + Bir Varmış Bir Yokmuş Chardonnay (2 glasses) with a mini cheese board.",
   },
   "Kırmızı Şarap Tadımı": {
     name: "Red Wine Tasting",
-    description: "Paşaeli CSKS (one glass) with a mini cheese board.",
+    description: "Paşaeli CSKS (2 glasses) with a mini cheese board.",
+  },
+  "Karışık Pizza + CSKS Kırmızı Şarap (1 kadeh)": {
+    name: "Mixed Pizza + CSKS Red Wine (1 glass)",
+  },
+  "Margarita Pizza + SYS Beyaz Şarap (1 kadeh)": {
+    name: "Margarita Pizza + SYS White Wine (1 glass)",
+  },
+  "Dana Füme Kaburga Pizza + 6N Kırmızı Şarap (1 kadeh)": {
+    name: "Smoked Beef Rib Pizza + 6N Red Wine (1 glass)",
+  },
+  "Hindi Füme Pizza + 6N Kırmızı Şarap (1 kadeh)": {
+    name: "Smoked Turkey Pizza + 6N Red Wine (1 glass)",
+    description: "Except Saturdays",
   },
   "Paşaeli SYS": {
     name: "Paşaeli SYS",
     description: "Sıdalan 2024 - Sultaniye, Yapıncak and Sıdalan. Paired with mezes, starters, cheese and pizza.",
-    price: "Glass 600 TL / Bottle 2,400 TL",
+    price: "Glass 600 TL / Bottle 2,200 TL",
   },
   "Bir Varmış Bir Yokmuş Chardonnay": {
     name: "Bir Varmış Bir Yokmuş Chardonnay",
     description: "Chardonnay 2024. Paired with salmon caviar and mushrooms.",
-    price: "Glass 800 TL / Bottle 3,200 TL",
+    price: "Glass 800 TL / Bottle 3,000 TL",
   },
   "Paşaeli CSKS": {
     name: "Paşaeli CSKS",
     description: "Karasakız 2023 - Cabernet Sauvignon and Karasakız. Paired with pizza, sandwiches, red meat and köfte.",
-    price: "Glass 600 TL / Bottle 2,400 TL",
+    price: "Glass 600 TL / Bottle 2,200 TL",
   },
   "Paşaeli 6N": {
     name: "Paşaeli 6N",
     description: "Kaz Mountains 2024 - Karasakız. A versatile pairing for pizza, köfte, white meat and cheese.",
-    price: "Glass 800 TL / Bottle 3,200 TL",
+    price: "Glass 800 TL / Bottle 3,000 TL",
   },
   "Morso di Sole": {
     name: "Morso di Sole",
     description: "Buldan 2021 (50cl) - Sultaniye. Paired with künefe, katmer and cheese boards.",
-    price: "Glass 800 TL / Bottle 3,500 TL",
+    price: "Glass 800 TL / Bottle 3,000 TL",
   },
   "İthal Şarap Seçkisi": {
     name: "Imported Wine Selection",
@@ -295,6 +279,9 @@ const itemCopy: Record<string, Partial<MenuItem>> = {
   "Jack Daniel's Duble": { name: "Jack Daniel's Double" },
   "Chivas Regal Tek": { name: "Chivas Regal Single" },
   "Chivas Regal Duble": { name: "Chivas Regal Double" },
+  "Woodford Reserve Tek": { name: "Woodford Reserve Single" },
+  "Woodford Reserve Duble": { name: "Woodford Reserve Double" },
+  "Woodford Reserve 70cl": { name: "Woodford Reserve 70cl" },
   "Filtre Kahve": { name: "Filter Coffee" },
   "Sıcak Çikolata": { name: "Hot Chocolate" },
   "Termos Çay": { name: "Tea Thermos" },

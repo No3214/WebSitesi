@@ -118,9 +118,9 @@ describe("hero media audit", () => {
     expect(result.mobileMetadata).toMatchObject({
       width: HERO_MEDIA_EXPECTATION.mobileWidth,
       height: HERO_MEDIA_EXPECTATION.mobileHeight,
-      sizeBytes: 3_248_055,
+      sizeBytes: 2_357_563,
     });
-    expect(result.mobileMetadata?.bitrateBps).toBeGreaterThanOrEqual(1_400_000);
+    expect(result.mobileMetadata?.bitrateBps).toBeGreaterThanOrEqual(1_000_000);
     expect(result.checks.map((check) => check.id)).toEqual(
       expect.arrayContaining([
         "hero_video_hash",

@@ -97,7 +97,7 @@ export const FloatingContact = () => {
 
       <style jsx global>{`
         .bg-gold {
-          background-color: #c5a059;
+          background-color: var(--gold);
         }
         .contact-fab-options {
           animation: contactFabPanelIn 220ms ease-out both;
