@@ -5,7 +5,7 @@ import { spawnSync } from "node:child_process";
 const liveTarget = process.env.PW_BASE_URL;
 const playwrightSpecs = ["tests/e2e/media-assets.spec.ts"];
 const videoPlaybackGrep =
-  "homepage editorial videos|/gastronomi videos can play real frames|mobile /gastronomi video controls";
+  "homepage editorial videos|gastronomy videos can play real frames|mobile gastronomy video controls|story sunset video plays real frames";
 const nodeBin = process.execPath;
 const playwrightCli = "node_modules/@playwright/test/cli.js";
 const outputRoot = path.join("test-results", "media-playback-readiness");
@@ -52,7 +52,7 @@ function main() {
   const target = liveTarget || "local production server via Playwright webServer";
   console.log("Kozbeyli Konagi media playback readiness");
   console.log(`Target: ${target}`);
-  console.log("Scope: homepage kitchen clips and /gastronomi breakfast, mihlama and chef video playback");
+  console.log("Scope: homepage kitchen clips, TR/EN gastronomy videos and story sunset video playback");
 
   if (!liveTarget && !fs.existsSync(".next/BUILD_ID")) {
     console.error("FAIL local media playback readiness needs a production build. Run `npm run build` first or set PW_BASE_URL.");

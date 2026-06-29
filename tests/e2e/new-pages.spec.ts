@@ -216,9 +216,19 @@ test.describe("EN public localization", () => {
     });
 
     expect(headerText).toContain("BOOKING");
+    expect(headerText).toContain("MENU");
     expect(headerText).toContain("EXPERIENCES");
     expect(headerText).not.toContain("BOOKİNG");
+    expect(headerText).not.toContain("MENÜ");
     expect(headerText).not.toContain("EXPERİENCES");
+    await expect(page.locator("header.site-header").getByRole("link", { name: "Menu", exact: true })).toHaveAttribute(
+      "href",
+      "/en/menu",
+    );
+    await expect(page.locator("footer.footer").getByRole("link", { name: "Menu", exact: true })).toHaveAttribute(
+      "href",
+      "/en/menu",
+    );
     await expect(page.getByRole("heading", { name: "Breakfast", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Warm Starters & Appetizers", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Main Courses", exact: true })).toBeVisible();
@@ -239,6 +249,33 @@ test.describe("EN public localization", () => {
 
     expect(mobileActionText).toContain("BOOKING");
     expect(mobileActionText).not.toContain("BOOKİNG");
+  });
+
+  test("global chrome exposes the restaurant menu in TR and EN desktop and mobile navigation", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("header.site-header").getByRole("link", { name: "Menü", exact: true })).toHaveAttribute(
+      "href",
+      "/menu",
+    );
+    await expect(page.locator("footer.footer").getByRole("link", { name: "Menü", exact: true })).toHaveAttribute(
+      "href",
+      "/menu",
+    );
+
+    await page.goto("/en");
+    await expect(page.locator("header.site-header").getByRole("link", { name: "Menu", exact: true })).toHaveAttribute(
+      "href",
+      "/en/menu",
+    );
+    await expect(page.locator("footer.footer").getByRole("link", { name: "Menu", exact: true })).toHaveAttribute(
+      "href",
+      "/en/menu",
+    );
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/en");
+    await page.getByRole("button", { name: "Open menu" }).click();
+    await expect(page.locator("#mobile-menu").getByRole("link", { name: /Menu/ })).toHaveAttribute("href", "/en/menu");
   });
 });
 

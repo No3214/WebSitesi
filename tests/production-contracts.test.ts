@@ -1612,13 +1612,18 @@ describe("production readiness contracts", () => {
 
   it("keeps media playback readiness focused on real public food videos", () => {
     const mediaPlaybackScript = read("scripts/media-playback-readiness.mjs");
+    const mediaAssetsSpec = read("tests/e2e/media-assets.spec.ts");
 
     expect(mediaPlaybackScript).toContain("Kozbeyli Konagi media playback readiness");
     expect(mediaPlaybackScript).toContain("tests/e2e/media-assets.spec.ts");
     expect(mediaPlaybackScript).toContain("homepage editorial videos");
-    expect(mediaPlaybackScript).toContain("/gastronomi videos can play real frames");
-    expect(mediaPlaybackScript).toContain("mobile /gastronomi video controls");
-    expect(mediaPlaybackScript).toContain("breakfast, mihlama and chef video playback");
+    expect(mediaPlaybackScript).toContain("gastronomy videos can play real frames");
+    expect(mediaPlaybackScript).toContain("mobile gastronomy video controls");
+    expect(mediaPlaybackScript).toContain("story sunset video plays real frames");
+    expect(mediaPlaybackScript).toContain("TR/EN gastronomy videos and story sunset video playback");
+    expect(mediaAssetsSpec).toContain('path: "/en/dining"');
+    expect(mediaAssetsSpec).toContain('data-event="video_play_sunset"');
+    expect(mediaAssetsSpec).toContain("/videos/sunset.mp4");
     expect(mediaPlaybackScript).toContain("PW_BASE_URL");
     expect(mediaPlaybackScript).toContain("scripts/domain-readiness.mjs");
     expect(mediaPlaybackScript).toContain(".next/BUILD_ID");
@@ -1627,6 +1632,21 @@ describe("production readiness contracts", () => {
     expect(mediaPlaybackScript).toContain("process.env.MEDIA_PLAYBACK_WORKERS || \"1\"");
     expect(mediaPlaybackScript).toContain("--grep");
     expect(mediaPlaybackScript).toContain("--output");
+  });
+
+  it("keeps the current restaurant menu discoverable in global chrome", () => {
+    const header = read("src/components/site-header.tsx");
+    const footer = read("src/components/site-footer.tsx");
+    const enDictionary = read("src/dictionaries/en.json");
+    const trDictionary = read("src/dictionaries/tr.json");
+
+    expect(header).toContain('{ href: "/menu", label: "Menü" }');
+    expect(header).toContain('{ href: "/menu", label: "Menu" }');
+    expect(header).toContain('{ href: "/menu", label: nav.menu || "Menu" }');
+    expect(footer).toContain('localizedHref("/menu", englishPath)');
+    expect(footer).toContain('englishPath ? "Menu" : "Menü"');
+    expect(enDictionary).toContain('"menu": "Menu"');
+    expect(trDictionary).toContain('"menu": "Menü"');
   });
 
   it("keeps stress tests reproducible with seeded interaction plans", () => {

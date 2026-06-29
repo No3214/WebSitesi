@@ -80,6 +80,7 @@ export function SiteFooter() {
               <li><Link href={localizedHref("/hikayemiz", englishPath)}>{englishPath ? "Our Story" : "Hikayemiz"}</Link></li>
               <li><Link href={localizedHref("/odalar", englishPath)}>{englishPath ? "Rooms" : "Odalarımız"}</Link></li>
               <li><Link href={localizedHref("/gastronomi", englishPath)}>{englishPath ? "Dining" : "Gastronomi"}</Link></li>
+              <li><Link href={localizedHref("/menu", englishPath)}>{englishPath ? "Menu" : "Menü"}</Link></li>
               <li><Link href={localizedHref("/organizasyonlar", englishPath)}>{englishPath ? "Events" : "Davet & Organizasyon"}</Link></li>
               <li><Link href={localizedHref("/galeri", englishPath)}>{englishPath ? "Gallery" : "Galeri"}</Link></li>
               <li><Link href={localizedHref("/misafir-rehberi", englishPath)}>{englishPath ? "Guest Guide" : "Misafir Rehberi"}</Link></li>

@@ -5,9 +5,35 @@ import { expect, test } from "@playwright/test";
 
 const publicDir = path.join(process.cwd(), "public");
 const mediaExtensions = new Set([".jpg", ".jpeg", ".png", ".webp", ".mp4"]);
-const mobileRoutes = ["/", "/odalar", "/gastronomi", "/menu", "/galeri", "/rezervasyon", "/organizasyonlar", "/en/menu", "/en/events"];
-const visualRoutes = ["/", "/gastronomi", "/galeri", "/odalar", "/organizasyonlar", "/odalar/standart-bahce-manzarali-oda", "/en/menu", "/en/events"];
+const mobileRoutes = [
+  "/",
+  "/odalar",
+  "/gastronomi",
+  "/menu",
+  "/galeri",
+  "/rezervasyon",
+  "/organizasyonlar",
+  "/hikayemiz",
+  "/en/menu",
+  "/en/dining",
+  "/en/events",
+  "/en/our-story",
+];
+const visualRoutes = [
+  "/",
+  "/gastronomi",
+  "/galeri",
+  "/odalar",
+  "/organizasyonlar",
+  "/hikayemiz",
+  "/odalar/standart-bahce-manzarali-oda",
+  "/en/menu",
+  "/en/dining",
+  "/en/events",
+  "/en/our-story",
+];
 const playableVideoSelector = 'video[data-event^="video_play_"]';
+const kitchenVideoSources = ["/videos/kahvalti.mp4", "/videos/mihlama.mp4", "/videos/chef.mp4"];
 
 test.describe.configure({ mode: "serial", timeout: 120000 });
 
@@ -235,21 +261,37 @@ test.describe("Media, video and mobile publish readiness", () => {
     });
   }
 
-  test("/gastronomi videos can play real frames", async ({ page }) => {
-    const response = await page.goto("/gastronomi", { waitUntil: "load" });
-    expect(response?.status(), "/gastronomi should return usable HTML").toBeLessThan(400);
-    await expect(page.getByRole("heading", { name: "Mutfaktan Canlı Kareler" })).toBeVisible({
-      timeout: 15000,
-    });
-    await expect(page.getByRole("heading", { name: "Konağın Seçili Lezzetleri" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Kahvaltı", exact: true })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Mezeler", exact: true })).toBeVisible();
-    await expect(page.getByRole("link", { name: "MENÜNÜN TAMAMINI GÖR" })).toHaveAttribute(
-      "href",
-      "/menu",
-    );
+  for (const route of [
+    {
+      path: "/gastronomi",
+      liveHeading: "Mutfaktan Canlı Kareler",
+      menuHeading: "Konağın Seçili Lezzetleri",
+      sampleHeadings: ["Kahvaltı", "Mezeler"],
+      menuCta: "MENÜNÜN TAMAMINI GÖR",
+      menuHref: "/menu",
+    },
+    {
+      path: "/en/dining",
+      liveHeading: "Live Frames from the Kitchen",
+      menuHeading: "Selected Tastes of the Mansion",
+      sampleHeadings: ["Breakfast", "Mezes"],
+      menuCta: "VIEW FULL MENU",
+      menuHref: "/en/menu",
+    },
+  ]) {
+    test(`${route.path} gastronomy videos can play real frames`, async ({ page }) => {
+      const response = await page.goto(route.path, { waitUntil: "load" });
+      expect(response?.status(), `${route.path} should return usable HTML`).toBeLessThan(400);
+      await expect(page.getByRole("heading", { name: route.liveHeading })).toBeVisible({
+        timeout: 15000,
+      });
+      await expect(page.getByRole("heading", { name: route.menuHeading })).toBeVisible();
+      for (const heading of route.sampleHeadings) {
+        await expect(page.getByRole("heading", { name: heading, exact: true })).toBeVisible();
+      }
+      await expect(page.getByRole("link", { name: route.menuCta })).toHaveAttribute("href", route.menuHref);
 
-    const playbackResults = await page.locator(playableVideoSelector).evaluateAll(async (videos) => {
+      const playbackResults = await page.locator(playableVideoSelector).evaluateAll(async (videos) => {
       const results: Array<{
         source: string;
         readyState: number;
@@ -291,73 +333,122 @@ test.describe("Media, video and mobile publish readiness", () => {
       return results;
     });
 
-    expect(playbackResults).toHaveLength(3);
-    expect(playbackResults, JSON.stringify(playbackResults, null, 2)).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ source: expect.stringContaining("/videos/kahvalti.mp4") }),
-        expect.objectContaining({ source: expect.stringContaining("/videos/mihlama.mp4") }),
-        expect.objectContaining({ source: expect.stringContaining("/videos/chef.mp4") }),
-      ])
-    );
-
-    for (const result of playbackResults) {
-      expect(result.error, `${result.source} should not fail play()`).toBeUndefined();
-      expect(result.readyState, `${result.source} should decode playable data`).toBeGreaterThanOrEqual(2);
-      expect(result.currentTime, `${result.source} should advance playback`).toBeGreaterThan(0);
-    }
-  });
-
-  test("mobile /gastronomi video controls play breakfast, mihlama and chef clips", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    const response = await page.goto("/gastronomi", { waitUntil: "load" });
-
-    expect(response?.status(), "/gastronomi should return usable HTML on mobile").toBeLessThan(400);
-    await expect(page.getByRole("heading", { name: "Mutfaktan Canlı Kareler" })).toBeVisible({
-      timeout: 15000,
-    });
-
-    for (const clip of [
-      { event: "video_play_kahvalti", testId: "kitchen-video-play-kahvalti", source: "/videos/kahvalti.mp4" },
-      { event: "video_play_mihlama", testId: "kitchen-video-play-mihlama", source: "/videos/mihlama.mp4" },
-      { event: "video_play_chef", testId: "kitchen-video-play-chef", source: "/videos/chef.mp4" },
-    ]) {
-      const video = page.locator(`video[data-event="${clip.event}"]`);
-      const button = page.getByTestId(clip.testId);
-
-      await button.scrollIntoViewIfNeeded();
-      await expect(button, `${clip.event} should expose a visible mobile play control`).toBeVisible();
-      await expect(button).toHaveAttribute("aria-label", /oynat/i);
-      await button.click();
-
-      await expect
-        .poll(
-          async () =>
-            video.evaluate((element, expectedSource) => {
-              const media = element as HTMLVideoElement;
-              const source = media.currentSrc || media.querySelector("source")?.getAttribute("src") || "";
-              return (
-                source.includes(expectedSource) &&
-                media.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
-                media.currentTime > 0 &&
-                !media.paused
-              );
-            }, clip.source),
-          { timeout: 15000 }
+      expect(playbackResults).toHaveLength(3);
+      expect(playbackResults, JSON.stringify(playbackResults, null, 2)).toEqual(
+        expect.arrayContaining(
+          kitchenVideoSources.map((source) => expect.objectContaining({ source: expect.stringContaining(source) }))
         )
-        .toBe(true);
+      );
 
-      const playback = await video.evaluate((element) => {
-        const media = element as HTMLVideoElement;
-        const result = {
-          currentTime: media.currentTime,
-          readyState: media.readyState,
-        };
-        media.pause();
-        return result;
+      for (const result of playbackResults) {
+        expect(result.error, `${result.source} should not fail play()`).toBeUndefined();
+        expect(result.readyState, `${result.source} should decode playable data`).toBeGreaterThanOrEqual(2);
+        expect(result.currentTime, `${result.source} should advance playback`).toBeGreaterThan(0);
+      }
+    });
+  }
+
+  for (const route of [
+    { path: "/gastronomi", heading: "Mutfaktan Canlı Kareler", playPattern: /oynat/i },
+    { path: "/en/dining", heading: "Live Frames from the Kitchen", playPattern: /play/i },
+  ]) {
+    test(`mobile ${route.path} gastronomy video controls play breakfast, mihlama and chef clips`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      const response = await page.goto(route.path, { waitUntil: "load" });
+
+      expect(response?.status(), `${route.path} should return usable HTML on mobile`).toBeLessThan(400);
+      await expect(page.getByRole("heading", { name: route.heading })).toBeVisible({
+        timeout: 15000,
       });
 
-      expect(playback.readyState, `${clip.source} should decode data on mobile`).toBeGreaterThanOrEqual(2);
-      expect(playback.currentTime, `${clip.source} should advance on mobile`).toBeGreaterThan(0);
+      for (const clip of [
+        { event: "video_play_kahvalti", testId: "kitchen-video-play-kahvalti", source: "/videos/kahvalti.mp4" },
+        { event: "video_play_mihlama", testId: "kitchen-video-play-mihlama", source: "/videos/mihlama.mp4" },
+        { event: "video_play_chef", testId: "kitchen-video-play-chef", source: "/videos/chef.mp4" },
+      ]) {
+        const video = page.locator(`video[data-event="${clip.event}"]`);
+        const button = page.getByTestId(clip.testId);
+
+        await button.scrollIntoViewIfNeeded();
+        await expect(button, `${clip.event} should expose a visible mobile play control`).toBeVisible();
+        await expect(button).toHaveAttribute("aria-label", route.playPattern);
+        await button.click();
+
+        await expect
+          .poll(
+            async () =>
+              video.evaluate((element, expectedSource) => {
+                const media = element as HTMLVideoElement;
+                const source = media.currentSrc || media.querySelector("source")?.getAttribute("src") || "";
+                return (
+                  source.includes(expectedSource) &&
+                  media.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+                  media.currentTime > 0 &&
+                  !media.paused
+                );
+              }, clip.source),
+            { timeout: 15000 }
+          )
+          .toBe(true);
+
+        const playback = await video.evaluate((element) => {
+          const media = element as HTMLVideoElement;
+          const result = {
+            currentTime: media.currentTime,
+            readyState: media.readyState,
+          };
+          media.pause();
+          return result;
+        });
+
+        expect(playback.readyState, `${clip.source} should decode data on mobile`).toBeGreaterThanOrEqual(2);
+        expect(playback.currentTime, `${clip.source} should advance on mobile`).toBeGreaterThan(0);
+      }
+    });
+  }
+
+  test("story sunset video plays real frames on TR and EN story routes", async ({ page }) => {
+    for (const route of [
+      { path: "/hikayemiz", heading: "Kozbeyli'de Gün Batımı" },
+      { path: "/en/our-story", heading: "Sunset in Kozbeyli" },
+    ]) {
+      const response = await page.goto(route.path, { waitUntil: "load" });
+      expect(response?.status(), `${route.path} should return usable HTML`).toBeLessThan(400);
+      await expect(page.getByRole("heading", { name: route.heading })).toBeVisible({ timeout: 15000 });
+
+      const result = await page.locator('video[data-event="video_play_sunset"]').evaluate(async (video) => {
+        const element = video as HTMLVideoElement;
+        element.muted = true;
+        element.preload = "auto";
+        element.load();
+
+        try {
+          await element.play();
+          await new Promise((resolve) => window.setTimeout(resolve, 900));
+        } catch (error) {
+          return {
+            source: element.currentSrc || element.querySelector("source")?.getAttribute("src") || "unknown",
+            readyState: element.readyState,
+            currentTime: element.currentTime,
+            paused: element.paused,
+            error: error instanceof Error ? error.message : String(error),
+          };
+        } finally {
+          element.pause();
+        }
+
+        return {
+          source: element.currentSrc || element.querySelector("source")?.getAttribute("src") || "unknown",
+          readyState: element.readyState,
+          currentTime: element.currentTime,
+          paused: element.paused,
+        };
+      });
+
+      expect(result.source).toContain("/videos/sunset.mp4");
+      expect(result.error, `${route.path} sunset video should not fail play()`).toBeUndefined();
+      expect(result.readyState, `${route.path} sunset video should decode playable data`).toBeGreaterThanOrEqual(2);
+      expect(result.currentTime, `${route.path} sunset video should advance playback`).toBeGreaterThan(0);
     }
   });
 
