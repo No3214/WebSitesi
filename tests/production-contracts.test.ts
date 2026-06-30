@@ -463,6 +463,9 @@ describe("production readiness contracts", () => {
       "node scripts/readiness-summary.mjs --strict",
     );
     expect(packageJson.scripts?.["live:verify"]).toBe("node scripts/live-production-verify.mjs");
+    expect(packageJson.scripts?.["live:verify:json"]).toBe(
+      "node scripts/live-production-verify.mjs --json",
+    );
     expect(packageJson.scripts?.["live:verify:list"]).toBe(
       "node scripts/live-production-verify.mjs --list",
     );
@@ -566,6 +569,13 @@ describe("production readiness contracts", () => {
 
     expect(liveVerify).toContain("Kozbeyli Konagi live production verification");
     expect(liveVerify).toContain("Kozbeyli Konagi live production verification summary");
+    expect(liveVerify).toContain("LIVE_VERIFY_SCRIPT_TIMEOUT_MS");
+    expect(liveVerify).toContain("timeout: timeoutMs");
+    expect(liveVerify).toContain("timedOut");
+    expect(liveVerify).toContain("captureOutput");
+    expect(liveVerify).toContain("stdoutTail");
+    expect(liveVerify).toContain("stderrTail");
+    expect(liveVerify).toContain("--json");
     expect(liveVerify).toContain("required: true");
     expect(liveVerify).toContain("required: false");
     expect(liveVerify).toContain("Readiness summary and GitHub CI are diagnostic");

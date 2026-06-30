@@ -128,6 +128,7 @@
     "readiness:summary:json": "node scripts/readiness-summary.mjs --json",
     "readiness:summary:strict": "node scripts/readiness-summary.mjs --strict",
     "live:verify": "node scripts/live-production-verify.mjs",
+    "live:verify:json": "node scripts/live-production-verify.mjs --json",
     "live:verify:list": "node scripts/live-production-verify.mjs --list",
     "launch:smoke": "node scripts/launch-smoke.mjs",
     "launch:smoke:preview": "cross-env PW_BASE_URL=https://kozbeyli-konagi.vercel.app node scripts/launch-smoke.mjs",

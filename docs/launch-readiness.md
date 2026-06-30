@@ -191,6 +191,10 @@ gate'ini tek komutta toplar. Readiness summary ve GitHub CI çıktıları tanıs
 kalır; dış hesap/billing blokları public live site sağlığını yanlış kırmızı
 göstermesin diye release kararı bu komutta sadece zorunlu public gate'lere
 bağlanır.
+2026-06-30 live production operatör güvenliği: `live:verify:json` aynı üst kapıyı
+makine-okunur sonuçla raporlar; her alt gate varsayılan 10 dakika içinde
+tamamlanmazsa timeout olarak kapanır. Uzun canlı ağ koşullarında bu süre
+`LIVE_VERIFY_SCRIPT_TIMEOUT_MS` ile açıkça yükseltilebilir.
 2026-06-23 commercial audit runtime ayrımı: `launch:audit:live`, canonical
 production `/api/health` runtime readiness bilgisini audit raporuna ayrı
 `runtime lane` olarak ekler. Bu canlı env durumunu görünür kılar; fakat
