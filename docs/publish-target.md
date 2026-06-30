@@ -1,6 +1,6 @@
 # Kozbeyli Konağı — Publish Target & Gate
 
-Son revizyon: 2026-06-22
+Son revizyon: 2026-06-30
 
 Bu dosya yayın hedefini tek yerde tanımlar. Amaç: "hazır mı?" sorusuna
 ölçülebilir kapılarla cevap vermek ve dış bağımlılıkları kod kalitesiyle
@@ -25,6 +25,7 @@ npm run launch:audit:live
 npm run launch:audit:live:strict
 npm run readiness:summary:json
 npm run live:verify
+npm run live:verify:json
 npm run evidence:handoff:live
 npm run evidence:templates:live
 npm run evidence:templates:live:runtime-ready

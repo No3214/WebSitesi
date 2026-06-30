@@ -160,6 +160,7 @@ After DNS and Vercel domain settings are corrected, run:
 ```bash
 npm run domain:verify:strict
 npm run live:verify
+npm run live:verify:json
 npm run launch:smoke:live
 ```
 
@@ -175,7 +176,9 @@ ready:
 
 `npm run live:verify` runs the canonical-domain, browser smoke, EN/TR
 localization and real video-playback gates together against
-`https://www.kozbeylikonagi.com`. `npm run launch:smoke:live` remains available
+`https://www.kozbeylikonagi.com`. Use `npm run live:verify:json` for the same
+gate when the result must be consumed by an operator dashboard or agentic
+release report. `npm run launch:smoke:live` remains available
 when only the browser smoke suite needs a narrower rerun. Use
 `npm run launch:smoke:preview` only when the Vercel preview host needs a
 separate check.

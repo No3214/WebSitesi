@@ -309,6 +309,7 @@ const requiredScripts = [
   "readiness:summary:json",
   "readiness:summary:strict",
   "live:verify",
+  "live:verify:json",
   "live:verify:list",
   "launch:smoke",
   "launch:smoke:preview",

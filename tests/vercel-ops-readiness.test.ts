@@ -12,6 +12,7 @@ const requiredScripts = [
   "domain:verify",
   "domain:verify:strict",
   "live:verify",
+  "live:verify:json",
   "launch:smoke:live",
   "release:verify",
 ];
@@ -95,6 +96,7 @@ describe("Vercel ops readiness", () => {
       detail: "Global Vercel CLI is not available on PATH; npx fallback was not executed.",
     });
     expect(scriptsCheck?.detail).toContain("live:verify");
+    expect(scriptsCheck?.detail).toContain("live:verify:json");
     expect(JSON.stringify(result)).not.toContain("npx --yes vercel");
   });
 

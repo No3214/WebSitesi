@@ -262,6 +262,7 @@ describe("production readiness contracts", () => {
     expect(readinessScript).toContain('"readiness:summary:json"');
     expect(readinessScript).toContain('"readiness:summary:strict"');
     expect(readinessScript).toContain('"live:verify"');
+    expect(readinessScript).toContain('"live:verify:json"');
     expect(readinessScript).toContain('"live:verify:list"');
     expect(readinessScript).toContain('"launch:smoke"');
     expect(readinessScript).toContain('"launch:smoke:preview"');
@@ -1181,7 +1182,7 @@ describe("production readiness contracts", () => {
     expect(launchReadiness).not.toContain("66 routes generated");
     expect(launchReadiness).not.toContain("113 passed / 2 skipped");
 
-    expect(publishTarget).toContain("Son revizyon: 2026-06-22");
+    expect(publishTarget).toContain("Son revizyon: 2026-06-30");
     expect(publishTarget).toContain("168 passed / 2 skipped");
     expect(publishTarget).toContain("31 files / 186 tests");
     expect(publishTarget).toContain("68 routes");

@@ -16,6 +16,7 @@ const REQUIRED_SCRIPTS = [
   "domain:verify",
   "domain:verify:strict",
   "live:verify",
+  "live:verify:json",
   "launch:smoke:live",
   "release:verify",
 ];
