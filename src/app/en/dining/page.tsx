@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { GastronomyPageContent } from "@/components/gastronomy-page-content";
-import { altLanguagesEn } from "@/lib/metadata";
+import { altLanguagesEn, enOpenGraph } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description:
     "Traditional stone-oven flavours of Kozbeyli Village, Antakya-Aegean cuisine and a generous village breakfast. Gourmet dining within historic texture.",
   alternates: altLanguagesEn("/gastronomi", "/en/dining"),
-  openGraph: {
+  openGraph: enOpenGraph({
     url: absoluteUrl("/en/dining"),
     title: "Dining & Aegean-Antakya Cuisine | Kozbeyli Konağı",
     description:
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         alt: "Generous village breakfast spread at Kozbeyli Konağı",
       },
     ],
-  },
+  }),
 };
 
 export default function EnglishDiningPage() {

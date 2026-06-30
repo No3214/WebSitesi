@@ -71,11 +71,18 @@ describe("SEO — oda detay sayfaları reciprocal canonical + hreflang yayar", (
 
 describe("SEO — EN içerik sayfaları en_US OG locale + reciprocal hreflang", () => {
   const pages = [
+    // Türkçe-slug EN varyantları
     "src/app/en/deneyimler/page.tsx",
     "src/app/en/gastronomi/page.tsx",
     "src/app/en/hikayemiz/page.tsx",
     "src/app/en/odalar/page.tsx",
     "src/app/en/organizasyonlar/page.tsx",
+    // İngilizce-slug canonical sayfalar
+    "src/app/en/dining/page.tsx",
+    "src/app/en/experiences/page.tsx",
+    "src/app/en/our-story/page.tsx",
+    "src/app/en/events/page.tsx",
+    "src/app/en/rooms/page.tsx",
   ];
 
   it("her sayfa enOpenGraph + altLanguagesEn kullanır", () => {

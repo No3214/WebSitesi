@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { HistoryClient } from "@/components/history-client";
-import { altLanguagesEn } from "@/lib/metadata";
+import { altLanguagesEn, enOpenGraph } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description:
     "A 19th-century registered stone mansion within Kozbeyli's five-century village texture, the secrets of Horasan mortar and the restoration of a family legacy.",
   alternates: altLanguagesEn("/hikayemiz", "/en/our-story"),
-  openGraph: {
+  openGraph: enOpenGraph({
     url: absoluteUrl("/en/our-story"),
     title: "Our Story & Living Museum | Kozbeyli Konağı",
     description:
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
         alt: "Historic stone-walled room at Kozbeyli Konağı",
       },
     ],
-  },
+  }),
 };
 
 export default function EnglishOurStoryPage() {

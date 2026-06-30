@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { RoomsClient } from "@/components/rooms-client";
 import { getDictionary } from "@/lib/dictionary";
-import { altLanguagesEn } from "@/lib/metadata";
+import { altLanguagesEn, enOpenGraph } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description:
     "High-ceilinged stone rooms restored with Horasan mortar at Kozbeyli Konağı. A serene, secluded boutique stay amid historic architecture in Foça.",
   alternates: altLanguagesEn("/odalar", "/en/rooms"),
-  openGraph: {
+  openGraph: enOpenGraph({
     url: absoluteUrl("/en/rooms"),
     title: "Our Rooms | Kozbeyli Konağı",
     description:
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
         alt: "Kozbeyli Konağı — Stone rooms and boutique stay",
       },
     ],
-  },
+  }),
 };
 
 export default async function EnglishRoomsAliasPage() {
