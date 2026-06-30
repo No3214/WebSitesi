@@ -57,6 +57,16 @@ describe("security helpers", () => {
     expect(
       validateSameOrigin(
         new Request("https://www.kozbeylikonagi.com/api/lead", {
+          headers: {
+            origin: "http://www.kozbeylikonagi.com",
+            host: "www.kozbeylikonagi.com",
+          },
+        }),
+      ),
+    ).toBe(false);
+    expect(
+      validateSameOrigin(
+        new Request("https://www.kozbeylikonagi.com/api/lead", {
           headers: { host: "www.kozbeylikonagi.com" },
         }),
       ),

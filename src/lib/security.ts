@@ -52,7 +52,11 @@ export function validateSameOrigin(request: Request) {
   if (!origin || !host) return false;
   try {
     const originUrl = new URL(origin);
-    return normalizeHost(originUrl.host) === normalizeHost(host);
+    const requestUrl = new URL(request.url);
+    return (
+      originUrl.protocol === requestUrl.protocol &&
+      normalizeHost(originUrl.host) === normalizeHost(host)
+    );
   } catch {
     return false;
   }
