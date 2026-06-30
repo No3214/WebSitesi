@@ -1983,8 +1983,15 @@ describe("production readiness contracts", () => {
     const publishVerifyIndex = ciWorkflow.indexOf("Publish verification tests");
 
     expect(ciWorkflow).toContain("Launch smoke gate");
-    expect(ciWorkflow).toContain("actions/checkout@v4");
-    expect(ciWorkflow).toContain("actions/setup-node@v4");
+    expect(ciWorkflow).toContain("permissions:");
+    expect(ciWorkflow).toContain("contents: read");
+    expect(ciWorkflow).toContain("actions/checkout@v5");
+    expect(ciWorkflow).toContain("actions/setup-node@v6");
+    expect(ciWorkflow).toContain("actions/upload-artifact@v6");
+    expect(ciWorkflow).toContain("cache-dependency-path: package-lock.json");
+    expect(ciWorkflow).not.toContain("actions/checkout@v4");
+    expect(ciWorkflow).not.toContain("actions/setup-node@v4");
+    expect(ciWorkflow).not.toContain("actions/upload-artifact@v4");
     expect(ciWorkflow).not.toContain("FORCE_JAVASCRIPT_ACTIONS_TO_NODE24");
     expect(launchSmokeIndex).toBeGreaterThan(-1);
     expect(publishVerifyIndex).toBeGreaterThan(-1);
