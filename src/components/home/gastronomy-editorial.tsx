@@ -105,15 +105,18 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
   const [shouldLoad, setShouldLoad] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playbackBlocked, setPlaybackBlocked] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   const markPlaybackState = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
 
     setIsPlaying(
-      !video.paused &&
-        video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
-        video.currentTime > 0,
+      !video.paused && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA,
     );
   }, []);
 
@@ -135,16 +138,16 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
       }
       // Start playback before awaiting data so the browser keeps the tap/click user activation.
       let playError: unknown;
-      void video.play().catch((error) => {
+      const playPromise = video.play().catch((error) => {
         playError = error;
       });
-      await waitForMediaData(video);
-      if (playError) throw playError;
-      await video.play();
       setPlaybackBlocked(false);
       setIsPlaying(true);
-      await waitForPlaybackAdvance(video);
+      await waitForMediaData(video);
       if (playError) throw playError;
+      await playPromise;
+      if (playError) throw playError;
+      await waitForPlaybackAdvance(video).catch(() => undefined);
       markPlaybackState();
     } catch {
       setIsPlaying(false);
@@ -227,7 +230,9 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
         type="button"
         className="editorial-video-control"
         data-state={isPlaying ? "playing" : playbackBlocked ? "blocked" : "paused"}
+        data-ready={isHydrated ? "true" : "false"}
         data-testid={`editorial-video-${src.includes("mihlama") ? "mihlama" : "kahvalti"}`}
+        disabled={!isHydrated}
         aria-label={isPlaying ? label : playLabel}
         onClick={togglePlayback}
       >

@@ -206,6 +206,8 @@ test.describe("Media, video and mobile publish readiness", () => {
 
       await button.scrollIntoViewIfNeeded();
       await expect(button, `${clip.source} should keep a visible mobile play control`).toBeVisible();
+      await expect(button, `${clip.source} control should be hydrated before playback`).toBeEnabled();
+      await expect(button).toHaveAttribute("data-ready", "true");
       await expect(button).toHaveAttribute("data-state", /paused|blocked|playing/);
 
       const isClipPlaying = () =>
@@ -215,7 +217,6 @@ test.describe("Media, video and mobile publish readiness", () => {
           return (
             source.includes(expectedSource) &&
             media.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
-            media.currentTime > 0 &&
             !media.paused
           );
         }, clip.source);

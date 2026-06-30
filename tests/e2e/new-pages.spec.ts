@@ -214,13 +214,17 @@ test.describe("EN public localization", () => {
     const headerText = await page.locator("header.site-header").evaluate((element) => {
       return (element as HTMLElement).innerText;
     });
+    const normalizedHeaderText = headerText.toLocaleLowerCase("en-US");
 
-    expect(headerText).toContain("BOOKING");
-    expect(headerText).toContain("MENU");
-    expect(headerText).toContain("EXPERIENCES");
+    expect(normalizedHeaderText).toContain("booking");
+    expect(normalizedHeaderText).toContain("menu");
+    expect(normalizedHeaderText).toContain("experiences");
     expect(headerText).not.toContain("BOOKİNG");
+    expect(headerText).not.toContain("Rezervasyon");
     expect(headerText).not.toContain("MENÜ");
+    expect(headerText).not.toContain("Menü");
     expect(headerText).not.toContain("EXPERİENCES");
+    expect(headerText).not.toContain("Deneyimler");
     await expect(page.locator("header.site-header").getByRole("link", { name: "Menu", exact: true })).toHaveAttribute(
       "href",
       "/en/menu",
