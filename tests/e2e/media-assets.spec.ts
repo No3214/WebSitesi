@@ -225,7 +225,10 @@ test.describe("Media, video and mobile publish readiness", () => {
       }
 
       await expect
-        .poll(isClipPlaying, { timeout: 15000 })
+        .poll(isClipPlaying, {
+          message: `${clip.source} should start playback from the visible editorial control`,
+          timeout: 30000,
+        })
         .toBe(true);
 
       await expect(button).toHaveAttribute("data-state", "playing");

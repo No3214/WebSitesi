@@ -14,7 +14,7 @@ type LazyEditorialVideoProps = {
   playLabel: string;
 };
 
-function waitForMediaData(video: HTMLVideoElement, timeoutMs = 5000) {
+function waitForMediaData(video: HTMLVideoElement, timeoutMs = 15000) {
   if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
     return Promise.resolve();
   }
@@ -56,7 +56,7 @@ function waitForMediaData(video: HTMLVideoElement, timeoutMs = 5000) {
   });
 }
 
-function waitForPlaybackAdvance(video: HTMLVideoElement, timeoutMs = 5000) {
+function waitForPlaybackAdvance(video: HTMLVideoElement, timeoutMs = 10000) {
   if (!video.paused && video.currentTime > 0) {
     return Promise.resolve();
   }
@@ -133,11 +133,18 @@ function LazyEditorialVideo({ src, poster, label, playLabel }: LazyEditorialVide
       ) {
         video.load();
       }
+      // Start playback before awaiting data so the browser keeps the tap/click user activation.
+      let playError: unknown;
+      void video.play().catch((error) => {
+        playError = error;
+      });
       await waitForMediaData(video);
+      if (playError) throw playError;
       await video.play();
       setPlaybackBlocked(false);
       setIsPlaying(true);
       await waitForPlaybackAdvance(video);
+      if (playError) throw playError;
       markPlaybackState();
     } catch {
       setIsPlaying(false);
