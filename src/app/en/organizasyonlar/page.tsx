@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 
 import { OrganizationsClient } from "@/components/organizations-client";
+import { altLanguagesEn, enOpenGraph } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Weddings & Private Events",
   description:
     "Curated boutique weddings, private celebrations and corporate gatherings in the registered stone courtyard of Kozbeyli Konağı, Foça.",
-  alternates: { canonical: "/en/events" },
-  openGraph: {
+  alternates: altLanguagesEn("/organizasyonlar", "/en/events"),
+  openGraph: enOpenGraph({
     url: absoluteUrl("/en/events"),
     title: "Weddings & Private Events | Kozbeyli Konağı",
     description:
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
         alt: "Boutique wedding atmosphere in the stone courtyard of Kozbeyli Konağı",
       },
     ],
-  },
+  }),
   twitter: {
     card: "summary_large_image",
     title: "Kozbeyli Konağı Weddings & Private Events",

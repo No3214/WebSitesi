@@ -5,6 +5,7 @@ import { RoomDetailClient } from "@/components/room-detail-client";
 import { RoomViewTracker } from "@/components/room-view-tracker";
 import { getLocalizedRoom, rooms } from "@/data/rooms";
 import { serializeJsonLd } from "@/lib/json-ld";
+import { altLanguagesEn, enOpenGraph } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 type Props = {
@@ -29,13 +30,13 @@ export async function generateMetadata({
   return {
     title: `${room.title} | Accommodation`,
     description: room.short,
-    alternates: { canonical: `/en/rooms/${slug}` },
-    openGraph: {
+    alternates: altLanguagesEn(`/odalar/${slug}`, `/en/rooms/${slug}`),
+    openGraph: enOpenGraph({
       images: [absoluteUrl(room.images[0])],
       title: `${room.title} - Kozbeyli Konağı`,
       description: room.short,
       url: absoluteUrl(`/en/rooms/${slug}`),
-    },
+    }),
   };
 }
 

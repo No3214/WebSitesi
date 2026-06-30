@@ -39,6 +39,28 @@ export function altLanguagesEn(tr: string, en: string) {
   } as const;
 }
 
+type EnOpenGraphInput = {
+  url?: string;
+  title?: string;
+  description?: string;
+  images?: NonNullable<Metadata["openGraph"]>["images"];
+};
+
+/**
+ * EN sayfalar kendi `openGraph` objelerini set ettiğinde Next.js parent (root)
+ * openGraph'ı TÜMÜYLE eziyor → og:locale / og:site_name / og:type düşüyor.
+ * Bu helper her EN sayfada en_US locale + website type + siteName'i korur,
+ * sayfanın kendi url/title/description/images alanlarını üstüne yazar.
+ */
+export function enOpenGraph(input: EnOpenGraphInput): Metadata["openGraph"] {
+  return {
+    type: "website",
+    locale: "en_US",
+    siteName: "Kozbeyli Konağı",
+    ...input,
+  };
+}
+
 export const defaultMetadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {

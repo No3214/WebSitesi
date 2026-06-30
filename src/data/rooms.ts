@@ -120,7 +120,7 @@ export const rooms: Room[] = [
   {
     slug: "4-kisilik-aile-odasi-balkonlu",
     video: "/videos/rooms/4-kisilik-aile-odasi-balkonlu.mp4",
-    title: "4 Kişilik Aile Odası Balkonlu Oda",
+    title: "4 Kişilik Balkonlu Aile Odası",
     short: "50 metrekarelik, özel balkonlu en prestijli aile ünitesi.",
     description: "Balkonlu Aile Odası, Kozbeyli Konağı'nın sunduğu en geniş iç mekan olan 50 metrekarelik alanıyla tesisin zirve konaklama birimlerinden biridir. Kendine ait geniş balkonu, misafirlere Kozbeyli Köyü'nün tarihi dokusunu ve temiz havasını özel bir alanda deneyimleme fırsatı verir. Taş duvarlar ve el işçiliği ahşap detaylarla süslenmiş bu birimde, televizyon ve genişletilmiş minibar servisi mevcuttur. Oda, çok çocuklu ailelerin ihtiyaçlarını karşılamak üzere tasarlanmış olup, konforu bir üst seviyeye taşıyan geniş banyo ve özel oturma köşesine sahiptir. Balkon alanı, sabah kahvesi veya akşam dinlenmesi için ideal bir kaçış noktasıdır. Tesisin tarihsel mirası ve modern lüksü, bu odanın her detayında somutlaşmaktadır.",
     capacity: "4-5 Kişi",

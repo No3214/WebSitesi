@@ -4,6 +4,7 @@ import { rooms as fallbackRooms } from "@/data/rooms";
 import { RoomDetailClient } from "@/components/room-detail-client";
 import { RoomViewTracker } from "@/components/room-view-tracker";
 import { serializeJsonLd } from "@/lib/json-ld";
+import { altLanguages } from "@/lib/metadata";
 import { absoluteUrl } from "@/lib/utils";
 
 type Props = {
@@ -25,9 +26,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${room.title} | Lüks Konaklama`,
     description: `${room.title}: ${room.short}. Kozbeyli Köyü'nde aslına uygun restore edilmiş taş mimari içinde sükunet dolu bir oda deneyimi.`,
+    alternates: altLanguages(`/odalar/${slug}`, `/en/rooms/${slug}`),
     openGraph: {
       images: [absoluteUrl(room.images[0])],
       title: `${room.title} - Kozbeyli Konağı`,
+      url: absoluteUrl(`/odalar/${slug}`),
     },
   };
 }
