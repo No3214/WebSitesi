@@ -6,7 +6,7 @@ import { z } from "zod";
 import { verifyEccSignature, extractPayloadFromRequest } from "@/lib/ecc-auth";
 import { hasSeen, markSeen, rateLimit } from "@/lib/rate-limit";
 import { extractClientIp, safeText } from "@/lib/security";
-import { logEvent } from "@/lib/logger";
+import { errField, logEvent } from "@/lib/logger";
 import { getRoomNightlyRate } from "@/lib/booking-pricing";
 
 // Audit F6/T5: partner public key artık env'den gelir; tanımlı değilse
@@ -184,7 +184,7 @@ export async function POST(req: Request) {
 
   } catch (error) {
     logEvent("error", "availability.unhandled_error", {
-      message: error instanceof Error ? error.message : String(error),
+      err: errField(error),
     });
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }

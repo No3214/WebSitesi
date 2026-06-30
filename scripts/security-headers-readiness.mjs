@@ -58,10 +58,12 @@ const requiredHeaders = [
 ];
 
 const requiredCspDirectives = [
+  "default-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   "script-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
   "connect-src 'self'",
   "img-src 'self' data: blob: https:",
   "media-src 'self' blob:",

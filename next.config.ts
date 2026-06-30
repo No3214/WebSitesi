@@ -1,7 +1,7 @@
 import { withPayload } from "@payloadcms/next/withPayload";
 import type { NextConfig } from "next";
 
-// CSP — gradual tightening: default-src/style-src deliberately omitted.
+// CSP — default-src 'self' baseline with explicit per-type overrides.
 // script-src: 'unsafe-inline' is required for the GTM/Meta Pixel inline
 // bootstrap snippets; external script hosts are GTM (gtm.js), Meta
 // (fbevents.js) and Cloudflare Turnstile (api.js). Next.js development uses
@@ -26,13 +26,27 @@ const scriptSrc = [
 ].filter(Boolean).join(" ");
 
 const csp = [
+  // default-src 'self' baseline: directives not listed below
+  // (font-src/worker-src/manifest-src/child-src/prefetch-src…) fall back to
+  // 'self' instead of the permissive global default. Every off-origin host the
+  // app needs stays enumerated in script-src/connect-src/frame-src, which
+  // override default-src, so GTM/Meta/Turnstile/PostHog/HMS keep working.
+  "default-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
   scriptSrc,
+  // style-src: 'unsafe-inline' required for styled-jsx <style> blocks, the many
+  // inline style={{}} attributes, and inline styles injected by GTM/PostHog.
+  "style-src 'self' 'unsafe-inline'",
   "connect-src 'self' https://*.posthog.com https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://stats.g.doubleclick.net https://connect.facebook.net https://www.facebook.com https://challenges.cloudflare.com https://app.hms.gen.tr https://kozbeyli-konagi.hmshotel.net",
   "img-src 'self' data: blob: https:",
   "media-src 'self' blob:",
+  // No off-origin web fonts (no next/font / Google Fonts); data: covers inlined
+  // glyphs. PostHog session replay may spin up a blob: web worker.
+  "font-src 'self' data:",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
   "frame-src 'self' https://www.google.com https://maps.google.com https://www.googletagmanager.com https://challenges.cloudflare.com",
   "frame-ancestors 'self'",
 ].join("; ");
