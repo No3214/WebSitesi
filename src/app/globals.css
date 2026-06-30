@@ -879,7 +879,7 @@
   }
 
   .eyebrow {
-    color: var(--gold);
+    color: var(--gold-text);
     text-transform: uppercase;
     letter-spacing: 0.32em;
     font-size: 0.72rem;
@@ -953,7 +953,7 @@
     font-size: 0.7rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--gold-text);
     font-weight: 700;
   }
 
@@ -1568,7 +1568,7 @@
   }
 
   .gastronomy-menu-card small {
-    color: var(--gold);
+    color: var(--gold-text);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.14em;

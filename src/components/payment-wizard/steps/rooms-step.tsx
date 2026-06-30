@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { getLocalizedRooms } from "@/data/rooms";
 import type { usePaymentWizard } from "../use-payment-wizard";
@@ -11,12 +11,14 @@ export function RoomsStep({ wizard }: { wizard: ReturnType<typeof usePaymentWiza
   const localizedRooms = getLocalizedRooms(locale);
   const liveRateLabel = locale === "tr" ? "Güncel fiyat HMS ekranında" : "Current rate in HMS";
   const liveRateHint = locale === "tr" ? "Fiyat ve müsaitlik resmi rezervasyon ekranında netleşir." : "Rate and availability are confirmed on the official booking screen.";
+  const shouldReduce = useReducedMotion();
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
+      initial={shouldReduce ? false : { opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+      exit={shouldReduce ? { opacity: 0 } : { opacity: 0, x: -20 }}
+      transition={{ duration: shouldReduce ? 0 : 0.3 }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
         <h3 className="serif" style={{ fontSize: "1.7rem", color: "var(--olive)", margin: 0 }}>{copy.rooms.title}</h3>

@@ -1,18 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Calendar, Users, ArrowRight } from "lucide-react";
 import type { usePaymentWizard } from "../use-payment-wizard";
 
 // Adim 1: Tarih ve konuk secimi
 export function DatesStep({ wizard }: { wizard: ReturnType<typeof usePaymentWizard> }) {
   const { checkIn, setCheckIn, checkOut, setCheckOut, guests, setGuests, setStep, copy } = wizard;
+  const shouldReduce = useReducedMotion();
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
+      initial={shouldReduce ? false : { opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+      exit={shouldReduce ? { opacity: 0 } : { opacity: 0, x: -20 }}
+      transition={{ duration: shouldReduce ? 0 : 0.3 }}
       style={{ display: "grid", gap: 24 }}
     >
       <h3 className="serif" style={{ fontSize: "1.7rem", color: "var(--olive)" }}>{copy.dates.title}</h3>

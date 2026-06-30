@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import type { usePaymentWizard } from "../use-payment-wizard";
 
@@ -15,11 +15,13 @@ export function SuccessStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
   const t = copy.success;
   const payment = copy.payment;
   const amountPending = wizard.locale === "tr" ? "HMS / ekip teyidi" : "HMS / team confirmation";
+  const shouldReduce = useReducedMotion();
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={shouldReduce ? false : { opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: shouldReduce ? 0 : 0.3 }}
       style={{ textAlign: "center", display: "grid", gap: 24, padding: "20px 0" }}
     >
       <div style={{ display: "flex", justifyContent: "center" }}>

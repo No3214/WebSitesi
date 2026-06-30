@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X, Gift, ArrowRight } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -40,6 +40,9 @@ export const ExitIntent = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [hasShown, setHasShown] = useState(false);
   const pathname = usePathname();
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
 
   const locale = pathname?.startsWith("/en") ? "en" : "tr";
   const copy = COPY[locale];
@@ -81,17 +84,69 @@ export const ExitIntent = () => {
     };
   }, [hasShown]);
 
+  // A11y: while the modal is open, lock body scroll, move focus into the dialog,
+  // trap Tab focus, close on Escape, and restore focus to the trigger on close
+  // (WCAG 2.1.1 / 2.4.3 — mirrors the gallery-lightbox pattern).
+  useEffect(() => {
+    if (!isVisible) return;
+
+    lastFocusedRef.current = (document.activeElement as HTMLElement) ?? null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setIsVisible(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusables = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      lastFocusedRef.current?.focus?.();
+    };
+  }, [isVisible]);
+
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-[rgba(61,74,59,0.38)] backdrop-blur-sm exit-intent-backdrop">
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-[rgba(61,74,59,0.38)] backdrop-blur-sm exit-intent-backdrop"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) setIsVisible(false);
+      }}
+    >
       <div
+        ref={dialogRef}
         className="relative w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl exit-intent-dialog"
         role="dialog"
         aria-modal="true"
         aria-label={copy.dialogLabel}
       >
         <button
+          ref={closeButtonRef}
           onClick={() => setIsVisible(false)}
           aria-label={copy.closeLabel}
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-zinc-100 transition-colors"

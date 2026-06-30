@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
 import type { usePaymentWizard } from "../use-payment-wizard";
 
@@ -8,12 +8,14 @@ import type { usePaymentWizard } from "../use-payment-wizard";
 export function SensoryStep({ wizard }: { wizard: ReturnType<typeof usePaymentWizard> }) {
   const { scent, setScent, pillow, setPillow, sound, setSound, light, setLight, setStep, copy, options } = wizard;
   const fieldId = (field: string) => `sensory-${wizard.locale}-${field}`;
+  const shouldReduce = useReducedMotion();
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
+      initial={shouldReduce ? false : { opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+      exit={shouldReduce ? { opacity: 0 } : { opacity: 0, x: -20 }}
+      transition={{ duration: shouldReduce ? 0 : 0.3 }}
       style={{ display: "grid", gap: 24 }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

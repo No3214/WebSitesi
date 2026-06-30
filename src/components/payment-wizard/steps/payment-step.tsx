@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ShieldCheck, ArrowLeft } from "lucide-react";
 import type { usePaymentWizard } from "../use-payment-wizard";
 import { getLegalHref } from "@/lib/legal-routes";
@@ -23,13 +23,18 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
   const kvkkHref = getLegalHref("kvkk", wizard.locale);
   const privacyHref = getLegalHref("privacy", wizard.locale);
   const fieldId = (field: string) => `payment-${wizard.locale}-${field}`;
+  const errorId = fieldId("error");
   const amountPending = wizard.locale === "tr" ? "HMS / ekip teyidi" : "HMS / team confirmation";
+  const shouldReduce = useReducedMotion();
+  const invalid = paymentError ? true : undefined;
+  const describedBy = paymentError ? errorId : undefined;
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
+      initial={shouldReduce ? false : { opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+      exit={shouldReduce ? { opacity: 0 } : { opacity: 0, x: -20 }}
+      transition={{ duration: shouldReduce ? 0 : 0.3 }}
       style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 32 }}
     >
       {/* Form Side */}
@@ -66,6 +71,8 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
             onChange={(e) => setGuestName(e.target.value)}
             required
             autoComplete="name"
+            aria-invalid={invalid}
+            aria-describedby={describedBy}
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
           />
           <label className="sr-only" htmlFor={fieldId("guest-phone")}>{t.phone}</label>
@@ -78,6 +85,8 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
             onChange={(e) => setGuestPhone(e.target.value)}
             required
             autoComplete="tel"
+            aria-invalid={invalid}
+            aria-describedby={describedBy}
             style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
           />
         </div>
@@ -91,6 +100,8 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
           onChange={(e) => setGuestEmail(e.target.value)}
           required
           autoComplete="email"
+          aria-invalid={invalid}
+          aria-describedby={describedBy}
           style={{ width: "100%", padding: 12, border: "1px solid var(--border)", borderRadius: 6 }}
         />
 
@@ -127,7 +138,11 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
           </span>
         </label>
 
-        {paymentError && <p style={{ color: "#c2410c", fontSize: "0.85rem", margin: 0 }}>{paymentError}</p>}
+        {paymentError && (
+          <p id={errorId} role="alert" style={{ color: "#c2410c", fontSize: "0.85rem", margin: 0 }}>
+            {paymentError}
+          </p>
+        )}
 
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12 }}>
           <button type="button" onClick={() => setStep("sensory")} className="button secondary" style={{ display: "flex", alignItems: "center", gap: 8 }}>
