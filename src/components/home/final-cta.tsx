@@ -1,6 +1,7 @@
 "use client";
 
 import { FadeIn } from "@/components/animations";
+import { WaveDivider } from "@/components/wave-divider";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { getWhatsAppHref } from "@/lib/contact";
 import { publicEnv } from "@/lib/public-env";
@@ -15,6 +16,7 @@ export function FinalCta({ locale }: { locale: "tr" | "en" }) {
 
   return (
     <section className="cta-banner section-alt grain">
+      <WaveDivider />
       <div className="container" style={{ position: "relative", zIndex: 2 }}>
         <FadeIn>
           <span className="eyebrow">{locale === "tr" ? "KOZBEYLİ SİZİ BEKLİYOR" : "KOZBEYLİ AWAITS"}</span>

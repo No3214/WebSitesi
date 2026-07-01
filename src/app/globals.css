@@ -2339,6 +2339,31 @@
     line-height: 1.8;
   }
 
+  /* Statik mesh-gradient parıltı (Paper Shaders'in WebGL'siz, bağımlılıksız
+     karşılığı) — tek boyama, sıfır sürekli maliyet, marka olive/gold/azure. */
+  .cta-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(58% 48% at 16% 14%, rgba(61, 74, 59, 0.14), transparent 60%),
+      radial-gradient(50% 44% at 86% 22%, rgba(179, 146, 92, 0.13), transparent 62%),
+      radial-gradient(60% 55% at 72% 96%, rgba(46, 93, 107, 0.1), transparent 60%);
+  }
+
+  /* ---------- Wave divider (Haikei tarzı, statik SVG) ---------- */
+  .wave-divider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    line-height: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
   /* ---------- Marquee ---------- */
   .marquee-band {
     background-color: #f7f1e7;
