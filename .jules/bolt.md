@@ -1,0 +1,3 @@
+## 2025-07-01 - Avoid internal execution overhead for scroll event listeners
+**Learning:** Even though React may bail out of re-rendering if state hasn't changed, repeatedly calling state dispatcher (like `setScrolled`) in high-frequency events (like scroll events) incurs unnecessary internal execution overhead.
+**Action:** When tracking boolean state for high-frequency events (like `window.scrollY > 24`), use a local variable within the `useEffect` closure to track the state and only call the state dispatcher when the value actually transitions.
