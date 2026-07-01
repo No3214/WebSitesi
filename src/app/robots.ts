@@ -6,9 +6,12 @@ import { siteUrl } from '@/lib/utils';
 // ileride daraltma kolaylığı). Wildcard zaten kapsar; bu yalnız açık beyandır.
 const AI_BOTS = [
   "OAI-SearchBot", "ChatGPT-User", "GPTBot",
-  "ClaudeBot", "Claude-User", "Claude-SearchBot",
+  "ClaudeBot", "Claude-User", "Claude-SearchBot", "anthropic-ai",
   "PerplexityBot", "Perplexity-User",
-  "Google-Extended", "Bingbot", "Applebot-Extended",
+  "Google-Extended", "Bingbot",
+  // Applebot = Apple arama/Siri/Spotlight (arama crawler'ı); Applebot-Extended
+  // yalnız Apple Intelligence eğitim kontrolü. Arama görünürlüğü için ikisi de davetli.
+  "Applebot", "Applebot-Extended",
 ];
 
 export default function robots(): MetadataRoute.Robots {

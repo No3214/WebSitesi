@@ -123,6 +123,12 @@ const nextConfig: NextConfig = {
       { source: "/en-US/about", destination: "/en/our-story", permanent: true },
       { source: "/en-US/pages/:path*", destination: "/en", permanent: true },
       { source: "/en-US/:path*", destination: "/en", permanent: true },
+      // Legacy /en-gb/* URL'leri (eski site yapisi; AEO baseline taramasinda
+      // hala indeksli bulundu — otoriteyi guncel /en agacina tasir).
+      { source: "/en-gb", destination: "/en", permanent: true },
+      { source: "/en-gb/about", destination: "/en/our-story", permanent: true },
+      { source: "/en-gb/pages/:path*", destination: "/en", permanent: true },
+      { source: "/en-gb/:path*", destination: "/en", permanent: true },
     ];
   },
 };

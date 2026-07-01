@@ -99,5 +99,75 @@ export const faqs = [
       tr: "Site üzerinden kart numarası, CVV veya son kullanma tarihi istemiyoruz. Kartlı ödeme gerektiğinde işlem güvenli ödeme sağlayıcısı veya resmi rezervasyon kanalı üzerinden yürütülür.",
       en: "We do not ask for card number, CVV or expiry date on this site. When card payment is required, the transaction is handled through a secure payment provider or the official booking channel."
     }
+  },
+  {
+    q: { tr: "Konaklama konsepti nedir; kahvaltı dahil mi?", en: "What is the accommodation concept; is breakfast included?" },
+    a: {
+      tr: "Kozbeyli Konağı oda + serpme köy kahvaltısı konseptiyle çalışır; organik köy kahvaltısı oda fiyatına dahildir ve konaklamayı takip eden sabah restoran veya bahçede servis edilir. Kahvaltısız oda satışı yapılmaz.",
+      en: "Kozbeyli Konağı operates on a room-plus-village-breakfast concept; the organic village breakfast is included in the room rate and served the morning after your stay, in the restaurant or garden. Rooms are not sold without breakfast."
+    }
+  },
+  {
+    q: { tr: "Otelde yüzme havuzu var mı?", en: "Is there a swimming pool?" },
+    a: {
+      tr: "Hayır, Kozbeyli Konağı'nda yüzme havuzu bulunmaz. Tesis; 19. yüzyıl tescilli taş konak, geniş bahçe ve sakin köy dokusuyla yavaş yaşam (slow living) konsepti sunar. Bahçedeki süs havuzu kullanıma açık değildir; resort, bungalov veya jakuzi konsepti değildir.",
+      en: "No, Kozbeyli Konağı does not have a swimming pool. It offers a slow-living concept with a 19th-century registered stone mansion, a large garden and quiet village texture. The garden's decorative pool is not in use; it is not a resort, bungalow or jacuzzi concept."
+    }
+  },
+  {
+    q: { tr: "Kaç odanız var ve oda tipleri neler?", en: "How many rooms are there and what are the room types?" },
+    a: {
+      tr: "Kozbeyli Konağı 16 butik odaya sahiptir. Oda tipleri: tek kişilik (25 m²), standart çift kişilik (25 m²), superior (35 m²; bazılarında balkon ve deniz/dağ manzarası) ve aile odası (50 m²). Tüm odalar deniz manzaralı değildir; manzara oda konumuna göre bahçe, dağ veya deniz yönündedir.",
+      en: "Kozbeyli Konağı has 16 boutique rooms. Types: single (25 m²), standard double (25 m²), superior (35 m², some with a balcony and sea/hill view) and family room (50 m²). Not all rooms are sea-view; the outlook is toward the garden, hills or sea depending on the room."
+    }
+  },
+  {
+    q: { tr: "Restoranda hangi mutfak sunuluyor?", en: "What cuisine does the restaurant serve?" },
+    a: {
+      tr: "Restoran, Antakya ve Ege (Türk) mutfağını buluşturur; taş fırın lezzetleri, à la carte menü, serpme köy kahvaltısı ve gurme kokteyller sunar. Akşam yemeği için önceden rezervasyon gerekir; konaklamayan ziyaretçilere de uygunluğa göre hizmet verilir.",
+      en: "The restaurant brings together Antakya and Aegean (Turkish) cuisine, with stone-oven dishes, an à la carte menu, a generous village breakfast and gourmet cocktails. Dinner requires advance reservation; non-staying visitors are also welcome subject to availability."
+    }
+  },
+  {
+    q: { tr: "Resepsiyon 24 saat açık mı?", en: "Is reception open 24 hours?" },
+    a: {
+      tr: "Hayır, resepsiyon 24 saat açık değildir; günlük planlı bir operasyonla hizmet verir. Giriş kapıları 23:00 sonrası kontrollüdür ve sessizlik saatleri 23:00–08:00 arasıdır; geç varış planlayan misafirlerin önceden bilgi vermesi rica edilir.",
+      en: "No, reception is not open 24/7; it runs on a planned daily operation. Entrance gates are controlled after 23:00 and quiet hours are 23:00–08:00; guests planning a late arrival are asked to notify the team in advance."
+    }
+  },
+  {
+    q: { tr: "Wi-Fi ücretsiz mi ve hangi olanaklar var?", en: "Is Wi-Fi free and what facilities are available?" },
+    a: {
+      tr: "Evet, tüm odalarda ve genel alanlarda ücretsiz Wi-Fi bulunur. Ayrıca açık otopark (valeli ve valesiz), bahçe, teras, ortak TV alanı, günlük temizlik, emanet kasası ve 25 m² toplantı/konferans alanı gibi olanaklar sunulur.",
+      en: "Yes, free Wi-Fi is available in all rooms and common areas. The property also offers open parking (valet and self), a garden, terrace, shared TV lounge, daily housekeeping, a safe and a 25 m² meeting/conference area."
+    }
+  },
+  {
+    q: { tr: "Tekerlekli sandalye erişimi var mı?", en: "Is it wheelchair accessible?" },
+    a: {
+      tr: "Konak tek katlıdır (asansör yok), merdivensiz girişi ve tırabzanları bulunur; tekerlekli sandalye kullanımına kısıtlamalı olarak uygundur ve engelli misafirler için ayrılmış otopark alanı vardır. Özel erişim ihtiyaçlarınızı rezervasyon öncesinde paylaşmanızı öneririz.",
+      en: "The mansion is single-story (no elevator), with a step-free entrance and handrails; it is wheelchair-suitable with some limitations and has dedicated accessible parking. We recommend sharing any specific access needs before booking."
+    }
+  },
+  {
+    q: { tr: "Havalimanına uzaklık ne kadar ve transfer var mı?", en: "How far is the airport and is a transfer available?" },
+    a: {
+      tr: "İzmir Adnan Menderes Havalimanı araçla yaklaşık 1–1,5 saat uzaklıktadır (mesafe rotaya göre değişir); Foça ilçe merkezi ise yaklaşık 19 km'dir. Havalimanı gidiş-dönüş transferi ücretli olarak, uygunluğa göre organize edilebilir. Güncel süre için canlı yol tarifi önerilir.",
+      en: "İzmir Adnan Menderes Airport is roughly a 1–1.5 hour drive away (distance varies by route); central Foça is about 19 km. A paid round-trip airport transfer can be arranged subject to availability. Use live directions for the current travel time."
+    }
+  },
+  {
+    q: { tr: "Yakında gezilebilecek yerler neler?", en: "What is there to visit nearby?" },
+    a: {
+      tr: "Kozbeyli Köyü'nün taş sokakları, zeytinlikleri ve dibek kahvesi durakları yürüyerek keşfedilir. Çevrede Eski Foça merkezi, koylar, Foça Kalesi, Kyme Antik Kenti, Pers Anıt Mezarı ve tarihî yel değirmenleri kültür ve fotoğraf gezileri için idealdir.",
+      en: "Kozbeyli Village's stone streets, olive groves and dibek-coffee stops are best explored on foot. Nearby, Old Foça, its coves, Foça Castle, the ancient city of Kyme, the Persian rock tomb and historic windmills are ideal for culture and photography trips."
+    }
+  },
+  {
+    q: { tr: "Kozbeyli Konağı kimler için uygundur?", en: "Who is Kozbeyli Konağı best suited for?" },
+    a: {
+      tr: "Kozbeyli Konağı; sakin bir kaçamak arayan çiftler, huzurlu bir konfor isteyen aileler, tarih ve yavaş yaşam meraklısı gezginler ile düğün/özel davet planlayanlar için uygundur. Sessiz köy atmosferi ve 18 yaş asgari giriş yaşıyla dinlenmeye odaklı, yetişkin dostu bir deneyim sunar.",
+      en: "Kozbeyli Konağı suits couples seeking a quiet escape, families wanting peaceful comfort, heritage and slow-living travelers, and those planning weddings or private events. With a quiet village atmosphere and a minimum check-in age of 18, it offers a restful, adult-friendly experience."
+    }
   }
 ] as const satisfies readonly Faq[];

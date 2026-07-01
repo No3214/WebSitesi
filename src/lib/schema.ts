@@ -25,6 +25,13 @@ export function hotelSchema() {
     ],
     telephone: "+905322342686",
     email: "info@kozbeylikonagi.com",
+    // T.C. Kültür ve Turizm Bakanlığı tesis belgesi — doğrulanabilir güven/E-E-A-T
+    // sinyali (kozbeyli-facts.md SSOT). Uydurma değil; resmi işletme belge no.
+    identifier: {
+      "@type": "PropertyValue",
+      propertyID: "T.C. Kültür ve Turizm Bakanlığı Tesis Belge No",
+      value: "2025-35-1824",
+    },
     address: {
       "@type": "PostalAddress",
       streetAddress: "Kozbeyli Köyü Küme Evler No:188",
@@ -41,6 +48,7 @@ export function hotelSchema() {
     checkinTime: "14:00",
     checkoutTime: "12:00",
     petsAllowed: true,
+    numberOfRooms: 16,
     priceRange: "₺₺₺",
     servesCuisine: "Aegean, Turkish, Breakfast, Antakya",
     amenityFeature: [
@@ -52,6 +60,11 @@ export function hotelSchema() {
       { "@type": "LocationFeatureSpecification", name: "Açık otopark alanı ve varış yönlendirmesi", value: true },
       { "@type": "LocationFeatureSpecification", name: "Kahvaltı", value: true },
       { "@type": "LocationFeatureSpecification", name: "Klima", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Ücretsiz Wi-Fi", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Ücretsiz açık otopark", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Bahçe ve teras", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Toplantı / konferans alanı (25 m²)", value: true },
+      { "@type": "LocationFeatureSpecification", name: "Havalimanı transferi (ücretli)", value: true },
     ],
     potentialAction: {
       "@type": "ReserveAction",
