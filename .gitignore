@@ -35,6 +35,9 @@ scratch/
 
 tsconfig.tsbuildinfo
 
+# generated Lighthouse report artifact (lighthouserc.json config stays tracked)
+lighthouse.json
+
 # gecici dogrulama scripti
 gate.ps1
 gate-w6.log

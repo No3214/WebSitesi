@@ -139,7 +139,19 @@ export function PaymentStep({ wizard }: { wizard: ReturnType<typeof usePaymentWi
         </label>
 
         {paymentError && (
-          <p id={errorId} role="alert" style={{ color: "#c2410c", fontSize: "0.85rem", margin: 0 }}>
+          <p
+            id={errorId}
+            role="alert"
+            style={{
+              color: "#c2410c",
+              fontSize: "0.85rem",
+              margin: 0,
+              padding: "10px 14px",
+              border: "1px solid #c2410c",
+              borderRadius: 8,
+              background: "rgba(194, 65, 12, 0.06)",
+            }}
+          >
             {paymentError}
           </p>
         )}

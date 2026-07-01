@@ -124,6 +124,11 @@ describe("a11y payment-wizard — reduced motion + hata duyurusu (WCAG 2.3.3 / 4
     expect(src).toContain("aria-invalid={invalid}");
     expect(src).toContain("aria-describedby={describedBy}");
   });
+
+  it("payment hata mesajı belirgin kenarlıklı uyarı kutusu olarak render edilir (CONV-1)", () => {
+    const src = read("src/components/payment-wizard/steps/payment-step.tsx");
+    expect(src).toContain('border: "1px solid #c2410c"');
+  });
 });
 
 describe("güvenlik — CSP default-src 'self' temeli + style-src kilidi", () => {
