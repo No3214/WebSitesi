@@ -16,7 +16,7 @@ export function FinalCta({ locale }: { locale: "tr" | "en" }) {
 
   return (
     <section className="cta-banner section-alt grain">
-      <WaveDivider />
+      <WaveDivider fill="var(--ivory)" height={54} />
       <div className="container" style={{ position: "relative", zIndex: 2 }}>
         <FadeIn>
           <span className="eyebrow">{locale === "tr" ? "KOZBEYLİ SİZİ BEKLİYOR" : "KOZBEYLİ AWAITS"}</span>
