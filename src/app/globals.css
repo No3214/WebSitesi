@@ -1127,6 +1127,18 @@
     background: var(--surface-stone);
   }
 
+  /* CLS kilidi: video in-view MOUNT olur (use-autoplay-video). Overlay olarak
+     konumlanmazsa in-flow block gibi karti buyutup footer'i ~1400px itiyordu
+     (lh-after CLS 0.3 kaniti, 2026-07-02). inset:0 + cover = mount aninda
+     sifir yerlesim etkisi. */
+  .room-mosaic-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   .room-mosaic-featured .room-mosaic-media {
     aspect-ratio: 4 / 3;
   }

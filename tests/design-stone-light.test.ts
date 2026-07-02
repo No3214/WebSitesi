@@ -221,4 +221,14 @@ describe("Stone & Light — LCP bant bütçesi", () => {
     expect(hero).toContain("imageSrcSet: HERO_POSTER_SRCSET");
     expect(hero).toContain('imageSizes: "100vw"');
   });
+
+  it("oda videosu overlay'dir: mount CLS üretemez (footer-shift regresyon kilidi)", () => {
+    const css = read("src/app/globals.css");
+    // In-view mount olan .room-mosaic-video overlay konumlanmazsa kartı
+    // büyütüp footer'ı itiyordu (lh-after CLS 0.3, 2026-07-02).
+    const block = css.match(/\.room-mosaic-video\s*\{[\s\S]*?\}/)?.[0] ?? "";
+    expect(block).toContain("position: absolute;");
+    expect(block).toContain("inset: 0;");
+    expect(block).toContain("object-fit: cover;");
+  });
 });
