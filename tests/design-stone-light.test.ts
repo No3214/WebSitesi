@@ -198,8 +198,11 @@ describe("Stone & Light — LCP bant bütçesi", () => {
   const hero = read("src/components/home/home-hero.tsx");
   const showcase = read("src/components/home/rooms-showcase.tsx");
 
-  it("hero video'da mükerrer poster attr yok; img poster srcSet ile kalır", () => {
-    expect(hero).not.toContain('poster="/images/hero-video-poster');
+  it("hero video posteri 960w'dir: erken LCP adayı + mobilde img ile tek indirme", () => {
+    // Poster attr'sız video ilk karesi LCP adayı olup LCP'yi ~10s'e itiyordu;
+    // 1280w attr ise her viewport'ta 101KB mükerrer indirme yaratıyordu.
+    expect(hero).toContain('poster="/images/hero-video-poster-960.webp"');
+    expect(hero).not.toContain('poster="/images/hero-video-poster-1280.webp"');
     expect(hero).toContain('src="/images/hero-video-poster-1280.webp"');
     expect(hero).toContain('fetchPriority="high"');
   });

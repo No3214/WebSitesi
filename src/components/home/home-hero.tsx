@@ -135,10 +135,12 @@ function HeroVideo({ locale }: Pick<Props, "locale">) {
         src={activeSource || undefined}
         data-desktop-src={HERO_VIDEO_SRC}
         data-mobile-src={HERO_MOBILE_VIDEO_SRC}
-        /* poster attr YOK: arkadaki <img> (srcSet + fetchPriority=high) aynı
-           kareyi taşıyor; video poster'ı LCP penceresinde 101KB mükerrer
-           indirme yaratıyordu (lh-diag 2026-07-02). Video ilk kare gelene
-           kadar şeffaftır, görsel fark yok. */
+        /* poster=960w BİLİNÇLİ: (1) poster attr'sız video'nun İLK KARESİ LCP
+           adayı oluyor ve 1.6MB indirme LCP'yi ~10s'e itiyor (lh-after kanıtı,
+           2026-07-02); poster attr erken LCP adayını geri getirir. (2) 960w,
+           mobilde <img> srcSet'inin seçtiği DOSYANIN AYNISI → tek indirme
+           (eski 1280w attr her viewport'ta 101KB mükerrer indiriyordu). */
+        poster="/images/hero-video-poster-960.webp"
         aria-hidden
         tabIndex={-1}
         disablePictureInPicture
