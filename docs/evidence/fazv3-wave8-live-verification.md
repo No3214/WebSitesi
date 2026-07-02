@@ -25,12 +25,15 @@ salınımı) — mutlak LCP değerleri bu koşullarda güvenilir A/B vermez. Nih
 sayısal doğrulama: PSI API (keyless kota yarın sıfırlanır) veya PostHog RUM
 (`analytics_purchase` gate'i sonrası).
 
-**Yeni bulgu — CLS 0.3 (aksiyon gerektirir):** after koşumlarında tekrarlayan
-tek layout shift, `body > footer.footer`'ı ~1400px iten geç yükseklik değişimi
-(lh-after1 layout-shifts kanıtı). Baseline'da (11:10) CLS 0'dı. Şüpheli:
-in-view mount olan oda videoları / yeniden üretilen mp4'lerin boyut davranışı
-(1921fd3 sonrası). Sonraki oturum işi: `.room-mosaic-video` yerleşimini
-`aspect-ratio` ile sabitle veya mount yerine `visibility` ile yönet.
+**CLS 0.3 bulgusu — KAPANDI (`cfcf3fb`):** kök neden `.room-mosaic-video`
+için HİÇ CSS kuralı olmamasıydı — in-view mount olan video in-flow block gibi
+kartı büyütüp footer'ı ~1400px itiyordu. Fix: `position:absolute; inset:0;
+object-fit:cover` overlay (mount anında sıfır yerleşim etkisi) + regresyon
+kilidi (`design-stone-light.test.ts`). Canlı doğrulama (deploy READY sonrası
+Lighthouse, 2026-07-02): **CLS 0.3 → 0**, TBT 179ms; overlay kuralı prod
+CSS'te birebir mevcut (`.room-mosaic-video{object-fit:cover;width:100%;
+height:100%;position:absolute;inset:0}`). Lab LCP (~10.6s) makine yükü +
+sim-4G altında ölçüldü; mutlak LCP doğrulaması PSI kotası/RUM'a bırakıldı.
 
 ## 1. Deploy kanıtı
 
