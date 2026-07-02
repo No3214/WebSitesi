@@ -64,6 +64,7 @@
   --motion-fast: 180ms;
   --motion-base: 420ms;
   --motion-slow: 720ms;
+  --motion-cinematic: 950ms;
   --dur: 0.5s;
 
   /* Stone & Light editorial surfaces */
@@ -73,6 +74,12 @@
   --line-soft: rgba(61, 74, 59, 0.12);
   --line-gold: rgba(179, 146, 92, 0.34);
   --radius-editorial: 2px;
+  /* Radius scale (Stone & Light editorial — restrained, physical) */
+  --radius-xs: 2px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
 
   /* Elevation */
   --shadow-soft: 0 8px 40px rgba(20, 22, 26, 0.06);

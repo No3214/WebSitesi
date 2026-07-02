@@ -237,17 +237,38 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
 
                 <div className="specs-row">
                   <div className="spec-card">
-                    <div className="spec-icon">📏</div>
+                    <div className="spec-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3.5" y="3.5" width="17" height="17" rx="1.6" />
+                        <path d="M8 8l8 8" />
+                        <path d="M8 12.5V8h4.5" />
+                        <path d="M16 11.5V16h-4.5" />
+                      </svg>
+                    </div>
                     <span className="spec-label">{copy.size}</span>
                     <span className="spec-value">{room.size}</span>
                   </div>
                   <div className="spec-card">
-                    <div className="spec-icon">👥</div>
+                    <div className="spec-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="9" cy="8" r="3.1" />
+                        <path d="M3.8 19.2c0-3 2.3-5.2 5.2-5.2s5.2 2.2 5.2 5.2" />
+                        <path d="M15.5 5.2a3 3 0 0 1 0 5.8" />
+                        <path d="M16.2 14.2c2.4.2 4 2.2 4 5" />
+                      </svg>
+                    </div>
                     <span className="spec-label">{copy.capacity}</span>
                     <span className="spec-value">{room.capacity}</span>
                   </div>
                   <div className="spec-card">
-                    <div className="spec-icon">🪟</div>
+                    <div className="spec-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 20v-8a7 7 0 0 1 14 0v8" />
+                        <path d="M4 20h16" />
+                        <path d="M12 5v15" />
+                        <path d="M5.4 13.5h13.2" />
+                      </svg>
+                    </div>
                     <span className="spec-label">{copy.view}</span>
                     <span className="spec-value">{room.view}</span>
                   </div>
@@ -459,12 +480,13 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
         .spec-card {
           background: #fdfaf6;
           padding: 24px;
-          border-radius: 12px;
+          border-radius: var(--radius-md);
           text-align: center;
           border: 1px solid #f1ece1;
         }
 
-        .spec-icon { font-size: 1.5rem; margin-bottom: 12px; }
+        .spec-icon { color: var(--olive); margin-bottom: 10px; display: flex; justify-content: center; }
+        .spec-icon svg { display: block; }
         .spec-label { display: block; font-size: 0.7rem; text-transform: uppercase; color: #999; margin-bottom: 4px; }
         .spec-value { font-weight: 700; color: var(--text); }
 
