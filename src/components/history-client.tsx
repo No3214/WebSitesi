@@ -1,5 +1,8 @@
 "use client";
 
+import Image from "next/image";
+
+import { TiltCard } from "@/components/animations";
 import { StoryHero, StorySegment } from "@/components/storytelling";
 import { SiteHeader } from "@/components/site-header";
 import { LivingMuseumMap } from "@/components/living-museum-map";
@@ -16,6 +19,26 @@ const historyCopy = {
     sunsetTitle: "Kozbeyli'de Gün Batımı",
     sunsetText: "Konağın terasından Ege'ye doğru, günün en yumuşak ışığında kısa bir an.",
     sunsetCaption: "Terastan Ege'ye, akşamüstü",
+    stoneLight: {
+      title: "Taş & Işık",
+      intro:
+        "Konağın malzemesi üç karede: köy dokusundaki taş cephe, Horasan harcıyla örülmüş duvarların dokusu ve avlu ışığında kurulan akşam sofrası.",
+      facade: {
+        image: "/images/galeri/tas-cephe.jpg",
+        alt: "Kozbeyli Konağı'nın taş cephesi",
+        caption: "Taş cephe — beş asırlık köy dokusunun içinde",
+      },
+      wall: {
+        image: "/images/odalar/detay/oda-detay-2.jpg",
+        alt: "Konağın taş duvar ve ahşap detayı",
+        caption: "Taş duvar dokusu — Horasan harcıyla, aslına sadık",
+      },
+      table: {
+        image: "/images/galeri/aksam-sofrasi.jpg",
+        alt: "Kozbeyli Konağı avlusunda akşam sofrası",
+        caption: "Avlu ışığında akşam sofrası",
+      },
+    },
     segments: [
       {
         title: "Tarihi Doku",
@@ -46,6 +69,26 @@ const historyCopy = {
     sunsetTitle: "Sunset in Kozbeyli",
     sunsetText: "A quiet moment from the terrace toward the Aegean in the softest light of the day.",
     sunsetCaption: "From the terrace to the Aegean, late afternoon",
+    stoneLight: {
+      title: "Stone & Light",
+      intro:
+        "The mansion's material in three frames: the stone facade within the village texture, walls bound with Horasan mortar, and the evening table set in courtyard light.",
+      facade: {
+        image: "/images/galeri/tas-cephe.jpg",
+        alt: "The stone facade of Kozbeyli Konağı",
+        caption: "Stone facade — within the five-century village texture",
+      },
+      wall: {
+        image: "/images/odalar/detay/oda-detay-2.jpg",
+        alt: "Stone wall and timber detail of the mansion",
+        caption: "Stone wall texture — Horasan mortar, faithfully preserved",
+      },
+      table: {
+        image: "/images/galeri/aksam-sofrasi.jpg",
+        alt: "Evening table in the courtyard of Kozbeyli Konağı",
+        caption: "The evening table in courtyard light",
+      },
+    },
     segments: [
       {
         title: "Historic Texture",
@@ -93,6 +136,63 @@ export function HistoryClient({ locale = "tr" }: { locale?: Locale }) {
 
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <LivingMuseumMap locale={locale} />
+      </section>
+
+      <section className="py-16 px-6 max-w-7xl mx-auto story-rail" aria-labelledby="stone-light-title">
+        <div className="story-rail-intro">
+          <h3
+            id="stone-light-title"
+            className="text-[var(--olive)] font-serif text-3xl md:text-4xl mb-3"
+          >
+            {copy.stoneLight.title}
+          </h3>
+          <p className="text-[var(--muted)] text-sm">{copy.stoneLight.intro}</p>
+        </div>
+        <div className="story-rail-scenes">
+          <figure className="story-rail-scene">
+            <div className="story-rail-media story-rail-media--landscape">
+              <Image
+                src={copy.stoneLight.facade.image}
+                alt={copy.stoneLight.facade.alt}
+                fill
+                sizes="(max-width: 899px) 100vw, 33vw"
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+            <figcaption>{copy.stoneLight.facade.caption}</figcaption>
+          </figure>
+
+          <TiltCard className="story-rail-scene story-rail-artifact" maxTilt={3}>
+            <figure className="m-0">
+              <div className="story-rail-media story-rail-media--portrait arch-frame">
+                <Image
+                  src={copy.stoneLight.wall.image}
+                  alt={copy.stoneLight.wall.alt}
+                  fill
+                  sizes="(max-width: 899px) 100vw, 33vw"
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
+              <figcaption>{copy.stoneLight.wall.caption}</figcaption>
+            </figure>
+          </TiltCard>
+
+          <figure className="story-rail-scene">
+            <div className="story-rail-media story-rail-media--landscape">
+              <Image
+                src={copy.stoneLight.table.image}
+                alt={copy.stoneLight.table.alt}
+                fill
+                sizes="(max-width: 899px) 100vw, 33vw"
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+            <figcaption>{copy.stoneLight.table.caption}</figcaption>
+          </figure>
+        </div>
       </section>
 
       <section className="py-12 px-6 max-w-7xl mx-auto">

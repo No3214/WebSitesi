@@ -3470,3 +3470,146 @@
     white-space: normal;
   }
 }
+
+/* ============================================================
+   FAZ V (V.3) — Stone & Light Editorial:
+   story rail + spatial (TiltCard) pilotu + native view transitions
+   Kurallar: @supports korumalı; reduced-motion'da kapalı;
+   mesafe ≤18px; scale ≤1.02; scroll-lock yok. (2026-07-01)
+   ============================================================ */
+
+:root {
+  --shadow-ambient: 0 20px 60px rgba(40, 34, 25, 0.08);
+  --shadow-elevated: 0 34px 90px rgba(40, 34, 25, 0.14);
+  --line-hairline: rgba(61, 74, 59, 0.12);
+}
+
+/* İmza şekli — taş kapı / kemer (sınırlı kullanım: hikâye medyası) */
+.arch-frame {
+  border-radius: 999px 999px var(--radius-lg) var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Story rail — /hikayemiz "Taş & Işık" bölümü */
+.story-rail-intro {
+  max-width: 700px;
+  margin: 0 auto 44px;
+  text-align: center;
+}
+
+.story-rail-scenes {
+  display: grid;
+  gap: clamp(24px, 4vw, 48px);
+}
+
+.story-rail-scene {
+  margin: 0;
+}
+
+.story-rail-media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-ambient);
+  background: var(--surface-stone);
+}
+
+.story-rail-media--landscape {
+  aspect-ratio: 4 / 3;
+}
+
+.story-rail-media--portrait {
+  aspect-ratio: 4 / 5;
+}
+
+.story-rail-scene figcaption {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-hairline);
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.story-rail-artifact .story-rail-media {
+  box-shadow: var(--shadow-elevated);
+}
+
+.story-rail-artifact .tilt-card-inner {
+  will-change: transform;
+}
+
+@media (min-width: 900px) {
+  .story-rail-scenes {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+  }
+
+  /* Editorial asimetri: orta sahne hafif düşük başlar */
+  .story-rail-scene:nth-child(2) {
+    margin-top: 56px;
+  }
+}
+
+/* Scroll-driven reveal: yalnız destekleyen tarayıcı + hareket tercihi.
+   Desteklemeyen tarayıcıda sahneler statik görünür (fallback). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .story-rail-scene {
+      animation: story-scene-reveal both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+@keyframes story-scene-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Native cross-document view transitions (hard navigasyonlarda; SPA
+   client-nav'ları etkilemez). Desteklemeyen tarayıcıda geçiş yok,
+   JS polyfill eklenmez. */
+@supports (view-transition-name: root) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: vt-fade-out 200ms var(--ease-lux) both;
+  }
+
+  ::view-transition-new(root) {
+    animation: vt-fade-in 220ms var(--ease-lux) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}

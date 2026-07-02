@@ -102,3 +102,86 @@ describe("Stone & Light — editorial tipografi (progressive enhancement)", () =
     expect(css).toContain("text-wrap: pretty");
   });
 });
+
+/**
+ * FAZ V.3 KİLİTLERİ (2026-07-01) — story rail + spatial pilot + native VT.
+ * Kurallar (codex-visual-transformation-prompt-v2 §15-§17):
+ *  - scroll-driven reveal yalnız @supports + reduced-motion:no-preference altında;
+ *  - view transitions @supports korumalı, ≤240ms, ≤12px, reduced-motion'da kapalı;
+ *  - TiltCard üretim kullanımı /hikayemiz spatial pilotu; yalnız gerçek medya.
+ */
+
+describe("Stone & Light — FAZ V.3: story rail + spatial pilot (/hikayemiz)", () => {
+  const hc = read("src/components/history-client.tsx");
+  const css = read("src/app/globals.css");
+
+  it("TiltCard üretimde kullanılır (yalnız Storybook değil)", () => {
+    expect(hc).toContain("TiltCard");
+    expect(hc).toContain("story-rail-artifact");
+  });
+
+  it("story rail yalnız gerçek, diskte var olan medyayı kullanır", () => {
+    const media = [
+      "/images/galeri/tas-cephe.jpg",
+      "/images/odalar/detay/oda-detay-2.jpg",
+      "/images/galeri/aksam-sofrasi.jpg",
+    ];
+    for (const rel of media) {
+      expect(hc).toContain(rel);
+      expect(fs.existsSync(path.join(root, "public", rel.replace(/^\//, "")))).toBe(true);
+    }
+  });
+
+  it("arch-frame imza şekli tanımlı ve hikâye medyasında sınırlı kullanılır", () => {
+    expect(css).toContain(".arch-frame");
+    const usage = hc.split("arch-frame").length - 1;
+    expect(usage).toBe(1);
+  });
+
+  it("scroll-driven reveal @supports + reduced-motion çifte korumalı", () => {
+    expect(css).toContain(
+      "@supports (animation-timeline: view()) {\n  @media (prefers-reduced-motion: no-preference) {",
+    );
+    expect(css).toContain("animation-timeline: view();");
+  });
+
+  it("reveal mesafesi hareket bütçesi içinde (≤24px, scale ≤1.05)", () => {
+    expect(css).toContain("translateY(18px) scale(0.985)");
+  });
+
+  it("yeni gölge/çizgi tokenları gerçek tüketiciye bağlı (dead token değil)", () => {
+    for (const token of ["--shadow-ambient", "--shadow-elevated", "--line-hairline"]) {
+      expect(css).toContain(`${token}:`);
+      expect(css).toContain(`var(${token})`);
+    }
+  });
+
+  it("story rail sahne başlığı erişilebilir bağlanır (aria-labelledby)", () => {
+    expect(hc).toContain('aria-labelledby="stone-light-title"');
+    expect(hc).toContain('id="stone-light-title"');
+  });
+});
+
+describe("Stone & Light — FAZ V.3: native view transitions", () => {
+  const css = read("src/app/globals.css");
+
+  it("@view-transition yalnız @supports koruması altında açılır", () => {
+    expect(css).toContain(
+      "@supports (view-transition-name: root) {\n  @view-transition {\n    navigation: auto;\n  }\n}",
+    );
+  });
+
+  it("geçiş süresi bütçe içinde (≤240ms) ve --ease-lux kullanır", () => {
+    expect(css).toContain("vt-fade-out 200ms var(--ease-lux)");
+    expect(css).toContain("vt-fade-in 220ms var(--ease-lux)");
+  });
+
+  it("reduced-motion'da view-transition animasyonları kapatılır", () => {
+    expect(css).toContain("::view-transition-new(root) {\n    animation: none;");
+  });
+
+  it("geçiş offset'i ≤12px hareket bütçesi içinde", () => {
+    expect(css).toContain("translateY(-6px)");
+    expect(css).toContain("translateY(10px)");
+  });
+});
