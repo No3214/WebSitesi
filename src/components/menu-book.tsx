@@ -138,7 +138,7 @@ const itemSignals = new Map<string, LocalizedMenuItemSignal>([
   ["White Wine Tasting", { en: { tags: ["Curated Pairing", "Sharing"] } }],
   ["Red Wine Tasting", { en: { tags: ["Curated Pairing", "Sharing"] } }],
   ["Pistachio Katmer", { en: { tags: ["Sweet Closing"], pairing: "Pairing: Morso di Sole" } }],
-  // ── 2026-07-02 canlı menü senkronu (kozbeylikonagi.com.tr/menu) ──
+  // ── 2026-07-02 canlı menü senkronu (işletmenin güncel menü sayfası) ──
   // kcal değerleri ve şarap/rakı eşleşmeleri canlı kaynaktan aktarıldı.
   // Map davranışı gereği aynı isim tekrarında AŞAĞIDAKİ değer geçerlidir;
   // yukarıdaki eski girdiler tarihsel bağlam için bırakıldı. EN kcal seti

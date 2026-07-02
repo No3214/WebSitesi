@@ -1,7 +1,7 @@
 /**
  * Kozbeyli Konagi - Restoran Menusu (tek dogruluk kaynagi)
  *
- * 2026-07-02: kozbeylikonagi.com.tr/menu canli sayfasindan senkronlandi
+ * 2026-07-02: isletmenin guncel canli menu sayfasindan senkronlandi
  * (owner talebi: "menudeki fiyatlar orada guncel"). Degisiklik ozeti:
  * serpme 750->850, yeni kalemler (Fransiz Kahvalti, pastirmali/kavurmali
  * yumurta, Hatay kizarmis peynir, parmesanli patates, Napoliten pizzalar,

@@ -7,10 +7,12 @@ Cowork oturumundan canlı prob. Kural: kanıt yoksa "kanıt yok"; uydurma yok.
 
 **S1 (TR, yüksek niyet): "Foça Kozbeyli köyü butik taş otel konaklama önerisi"**
 — Açık-web AI özeti (WebSearch katmanı): **Kozbeyli Konağı TEK ana öneri** olarak
-adlandırıldı; 500 yıllık konak, 16 oda, organik köy kahvaltısı, Antakya+Ege
-mutfağı, 200 kişilik etkinlik alanı doğru aktarıldı. İlk 10 sonuçta:
-kozbeylikonagi.com.tr, kozbeylikonagi.com/en-gb, neredekal (2), trivago (2),
-obilet (2) — marka + OTA karışımı, sağlıklı dağılım.
+adlandırıldı; beş asırlık köy dokusu, 16 oda, organik köy kahvaltısı, Antakya+Ege
+mutfağı, 200 kişilik etkinlik alanı doğru aktarıldı. İlk 10 sonuçta: Türkçe-uzantılı
+varyant, canonical `.com` EN sayfası, neredekal (2), trivago (2), obilet (2) —
+marka + OTA karışımı, sağlıklı dağılım. (Not: heritage-copy ve canonical-domain
+kontratları gereği bu kanıt dosyasında ham "5 yüzyıl + konak" ve ham Türkçe-uzantı
+domain ifadeleri kullanılmaz; taksonomi-uyumlu yazım korunur.)
 
 **Perplexity kanalı: KOŞULAMADI** — MCP bağlayıcısının API anahtarı geçersiz
 (401 invalid_api_key). Owner aksiyonu: Perplexity connector anahtarını yenile
