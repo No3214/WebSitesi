@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Pause, Play } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { preload } from "react-dom";
 import { MagneticLink } from "@/components/animations";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
@@ -11,6 +12,10 @@ type Props = { locale: "tr" | "en"; eyebrow: string };
 
 const HERO_VIDEO_SRC = "/videos/hero.mp4";
 const HERO_MOBILE_VIDEO_SRC = "/videos/hero-mobile.mp4";
+
+const HERO_POSTER_SRC = "/images/hero-video-poster-1280.webp";
+const HERO_POSTER_SRCSET =
+  "/images/hero-video-poster-640.webp 640w, /images/hero-video-poster-960.webp 960w, /images/hero-video-poster-1280.webp 1280w, /images/hero-video-poster-1440.webp 1440w";
 
 /**
  * Hero arka plan videosu:
@@ -166,6 +171,17 @@ function HeroVideo({ locale }: Pick<Props, "locale">) {
 }
 
 export function HomeHero({ locale, eyebrow }: Props) {
+  /* LCP koruması (lh-diag 2026-07-02): mozaik görselleri ve JS chunk'ları
+     posterle aynı anda indiğinden poster ağ yarışını kaybediyordu. Head'den
+     fetchPriority=high preload, LCP posterinin her koşulda önce inmesini
+     garanti eder (React 19 preload SSR'da <link rel="preload"> üretir). */
+  preload(HERO_POSTER_SRC, {
+    as: "image",
+    fetchPriority: "high",
+    imageSrcSet: HERO_POSTER_SRCSET,
+    imageSizes: "100vw",
+  });
+
   const heroTitle = locale === "tr" ? "Tarihin Kalbinde" : "In the Heart of History";
   const heroAccent = locale === "tr" ? "Zarif Bir Ege Kaçamağı" : "An Elegant Aegean Escape";
   const reservationHref = getConfiguredBookingEngineHref(publicEnv.NEXT_PUBLIC_HMS_BOOKING_ENGINE_URL);

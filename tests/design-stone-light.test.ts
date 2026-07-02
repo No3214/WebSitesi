@@ -208,8 +208,14 @@ describe("Stone & Light — LCP bant bütçesi", () => {
     expect(hero).toContain('preload="auto"');
   });
 
-  it("mozaikte yalnız featured görsel yüksek ağ önceliği alır", () => {
-    expect(showcase).toContain('fetchPriority={index === 0 ? "high" : "low"}');
+  it("mozaik featured priority sözleşmesi korunur (visual-motion kilidiyle uyum)", () => {
     expect(showcase).toContain("priority={index === 0}");
+  });
+
+  it("LCP posteri head'den fetchPriority=high preload edilir (React 19 preload)", () => {
+    expect(hero).toContain('import { preload } from "react-dom"');
+    expect(hero).toContain('fetchPriority: "high"');
+    expect(hero).toContain("imageSrcSet: HERO_POSTER_SRCSET");
+    expect(hero).toContain('imageSizes: "100vw"');
   });
 });
