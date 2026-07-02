@@ -138,6 +138,172 @@ const itemSignals = new Map<string, LocalizedMenuItemSignal>([
   ["White Wine Tasting", { en: { tags: ["Curated Pairing", "Sharing"] } }],
   ["Red Wine Tasting", { en: { tags: ["Curated Pairing", "Sharing"] } }],
   ["Pistachio Katmer", { en: { tags: ["Sweet Closing"], pairing: "Pairing: Morso di Sole" } }],
+  // ── 2026-07-02 canlı menü senkronu (kozbeylikonagi.com.tr/menu) ──
+  // kcal değerleri ve şarap/rakı eşleşmeleri canlı kaynaktan aktarıldı.
+  // Map davranışı gereği aynı isim tekrarında AŞAĞIDAKİ değer geçerlidir;
+  // yukarıdaki eski girdiler tarihsel bağlam için bırakıldı. EN kcal seti
+  // ayrı turda eklenecek (EN sayfa mevcut signals'ı korur).
+  ["Gurme Serpme Kahvaltı (kişi başı)", { tr: { tags: ["İmza", "Paylaşım", "~1.200 kcal"] } }],
+  ["Pişi Kahvaltı Tabağı", { tr: { tags: ["Daha Hafif Seçim", "~650 kcal"] } }],
+  ["Fransız Kahvaltı", { tr: { tags: ["~700 kcal"] } }],
+  ["Pastırmalı Sahanda Yumurta", { tr: { tags: ["~550 kcal"] } }],
+  ["Kavurmalı Sahanda Yumurta", { tr: { tags: ["~600 kcal"] } }],
+  ["Mıhlama", { tr: { tags: ["~450 kcal"] } }],
+  ["Sahanda Sucuklu Yumurta", { tr: { tags: ["~350 kcal"] } }],
+  ["Fransız Tereyağlı Kruvasan (2 Adet)", { tr: { tags: ["~440 kcal"] } }],
+  ["Sahanda Menemen", { tr: { tags: ["~280 kcal"] } }],
+  ["Patates Kızartması", { tr: { tags: ["~380 kcal"] } }],
+  ["Omlet (sade / peynirli)", { tr: { tags: ["~250 kcal"] } }],
+  ["Sahanda Peynirli Yumurta", { tr: { tags: ["~300 kcal"] } }],
+  ["Fesleğenli Domatesli Ciabatta (4 adet)", { tr: { tags: ["~320 kcal"] } }],
+  ["Kare Rustik Ekmek", { tr: { tags: ["~280 kcal"] } }],
+  ["Sigara Böreği (4 adet)", { tr: { tags: ["~360 kcal"] } }],
+  ["Bal-Kaymak", { tr: { tags: ["~200 kcal"] } }],
+  [
+    "Konağın Meze Tabağı (2 kişilik - 5 çeşit)",
+    {
+      tr: {
+        tags: ["Şefin Tercihi", "Paylaşım", "~1.100 kcal"],
+        pairing: "Öneri: Paşaeli SYS kadeh ile",
+      },
+    },
+  ],
+  ["Tereyağlı Pastırmalı Antakya Humus", { tr: { tags: ["~320 kcal"] } }],
+  ["Avokadolu Kapya Biber", { tr: { tags: ["~180 kcal"] } }],
+  ["Zeytinyağlı Vişneli Yaprak Sarma", { tr: { tags: ["~250 kcal"] } }],
+  [
+    "Somon Havyarı",
+    {
+      tr: {
+        tags: ["~220 kcal"],
+        pairing: "Öneri: Bir Varmış Bir Yokmuş Chardonnay",
+      },
+    },
+  ],
+  [
+    "Tereyağlı Jumbo Karides",
+    {
+      tr: {
+        tags: ["Şefin Tercihi", "~350 kcal"],
+        pairing: "Öneri: Bir Varmış Bir Yokmuş Chardonnay",
+      },
+    },
+  ],
+  ["Hatay Usulü Kızarmış Peynir", { tr: { tags: ["Antakya Klasiği", "~420 kcal"] } }],
+  ["Antakya Usulü İçli Köfte (adet)", { tr: { tags: ["En Çok Tercih Edilen", "~180 kcal"] } }],
+  ["Paçanga Böreği (adet)", { tr: { tags: ["~170 kcal"] } }],
+  ["Kaşarlı Mantar", { tr: { tags: ["~280 kcal"] } }],
+  ["Kasap Sosis & Baharatlı Çıtır Patates (2 adet sosis)", { tr: { tags: ["~520 kcal"] } }],
+  ["Kızarmış Tavuk & Baharatlı Patates", { tr: { tags: ["~580 kcal"] } }],
+  [
+    "Rustik Ekmek Üstü Füme Somon",
+    {
+      tr: {
+        tags: ["~320 kcal"],
+        pairing: "Öneri: Bir Varmış Bir Yokmuş Chardonnay",
+      },
+    },
+  ],
+  ["Roka Salatası", { tr: { tags: ["~280 kcal"] } }],
+  ["Başlangıç Tabağı (2 kişi)", { tr: { tags: ["~250 kcal"] } }],
+  ["Baharatlı Çıtır Patates", { tr: { tags: ["~380 kcal"] } }],
+  ["Parmesanlı Patates Kızartması", { tr: { tags: ["~450 kcal"] } }],
+  [
+    "Köy Usulü Konak Pizza",
+    {
+      tr: {
+        tags: ["En Çok Tercih Edilen", "~850 kcal"],
+        pairing: "Öneri: Paşaeli CSKS veya Paşaeli 6N",
+      },
+    },
+  ],
+  [
+    "Konak Tandır Pizza",
+    { tr: { tags: ["Şefin Tercihi", "~780 kcal"], pairing: "Öneri: Paşaeli CSKS" } },
+  ],
+  [
+    "Kavurmalı Konak Pizza",
+    { tr: { tags: ["~800 kcal"], pairing: "Öneri: Paşaeli CSKS veya Paşaeli 6N" } },
+  ],
+  [
+    "Margherita Napoletana",
+    { tr: { tags: ["~700 kcal"], pairing: "Öneri: Paşaeli CSKS veya Paşaeli SYS" } },
+  ],
+  [
+    "Dana Kaburga Füme Etli Sandviç",
+    { tr: { tags: ["~650 kcal"], pairing: "Öneri: Paşaeli 6N" } },
+  ],
+  [
+    "Hindi Füme Etli Sandviç",
+    { tr: { tags: ["~580 kcal"], pairing: "Öneri: Paşaeli 6N" } },
+  ],
+  [
+    "Gurme Rustik Pesto Sandviç",
+    { tr: { tags: ["~520 kcal"], pairing: "Öneri: Paşaeli SYS" } },
+  ],
+  [
+    "Gurme Rustik Avokado Sandviç",
+    { tr: { tags: ["~540 kcal"], pairing: "Öneri: Paşaeli CSKS" } },
+  ],
+  [
+    "Rakı Eşlikçisi Peynir Tabağı",
+    { tr: { tags: ["~450 kcal"], pairing: "Öneri: Beylerbeyi Göbek 70cl" } },
+  ],
+  [
+    "Türk Yerli Peynir & Şarap Tabağı",
+    { tr: { tags: ["~500 kcal"], pairing: "Öneri: Paşaeli SYS veya CSKS" } },
+  ],
+  [
+    "Dallas Steak",
+    { tr: { tags: ["Konağın İmzası", "~950 kcal"], pairing: "Öneri: Paşaeli 6N" } },
+  ],
+  [
+    "Lokum Bonfile",
+    {
+      tr: {
+        tags: ["Şefin Tercihi", "En Çok Tercih Edilen", "~680 kcal"],
+        pairing: "Öneri: Paşaeli CSKS",
+      },
+    },
+  ],
+  [
+    "Sac Kavurma - Köy Usulü",
+    { tr: { tags: ["~720 kcal"], pairing: "Öneri: Paşaeli CSKS veya 6N" } },
+  ],
+  [
+    "Izgara Pirzola",
+    { tr: { tags: ["~750 kcal"], pairing: "Öneri: Paşaeli CSKS veya 6N" } },
+  ],
+  [
+    "Konağın Sac Kavurması",
+    { tr: { tags: ["~650 kcal"], pairing: "Öneri: Paşaeli CSKS veya 6N" } },
+  ],
+  ["Konak Köfte", { tr: { tags: ["~620 kcal"], pairing: "Öneri: Paşaeli 6N" } }],
+  [
+    "Antep Fıstıklı Katmer",
+    {
+      tr: { tags: ["Şefin Tercihi", "~550 kcal"], pairing: "Öneri: Morso di Sole" },
+    },
+  ],
+  [
+    "Antakya Künefe",
+    {
+      tr: { tags: ["Klasik Favori", "~480 kcal"], pairing: "Öneri: Morso di Sole" },
+      en: { tags: ["Antakya Classic"], pairing: "Pairing: Morso di Sole" },
+    },
+  ],
+  ["Churros", { tr: { tags: ["~420 kcal"], pairing: "Öneri: Morso di Sole" } }],
+  ["Çikolatalı Mini Berliner (2 adet)", { tr: { tags: ["~350 kcal"] } }],
+  ["Vanilyalı Maraş Dondurma (2 top)", { tr: { tags: ["~280 kcal"] } }],
+  ["Tatlı & Kahve Keyfi", { tr: { tags: ["En Çok Tercih Edilen"] } }],
+  [
+    "Beyaz Şarap Tadımı",
+    { tr: { tags: ["Şefin Önerisi"], pairing: "1 kadeh + mini peynir tabağı eşliğinde" } },
+  ],
+  [
+    "Kırmızı Şarap Tadımı",
+    { tr: { tags: ["Şefin Önerisi"], pairing: "1 kadeh + mini peynir tabağı eşliğinde" } },
+  ],
 ]);
 
 function MenuItemSignals({ signal }: { signal?: MenuItemSignal }) {
