@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import { menuSections } from "@/data/menu";
 
-// Not: Menü içeriği işletmenin güncel menü kaynağından senkronlanır (T7).
+// Not: Menü içeriği işletmenin güncel menü kaynağından senkronlanır.
+// Son senkron: 2026-07-02, kozbeylikonagi.com.tr/menu canlı sayfası (owner talebi;
+// serpme 850, Napoliten pizza bölümü, rakı/şişe şarap zamları, yeni kalemler).
 // Bu testler veri bütünlüğünü doğrular; ürün/fiyat içeriği src/data/menu.ts'te tutulur.
 
 describe("menu data (src/data/menu.ts)", () => {
@@ -14,13 +16,13 @@ describe("menu data (src/data/menu.ts)", () => {
     return allItems.find((item) => item.name === name);
   }
 
-  it("zip kaynaklı güncel menü bölümlerini içerir", () => {
+  it("canlı kaynaklı güncel menü bölümlerini içerir", () => {
     expect(menuSections).toHaveLength(12);
     expect(menuSections.map((section) => section.title)).toEqual([
       "Kahvaltı",
       "Mezeler",
       "Ara Sıcaklar & Başlangıçlar",
-      "Taş Fırın Pizza & Sandviç",
+      "Napoliten Pizza & Sandviç",
       "Peynir Tabakları",
       "Ana Yemekler",
       "Tatlılar",
@@ -44,16 +46,23 @@ describe("menu data (src/data/menu.ts)", () => {
     }
   });
 
-  it("kaynak dosyadaki kritik ürün ve fiyatları korur", () => {
-    expect(findItem("Gurme Serpme Kahvaltı (kişi başı)")?.price).toBe("750 TL");
-    expect(findItem("Konağın Meze Tabağı (2 kişilik - 5 çeşit)")?.price).toBe("2.400 TL");
+  it("canlı kaynaktaki kritik ürün ve fiyatları korur (2026-07-02 senkronu)", () => {
+    expect(findItem("Gurme Serpme Kahvaltı (kişi başı)")?.price).toBe("850 TL");
+    expect(findItem("Fransız Kahvaltı")?.price).toBe("750 TL");
+    expect(findItem("Konağın Meze Tabağı (2 kişilik - 5 çeşit)")?.price).toBe("3.200 TL");
     expect(findItem("Paçanga Böreği (adet)")?.price).toBe("200 TL");
-    expect(findItem("Hindi Füme Pizza")?.price).toBe("900 TL");
-    expect(findItem("Konak Saç Kavurma")?.price).toBe("1.000 TL");
+    expect(findItem("Konak Tandır Pizza")?.price).toBe("1.000 TL");
+    expect(findItem("Margherita Napoletana")?.price).toBe("750 TL");
+    expect(findItem("Konağın Sac Kavurması")?.price).toBe("1.000 TL");
+    expect(findItem("Sac Kavurma - Köy Usulü")?.price).toBe("1.250 TL");
     expect(findItem("Beyaz Şarap Tadımı")?.price).toBe("1.600 TL");
-    expect(findItem("Beylerbeyi Göbek 100cl")?.price).toBe("3.850 TL");
+    expect(findItem("Beylerbeyi Göbek 100cl")?.price).toBe("4.600 TL");
     expect(findItem("Jack Daniel's 35cl")?.price).toBe("2.500 TL");
     expect(findItem("Türk Kahvesi")?.price).toBe("150 TL");
+    // Canlı menüden kaldırılanlar geri sızmasın:
+    expect(findItem("Kalamar")).toBeUndefined();
+    expect(findItem("Hindi Füme Pizza")).toBeUndefined();
+    expect(findItem("Woodford Reserve Tek")).toBeUndefined();
   });
 
   it("doğrulanmamış eski tarih iddialarını menü verisine taşımaz", () => {

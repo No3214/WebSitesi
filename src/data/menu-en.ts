@@ -275,6 +275,43 @@ const itemCopy: Record<string, Partial<MenuItem>> = {
     description: "A fruity signature cocktail with a sweet-sour finish.",
   },
   "Blanc (buğday birası)": { name: "Blanc Wheat Beer" },
+  // 2026-07-02 canlı menü senkronu — yeni kalemlerin EN karşılıkları:
+  "Fransız Kahvaltı": { name: "French Breakfast" },
+  "Pastırmalı Sahanda Yumurta": { name: "Pan-Fried Eggs with Pastirma" },
+  "Kavurmalı Sahanda Yumurta": { name: "Pan-Fried Eggs with Kavurma" },
+  "Hatay Usulü Kızarmış Peynir": {
+    name: "Hatay-Style Fried Cheese",
+    description: "Hatay künefe cheese seared in a copper pan, served hot with butter.",
+  },
+  "Parmesanlı Patates Kızartması": {
+    name: "Parmesan Fries",
+    description: "Crispy fries finished with grated parmesan.",
+  },
+  "Baharatlı Çıtır Patates": {
+    name: "Spiced Crispy Fries",
+    description: "Fried plain or spiced.",
+  },
+  "Konak Tandır Pizza": { name: "Mansion Tandoor Pizza" },
+  "Kavurmalı Konak Pizza": { name: "Mansion Kavurma Pizza" },
+  "Köy Usulü Konak Pizza": { name: "Village-Style Mansion Pizza" },
+  "Margherita Napoletana": { name: "Margherita Napoletana" },
+  "Pizza Ekstraları": {
+    name: "Pizza Add-Ons",
+    description:
+      "Pesto sauce +100, spicy garlic olive oil +100, truffle mayo +100, truffle honey +150, truffle olive oil +200, rocket & parmesan shower +200.",
+  },
+  "Hindi Füme Etli Sandviç": {
+    name: "Smoked Turkey Sandwich",
+    description:
+      "Rustic baguette, smoked turkey, white cheese, tomato, olive oil and greens.",
+  },
+  "Sac Kavurma - Köy Usulü": { name: "Sac Kavurma - Village Style" },
+  "Konağın Sac Kavurması": {
+    name: "Mansion Sac Kavurma",
+    description:
+      "Tender meat cooked on a copper sac, on a bed of mashed potatoes with roasted almond flakes.",
+  },
+  "Caprisun Safari Fruit": { name: "Caprisun Safari Fruit" },
   "Jack Daniel's Tek": { name: "Jack Daniel's Single" },
   "Jack Daniel's Duble": { name: "Jack Daniel's Double" },
   "Chivas Regal Tek": { name: "Chivas Regal Single" },

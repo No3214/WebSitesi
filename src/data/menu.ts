@@ -1,10 +1,14 @@
 /**
  * Kozbeyli Konagi - Restoran Menusu (tek dogruluk kaynagi)
  *
- * Icerik, kullanicinin ekledigi `kozbeyli-konagi-website (24).zip` icindeki
- * `menu/index.html` kaynagindan 2026-06-20 tarihinde senkronlandi.
- * Kaynaktaki eski koyu tasarim ve dogrulanmamis tarih iddialari tasinmadi;
- * yalnizca isletme menusu urun/fiyat icerigi aktarildi.
+ * 2026-07-02: kozbeylikonagi.com.tr/menu canli sayfasindan senkronlandi
+ * (owner talebi: "menudeki fiyatlar orada guncel"). Degisiklik ozeti:
+ * serpme 750->850, yeni kalemler (Fransiz Kahvalti, pastirmali/kavurmali
+ * yumurta, Hatay kizarmis peynir, parmesanli patates, Napoliten pizzalar,
+ * hindi fume sandvic, koy usulu sac kavurma, termos cay, mango ananas cayi,
+ * Caprisun), kaldirilanlar (Kalamar, eski tas firin pizzalar, pizza+sarap
+ * kombolari, Woodford Reserve), raki 35-100cl ve sise sarap zamlari.
+ * Kaynaktaki kcal/alerjen/eslesme rozetleri tasinmadi; urun+fiyat esastir.
  */
 
 export type MenuItem = {
@@ -28,21 +32,24 @@ export const menuSections: MenuSection[] = [
         name: "Gurme Serpme Kahvaltı (kişi başı)",
         description:
           "Sahanda tereyağlı sucuklu yumurta, avokado, Hatay kırma zeytin, çeşitli peynirler, ceviz, mevsim meyveleri, jalapenolu labne, acılı ezme, taze pişi, köy ekmeği, bal, kaymak ve ev yapımı reçeller.",
-        price: "750 TL",
+        price: "850 TL",
       },
       {
         name: "Pişi Kahvaltı Tabağı",
         description:
           "2 adet sıcak pişi, beyaz ve tulum peynir, zeytinler, acılı ezme, reçel, domates ve salatalık.",
-        price: "750 TL",
+        price: "700 TL",
       },
+      { name: "Fransız Kahvaltı", price: "750 TL" },
+      { name: "Pastırmalı Sahanda Yumurta", price: "650 TL" },
+      { name: "Kavurmalı Sahanda Yumurta", price: "650 TL" },
       { name: "Mıhlama", price: "450 TL" },
       { name: "Sahanda Sucuklu Yumurta", price: "400 TL" },
       { name: "Fransız Tereyağlı Kruvasan (2 Adet)", price: "400 TL" },
       { name: "Sahanda Menemen", price: "350 TL" },
       { name: "Patates Kızartması", price: "350 TL" },
-      { name: "Omlet (sade / peynirli)", price: "300 TL" },
-      { name: "Sahanda Peynirli Yumurta", price: "300 TL" },
+      { name: "Omlet (sade / peynirli)", price: "350 TL" },
+      { name: "Sahanda Peynirli Yumurta", price: "350 TL" },
       { name: "Fesleğenli Domatesli Ciabatta (4 adet)", price: "300 TL" },
       { name: "Kare Rustik Ekmek", price: "300 TL" },
       { name: "Sigara Böreği (4 adet)", price: "300 TL" },
@@ -64,8 +71,8 @@ export const menuSections: MenuSection[] = [
       {
         name: "Konağın Meze Tabağı (2 kişilik - 5 çeşit)",
         description:
-          "Atom, kuru cacık, deniz börülcesi, vişneli yaprak sarma, havuç tarator. Rustik ekmek eşliğinde. 2 kadeh Paşaeli seçkiniz ile taçlandırılır - SYS (beyaz) veya CSKS (kırmızı).",
-        price: "2.400 TL",
+          "Atom, kuru cacık, deniz börülcesi, vişneli yaprak sarma, havuç tarator. Rustik ekmek eşliğinde.",
+        price: "3.200 TL",
       },
       {
         name: "Tereyağlı Pastırmalı Antakya Humus",
@@ -74,7 +81,7 @@ export const menuSections: MenuSection[] = [
       },
       {
         name: "Avokadolu Kapya Biber",
-        description: "Közlenmiş kapya biber ve avokado - hafif, renkli ve taze.",
+        description: "Taze kapya biber ve avokado - hafif, renkli ve taze.",
         price: "350 TL",
       },
       {
@@ -101,6 +108,32 @@ export const menuSections: MenuSection[] = [
         price: "3.000 TL",
       },
       {
+        name: "Tereyağlı Jumbo Karides",
+        description: "Tereyağında sotelenen jumbo karides, sarımsak ve taze otlar ile.",
+        price: "850 TL",
+      },
+      {
+        name: "Hatay Usulü Kızarmış Peynir",
+        description:
+          "Bakır tavada kızdırılmış Hatay künefelik peyniri, tereyağı ile sıcak servis edilir.",
+        price: "800 TL",
+      },
+      {
+        name: "Kızarmış Tavuk & Baharatlı Patates",
+        description: "Çıtır tavuk parçaları, baharatlı patates eşliğinde.",
+        price: "650 TL",
+      },
+      {
+        name: "Kasap Sosis & Baharatlı Çıtır Patates (2 adet sosis)",
+        description: "Kalın kasap sosisi, baharatlı patates kızartması ile.",
+        price: "600 TL",
+      },
+      {
+        name: "Rustik Ekmek Üstü Füme Somon",
+        description: "Rustik ekmek, füme somon, krem peynir, kapari.",
+        price: "500 TL",
+      },
+      {
         name: "Kaşarlı Mantar",
         description: "Taze mantarlar, kaşar peyniri ile fırınlanmış.",
         price: "450 TL",
@@ -111,19 +144,9 @@ export const menuSections: MenuSection[] = [
         price: "450 TL",
       },
       {
-        name: "Rustik Ekmek Üstü Füme Somon",
-        description: "Füme somon parçaları rustik ekmek üzerinde.",
-        price: "500 TL",
-      },
-      {
-        name: "Kasap Sosis & Baharatlı Çıtır Patates (2 adet sosis)",
-        description: "Izgara sosis ve çıtır patates kızartması.",
-        price: "600 TL",
-      },
-      {
-        name: "Kızarmış Tavuk & Baharatlı Patates",
-        description: "Tavuk parçaları kızartılıp baharatlanır.",
-        price: "650 TL",
+        name: "Parmesanlı Patates Kızartması",
+        description: "Çıtır patates, rende parmesan ile.",
+        price: "450 TL",
       },
       {
         name: "Roka Salatası",
@@ -132,81 +155,62 @@ export const menuSections: MenuSection[] = [
       },
       {
         name: "Başlangıç Tabağı (2 kişi)",
-        description: "Zeytin, zahter, zeytinyağı, ciabatta.",
+        description: "Zeytin, zahter, zeytinyağı, rustik köy ekmeği.",
+        price: "350 TL",
+      },
+      {
+        name: "Baharatlı Çıtır Patates",
+        description: "Baharatlı veya sade, kızartılmış.",
         price: "350 TL",
       },
       {
         name: "Antakya Usulü İçli Köfte (adet)",
-        description: "Bulgur hamuru, kıymalı iç, kızartma.",
+        description: "İnce bulgur kabuğu, kıyma ve baharat dolgulu. Kızartılarak servis edilir.",
         price: "200 TL",
       },
       {
         name: "Paçanga Böreği (adet)",
-        description: "Pastırma ve peynir dolgulu, ince yufka.",
+        description: "Pastırma ve peynir dolgulu, ince yufkada kızartılmış.",
         price: "200 TL",
-      },
-      {
-        name: "Patates Kızartması",
-        description: "Baharatlı veya sade.",
-        price: "350 TL",
-      },
-      {
-        name: "Tereyağlı Jumbo Karides",
-        description: "Tereyağında sote edilmiş jumbo karides.",
-        price: "850 TL",
-      },
-      {
-        name: "Kalamar",
-        description: "Kızartılmış kalamar halka, limon ve sos eşliğinde.",
-        price: "850 TL",
       },
     ],
   },
   {
-    title: "Taş Fırın Pizza & Sandviç",
-    note: "Taş Fırın Geleneği",
+    title: "Napoliten Pizza & Sandviç",
+    note: "Napoliten Pizza Geleneği",
     items: [
+      { name: "Konak Tandır Pizza", price: "1.000 TL" },
+      { name: "Kavurmalı Konak Pizza", price: "950 TL" },
+      { name: "Köy Usulü Konak Pizza", price: "900 TL" },
+      { name: "Margherita Napoletana", price: "750 TL" },
       {
-        name: "Füme Dana Kaburga Pizza",
+        name: "Pizza Ekstraları",
         description:
-          "İnce çıtır taban, eriyen mozarella, füme kaburga et dilimleri, taze roka ve rende parmesan.",
-        price: "1.000 TL",
-      },
-      {
-        name: "Hindi Füme Pizza",
-        description:
-          "İnce çıtır taban, eriyen mozarella, hindi füme dilimleri, taze roka ve rende parmesan.",
-        price: "900 TL",
-      },
-      {
-        name: "Taş Fırın Karışık Pizza",
-        description:
-          "İnce çıtır taban, mozarella, kasap sucuk, dana salam, mantar, zeytin, mısır, taze roka ve rende parmesan.",
-        price: "750 TL",
-      },
-      {
-        name: "Taş Fırın Margarita Pizza",
-        description:
-          "İnce çıtır taban, mozarella, Roma domates sosu, taze fesleğen ve sızma zeytinyağı.",
-        price: "700 TL",
+          "Pesto Sos +100, Acılı Sarımsaklı Zeytinyağı +100, Trüflü Mayonez +100, Trüflü Bal +150, Trüflü Zeytinyağı +200, Roka & Parmesan Yağmuru +200.",
       },
       {
         name: "Dana Kaburga Füme Etli Sandviç",
         description:
-          "Rustik baget, dana kaburga füme et, beyaz peynir, domates.",
+          "Rustik baget, dana kaburga füme et, beyaz peynir, domates, zeytinyağı ve yeşillik.",
         price: "750 TL",
       },
       {
-        name: "Gurme Rustik Avokado Sandviç",
+        name: "Hindi Füme Etli Sandviç",
         description:
-          "Rustik baget, beyaz peynir, roka, kapya biberli avokado. Patates kızartması eşliğinde.",
-        price: "650 TL",
+          "Rustik baget, hindi füme et, beyaz peynir, domates, zeytinyağı ve yeşillik.",
+        price: "750 TL",
       },
       {
         name: "Gurme Rustik Pesto Sandviç",
         description:
           "Rustik baget, beyaz peynir, roka, pesto sosu. Patates kızartması eşliğinde.",
-        price: "600 TL",
+        price: "700 TL",
+      },
+      {
+        name: "Gurme Rustik Avokado Sandviç",
+        description:
+          "Rustik baget, beyaz peynir, roka, kapya biberli avokado. Patates kızartması eşliğinde.",
+        price: "700 TL",
       },
     ],
   },
@@ -243,13 +247,17 @@ export const menuSections: MenuSection[] = [
         price: "1.500 TL",
       },
       {
+        name: "Sac Kavurma - Köy Usulü",
+        price: "1.250 TL",
+      },
+      {
         name: "Izgara Pirzola",
         description:
           "Kemikli pirzola, ızgarada közlenmiş. Patates püresi, kavrulmuş file badem.",
         price: "1.200 TL",
       },
       {
-        name: "Konak Saç Kavurma",
+        name: "Konağın Sac Kavurması",
         description:
           "Bakır saçta pişirilen lezzetli et parçaları, patates püresi tabanı ve kavrulmuş file badem.",
         price: "1.000 TL",
@@ -257,7 +265,7 @@ export const menuSections: MenuSection[] = [
       {
         name: "Konak Köfte",
         description:
-          "Geleneksel tarifle hazırlanan nefis köfteler, patates püresi ve kavrulmuş file badem.",
+          "Geleneksel tarifle hazırlanan köfteler, patates püresi ve kavrulmuş file badem ile.",
         price: "800 TL",
       },
     ],
@@ -284,7 +292,7 @@ export const menuSections: MenuSection[] = [
       },
       {
         name: "Fransız Tereyağlı Kruvasan (2 Adet)",
-        description: "Çıtır kruvasan, file bademlerle. Reçel veya Nutella.",
+        description: "Çıtır kruvasan, file bademlerle. Reçel veya Çikolata Kreması.",
         price: "400 TL",
       },
       {
@@ -299,7 +307,7 @@ export const menuSections: MenuSection[] = [
       },
       {
         name: "Tatlı & Kahve Keyfi",
-        description: "Herhangi bir tatlı + Türk Kahvesi — akşamı en güzel kapatan ikili.",
+        description: "Herhangi bir tatlı + Türk Kahvesi - akşamı en güzel kapatan ikili.",
         price: "500 TL",
       },
     ],
@@ -310,59 +318,44 @@ export const menuSections: MenuSection[] = [
     items: [
       {
         name: "Beyaz Şarap Tadımı",
-        description: "Paşaeli SYS + Bir Varmış Bir Yokmuş Chardonnay (2 kadeh) + Mini peynir tabağı",
+        description:
+          "Paşaeli SYS + Bir Varmış Bir Yokmuş Chardonnay (1 kadeh) + Mini peynir tabağı",
         price: "1.600 TL",
       },
       {
         name: "Kırmızı Şarap Tadımı",
-        description: "Paşaeli CSKS (2 kadeh) + Mini peynir tabağı",
-        price: "1.600 TL",
-      },
-      {
-        name: "Karışık Pizza + CSKS Kırmızı Şarap (1 kadeh)",
-        price: "1.200 TL",
-      },
-      {
-        name: "Margarita Pizza + SYS Beyaz Şarap (1 kadeh)",
-        price: "1.200 TL",
-      },
-      {
-        name: "Dana Füme Kaburga Pizza + 6N Kırmızı Şarap (1 kadeh)",
-        price: "1.600 TL",
-      },
-      {
-        name: "Hindi Füme Pizza + 6N Kırmızı Şarap (1 kadeh)",
-        description: "Cumartesi günleri hariç",
+        description: "Paşaeli CSKS (1 kadeh) + Mini peynir tabağı",
         price: "1.600 TL",
       },
       {
         name: "Paşaeli SYS",
-        description: "Sultaniye, Yapıncak, Sıdalan. Meze, başlangıç, peynir, pizza",
-        price: "Kadeh 600 TL / Şişe 2.200 TL",
+        description: "Sıdalan 2024. Sultaniye, Yapıncak, Sıdalan. Meze, başlangıç, peynir, pizza",
+        price: "Kadeh 600 TL / Şişe 2.400 TL",
       },
       {
         name: "Bir Varmış Bir Yokmuş Chardonnay",
-        description: "Chardonnay. Somon havyarı, mantar",
-        price: "Kadeh 800 TL / Şişe 3.000 TL",
+        description: "Chardonnay 2024. Somon havyarı, mantar",
+        price: "Kadeh 800 TL / Şişe 3.200 TL",
       },
       {
         name: "Paşaeli CSKS",
-        description: "Cab. Sauvignon, Karasakız. Pizza, sandviç, kırmızı et, köfte",
-        price: "Kadeh 600 TL / Şişe 2.200 TL",
+        description: "Karasakız 2023. Cab. Sauvignon, Karasakız. Pizza, sandviç, kırmızı et, köfte",
+        price: "Kadeh 600 TL / Şişe 2.400 TL",
       },
       {
         name: "Paşaeli 6N",
-        description: "Karasakız. Joker: pizza, köfte, beyaz et, peynir",
-        price: "Kadeh 800 TL / Şişe 3.000 TL",
+        description: "Kaz Dağları 2024. Karasakız. Çok yönlü eşleşme: pizza, köfte, beyaz et, peynir",
+        price: "Kadeh 800 TL / Şişe 3.200 TL",
       },
       {
         name: "Morso di Sole",
-        description: "Sultaniye. Künefe, katmer, peynir tabağı",
-        price: "Kadeh 800 TL / Şişe 3.000 TL",
+        description: "Buldan 2021 (50cl). Sultaniye. Künefe, katmer, peynir tabağı",
+        price: "Kadeh 800 TL / Şişe 3.500 TL",
       },
       {
         name: "İthal Şarap Seçkisi",
-        description: "Konağımızda sınırlı sayıda özenle seçilmiş ithal şaraplar bulunmaktadır. Güncel seçki ve fiyat bilgisi için servis ekibimize danışınız.",
+        description:
+          "Konağımızda sınırlı sayıda özenle seçilmiş ithal şaraplar bulunmaktadır. Güncel seçki ve fiyat bilgisi için servis ekibimize danışınız.",
       },
     ],
   },
@@ -372,16 +365,16 @@ export const menuSections: MenuSection[] = [
     items: [
       { name: "Beylerbeyi Göbek Tek", price: "500 TL" },
       { name: "Beylerbeyi Göbek Duble", price: "700 TL" },
-      { name: "Beylerbeyi Göbek 35cl", price: "2.150 TL" },
-      { name: "Beylerbeyi Göbek 50cl", price: "2.650 TL" },
-      { name: "Beylerbeyi Göbek 70cl", price: "3.400 TL" },
-      { name: "Beylerbeyi Göbek 100cl", price: "3.850 TL" },
+      { name: "Beylerbeyi Göbek 35cl", price: "2.350 TL" },
+      { name: "Beylerbeyi Göbek 50cl", price: "2.850 TL" },
+      { name: "Beylerbeyi Göbek 70cl", price: "3.600 TL" },
+      { name: "Beylerbeyi Göbek 100cl", price: "4.600 TL" },
       { name: "Efe Gold Tek", price: "500 TL" },
       { name: "Efe Gold Duble", price: "700 TL" },
-      { name: "Efe Gold 35cl", price: "2.150 TL" },
-      { name: "Efe Gold 50cl", price: "2.650 TL" },
-      { name: "Efe Gold 70cl", price: "3.400 TL" },
-      { name: "Efe Gold 100cl", price: "3.850 TL" },
+      { name: "Efe Gold 35cl", price: "2.350 TL" },
+      { name: "Efe Gold 50cl", price: "2.850 TL" },
+      { name: "Efe Gold 70cl", price: "3.600 TL" },
+      { name: "Efe Gold 100cl", price: "4.600 TL" },
     ],
   },
   {
@@ -415,9 +408,6 @@ export const menuSections: MenuSection[] = [
       { name: "Chivas Regal Duble", price: "1.000 TL" },
       { name: "Chivas Regal 35cl", price: "3.000 TL" },
       { name: "Chivas Regal 70cl", price: "5.000 TL" },
-      { name: "Woodford Reserve Tek", price: "800 TL" },
-      { name: "Woodford Reserve Duble", price: "1.200 TL" },
-      { name: "Woodford Reserve 70cl", price: "6.500 TL" },
     ],
   },
   {
@@ -425,18 +415,21 @@ export const menuSections: MenuSection[] = [
     note: "Sıcak & Soğuk",
     items: [
       { name: "Çay", price: "50 TL" },
+      { name: "Termos Çay", price: "400 TL" },
       { name: "Türk Kahvesi", price: "150 TL" },
       { name: "Espresso", price: "150 TL" },
       { name: "Americano", price: "150 TL" },
       { name: "Filtre Kahve", price: "150 TL" },
       { name: "Bitki Çayları", price: "150 TL" },
+      { name: "Mango Ananas Bitki Çayı", price: "200 TL" },
       { name: "Ice Latte", price: "200 TL" },
       { name: "Ice Americano", price: "200 TL" },
       { name: "Taze Sıkım Portakal Suyu", price: "250 TL" },
       { name: "Kola", price: "150 TL" },
       { name: "Fanta", price: "150 TL" },
       { name: "Ice Tea", price: "150 TL" },
-      { name: "Niğde Gazozu", price: "100 TL" },
+      { name: "Caprisun Safari Fruit", price: "150 TL" },
+      { name: "Niğde Gazozu", price: "150 TL" },
       { name: "Soda", price: "100 TL" },
       { name: "Ayran", price: "100 TL" },
       { name: "Su (küçük)", price: "50 TL" },
