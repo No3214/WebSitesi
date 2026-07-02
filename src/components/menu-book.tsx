@@ -304,6 +304,176 @@ const itemSignals = new Map<string, LocalizedMenuItemSignal>([
     "Kırmızı Şarap Tadımı",
     { tr: { tags: ["Şefin Önerisi"], pairing: "1 kadeh + mini peynir tabağı eşliğinde" } },
   ],
+  // ── EN sayfası kcal + eşleşme seti (2026-07-02 canlı senkron, 2. tur) ──
+  ["Gourmet Village Breakfast (per person)", { en: { tags: ["Signature", "Sharing", "~1,200 kcal"] } }],
+  ["Pişi Breakfast Plate", { en: { tags: ["Lighter Choice", "~650 kcal"] } }],
+  ["French Breakfast", { en: { tags: ["~700 kcal"] } }],
+  ["Pan-Fried Eggs with Pastirma", { en: { tags: ["~550 kcal"] } }],
+  ["Pan-Fried Eggs with Kavurma", { en: { tags: ["~600 kcal"] } }],
+  ["Pan-Fried Eggs with Sucuk", { en: { tags: ["~350 kcal"] } }],
+  ["French Butter Croissants (2 pieces)", { en: { tags: ["~440 kcal"] } }],
+  ["Pan-Fried Menemen", { en: { tags: ["~280 kcal"] } }],
+  ["French Fries", { en: { tags: ["~380 kcal"] } }],
+  ["Omelette (plain / cheese)", { en: { tags: ["~250 kcal"] } }],
+  ["Pan-Fried Eggs with Cheese", { en: { tags: ["~300 kcal"] } }],
+  ["Basil & Tomato Ciabatta (4 pieces)", { en: { tags: ["~320 kcal"] } }],
+  ["Square Rustic Bread", { en: { tags: ["~280 kcal"] } }],
+  ["Cheese Pastry Rolls (4 pieces)", { en: { tags: ["~360 kcal"] } }],
+  ["Honey & Clotted Cream", { en: { tags: ["~200 kcal"] } }],
+  [
+    "Mansion Meze Plate (for 2 - 5 varieties)",
+    {
+      en: {
+        tags: ["Chef's Pick", "Sharing", "~1,100 kcal"],
+        pairing: "Pairing: Paşaeli SYS by the glass",
+      },
+    },
+  ],
+  ["Antakya Hummus with Butter & Pastirma", { en: { tags: ["~320 kcal"] } }],
+  ["Capia Pepper with Avocado", { en: { tags: ["~180 kcal"] } }],
+  ["Cherry-Stuffed Vine Leaves in Olive Oil", { en: { tags: ["~250 kcal"] } }],
+  [
+    "Salmon Caviar",
+    { en: { tags: ["~220 kcal"], pairing: "Pairing: Bir Varmış Bir Yokmuş Chardonnay" } },
+  ],
+  [
+    "Jumbo Shrimp in Butter",
+    {
+      en: {
+        tags: ["Chef's Pick", "~350 kcal"],
+        pairing: "Pairing: Bir Varmış Bir Yokmuş Chardonnay",
+      },
+    },
+  ],
+  ["Hatay-Style Fried Cheese", { en: { tags: ["Antakya Classic", "~420 kcal"] } }],
+  ["Antakya-Style Stuffed Köfte (per piece)", { en: { tags: ["Most Popular", "~180 kcal"] } }],
+  ["Paçanga Pastry (per piece)", { en: { tags: ["~170 kcal"] } }],
+  ["Baked Mushrooms with Kaşar Cheese", { en: { tags: ["~280 kcal"] } }],
+  ["Butcher's Sausage & Spiced Crispy Potatoes (2 sausages)", { en: { tags: ["~520 kcal"] } }],
+  ["Fried Chicken & Spiced Potatoes", { en: { tags: ["~580 kcal"] } }],
+  [
+    "Smoked Salmon on Rustic Bread",
+    { en: { tags: ["~320 kcal"], pairing: "Pairing: Bir Varmış Bir Yokmuş Chardonnay" } },
+  ],
+  ["Arugula Salad", { en: { tags: ["~280 kcal"] } }],
+  ["Starter Plate (for 2)", { en: { tags: ["~250 kcal"] } }],
+  ["Spiced Crispy Fries", { en: { tags: ["~380 kcal"] } }],
+  ["Parmesan Fries", { en: { tags: ["~450 kcal"] } }],
+  [
+    "Village-Style Mansion Pizza",
+    {
+      en: {
+        tags: ["Most Popular", "~850 kcal"],
+        pairing: "Pairing: Paşaeli CSKS or Paşaeli 6N",
+      },
+    },
+  ],
+  [
+    "Mansion Tandoor Pizza",
+    { en: { tags: ["Chef's Pick", "~780 kcal"], pairing: "Pairing: Paşaeli CSKS" } },
+  ],
+  [
+    "Mansion Kavurma Pizza",
+    { en: { tags: ["~800 kcal"], pairing: "Pairing: Paşaeli CSKS or Paşaeli 6N" } },
+  ],
+  [
+    "Margherita Napoletana",
+    { en: { tags: ["~700 kcal"], pairing: "Pairing: Paşaeli CSKS or Paşaeli SYS" } },
+  ],
+  [
+    "Smoked Beef Rib Sandwich",
+    { en: { tags: ["~650 kcal"], pairing: "Pairing: Paşaeli 6N" } },
+  ],
+  [
+    "Smoked Turkey Sandwich",
+    { en: { tags: ["~580 kcal"], pairing: "Pairing: Paşaeli 6N" } },
+  ],
+  [
+    "Gourmet Rustic Pesto Sandwich",
+    { en: { tags: ["~520 kcal"], pairing: "Pairing: Paşaeli SYS" } },
+  ],
+  [
+    "Gourmet Rustic Avocado Sandwich",
+    { en: { tags: ["~540 kcal"], pairing: "Pairing: Paşaeli CSKS" } },
+  ],
+  [
+    "Cheese Board for Raki",
+    { en: { tags: ["~450 kcal"], pairing: "Pairing: Beylerbeyi Göbek 70cl" } },
+  ],
+  [
+    "Turkish Local Cheese & Wine Board",
+    { en: { tags: ["~500 kcal"], pairing: "Pairing: Paşaeli SYS or CSKS" } },
+  ],
+  [
+    "Dallas Steak",
+    {
+      tr: { tags: ["Konağın İmzası", "~950 kcal"], pairing: "Öneri: Paşaeli 6N" },
+      en: { tags: ["Mansion Signature", "~950 kcal"], pairing: "Pairing: Paşaeli 6N" },
+    },
+  ],
+  [
+    "Tenderloin Lokum",
+    {
+      en: {
+        tags: ["Chef's Pick", "Most Popular", "~680 kcal"],
+        pairing: "Pairing: Paşaeli CSKS",
+      },
+    },
+  ],
+  [
+    "Sac Kavurma - Village Style",
+    { en: { tags: ["~720 kcal"], pairing: "Pairing: Paşaeli CSKS or 6N" } },
+  ],
+  [
+    "Grilled Lamb Chops",
+    { en: { tags: ["~750 kcal"], pairing: "Pairing: Paşaeli CSKS or 6N" } },
+  ],
+  [
+    "Mansion Sac Kavurma",
+    { en: { tags: ["~650 kcal"], pairing: "Pairing: Paşaeli CSKS or 6N" } },
+  ],
+  ["Mansion Köfte", { en: { tags: ["~620 kcal"], pairing: "Pairing: Paşaeli 6N" } }],
+  [
+    "Pistachio Katmer",
+    {
+      en: { tags: ["Chef's Pick", "Sweet Closing", "~550 kcal"], pairing: "Pairing: Morso di Sole" },
+    },
+  ],
+  [
+    "Antakya Künefe",
+    {
+      tr: { tags: ["Klasik Favori", "~480 kcal"], pairing: "Öneri: Morso di Sole" },
+      en: { tags: ["Classic Favorite", "~480 kcal"], pairing: "Pairing: Morso di Sole" },
+    },
+  ],
+  [
+    "Churros",
+    {
+      tr: { tags: ["~420 kcal"], pairing: "Öneri: Morso di Sole" },
+      en: { tags: ["~420 kcal"], pairing: "Pairing: Morso di Sole" },
+    },
+  ],
+  ["Chocolate Mini Berliners (2 pieces)", { en: { tags: ["~350 kcal"] } }],
+  ["Vanilla Maraş Ice Cream (2 scoops)", { en: { tags: ["~280 kcal"] } }],
+  ["Dessert & Coffee Ritual", { en: { tags: ["Most Popular"] } }],
+  [
+    "White Wine Tasting",
+    {
+      en: {
+        tags: ["Chef's Pick", "Curated Pairing"],
+        pairing: "1 glass + mini cheese board",
+      },
+    },
+  ],
+  [
+    "Red Wine Tasting",
+    {
+      en: {
+        tags: ["Chef's Pick", "Curated Pairing"],
+        pairing: "1 glass + mini cheese board",
+      },
+    },
+  ],
 ]);
 
 function MenuItemSignals({ signal }: { signal?: MenuItemSignal }) {
