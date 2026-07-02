@@ -130,7 +130,10 @@ function HeroVideo({ locale }: Pick<Props, "locale">) {
         src={activeSource || undefined}
         data-desktop-src={HERO_VIDEO_SRC}
         data-mobile-src={HERO_MOBILE_VIDEO_SRC}
-        poster="/images/hero-video-poster-1280.webp"
+        /* poster attr YOK: arkadaki <img> (srcSet + fetchPriority=high) aynı
+           kareyi taşıyor; video poster'ı LCP penceresinde 101KB mükerrer
+           indirme yaratıyordu (lh-diag 2026-07-02). Video ilk kare gelene
+           kadar şeffaftır, görsel fark yok. */
         aria-hidden
         tabIndex={-1}
         disablePictureInPicture

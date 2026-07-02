@@ -185,3 +185,31 @@ describe("Stone & Light — FAZ V.3: native view transitions", () => {
     expect(css).toContain("translateY(10px)");
   });
 });
+
+/**
+ * LCP BANT BÜTÇESİ KİLİTLERİ (2026-07-02, lh-diag kanıtı):
+ * mobil LCP 9.6s'in kök nedeni ilk viewport'ta bant genişliği yarışıydı —
+ * 6 ham mozaik JPG (~1.2MB) + video poster attr'ının 101KB mükerrer poster
+ * indirmesi hero LCP posteriyle aynı anda başlıyordu.
+ * preload="auto" owner kararıdır (production-contracts) — DOKUNULMAZ.
+ */
+
+describe("Stone & Light — LCP bant bütçesi", () => {
+  const hero = read("src/components/home/home-hero.tsx");
+  const showcase = read("src/components/home/rooms-showcase.tsx");
+
+  it("hero video'da mükerrer poster attr yok; img poster srcSet ile kalır", () => {
+    expect(hero).not.toContain('poster="/images/hero-video-poster');
+    expect(hero).toContain('src="/images/hero-video-poster-1280.webp"');
+    expect(hero).toContain('fetchPriority="high"');
+  });
+
+  it("owner kararı korunur: hero video preload=auto", () => {
+    expect(hero).toContain('preload="auto"');
+  });
+
+  it("mozaikte yalnız featured görsel yüksek ağ önceliği alır", () => {
+    expect(showcase).toContain('fetchPriority={index === 0 ? "high" : "low"}');
+    expect(showcase).toContain("priority={index === 0}");
+  });
+});

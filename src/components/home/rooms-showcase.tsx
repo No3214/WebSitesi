@@ -34,6 +34,11 @@ function RoomCardMedia({ room, index }: { room: Room; index: number }) {
         }
         className="object-cover"
         priority={index === 0}
+        /* LCP bant bütçesi: featured dışındaki 5 ham JPG (~1MB) hero poster ile
+           aynı anda iniyordu (lh-diag 2026-07-02, t=0.9s'te 6 istek). Ağ
+           önceliğini düşürmek posterin bant genişliğini korur; bayt sayısı
+           değişmez, sıra değişir. */
+        fetchPriority={index === 0 ? "high" : "low"}
         unoptimized
       />
       {room.video && autoplayAllowed && (
