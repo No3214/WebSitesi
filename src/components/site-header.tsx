@@ -74,8 +74,19 @@ export function SiteHeader({ variant = "solid" }: SiteHeaderProps) {
   }, [englishPath]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
+    let currentScrolled = window.scrollY > 24;
+    setScrolled(currentScrolled);
+
+    // Bolt Optimization: Only dispatch React state when scroll value transitions
+    // to prevent unnecessary internal re-render checks on every scroll event
+    const onScroll = () => {
+      const newScrolled = window.scrollY > 24;
+      if (newScrolled !== currentScrolled) {
+        currentScrolled = newScrolled;
+        setScrolled(currentScrolled);
+      }
+    };
+
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
