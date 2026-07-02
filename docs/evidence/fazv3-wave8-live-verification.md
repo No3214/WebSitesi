@@ -2,6 +2,36 @@
 
 Kural: kanıt yoksa "kanıt yok". Tüm ölçümler bu oturumda alındı.
 
+## 0. LCP iterasyonu (aynı gün, 3 adım — nihai durum)
+
+Teşhis (lh-diag, sim. yavaş-4G mobil): LCP 9.6s'in kök nedeni bant yarışıydı —
+t=0.9s'te 6 ham mozaik JPG (~1.2MB) + video `poster` attr'ının 101KB mükerrer
+poster indirmesi + High öncelikli featured JPG, LCP posterinden önce bitiyordu
+(poster bitişi 11.2s).
+
+| Adım | Değişiklik | Sonuç |
+| --- | --- | --- |
+| `aceb3ec` | video poster attr kaldırıldı; Next/Image `fetchPriority` prop denendi | Poster dedupe ✓; prop Next tarafından markup'a GEÇİRİLMEDİ (servis HTML'de doğrulandı) |
+| `f767046` | `ReactDOM.preload` (head'den `<link rel=preload as=image fetchpriority=high imagesrcset>`) | Canlıda link doğrulandı; poster High öncelikle ~1.3s'te bitiyor (önce 11.2s) |
+| `ba07e6f` | `poster="...960w"` geri geldi | Poster attr'sız video İLK KARESİ LCP adayı olup LCP'yi ~10s'e sabitliyordu; 960w hem erken adayı geri getirir hem mobilde img'nin seçtiği DOSYANIN aynısı → tek indirme |
+
+Mekanik kanıtlar (deterministik, makine yükünden bağımsız):
+poster ağ isteği High öncelik + tüm mozaik Low/lazy'den önce bitiyor;
+head preload linki canlı HTML'de; mükerrer 1280w poster isteği yok.
+
+Lab ölçümü uyarısı: after koşumları paralel oturumun işleri (video encode,
+test koşuları) makineyi doyururken alındı (TBT 230-470ms, FCP 1.9-3.3s
+salınımı) — mutlak LCP değerleri bu koşullarda güvenilir A/B vermez. Nihai
+sayısal doğrulama: PSI API (keyless kota yarın sıfırlanır) veya PostHog RUM
+(`analytics_purchase` gate'i sonrası).
+
+**Yeni bulgu — CLS 0.3 (aksiyon gerektirir):** after koşumlarında tekrarlayan
+tek layout shift, `body > footer.footer`'ı ~1400px iten geç yükseklik değişimi
+(lh-after1 layout-shifts kanıtı). Baseline'da (11:10) CLS 0'dı. Şüpheli:
+in-view mount olan oda videoları / yeniden üretilen mp4'lerin boyut davranışı
+(1921fd3 sonrası). Sonraki oturum işi: `.room-mosaic-video` yerleşimini
+`aspect-ratio` ile sabitle veya mount yerine `visibility` ile yönet.
+
 ## 1. Deploy kanıtı
 
 | Alan | Değer |
