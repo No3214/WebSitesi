@@ -5,9 +5,55 @@ import Image from "next/image";
 
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
-import { getShowcaseRooms } from "@/data/rooms";
+import { getShowcaseRooms, type Room } from "@/data/rooms";
+import { useAutoplayInView } from "@/lib/use-autoplay-video";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
+
+/**
+ * Kart medyası — OWNER KARARI (2026-07-02): oda videosu olan kartlarda video,
+ * görünüme girince tuşsuz otomatik oynar (sessiz, döngülü); görünümden çıkınca
+ * durur. `prefers-reduced-motion` ve Data Saver'da video hiç oynatılmaz, poster
+ * fotoğraf kalır. `preload="none"` + autoplay attribute'suz kurulum sayesinde
+ * ilk viewport'ta hiçbir oda videosu ağ isteği üretmez (LCP korunur).
+ * Video dekoratiftir (aria-hidden); kartın erişilebilir adı başlıktan gelir.
+ */
+function RoomCardMedia({ room, index }: { room: Room; index: number }) {
+  const { ref, autoplayAllowed } = useAutoplayInView(Boolean(room.video), 0.3);
+
+  return (
+    <div className="room-mosaic-media">
+      <Image
+        src={room.images[0]}
+        alt={room.title}
+        fill
+        sizes={
+          index === 0
+            ? "(max-width: 760px) 100vw, 56vw"
+            : "(max-width: 760px) 100vw, (max-width: 1180px) 44vw, 22vw"
+        }
+        className="object-cover"
+        priority={index === 0}
+        unoptimized
+      />
+      {room.video && autoplayAllowed && (
+        <video
+          ref={ref}
+          className="room-mosaic-video"
+          src={room.video}
+          poster={room.images[0]}
+          muted
+          loop
+          playsInline
+          preload="none"
+          disablePictureInPicture
+          aria-hidden
+          tabIndex={-1}
+        />
+      )}
+    </div>
+  );
+}
 
 export function RoomsShowcase({ locale, eyebrow }: Props) {
   const showcaseRooms = getShowcaseRooms(locale);
@@ -33,21 +79,7 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
               href={`${locale === "en" ? "/en/rooms" : "/odalar"}/${room.slug}`}
               className={`room-mosaic-card${index === 0 ? " room-mosaic-featured" : ""}${index === 3 ? " room-mosaic-wide" : ""}`}
             >
-              <div className="room-mosaic-media">
-                <Image
-                  src={room.images[0]}
-                  alt={room.title}
-                  fill
-                  sizes={
-                    index === 0
-                      ? "(max-width: 760px) 100vw, 56vw"
-                      : "(max-width: 760px) 100vw, (max-width: 1180px) 44vw, 22vw"
-                  }
-                  className="object-cover"
-                  priority={index === 0}
-                  unoptimized
-                />
-              </div>
+              <RoomCardMedia room={room} index={index} />
               <div className="room-mosaic-copy">
                 <span className="room-mosaic-meta">
                   {room.size} · {room.capacity} · {room.view}
@@ -70,6 +102,16 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
           </div>
         </FadeIn>
       </div>
+      <style jsx global>{`
+        .room-mosaic-video {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          pointer-events: none;
+        }
+      `}</style>
     </section>
   );
 }

@@ -34,8 +34,29 @@ describe("oda tanitim videosu (yalniz gercek oda fotograflarindan)", () => {
     expect(src).toContain('preload="metadata"');
     expect(src).toContain("playsInline");
     expect(src).toContain("aria-label={`${room.title} — ${copy.introVideo}`}");
-    // otomatik oynatma yok (kullanici baslatir) -> autoplay attribute olmamali
+    // OWNER KARARI (2026-07-02): video tussuz otomatik oynar. `autoPlay`
+    // attribute'u YINE de kullanilmaz -- oynatmayi IntersectionObserver
+    // gorunumde tetikler (ilk viewport'ta ag istegi yok, LCP korunur).
     expect(src).not.toContain("autoPlay");
+    expect(src).toContain("useAutoplayInView");
+  });
+
+  it("owner karari: gorunur kontrol tusu yok; duraklatma tik/klavye ile", () => {
+    const src = read("src/components/room-detail-client.tsx");
+    // Native controls kaldirildi (tus olmasin) -- sessiz dongulu tanitim.
+    expect(src).not.toMatch(/\scontrols\b/);
+    expect(src).toContain("loop");
+    // WCAG 2.2.2 pause mekanizmasi gorunur buton olmadan saglanir:
+    expect(src).toContain("introVideo.togglePlayback");
+    expect(src).toContain('e.key === "Enter" || e.key === " "');
+  });
+
+  it("autoplay guard'lari paylasilan hook'ta: reduced-motion + Data Saver + in-view", () => {
+    const hook = read("src/lib/use-autoplay-video.ts");
+    expect(hook).toContain("prefers-reduced-motion");
+    expect(hook).toContain("saveData");
+    expect(hook).toContain("IntersectionObserver");
+    expect(hook).toContain("video.pause()");
   });
 
   it("uretim scripti repoda (yeniden uretilebilirlik)", () => {

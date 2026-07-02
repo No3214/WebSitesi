@@ -13,6 +13,7 @@ import { WeatherRibbon } from "@/components/weather-ribbon";
 import { getLocalizedRoom, rooms as fallbackRooms } from "@/data/rooms";
 import { getConfiguredBookingEngineHref } from "@/lib/booking-engine-url";
 import { publicEnv } from "@/lib/public-env";
+import { useAutoplayInView } from "@/lib/use-autoplay-video";
 
 function useReducedMotion() {
   const [reduced, setReduced] = useState(false);
@@ -31,6 +32,9 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
   const [activeImg, setActiveImg] = useState(0);
   const reduced = useReducedMotion();
   const touchStartX = useRef<number | null>(null);
+  // Owner kararı (2026-07-02): oda tanıtım videosu tuşsuz, görünüme girince
+  // kendiliğinden oynar; tıklama/Enter/Space duraklatır (görünür kontrol yok).
+  const introVideo = useAutoplayInView(true);
   const locale = initialLocale;
   const baseRoom = fallbackRooms.find((item) => item.slug === slug);
   const room = baseRoom ? getLocalizedRoom(baseRoom, locale) : undefined;
@@ -193,13 +197,23 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
                  </div>
                  {room.video && (
                    <video
+                     ref={introVideo.ref}
                      className="room-intro-video"
                      src={room.video}
                      poster={room.images[0]}
-                     controls
                      muted
+                     loop
                      playsInline
                      preload="metadata"
+                     disablePictureInPicture
+                     tabIndex={0}
+                     onClick={introVideo.togglePlayback}
+                     onKeyDown={(e) => {
+                       if (e.key === "Enter" || e.key === " ") {
+                         e.preventDefault();
+                         introVideo.togglePlayback();
+                       }
+                     }}
                      aria-label={`${room.title} — ${copy.introVideo}`}
                    />
                  )}
@@ -334,12 +348,18 @@ export function RoomDetailClient({ slug, initialLocale = "tr" }: { slug: string;
           width: 100%;
           aspect-ratio: 16 / 9;
           object-fit: cover;
-          border-radius: 12px;
+          border-radius: var(--radius-md, 12px);
           overflow: hidden;
           margin-bottom: 24px;
           background: #000;
           display: block;
           box-shadow: 0 20px 50px -16px rgba(0, 0, 0, 0.28);
+          cursor: pointer;
+        }
+
+        .room-intro-video:focus-visible {
+          outline: 2px solid var(--gold);
+          outline-offset: 3px;
         }
 
         .image-strip {
