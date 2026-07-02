@@ -9,6 +9,8 @@ export type Room = {
   amenities: string[];
   images: string[];
   video?: string;
+  /** Ana sayfa vitrin mozaiğinde büyük (featured) kart olarak öne çıkar. */
+  featured?: boolean;
   translations?: {
     en: Pick<Room, "title" | "short" | "description" | "capacity" | "view" | "amenities">;
   };
@@ -26,6 +28,21 @@ export function getLocalizedRoom(room: Room, locale: RoomLocale): Room {
 
 export function getLocalizedRooms(locale: RoomLocale): Room[] {
   return rooms.map((room) => getLocalizedRoom(room, locale));
+}
+
+/**
+ * Ana sayfa vitrin dizilimi (Stone & Light editorial mosaic).
+ * Featured oda kaynak sırasından bağımsız olarak başa alınır (büyük kart);
+ * kalanlar veri sırasını korur. Featured işaretli oda yoksa mevcut davranışa
+ * (ilk `count` oda) düşer — vitrin asla boş kalmaz.
+ */
+export function getShowcaseRooms(locale: RoomLocale, count = 6): Room[] {
+  const localized = getLocalizedRooms(locale);
+  const featuredIndex = localized.findIndex((room) => room.featured);
+  if (featuredIndex <= 0) return localized.slice(0, count);
+  const featured = localized[featuredIndex] as Room;
+  const rest = localized.filter((_, index) => index !== featuredIndex);
+  return [featured, ...rest].slice(0, count);
 }
 
 export const rooms: Room[] = [
@@ -141,6 +158,7 @@ export const rooms: Room[] = [
   },
   {
     slug: "superior-2-kisilik-oda",
+    featured: true,
     video: "/videos/rooms/superior-2-kisilik-oda.mp4",
     title: "Superior 2 Kişilik Oda",
     short: "40 metrekarelik, küvetli ve panoramik deniz manzaralı lüks süit.",

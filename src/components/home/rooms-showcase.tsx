@@ -5,12 +5,12 @@ import Image from "next/image";
 
 import { FadeIn, StaggerContainer } from "@/components/animations";
 import { SectionTitle } from "@/components/section-title";
-import { getLocalizedRooms } from "@/data/rooms";
+import { getShowcaseRooms } from "@/data/rooms";
 
 type Props = { locale: "tr" | "en"; eyebrow: string };
 
 export function RoomsShowcase({ locale, eyebrow }: Props) {
-  const localizedRooms = getLocalizedRooms(locale);
+  const showcaseRooms = getShowcaseRooms(locale);
 
   return (
     <section className="section" id="konaklama" style={{ paddingTop: 0 }}>
@@ -27,7 +27,7 @@ export function RoomsShowcase({ locale, eyebrow }: Props) {
           />
         </FadeIn>
         <StaggerContainer className="room-mosaic" delay={0.12} stagger={0.08}>
-          {localizedRooms.slice(0, 6).map((room, index) => (
+          {showcaseRooms.map((room, index) => (
             <Link
               key={room.slug}
               href={`${locale === "en" ? "/en/rooms" : "/odalar"}/${room.slug}`}

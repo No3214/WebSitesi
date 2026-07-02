@@ -925,6 +925,13 @@
     font-size: 1.02rem;
   }
 
+  /* Editorial satır sonu dengesi — desteklemeyen motorda sessizce yok sayılır. */
+  .section-text,
+  .hero .hero-text,
+  .room-mosaic-copy p {
+    text-wrap: pretty;
+  }
+
   /* ---------- KPI / Stats band ---------- */
   .kpi-row {
     display: grid;

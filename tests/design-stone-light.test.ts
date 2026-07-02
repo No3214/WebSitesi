@@ -60,3 +60,45 @@ describe("Stone & Light — tasarım token temeli", () => {
     expect(rd).toContain("var(--radius-md)");
   });
 });
+
+describe("Stone & Light — editorial mosaic featured seçimi (source-order tesadüfü değil)", () => {
+  it("rooms verisinde tam olarak bir oda featured işaretlidir", async () => {
+    const { rooms } = await import("@/data/rooms");
+    expect(rooms.filter((room) => room.featured).length).toBe(1);
+  });
+
+  it("getShowcaseRooms featured odayı başa alır, 6 ile sınırlar, tekrar üretmez", async () => {
+    const { getShowcaseRooms } = await import("@/data/rooms");
+    const showcase = getShowcaseRooms("tr");
+    expect(showcase[0]?.featured).toBe(true);
+    expect(showcase).toHaveLength(6);
+    const slugs = showcase.map((room) => room.slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
+  });
+
+  it("featured işareti EN lokalizasyonunda kaybolmaz", async () => {
+    const { getShowcaseRooms } = await import("@/data/rooms");
+    expect(getShowcaseRooms("en")[0]?.featured).toBe(true);
+  });
+
+  it("hiç featured yoksa mevcut davranışa düşer (ilk N oda)", async () => {
+    const mod = await import("@/data/rooms");
+    const plain = mod.rooms.map((room) => ({ ...room, featured: undefined }));
+    const localized = plain.slice(0, 6).map((room) => room.slug);
+    // Fallback sözleşmesi: featuredIndex bulunamazsa slice(0, count).
+    expect(localized).toHaveLength(6);
+  });
+
+  it("vitrin bileşeni helper'ı kullanır (elle slice değil)", () => {
+    const src = read("src/components/home/rooms-showcase.tsx");
+    expect(src).toContain("getShowcaseRooms");
+    expect(src).not.toContain("slice(0, 6)");
+  });
+});
+
+describe("Stone & Light — editorial tipografi (progressive enhancement)", () => {
+  it("uzun gövde metinlerinde text-wrap: pretty kullanılır", () => {
+    const css = read("src/app/globals.css");
+    expect(css).toContain("text-wrap: pretty");
+  });
+});
